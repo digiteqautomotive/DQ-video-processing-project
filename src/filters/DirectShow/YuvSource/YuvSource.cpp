@@ -39,8 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "YuvSource.h"
 #include "YuvOutputPin.h"
 
-#include <Shared/Conversion.h>
-#include <Shared/StringUtil.h>
+#include <Util/Conversion.h>
+#include <Util/StringUtil.h>
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 {
@@ -48,13 +48,28 @@ const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
   &MEDIASUBTYPE_NULL      // Minor type
 };
 
-
+using namespace artist;
 
 /**********************************************
 *
 *  YuvSourceFilter Class
 *
 **********************************************/
+
+// UNITS = 10 ^ 7  
+// UNITS / 30 = 30 fps;
+// UNITS / 20 = 20 fps, etc
+const REFERENCE_TIME FPS_60 = UNITS / 60;
+const REFERENCE_TIME FPS_30 = UNITS / 30;
+const REFERENCE_TIME FPS_20 = UNITS / 20;
+const REFERENCE_TIME FPS_10 = UNITS / 10;
+const REFERENCE_TIME FPS_5 = UNITS / 5;
+const REFERENCE_TIME FPS_4 = UNITS / 4;
+const REFERENCE_TIME FPS_3 = UNITS / 3;
+const REFERENCE_TIME FPS_2 = UNITS / 2;
+const REFERENCE_TIME FPS_1 = UNITS / 1;
+
+const REFERENCE_TIME rtDefaultFrameLength = FPS_10;
 
 CUnknown * WINAPI YuvSourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 {
@@ -75,6 +90,7 @@ YuvSourceFilter::YuvSourceFilter(IUnknown *pUnk, HRESULT *phr)
   m_iHeight(288),
   m_sDimensions("352x288"),
   m_iFramesPerSecond(30),
+  m_rtFrameLength(FPS_30),
   m_iNoFrames(150),		  //TODO: move to property page
   m_dBytesPerPixel(1.5),
   m_pYuvBuffer(NULL),
@@ -110,7 +126,7 @@ YuvSourceFilter::~YuvSourceFilter()
 STDMETHODIMP YuvSourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
 {
   // Store the URL
-  m_sFile = StringUtil::wideToStl(lpwszFileName);
+  m_sFile = StringUtil::wideStringToString(lpwszFileName);
  
   m_in1.open(m_sFile.c_str(), std::ifstream::in | std::ifstream::binary);
   if ( m_in1.is_open() )
@@ -124,7 +140,7 @@ STDMETHODIMP YuvSourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE
   }
   else
   {
-    SetLastError("Failed to open file: " + m_sFile, true);
+    SetLastError(("Failed to open file: " + m_sFile).c_str(), true);
     return E_FAIL;
   }
 }
@@ -201,9 +217,12 @@ void YuvSourceFilter::createYuvFrameBuffer()
     }
 
     // try and convert to int
-    int iWidth = convert<int>(sWidth);
-    int iHeight = convert<int>(sHeight);
+    bool bDummy = false;
+    int iWidth = convert<int>(sWidth, bDummy);
+    int iHeight = convert<int>(sHeight, bDummy);
     updatePictureBuffer(iWidth, iHeight, m_dBytesPerPixel);
+    // update for property page
+    m_sDimensions = sWidth + "x" + sHeight;
     break;
   }
 
@@ -219,15 +238,12 @@ STDMETHODIMP YuvSourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYPE
 
   if (m_sFile.length()!=0) 
   {
-    WCHAR* pFileName = (StringUtil::stlToWide(m_sFile));	
-
-    DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
-
-    *ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
-    if (*ppszFileName!=NULL) {
-      CopyMemory(*ppszFileName, pFileName, n);
+    std::wstring wsFileName = StringUtil::stringToWideString(m_sFile);
+    DWORD n = sizeof(WCHAR)*(1 + lstrlenW(wsFileName.c_str()));
+    *ppszFileName = (LPOLESTR)CoTaskMemAlloc(n);
+    if (*ppszFileName != NULL) {
+      CopyMemory(*ppszFileName, wsFileName.c_str(), n);
     }
-    delete[] pFileName;
   }
   return NOERROR;
 }
@@ -272,6 +288,15 @@ STDMETHODIMP YuvSourceFilter::SetParameter( const char* type, const char* value 
     else
       return E_FAIL;
   }
+  else if (strcmp(type, SOURCE_FPS) == 0)
+  {
+    HRESULT hr = CSettingsInterface::SetParameter(type, value);
+    if (SUCCEEDED(hr))
+    {
+      m_rtFrameLength = UNITS / m_iFramesPerSecond;
+    }
+    return hr;
+  }
   else
   {
     HRESULT hr = CSettingsInterface::SetParameter(type, value);
@@ -282,9 +307,9 @@ STDMETHODIMP YuvSourceFilter::SetParameter( const char* type, const char* value 
 
 void YuvSourceFilter::recalculate()
 {
-  m_iFrameSize = m_iWidth*m_iHeight*m_dBytesPerPixel;
+  m_iFrameSize = static_cast<int>(m_iWidth*m_iHeight*m_dBytesPerPixel);
   m_iNoFrames = m_iFileSize/m_iFrameSize;
-  m_pPin->m_rtFrameLength = UNITS/m_iFramesPerSecond;
+  // m_pPin->m_rtFrameLength = UNITS/m_iFramesPerSecond;
 }
 
 bool YuvSourceFilter::readFrame()

@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include <streams.h>
-#include <initguid.h>
+// #include <initguid.h>
 #include <wmcodecdsp.h> //for i420 GUID
 
 #include "YuvSource.h"

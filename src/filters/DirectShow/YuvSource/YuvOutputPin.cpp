@@ -40,8 +40,7 @@ DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
 YuvOutputPin::YuvOutputPin(HRESULT *phr, YuvSourceFilter* pFilter)
   : CSourceStream(NAME("CSIR VPP YUV Source"), phr, pFilter, L"Out"),
   m_pYuvFilter(pFilter),
-  m_iCurrentFrame(0),
-  m_rtFrameLength(FPS_30)
+  m_iCurrentFrame(0)
 {
 }
 
@@ -62,7 +61,7 @@ HRESULT YuvOutputPin::GetMediaType(CMediaType *pMediaType)
     return(E_OUTOFMEMORY);
 
   ZeroMemory(pvi, pMediaType->cbFormat);
-  pvi->AvgTimePerFrame = m_rtFrameLength;
+  pvi->AvgTimePerFrame = m_pYuvFilter->m_rtFrameLength;
   pvi->dwBitRate = ((int)(m_pYuvFilter->m_iFramesPerSecond * m_pYuvFilter->m_iFrameSize * m_pYuvFilter->m_dBytesPerPixel)) << 3;
 
   switch (m_pYuvFilter->m_nYuvFormat)
@@ -90,7 +89,6 @@ HRESULT YuvOutputPin::GetMediaType(CMediaType *pMediaType)
     pMediaType->SetSubtype(&MEDIASUBTYPE_AYUV);    break;
   }
   }
-
 
   pvi->bmiHeader.biClrImportant = 0;
   pvi->bmiHeader.biClrUsed = 0;
@@ -241,8 +239,8 @@ HRESULT YuvOutputPin::FillBuffer(IMediaSample *pSample)
     // then you'll also need to configure the AVI Mux filter to 
     // set the Average Time Per Frame for the AVI Header.
     // The current time is the sample's start
-    REFERENCE_TIME rtStart = m_iCurrentFrame * m_rtFrameLength;
-    REFERENCE_TIME rtStop = rtStart + m_rtFrameLength;
+    REFERENCE_TIME rtStart = m_iCurrentFrame * m_pYuvFilter->m_rtFrameLength;
+    REFERENCE_TIME rtStop = rtStart + m_pYuvFilter->m_rtFrameLength;
 
     pSample->SetTime(&rtStart, &rtStop);
 

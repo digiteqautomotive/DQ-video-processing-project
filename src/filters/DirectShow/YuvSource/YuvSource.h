@@ -31,12 +31,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
-#include <strsafe.h>
-
+//#include <strsafe.h>
+#include <cstdint>
 #include <fstream>
-#include <DirectShow/CStatusInterface.h>
-#include <DirectShow/CSettingsInterface.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include <DirectShowExt/CStatusInterface.h>
+#include <DirectShowExt/CSettingsInterface.h>
+// #include <Filters/DirectShow/FilterParameters.h>
+#include "VersionInfo.h"
 
 
 // {DAC3AA2A-5AB3-4705-963B-FFAF9C0D08D8}
@@ -49,6 +50,12 @@ DEFINE_GUID(CLSID_YUVProperties,
 
 // Filter name strings
 #define g_wszYuvSource     L"CSIR VPP YUV Source"
+#define SOURCE_DIMENSIONS "sourcedimensions"
+#define SOURCE_FPS        "fps"
+
+#define YUV_FORMAT        "yuv_format"
+#define YUV420P           0
+#define YUV444I           1
 
 /**
  * @brief YUV source filter that currently supports reading YUV420P and YUV444 interlaced packet.
@@ -73,6 +80,10 @@ public:
   /// From CSource
   STDMETHODIMP Stop();
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /// From CSettingsInterface
   virtual void initParameters()
   {
@@ -128,6 +139,7 @@ private:
   int m_iHeight;
   std::string m_sDimensions;
   int m_iFramesPerSecond;
+  int m_rtFrameLength;
   int m_iNoFrames;
   int m_iFrameSize;
   double m_dBytesPerPixel;
@@ -135,7 +147,7 @@ private:
   std::string m_sFile;
 
   unsigned char* m_pYuvBuffer;
-  int m_iFileSize;
+  int64_t m_iFileSize;
   int m_iRead;
   std::ifstream m_in1;
 };

@@ -32,10 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/FilterPropertiesBase.h>
-#include <Shared/Conversion.h>
-
+#include <DirectShowExt/FilterPropertiesBase.h>
+#include <Util/Conversion.h>
 #include "resource.h"
 
 #define BUFFER_SIZE 256
@@ -113,7 +111,7 @@ public:
       int iCheck = SendMessage(GetDlgItem(m_Dlg, nRadioID), (UINT)BM_GETCHECK, 0, 0);
       if (iCheck != 0)
       {
-        std::string sID = toString(i);
+        std::string sID = artist::toString(i);
         HRESULT hr = m_pSettingsInterface->SetParameter(YUV_FORMAT, sID.c_str());
         ASSERT(SUCCEEDED(hr));
         break;
@@ -136,16 +134,28 @@ private:
   {
     InitCommonControls();
 
+    int nLength = 0;
+    char szBuffer[BUFFER_SIZE];
+    HRESULT hr = m_pSettingsInterface->GetParameter(SOURCE_DIMENSIONS, sizeof(szBuffer), szBuffer, &nLength);
+    ASSERT(SUCCEEDED(hr));
+    std::vector<std::string> vResolutions;
+    vResolutions.push_back(szBuffer);
+    vResolutions.push_back("176x144");
+    vResolutions.push_back("320x240");
+    vResolutions.push_back("352x288");
+    vResolutions.push_back("704x576");
+
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_RESETCONTENT, 0, 0);
     //Add default option
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_ADDSTRING,	 0, (LPARAM)"Select");
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_SELECTSTRING,  0, (LPARAM)"Select");
     // Now populate the graphs
-    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_INSERTSTRING,  1, (LPARAM)"176x144");
-    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_INSERTSTRING,  2, (LPARAM)"320x240");
-    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_INSERTSTRING,  3, (LPARAM)"352x288");
-    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_INSERTSTRING,  4, (LPARAM)"704x576");
-    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_SETMINVISIBLE, 5, 0);
+    for (size_t i = 0; i < vResolutions.size(); ++i)
+    {
+      SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_INSERTSTRING, 1, (LPARAM)vResolutions[i].c_str());
+    }
+
+    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_SETMINVISIBLE, vResolutions.size(), 0);
 
     // Init frames per second
     short lower = 1;

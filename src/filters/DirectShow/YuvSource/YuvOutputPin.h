@@ -39,20 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <streams.h>
 #pragma warning(pop)      // restore original warning level
 
-// UNITS = 10 ^ 7  
-// UNITS / 30 = 30 fps;
-// UNITS / 20 = 20 fps, etc
-const REFERENCE_TIME FPS_30 = UNITS / 30;
-const REFERENCE_TIME FPS_20 = UNITS / 20;
-const REFERENCE_TIME FPS_10 = UNITS / 10;
-const REFERENCE_TIME FPS_5 = UNITS / 5;
-const REFERENCE_TIME FPS_4 = UNITS / 4;
-const REFERENCE_TIME FPS_3 = UNITS / 3;
-const REFERENCE_TIME FPS_2 = UNITS / 2;
-const REFERENCE_TIME FPS_1 = UNITS / 1;
-
-const REFERENCE_TIME rtDefaultFrameLength = FPS_10;
-
 class YuvOutputPin : public CSourceStream
 {
   friend class YuvSourceFilter;
@@ -77,10 +63,7 @@ public:
 
 protected:
   YuvSourceFilter* m_pYuvFilter;
-
   int m_iCurrentFrame;
-  REFERENCE_TIME m_rtFrameLength;
-
   CCritSec m_cSharedState;            // Protects our internal state
 };
 
