@@ -31,10 +31,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
+#include <cstdint>
 #include <fstream>
 #include <vector>
-#include <DirectShow/CStatusInterface.h>
-#include <DirectShow/CSettingsInterface.h>
+#include <DirectShowExt/CStatusInterface.h>
+#include <DirectShowExt/CSettingsInterface.h>
+#include "VersionInfo.h"
 
 
 // UNITS = 10 ^ 7  
@@ -93,6 +95,10 @@ public:
   /// From CSource
   STDMETHODIMP Stop();
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /// From CSettingsInterface
   virtual void initParameters()
   {
@@ -220,20 +226,19 @@ private:
   unsigned m_uiPicParamSetLen;
   ICodecv2* m_pCodec;
 
-  unsigned m_uiCurrentBufferSize;
+  size_t m_uiCurrentBufferSize;
   unsigned char* m_pBuffer;
-  unsigned m_uiBytesInBuffer;
-  unsigned m_uiCurrentNalUnitSize;
-  unsigned m_uiCurrentNalUnitStartPos;
-  unsigned m_uiCurrentStartCodeSize;
+  size_t m_uiBytesInBuffer;
+  size_t m_uiCurrentNalUnitSize;
+  size_t m_uiCurrentNalUnitStartPos;
+  size_t m_uiCurrentStartCodeSize;
 
-  int m_iFileSize;
-  int m_iRead;
+  int64_t m_iFileSize;
   std::ifstream m_in1;
 
   // store byte indexes of various frames for IMediaSeeking implementation
   bool m_bAnalyseOnLoad;
-  std::vector<unsigned> m_vParameterSets;
-  std::vector<unsigned> m_vIdrFrames;
-  std::vector<unsigned> m_vFrames;
+  std::vector<size_t> m_vParameterSets;
+  std::vector<size_t> m_vIdrFrames;
+  std::vector<size_t> m_vFrames;
 };

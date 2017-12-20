@@ -32,9 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
 #include <Windows.h>
 #include <streams.h>
-#include <DShow.h>
-#include <initguid.h>
-#include <wmcodecdsp.h> //for i420 GUID
+// #include <DShow.h>
+// #include <initguid.h>
+#include <wmcodecdsp.h> //for I420 GUID

@@ -36,9 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "H264Source.h"
 #include "H264OutputPin.h"
 #include <Codecs/H264v2/H264v2.h>
-#include <Codecs/CodecUtils/ICodecv2.h>
-#include <Shared/Conversion.h>
-#include <Shared/StringUtil.h>
+#include <CodecUtils/ICodecv2.h>
+#include <Util/Conversion.h>
+#include <Util/StringUtil.h>
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 {
@@ -52,14 +52,7 @@ const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 
 const unsigned char g_startCode_3[] = { 0, 0, 1};
 
-// HACK for backwards compatibility with pre-CMake projects
-#ifndef VPP_CMAKE_BUILD
-#ifdef _DEBUG
-#pragma comment(lib, "H264v2d.lib")
-#else
-#pragma comment(lib, "H264v2.lib")
-#endif
-#endif
+using namespace artist;
 
 CUnknown * WINAPI H264SourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 {
@@ -91,7 +84,6 @@ H264SourceFilter::H264SourceFilter(IUnknown *pUnk, HRESULT *phr)
   m_uiPicParamSetLen(0),
   m_uiCurrentStartCodeSize(0),
   m_iFileSize(0),
-  m_iRead(0),
   m_bAnalyseOnLoad(true)
 {
   // Init CSettingsInterface
@@ -152,7 +144,7 @@ void H264SourceFilter::reset()
 STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
 {
   // Store the URL
-  m_sFile = StringUtil::wideToStl(lpwszFileName);
+  m_sFile = StringUtil::wideStringToString(lpwszFileName);
 
   m_in1.open(m_sFile.c_str(), std::ifstream::in | std::ifstream::binary);
   if ( m_in1.is_open() )
@@ -184,7 +176,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
         if (m_pSeqParamSet) delete[] m_pSeqParamSet;
         m_pSeqParamSet = new unsigned char[m_uiCurrentNalUnitSize];
         memcpy(m_pSeqParamSet, m_pBuffer, m_uiCurrentNalUnitSize);
-        m_uiSeqParamSetLen = m_uiCurrentNalUnitSize;
+        m_uiSeqParamSetLen = static_cast<uint32_t>(m_uiCurrentNalUnitSize);
 
         m_vParameterSets.push_back(m_uiCurrentNalUnitStartPos);
       }
@@ -196,7 +188,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
         if (m_pPicParamSet) delete[] m_pPicParamSet;
         m_pPicParamSet = new unsigned char[m_uiCurrentNalUnitSize];
         memcpy(m_pPicParamSet, m_pBuffer, m_uiCurrentNalUnitSize);
-        m_uiPicParamSetLen = m_uiCurrentNalUnitSize;
+        m_uiPicParamSetLen = static_cast<uint32_t>(m_uiCurrentNalUnitSize);
 
         m_vParameterSets.push_back(m_uiCurrentNalUnitStartPos);
       }
@@ -226,7 +218,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
     if (!parseParameterSets() && m_bUseRtvcH264)
     {
       // don't fail if m_bUseRtvcH264 == false
-      SetLastError("Failed to parse parameter required for RTVC codec sets in: " + m_sFile, true);
+      SetLastError(("Failed to parse parameter required for RTVC codec sets in: " + m_sFile).c_str(), true);
       return E_FAIL;
     }
 
@@ -236,7 +228,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
   }
   else
   {
-    SetLastError("Failed to open file: " + m_sFile, true);
+    SetLastError(("Failed to open file: " + m_sFile).c_str(), true);
     return E_FAIL;
   }
 }
@@ -305,15 +297,13 @@ STDMETHODIMP H264SourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYP
 
   if (m_sFile.length() != 0) 
   {
-    WCHAR* pFileName = (StringUtil::stlToWide(m_sFile));	
-
-    DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
-
-    *ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
-    if (*ppszFileName!=NULL) {
-      CopyMemory(*ppszFileName, pFileName, n);
+    std::wstring wsFileName = StringUtil::stringToWideString(m_sFile);
+    DWORD n = sizeof(WCHAR)*(1 + lstrlenW(wsFileName.c_str()));
+    *ppszFileName = (LPOLESTR)CoTaskMemAlloc(n);
+    if (*ppszFileName != NULL) {
+      CopyMemory(*ppszFileName, wsFileName.c_str(), n);
     }
-    delete[] pFileName;
+    return S_OK;
   }
   return NOERROR;
 }
@@ -429,7 +419,7 @@ bool H264SourceFilter::readNalUnit()
 
     if (uiStartCodeLen > 0)
     {
-      unsigned uiStartingPos = uiStartCodeLen;
+      uint64_t uiStartingPos = uiStartCodeLen;
       while (true)
       {
         // need to find next start code or EOF
@@ -617,7 +607,7 @@ HRESULT H264SourceFilter::SetPositions(LONGLONG *pCurrent, DWORD dwCurrentFlags,
   if (dwCurrentFlags & AM_SEEKING_AbsolutePositioning)
   {
     // find index of frame
-    unsigned uiIndexOfFrame = (*pCurrent)/m_pPin->m_rtFrameLength;
+    unsigned uiIndexOfFrame = static_cast<unsigned>((*pCurrent) / m_pPin->m_rtFrameLength);
     if (uiIndexOfFrame >= m_vFrames.size()) return E_INVALIDARG;
     else
     {
