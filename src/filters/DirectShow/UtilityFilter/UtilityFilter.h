@@ -38,8 +38,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(pop)      // restore original warning level
 #include <deque>
 #include <comdef.h>
-#include <DirectShow/CSettingsInterface.h>
-#include <DirectShow/IFileInfoSourceInterface.h>
+#include <DirectShowExt/CSettingsInterface.h>
+#include <DirectShowExt/CStatusInterface.h>
+#include <DirectShowExt/IFileInfoSourceInterface.h>
+#include "VersionInfo.h"
+#include "UtilityProperties.h"
 
 // {5E0F5204-F598-46F7-9D05-D0CCD195E545}
 static const GUID CLSID_VPP_UtilityFilter =
@@ -100,6 +103,7 @@ static bool isFramerateEstimationMode(UtilityMode eMode )
  * \ingroup DirectShowFilters
  */
 class UtilityFilter : public CTransInPlaceFilter,
+                      public CStatusInterface,
                       public CSettingsInterface,
                       public ISpecifyPropertyPages,
                       public IFilterInfoSourceInterface
@@ -139,16 +143,21 @@ public:
 		return S_OK;
 	}
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /// Overridden from CSettingsInterface
   virtual void initParameters() 
   {
-    addParameter("X", &m_uiX, 0);
-    addParameter("Y", &m_uiY, 0);
-    addParameter("estimatedframerate", &m_dEstimatedFramerate, 0);
-    addParameter("mode", &m_uiFramerateEstimationMode, 1);
+    addParameter(UF_PARAM_X, &m_uiX, 0);
+    addParameter(UF_PARAM_Y, &m_uiY, 0);
+    addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0);
+    addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0);
+    addParameter(UF_MODE, &m_uiFramerateEstimationMode, 1);
     addParameter("writeonframe", &m_bWriteOnFrame, true);
-    addParameter("precision", &m_uiPrecision, 1);
-    addParameter("history_size", &m_uiHistorySize, 50);
+    addParameter(UF_PRECISION, &m_uiPrecision, 1);
+    addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
   }
   STDMETHODIMP SetParameter( const char* type, const char* value);
 
@@ -158,47 +167,46 @@ private:
 
   HRESULT drawTextOntoFrame(const std::string& sText, IMediaSample *pSample);
   void initFramerateEstimation(REFERENCE_TIME tSampleStartTime);
-  void updateFramerateEstimation(REFERENCE_TIME tSampleStartTime);
-  void updateForBitrateMeasurement(REFERENCE_TIME tSampleStartTime, unsigned uiSampleSize);
 
   double calculateFramerate();
   double calculateBitrate();
   const std::string getString(double dFramerate);
+  REFERENCE_TIME getDifference(REFERENCE_TIME tSampleStartTime);
 
   // parameters
   unsigned m_uiX;
   unsigned m_uiY;
   double m_dEstimatedFramerate;
+  double m_dEstimatedBitrate;
+
   unsigned m_uiFramerateEstimationMode;
   bool m_bWriteOnFrame;
   unsigned m_uiPrecision;
 
   bool m_bSeenFirstFrame;
-  REFERENCE_TIME m_previousTimestamp;
+  REFERENCE_TIME m_tPreviousTimestamp;
   REFERENCE_TIME m_tMaxDifferenceBetweenFrames;
   double m_dTimerFrequency;
-
+  unsigned __int64 m_iPerformanceFrequency;
   struct SampleInfo
   {
     SampleInfo()
       :TimeStamp(0),
+      Diff(0),
       Size(0)
     {
 
     }
-    SampleInfo(REFERENCE_TIME ts)
-      :TimeStamp(ts),
-      Size(0)
-    {
 
-    }
-    SampleInfo(REFERENCE_TIME ts, unsigned size)
+    SampleInfo(REFERENCE_TIME ts, REFERENCE_TIME diff, unsigned size)
       :TimeStamp(ts),
+      Diff(diff),
       Size(size)
     {
 
     }
     REFERENCE_TIME TimeStamp;
+    REFERENCE_TIME Diff;
     unsigned Size;
   };
   std::deque<SampleInfo> m_qDurations;

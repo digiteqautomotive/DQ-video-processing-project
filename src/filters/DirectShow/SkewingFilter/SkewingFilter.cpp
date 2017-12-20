@@ -32,9 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "stdafx.h"
-
 #include "SkewingFilter.h"
-#include <Shared/StringUtil.h>
+#include <Util/StringUtil.h>
 
 SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr)
 : CTransInPlaceFilter(NAME("CSIR RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),

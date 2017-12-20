@@ -32,16 +32,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "stdafx.h"
-
-//**** Adding the TimingFilter
 #include "TimestampLoggerFilter.h"
-#include <Shared/StringUtil.h>
-
-//To calculate the time now
+#include <Util/StringUtil.h>
 #include <iostream>
 #include <time.h>
 #include <ctime>
 
+using namespace artist;
 
 TimestampLoggerFilter::TimestampLoggerFilter(LPUNKNOWN pUnk, HRESULT *pHr)
 : CTransInPlaceFilter(NAME("CSIR VPP Timestamp Logger"), pUnk, CLSID_VPP_TimeStampLoggerFilter, pHr, false)
@@ -96,7 +93,7 @@ HRESULT TimestampLoggerFilter::CheckInputType(const CMediaType* mtIn)
 STDMETHODIMP TimestampLoggerFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
 {
 	// Store the filename
-	m_sFileName = StringUtil::wideToStl(lpwszFileName);
+  m_sFileName = StringUtil::wideStringToString(lpwszFileName);
 	return S_OK;
 }
 
@@ -104,13 +101,12 @@ STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDI
 {
 	if (m_sFileName != "")
 	{
-		WCHAR* pFileName = StringUtil::stlToWide(m_sFileName);	
-		DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
+    std::wstring wsFileName = StringUtil::stringToWideString(m_sFileName);
+    DWORD n = sizeof(WCHAR)*(1 + lstrlenW(wsFileName.c_str()));
 		*ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
 		if (*ppszFileName!=NULL) {
-			CopyMemory(*ppszFileName, pFileName, n);
+      CopyMemory(*ppszFileName, wsFileName.c_str(), n);
 		}
-		delete[] pFileName;
 		return S_OK;
 	}
 	else

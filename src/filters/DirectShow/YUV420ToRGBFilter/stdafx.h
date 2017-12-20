@@ -54,3 +54,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
 #include <windows.h>
+
+#pragma warning(push)     // disable for this header only
+#pragma warning(disable:4312) 
+// DirectShow
+#include <streams.h>
+#pragma warning(pop)      // restore original warning level
+

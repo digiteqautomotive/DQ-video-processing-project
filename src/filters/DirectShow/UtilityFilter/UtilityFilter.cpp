@@ -33,28 +33,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "stdafx.h"
 #include "UtilityFilter.h"
-#include <DirectShow/DirectShowHelper.h>
-#include <Shared/Conversion.h>
-#include <Shared/StringUtil.h>
+#include <DirectShowExt/DirectShowHelper.h>
+#include <Util/Conversion.h>
+#include <Util/StringUtil.h>
 #include <Gdiplus.h>
 #include <GdiPlusInit.h>
 #include <numeric>
 
 using namespace Gdiplus;
+using namespace artist;
 
 UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr)
-  : CTransInPlaceFilter(NAME("CSIR RTVC Utility Filter"), pUnk, CLSID_VPP_UtilityFilter, pHr, false),
-  //m_bIsAdvertType(false),
-  m_dEstimatedFramerate(0.0),
+  : CTransInPlaceFilter(NAME("CSIR VPP Utility Filter"), pUnk, CLSID_VPP_UtilityFilter, pHr, false),
+  m_dEstimatedFramerate(-1.0),
+  m_dEstimatedBitrate(-1.0),
   m_bSeenFirstFrame(false),
-  m_previousTimestamp(0),
+  m_tPreviousTimestamp(0),
   m_tMaxDifferenceBetweenFrames(50000000), // 5 seconds max
   m_dTimerFrequency(0.0),
+  m_iPerformanceFrequency(0),
   m_gdiplusStartupInput(new Gdiplus::GdiplusStartupInput()),
   m_pGdiToken(NULL),
   m_hrInterfaceAquired(S_OK)
 {
   GdiplusStartup(&m_pGdiToken, m_gdiplusStartupInput, NULL); //gdi+ init
+  QueryPerformanceFrequency((LARGE_INTEGER*)&m_iPerformanceFrequency);
   // Init parameters
   initParameters();
 }
@@ -85,6 +88,10 @@ STDMETHODIMP UtilityFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv
   {
     return GetInterface((ISettingsInterface*) this, ppv);
   }
+  else if (riid == (IID_IStatusInterface))
+  {
+    return GetInterface((IStatusInterface*) this, ppv);
+  }
   else if (riid == (IID_IFilterInfoSourceInterface))
   {
     return GetInterface((IFilterInfoSourceInterface*) this, ppv);
@@ -112,10 +119,12 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
   hr = pSample->GetPointer(&pBuffer);
   if (FAILED(hr))
   {
+    // Release the format block.
+    FreeMediaType(mt);
     return hr;
   }
 
-  wchar_t* wsText = StringUtil::stlToWide(sText);
+  std::wstring wsText = StringUtil::stringToWideString(sText);
 
   BITMAPINFO bitmapInfo;
   bitmapInfo.bmiHeader = *pbmi;
@@ -126,7 +135,7 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
   // Initialize font
   Gdiplus::Font myFont(L"Arial", 16);
   //RectF layoutRect(0.0f, 0.0f, 200.0f, 50.0f);
-  RectF layoutRect(m_uiX, m_uiY, 350.0f, 50.0f);
+  RectF layoutRect((float)m_uiX, (float)m_uiY, 350.0f, 50.0f);
   StringFormat format;
   format.SetAlignment(StringAlignmentNear);
   SolidBrush blackBrush(Color(255, 0, 0, 0));
@@ -134,16 +143,19 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
 
   // Draw string
   pGraphics->DrawString(
-    wsText,
+    wsText.c_str(),
     sText.length(),
     &myFont,
     layoutRect,
     &format,
     &greenBrush);
 
-  delete[] wsText;
   // Do we need to delete it?
   delete pGraphics;
+
+  // Release the format block.
+  FreeMediaType(mt);
+
   return S_OK;
 }
 
@@ -155,89 +167,135 @@ HRESULT UtilityFilter::Transform(IMediaSample *pSample)
 
   switch (m_uiFramerateEstimationMode)
   {
-  case UTIL_NONE:
+    case UTIL_NONE:
     {
       return S_OK;
     }
-  case UTIL_TIME_STAMP_FRAME:
+    case UTIL_TIME_STAMP_FRAME:
     {
       // %X = time
       sText = StringUtil::GetTimeString("%X");
       break;
     }
-  case UTIL_DATE_TIME_STAMP_FRAME:
+    case UTIL_DATE_TIME_STAMP_FRAME:
     {
       // %d/%m/%Y date
       sText = StringUtil::GetTimeString("%d/%m/%Y %X");
       break;
     }
-  case UTIL_EST_FRAMERATE_TIMESTAMP:
-  case UTIL_EST_FRAMERATE_SYSTEM_TIME:
-  case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
-  case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
+    // always measure both frame and bit rates
+    case UTIL_EST_FRAMERATE_TIMESTAMP:
+    case UTIL_EST_FRAMERATE_SYSTEM_TIME:
+    case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
+    case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
+    case UTIL_MEASURE_BITRATE:
     {
       REFERENCE_TIME tStart = 0, tStop = 0;
       HRESULT hr = pSample->GetTime(&tStart, &tStop);
       if (SUCCEEDED(hr))
       {
+        REFERENCE_TIME tStartTime = 0;
+        switch (m_uiFramerateEstimationMode)
+        {
+          case UTIL_EST_FRAMERATE_TIMESTAMP:
+          case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
+          case UTIL_MEASURE_BITRATE:
+          {
+            tStartTime = tStart;
+            break;
+          }
+          case UTIL_EST_FRAMERATE_SYSTEM_TIME:
+          case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
+          {
+            QueryPerformanceCounter((LARGE_INTEGER *)&tStartTime);
+            break;
+          }
+        }
+
+        // frame rate calculations
         if (!m_bSeenFirstFrame)
         {
-          initFramerateEstimation(tStart);
+          initFramerateEstimation(tStartTime);
           m_bSeenFirstFrame = true;
           return S_OK;
         }
         else
         {
-          updateFramerateEstimation(tStart);
-          double dAverageFramerate = calculateFramerate();
-          m_dEstimatedFramerate = dAverageFramerate;          
-          sText = getString(dAverageFramerate);
-          break;
+          REFERENCE_TIME tDiff = getDifference(tStartTime);
+          // Make sure timestamps are increasing
+          if (tDiff > 0 && tDiff < m_tMaxDifferenceBetweenFrames)
+          {
+            m_qDurations.push_back(SampleInfo(tStartTime, tDiff, pSample->GetActualDataLength()));
+            m_tPreviousTimestamp = tStartTime;
+
+            // limit the number of measurements
+            if (m_qDurations.size() > m_uiHistorySize)
+            {
+              m_qDurations.pop_front();
+            }
+          }
+          else
+          {
+            // reset vars and restart estimation
+            initFramerateEstimation(tStartTime);
+          }
+          // frame rate
+          m_dEstimatedFramerate = calculateFramerate();
+          // bit rate calculations
+          m_dEstimatedBitrate = calculateBitrate();
         }
+
+
+        // now set text according to mode
+        switch (m_uiFramerateEstimationMode)
+        {
+          case UTIL_EST_FRAMERATE_TIMESTAMP:
+          case UTIL_EST_FRAMERATE_SYSTEM_TIME:
+          case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
+          case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
+          {
+            sText = getString(m_dEstimatedFramerate);
+            break;
+          }
+          case UTIL_MEASURE_BITRATE:
+          {
+            sText = getString(m_dEstimatedBitrate);
+            break;
+          }
+        }
+        break;
       }
       else
       {
         return hr;
       }
     }
-  case UTIL_MEASURE_BITRATE:
-  {
-    REFERENCE_TIME tStart = 0, tStop = 0;
-    HRESULT hr = pSample->GetTime(&tStart, &tStop);
-    if (SUCCEEDED(hr))
+    case UTIL_DETECT_UPSTREAM_SOURCE:
     {
-      updateForBitrateMeasurement(tStart, pSample->GetActualDataLength());
-      double dBitrate = calculateBitrate();
-      sText = getString(dBitrate);
-    }
-    break;
-  }
-  case UTIL_DETECT_UPSTREAM_SOURCE:
-  {
-    if (FAILED(m_hrInterfaceAquired)) return m_hrInterfaceAquired;
-    int iLength = BUFFER_SIZE;
+      if (FAILED(m_hrInterfaceAquired)) return m_hrInterfaceAquired;
+      int iLength = BUFFER_SIZE;
 #if 1
-    if (!m_pFilterInfoSourceInterface)
-    {
-      m_hrInterfaceAquired = CDirectShowHelper::FindFirstInterface(this, PINDIR_INPUT, IID_IFilterInfoSourceInterface, (void **)&m_pFilterInfoSourceInterface);
-      if (FAILED(m_hrInterfaceAquired))
+      if (!m_pFilterInfoSourceInterface)
       {
-        DbgLog((LOG_TRACE, 0, TEXT("Failed to find upstream IID_IFilterInfoSourceInterface interface")));
-        return m_hrInterfaceAquired;
+        m_hrInterfaceAquired = CDirectShowHelper::FindFirstInterface(this, PINDIR_INPUT, IID_IFilterInfoSourceInterface, (void **)&m_pFilterInfoSourceInterface);
+        if (FAILED(m_hrInterfaceAquired))
+        {
+          DbgLog((LOG_TRACE, 0, TEXT("Failed to find upstream IID_IFilterInfoSourceInterface interface")));
+          return m_hrInterfaceAquired;
+        }
       }
-    }
 
-    HRESULT hr = m_pFilterInfoSourceInterface->GetMeasurement(m_pBuffer, &iLength);
-    if (FAILED(hr))
-    {
-      DbgLog((LOG_TRACE, 0, TEXT("Failed to find get measurement from IID_IFilterInfoSourceInterface interface")));
-      return hr;
-    }
+      HRESULT hr = m_pFilterInfoSourceInterface->GetMeasurement(m_pBuffer, &iLength);
+      if (FAILED(hr))
+      {
+        DbgLog((LOG_TRACE, 0, TEXT("Failed to find get measurement from IID_IFilterInfoSourceInterface interface")));
+        return hr;
+      }
 #endif
-    sText = std::string(m_pBuffer, iLength);
-    break;
-  }
-  default:
+      sText = std::string(m_pBuffer, iLength);
+      break;
+    }
+    default:
     {
       return S_OK;
     }
@@ -251,6 +309,25 @@ HRESULT UtilityFilter::Transform(IMediaSample *pSample)
   }
   else
     return S_OK;
+}
+
+inline REFERENCE_TIME UtilityFilter::getDifference(REFERENCE_TIME tSampleStartTime)
+{
+  switch (m_uiFramerateEstimationMode)
+  {
+    case UTIL_EST_FRAMERATE_TIMESTAMP:
+    case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
+    case UTIL_MEASURE_BITRATE:
+    {
+      return tSampleStartTime - m_tPreviousTimestamp;
+    }
+    case UTIL_EST_FRAMERATE_SYSTEM_TIME:
+    case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
+    {
+      return ((tSampleStartTime - m_tPreviousTimestamp) * 10000000 / m_iPerformanceFrequency);
+    }
+  }
+  return 0;
 }
 
 HRESULT UtilityFilter::CheckInputType(const CMediaType* mtIn)
@@ -278,99 +355,16 @@ HRESULT UtilityFilter::Stop( void )
   m_qDurations.clear();
   m_dEstimatedFramerate = 0.0;
   m_bSeenFirstFrame = false;
-  m_previousTimestamp = 0;
+  m_tPreviousTimestamp = 0;
 
   return CTransInPlaceFilter::Stop();
 }
 
-void UtilityFilter::updateForBitrateMeasurement(REFERENCE_TIME tSampleStartTime, unsigned uiSampleSize)
-{
-  m_qDurations.push_back(SampleInfo(tSampleStartTime, uiSampleSize));
-  // limit the number of measurements
-  if (m_qDurations.size() > m_uiHistorySize)
-  {
-    m_qDurations.pop_front();
-  }
-}
-
 void UtilityFilter::initFramerateEstimation(REFERENCE_TIME tSampleStartTime)
 {
-  switch (m_uiFramerateEstimationMode)
-  {
-  case UTIL_EST_FRAMERATE_TIMESTAMP:
-  case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
-    {
-      m_previousTimestamp = tSampleStartTime;
-      break;
-    }
-  case UTIL_EST_FRAMERATE_SYSTEM_TIME:
-  case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
-    {
-      QueryPerformanceCounter((LARGE_INTEGER*)&m_previousTimestamp);
-      break;
-    }
-  }
-
+  m_tPreviousTimestamp = tSampleStartTime;
   // clear queue in case mode was changed
   m_qDurations.clear();
-}
-
-void UtilityFilter::updateFramerateEstimation( REFERENCE_TIME tSampleStartTime)
-{
-  switch (m_uiFramerateEstimationMode)
-  {
-  case UTIL_EST_FRAMERATE_TIMESTAMP:
-  case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
-    {
-      REFERENCE_TIME tDiff = tSampleStartTime - m_previousTimestamp;
-      // Make sure timestamps are increasing
-      if (tDiff > 0 && tDiff < m_tMaxDifferenceBetweenFrames)
-      {
-        m_qDurations.push_back(SampleInfo(tDiff));
-        m_previousTimestamp = tSampleStartTime;
-
-        // limit the number of measurements
-        if (m_qDurations.size() > m_uiHistorySize)
-        {
-          m_qDurations.pop_front();
-        }
-      }
-      else
-      {
-        // reset vars and restart estimation
-        initFramerateEstimation(tSampleStartTime);
-      }
-      break;
-    }
-  case UTIL_EST_FRAMERATE_SYSTEM_TIME:
-  case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
-    {
-      unsigned __int64 tNow;
-      unsigned __int64 freq;
-      QueryPerformanceCounter((LARGE_INTEGER *)&tNow);
-      QueryPerformanceFrequency((LARGE_INTEGER*)&freq);
-
-      REFERENCE_TIME tDiff = ((tNow - m_previousTimestamp)* 10000000 / freq) ;
-      // Make sure timestamps are increasing
-      if (tDiff > 0 && tDiff < m_tMaxDifferenceBetweenFrames)
-      {
-        m_qDurations.push_back(SampleInfo(tDiff));
-        m_previousTimestamp = tNow;
-
-        // limit the number of measurements
-        if (m_qDurations.size() > m_uiHistorySize)
-        {
-          m_qDurations.pop_front();
-        }
-      }
-      else
-      {
-        // reset vars and restart estimation
-        initFramerateEstimation(tSampleStartTime);
-      }
-      break;
-    }
-  }
 }
 
 double UtilityFilter::calculateFramerate()
@@ -381,7 +375,7 @@ double UtilityFilter::calculateFramerate()
     REFERENCE_TIME uiTotal = 0;
     for (size_t i = 0; i < m_qDurations.size(); ++i)
     {
-      uiTotal += m_qDurations[i].TimeStamp;
+      uiTotal += m_qDurations[i].Diff;
     }
     uiTotal /= m_qDurations.size();
 
@@ -404,6 +398,7 @@ double UtilityFilter::calculateBitrate()
     REFERENCE_TIME tLast = m_qDurations.back().TimeStamp;
     REFERENCE_TIME tDiff = tLast - tFirst;
     double dSeconds = tDiff / (double)UNITS;
+    if (dSeconds == 0.0) return -1.0;
 
     unsigned uiTotalBytes = 0;
     for (size_t i = 0; i < m_qDurations.size(); ++i)
@@ -415,12 +410,12 @@ double UtilityFilter::calculateBitrate()
 
     return dBitrate;
   }
-  return 0.0;
+  return -1.0;
 }
 
 STDMETHODIMP UtilityFilter::GetMeasurement(char* value, int* buffersize)
 {
-  if (m_sLastValue.length() > *buffersize)
+  if (static_cast<int>(m_sLastValue.length()) > *buffersize)
     return E_FAIL;
   memcpy(value, m_sLastValue.c_str(), m_sLastValue.length());
   *buffersize = m_sLastValue.length();
@@ -460,7 +455,7 @@ STDMETHODIMP UtilityFilter::SetParameter( const char* type, const char* value )
   {
     // reset members
     m_bSeenFirstFrame = false;
-    m_previousTimestamp = 0.0;
+    m_tPreviousTimestamp = 0;
     return S_OK;
   }
   else

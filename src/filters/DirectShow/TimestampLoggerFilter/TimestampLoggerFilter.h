@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <fstream>
 #include <vector>
+#include "VersionInfo.h"
 
 // {DD467633-CFFA-4db7-8213-FE260668CD7F}
 static const GUID CLSID_VPP_TimeStampLoggerFilter = 

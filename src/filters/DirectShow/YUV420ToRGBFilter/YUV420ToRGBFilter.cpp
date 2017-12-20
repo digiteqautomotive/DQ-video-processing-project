@@ -32,13 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "YUV420ToRGBFilter.h"
-
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/CustomMediaTypes.h>
-#include <Image/RealYUV420toRGB24Converter.h>
-
-DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
-  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
+#include <DirectShowExt/DirectShowMediaFormats.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/RealYUV420toRGB24Converter.h>
 
 YUV420toRGBFilter::YUV420toRGBFilter()
   : CCustomBaseFilter(NAME("CSIR VPP YUV420P 2 RGB Converter"), 0, CLSID_VPP_YUV420toRGBColorConverter),
@@ -51,8 +47,14 @@ YUV420toRGBFilter::YUV420toRGBFilter()
   initParameters();
  
   // init converter
-  m_pConverter->SetFlip(m_bInvert);
+  m_pConverter->SetFlip(true);
+  // MERGE from VPP
+  // TODO: RTVC/artist code based has changed in mean-time.
+  // It seems like it defaults to 128 which is the desired value in any case
+  // TESTME/FIXME
+#if 1
   m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
+#endif
 }
 
 YUV420toRGBFilter::~YUV420toRGBFilter()
@@ -75,8 +77,7 @@ CUnknown * WINAPI YUV420toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 void YUV420toRGBFilter::InitialiseInputTypes()
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420,	  &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
 }
 
 
@@ -174,7 +175,7 @@ HRESULT YUV420toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
     // adapt compression in case necessary
     pbmi->biCompression = BI_RGB;
     //Reset the media subtype
-    // Change the output format from MEDIASUBTYPE_YUV420P to RGB24
+    // Change the output format from MEDIASUBTYPE_YUV420P_S to RGB24
     pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
     return S_OK;
   }
@@ -317,7 +318,13 @@ STDMETHODIMP YUV420toRGBFilter::SetParameter( const char* type, const char* valu
 
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
+    // MERGE from VPP
+    // TODO: RTVC/artist code based has changed in mean-time.
+    // It seems like it defaults to 128 which is the desired value in any case
+    // TESTME/FIXME
+#if 0
     m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
+#endif
     m_pConverter->SetFlip(m_bInvert);
     return S_OK;
   }

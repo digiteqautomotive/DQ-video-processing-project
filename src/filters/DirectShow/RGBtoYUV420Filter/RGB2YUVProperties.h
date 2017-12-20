@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <cassert>
-#include <DirectShow/FilterPropertiesBase.h>
+#include <DirectShowExt/FilterPropertiesBase.h>
 
 #include "resource.h"
 
@@ -59,7 +59,7 @@ public:
 	}
 
 	RGB2YUVProperties::RGB2YUVProperties(IUnknown *pUnk) : 
-		FilterPropertiesBase(NAME("RGB 2 YUV Properties"), pUnk, IDD_RGB2YUV_DIALOG, IDS_RGB2YUV_CAPTION)
+		FilterPropertiesBase(NAME("RGB 2 YUV420P Properties"), pUnk, IDD_RGB2YUV_DIALOG, IDS_RGB2YUV_CAPTION)
 	{;}
 
 	HRESULT ReadSettings()

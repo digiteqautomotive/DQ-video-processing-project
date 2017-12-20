@@ -1,4 +1,4 @@
-LIBRARY     Vcam.ax
+LIBRARY     VirtualCam
 EXPORTS
             DllMain                 PRIVATE
             DllGetClassObject       PRIVATE

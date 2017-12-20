@@ -32,10 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/FilterPropertiesBase.h>
-#include <Shared/Conversion.h>
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <DirectShowExt/FilterPropertiesBase.h>
+#include <Util/Conversion.h>
 
 #include "resource.h"
 #define BUFFER_SIZE 256
@@ -68,7 +68,7 @@ public:
 	{
 		int nLength = 0;
 		char szBuffer[BUFFER_SIZE];
-		HRESULT hr = m_pSettingsInterface->GetParameter(ORIENTATION, sizeof(szBuffer), szBuffer, &nLength);
+    HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ORIENTATION, sizeof(szBuffer), szBuffer, &nLength);
 		if (SUCCEEDED(hr))
 		{
 			int nMixingMode = atoi(szBuffer);
@@ -96,8 +96,8 @@ public:
 			int iCheck = SendMessage( GetDlgItem(m_Dlg, nRadioID),	(UINT) BM_GETCHECK,	0, 0);
 			if (iCheck != 0)
 			{
-				std::string sID = toString(i);
-				HRESULT hr = m_pSettingsInterface->SetParameter(ORIENTATION, sID.c_str());
+				std::string sID = artist::toString(i);
+        HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_ORIENTATION, sID.c_str());
 				break;
 			}
 		}

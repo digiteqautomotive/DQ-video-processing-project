@@ -32,11 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/FilterPropertiesBase.h>
-#include <Filters/DirectShow/FilterParameters.h>
-#include <Shared/StringUtil.h>
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <DirectShowExt/FilterPropertiesBase.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <Util/StringUtil.h>
 
 #include "resource.h"
 #define BUFFER_SIZE 256

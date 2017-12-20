@@ -35,19 +35,58 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "YUV420toRGBFilter.h"
 #include "YUY2RGBProperties.h"
+#include <DirectShowExt/DirectShowMediaFormats.h>
+#include "wmcodecdsp.h"
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"CSIR VPP YUV420P 2 RGB Converter";   /// A name for the filter 
 
+const AMOVIESETUP_MEDIATYPE sudMediaTypes[] =
+{
+  {
+    &MEDIATYPE_Video,       // Major type
+    &MEDIASUBTYPE_YUV420P_S // Minor type
+  },
+  {
+    &MEDIATYPE_Video,   // Major type
+    &MEDIASUBTYPE_RGB24 // Minor type
+  },
+};
+
+const AMOVIESETUP_PIN sudPin[] =
+{
+  {
+    L"",              // Obsolete, not used.
+    FALSE,            // Is this pin rendered?
+    FALSE,            // Is it an output pin?
+    FALSE,            // Can the filter create zero instances?
+    FALSE,            // Does the filter create multiple instances?
+    &GUID_NULL,       // Obsolete.
+    NULL,             // Obsolete.
+    1,                // Number of media types.
+    &sudMediaTypes[0] // Pointer to media types.
+  },
+  {
+    L"",					    // Obsolete, not used.
+    FALSE,				    // Is this pin rendered?
+    TRUE,				      // Is it an output pin?
+    FALSE,				    // Can the filter create zero instances?
+    FALSE,				    // Does the filter create multiple instances?
+    &GUID_NULL,			  // Obsolete.
+    NULL,				      // Obsolete.
+    1,					      // Number of media types.
+    &sudMediaTypes[1] // Pointer to media types.
+  }
+};
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =
 {
   &CLSID_VPP_YUV420toRGBColorConverter,	// CLSID
   g_wszName,                            // Name
-  MERIT_DO_NOT_USE,                     // Merit
-  0,                                    // Number of AMOVIESETUP_PIN structs
-  NULL                                  // Pin registration information.
+  MERIT_NORMAL,                         // Merit
+  2,                                    // Number of AMOVIESETUP_PIN structs
+  sudPin                                // Pin registration information.
 };
 
 

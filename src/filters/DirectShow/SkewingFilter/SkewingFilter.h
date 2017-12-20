@@ -33,9 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 #include <streams.h>
-
-//#include <Filters/DirectShow/DirectShowFilterGuids.h>
-#include <DirectShow/CSettingsInterface.h>
+#include <DirectShowExt/CSettingsInterface.h>
+#include "VersionInfo.h"
 
 // {01A5D2B0-E1F5-4fbf-97A7-2025FC13FB63}
 static const GUID CLSID_VPP_SkewingFilter = 
@@ -89,6 +88,10 @@ public:
   STDMETHODIMP Run( REFERENCE_TIME tStart );
   STDMETHODIMP Stop(void);
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
    /// Overridden from CSettingsInterface
   virtual void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
 

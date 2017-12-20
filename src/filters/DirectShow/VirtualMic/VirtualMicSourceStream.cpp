@@ -80,11 +80,12 @@ HRESULT VirtualMicSourceStream::FillBuffer(IMediaSample *pms)
   for (int i = 0; i < lDataLen; ++i)
     pData[i] = rand();
 #else
+#if 0
   // creates beep
   int i = 0;
   static unsigned char val = 0;
   int repeat = 1;
-  int inc = 1;
+  int inc = 10;
   while (i < lDataLen)
   {
     pData[i++] = val;
@@ -97,7 +98,59 @@ HRESULT VirtualMicSourceStream::FillBuffer(IMediaSample *pms)
       }
     }
   }
+#else
+  int i = 0;
+  static unsigned char value = 255;
+  static unsigned char silence = 0;
+  static unsigned value_count = 32000;
+  static unsigned silence_count = 96000;
+  static bool output_silence = true;
+  static unsigned index = 0;
+  static unsigned char val = 0;
+  int repeat = 1;
+  int inc = 1;
+  static int currentBeep = 0;
+  while (i < lDataLen)
+  {
+    if (output_silence)
+    {
+      if (index < silence_count)
+      {
+        pData[i++] = silence;
+        index++;
+      }
+      else
+      {
+        index = 0;
+        output_silence = false;
+        val = 0;
+      }
+    }
+    else
+    {
+      if (index < value_count)
+      {
+        pData[i++] = val;
+        // if ((i % repeat) == 0)
+        if ((index % repeat) == 0)
+        {
+          val += inc;
+          if (val == 0)
+          {
+            inc *= -1;
+          }
+        }
+        index++;
+      }
+      else
+      {
+        index = 0;
+        output_silence = true;
+      }
+    }
+  }
 
+#endif
 #endif
   return NOERROR;
 } // FillBuffer

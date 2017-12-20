@@ -33,10 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "stdafx.h"
 #include "PicInPicFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <Image/PicInPicRGB24Impl.h>
-#include <Image/PicInPicRGB32Impl.h>
-#include <Image/PicScalerRGB24Impl.h>
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <ImageUtils/PicInPicRGB24Impl.h>
+#include <ImageUtils/PicInPicRGB32Impl.h>
+#include <ImageUtils/PicScalerRGB24Impl.h>
 
 PicInPicFilter::PicInPicFilter()
 	:VideoMixingBase(NAME("CSIR VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
@@ -46,9 +46,9 @@ PicInPicFilter::PicInPicFilter()
   m_nSubPictureHeight(0),
   m_nCustomOffsetX(0),
   m_nCustomOffsetY(0),
-	m_pPicInPic(NULL),
-	m_pTargetPicScaler(NULL),
-	m_pSubPicScaler(NULL),
+  m_pPicInPic(NULL),
+  m_pTargetPicScaler(NULL),
+  m_pSubPicScaler(NULL),
   m_nBytesPerPixel(0.0),
   m_pBufferForScaledSecondaryImage(NULL)
 {
@@ -107,17 +107,17 @@ void PicInPicFilter::initParameters()
   // the picture i.e. top left or top right corner.
 	// addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
   // width output picture is scaled to
-	addParameter(TARGET_WIDTH, &m_nTargetWidth, 0);
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);
   // height output picture is scaled to
-  addParameter(TARGET_HEIGHT, &m_nTargetHeight, 0);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);
   // width inner picture is scaled to
-  addParameter(SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);
+  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);
   // height inner picture is scaled to
-  addParameter(SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);
+  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);
   // x offset from bottom left corner
-  addParameter(OFFSET_X, &m_nCustomOffsetX, 0);
+  addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);
   // y offset from bottom left corner
-  addParameter(OFFSET_Y, &m_nCustomOffsetY, 0);
+  addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);
 }
 
 HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
@@ -186,7 +186,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     int nWidth = m_nOutputWidth;
     int nHeight = m_nOutputHeight;
 		// TODO: is zeros the right filler
-		memset(pBufferOut, 0, nWidth * nHeight* m_nBytesPerPixel);
+		memset(pBufferOut, 0, static_cast<size_t>(nWidth * nHeight* m_nBytesPerPixel));
 
     if (m_pSubPicScaler)
     {
@@ -317,7 +317,7 @@ HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFO
     // if target width and height have been set use those dimensions
     nOutputWidth = m_nTargetWidth;
     nOutputHeight = m_nTargetHeight;
-    nOutputSize = m_nOutputWidth * m_nOutputHeight * m_nBytesPerPixel;
+    nOutputSize = static_cast<int>(m_nOutputWidth * m_nOutputHeight * m_nBytesPerPixel);
   }
   else
   {
@@ -367,8 +367,8 @@ STDMETHODIMP PicInPicFilter::SetParameter( const char* type, const char* value )
 
 bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 {
-	if ( ( strcmp(szParam, TARGET_WIDTH) == 0) ||
-		 ( strcmp(szParam, TARGET_HEIGHT) == 0)
+  if ((strcmp(szParam, FILTER_PARAM_TARGET_WIDTH) == 0) ||
+    (strcmp(szParam, FILTER_PARAM_TARGET_HEIGHT) == 0)
 		)
 	{
 		return true;
@@ -418,9 +418,9 @@ void PicInPicFilter::reconfigure()
       // if the inner picture is bigger than half the target picture, scale it by a factor of 0.4
       // TODO: do we need to scale to multiples of 4?
       if (m_nSubPictureWidth > getOutputWidth() / 2)
-        m_nSubPictureWidth = m_nSubPictureWidth * 0.4;
+        m_nSubPictureWidth = static_cast<int>(m_nSubPictureWidth * 0.4);
       if (m_nSubPictureHeight > getOutputHeight() / 2)
-        m_nSubPictureHeight = m_nSubPictureHeight * 0.4;
+        m_nSubPictureHeight = static_cast<int>(m_nSubPictureHeight * 0.4);
     }
 
     if (iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
@@ -440,7 +440,7 @@ void PicInPicFilter::reconfigure()
         delete m_pBufferForScaledSecondaryImage;
         m_pBufferForScaledSecondaryImage = NULL;
       }
-      m_pBufferForScaledSecondaryImage = new BYTE[m_nSubPictureWidth * m_nSubPictureHeight * m_nBytesPerPixel];
+      m_pBufferForScaledSecondaryImage = new BYTE[static_cast<int>(m_nSubPictureWidth * m_nSubPictureHeight * m_nBytesPerPixel)];
     }
     else
     {

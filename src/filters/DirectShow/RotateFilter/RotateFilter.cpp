@@ -33,9 +33,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "RotateFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <Image/PicRotateRGB24Impl.h>
-#include <Image/PicRotateRGB32Impl.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/PicRotateRGB24Impl.h>
+#include <ImageUtils/PicRotateRGB32Impl.h>
 
 RotateFilter::RotateFilter()
 : CCustomBaseFilter(NAME("CSIR VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),

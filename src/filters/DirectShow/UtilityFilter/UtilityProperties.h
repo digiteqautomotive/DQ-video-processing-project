@@ -32,14 +32,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/FilterPropertiesBase.h>
-
 #include "resource.h"
+#include <DirectShowExt/FilterPropertiesBase.h>
+
 
 #define BUFFER_SIZE 256
 
+#define UF_PARAM_X "x"
+#define UF_PARAM_Y "y"
+#define UF_ESTIMATED_VIDEO_BITRATE "estimated_videobitrate"
+#define UF_ESTIMATED_FRAMERATE     "estimated_framerate"
+#define UF_ESTIMATED_BITRATE       "estimated_bitrate"
 #define UF_MODE "mode"
+#define UF_PRECISION "precision"
+#define UF_HISTORY_SIZE "history_size"
 #define UF_FPS_TS "FPS Timestamp (TS)"
 #define UF_FPS_ST "FPS Timestamp (ST)"
 #define UF_TIME "Time"
@@ -167,7 +173,7 @@ public:
     // mode of operation
     int index = ComboBox_GetCurSel(GetDlgItem(m_Dlg, IDC_CMB_MODE));
     ASSERT (index != CB_ERR);
-    itoa(index, szBuffer, 10);
+    _itoa(index, szBuffer, 10);
     m_pSettingsInterface->SetParameter(UF_MODE, szBuffer);
     //nLength = GetDlgItemText(m_Dlg, IDC_CMB_MODE, szBuffer, BUFFER_SIZE);
     //if (strcmp(szBuffer, UF_FPS_TS_DATE_TIME) == 0)

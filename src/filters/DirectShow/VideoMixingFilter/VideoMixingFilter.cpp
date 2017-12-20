@@ -33,9 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "stdafx.h"
 #include "VideoMixingFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <Image/PicConcatRGB24Impl.h>
-#include <Image/PicConcatRGB32Impl.h>
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/PicConcatRGB24Impl.h>
+#include <ImageUtils/PicConcatRGB32Impl.h>
 
 VideoMixingFilter::VideoMixingFilter()
 	:VideoMixingBase(NAME("CSIR VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
@@ -77,7 +78,7 @@ CUnknown * WINAPI VideoMixingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 void VideoMixingFilter::initParameters()
 {
-	addParameter(ORIENTATION, &m_nOrientation, 0);
+	addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
 }
 
 HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
@@ -123,13 +124,13 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 	{
 		int nWidth = m_pPicConcat->Get1stWidth();
 		int nHeight = m_pPicConcat->Get1stHeight();
-		memcpy(pBufferOut, m_pSampleBuffers[0], nWidth * nHeight* m_nBytesPerPixel);
+    memcpy(pBufferOut, m_pSampleBuffers[0], static_cast<size_t>(nWidth * nHeight* m_nBytesPerPixel));
 	}
 	else
 	{
 		int nWidth = m_pPicConcat->Get2ndWidth();
 		int nHeight = m_pPicConcat->Get2ndHeight();
-		memcpy(pBufferOut, m_pSampleBuffers[1], nWidth * nHeight* m_nBytesPerPixel);
+    memcpy(pBufferOut, m_pSampleBuffers[1], static_cast<size_t>(nWidth * nHeight* m_nBytesPerPixel));
 	}
 
 	pOutSample->SetActualDataLength(m_nOutputSize);

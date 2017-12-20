@@ -34,7 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 // CSIR includes
-#include <DirectShow/CustomBaseFilter.h>
+#include <DirectShowExt/CustomBaseFilter.h>
+#include "VersionInfo.h"
 
 // Parameters
 #define CHROMINANCE_OFFSET "chrominanceoffset"
@@ -106,6 +107,10 @@ public:
   /// Overridden from CSettingsInterface
   STDMETHODIMP SetParameter( const char* type, const char* value);
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /// Overridden from CSettingsInterface
   virtual void initParameters()
   {

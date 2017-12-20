@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 #include <streams.h>
-
-#include <DirectShow/CustomBaseFilter.h>
+#include <DirectShowExt/CustomBaseFilter.h>
+#include "VersionInfo.h"
 
 // {E0734A05-F25B-4F42-9CBF-7F1F610266C6}
 static const GUID CLSID_VPP_Stereo2MonoFilter = 
@@ -81,7 +81,10 @@ public:
 		pPages->pElems[0] = CLSID_Stereo2MonoProperties;
 		return S_OK;
 	}
-
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /// Overridden from CSettingsInterface
   virtual void initParameters() { addParameter("channel", &m_channel, 0); }
 

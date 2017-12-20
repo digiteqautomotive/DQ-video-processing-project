@@ -32,18 +32,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "stdafx.h"
-
-// CSIR includes
 #include "ScaleFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/CustomMediaTypes.h>
-#include <Image/PicScalerRGB24Impl.h>
-#include <Image/PicScalerYUV420PImpl.h>
+#include <DirectShowExt/DirectShowMediaFormats.h>
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/PicCropperRGB24Impl.h>
+#include <ImageUtils/PicScalerRGB24Impl.h>
+#include <ImageUtils/PicScalerYUV420PImpl.h>
+#include <artist/Media/MediaUtil.h>
 
 ScaleFilter::ScaleFilter()
   : CCustomBaseFilter(NAME("CSIR VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
-  m_nBytesPerPixel(BYTES_PER_PIXEL_RGB24)
+  m_nBytesPerPixel(BYTES_PER_PIXEL_RGB24),
+  m_eMode(MODE_ASPECT_RATIO_CORRECT_SCALING1),
+  m_uiTopCrop(0),
+  m_uiBottomCrop(0),
+  m_uiRightCrop(0),
+  m_uiLeftCrop(0),
+  m_uiWidthAfterCropping(0),
+  m_uiHeightAfterCropping(0),
+  m_pCropper(nullptr),
+  m_pCropBuffer(nullptr)
 {
   //Call the initialize input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -53,6 +63,16 @@ ScaleFilter::ScaleFilter()
 
 ScaleFilter::~ScaleFilter()
 {
+  if (m_pCropBuffer)
+  {
+    delete m_pCropBuffer;
+    m_pCropBuffer = NULL;
+  }
+  if (m_pCropper)
+  {
+    delete m_pCropper;
+    m_pCropper = NULL;
+  }
   if (m_pScaler)
   {
     delete m_pScaler;
@@ -74,7 +94,7 @@ CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 void ScaleFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
 }
 
 HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
@@ -105,7 +125,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         m_pScaler = new PicScalerRGB24Impl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
       }
-      else if (pmt->subtype == MEDIASUBTYPE_YUV420P)
+      else if (pmt->subtype == MEDIASUBTYPE_YUV420P_S)
       {
         m_pScaler = new PicScalerYUV420PImpl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_YUV420P;
@@ -168,7 +188,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
   // Leaving this var so that we can cater for RGB32 at a later stage
-  pProp->cbBuffer = m_nOutPixels * m_nBytesPerPixel;
+  pProp->cbBuffer = static_cast<long>(m_nOutPixels * m_nBytesPerPixel);
   if (m_nBytesPerPixel == BYTES_PER_PIXEL_YUV420P)
   {
     //Adjust the buffer requirements for our custom format
@@ -214,9 +234,9 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
   }
-  if (mtIn->subtype == MEDIASUBTYPE_YUV420P)
+  if (mtIn->subtype == MEDIASUBTYPE_YUV420P_S)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_YUV420P)
+    if (mtOut->subtype != MEDIASUBTYPE_YUV420P_S)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -241,7 +261,6 @@ STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
     }
   }
 
-  // TODO: get rid of enum or get rid of string!!!!
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
     RecalculateFilterParameters();
@@ -253,23 +272,134 @@ STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
   }
 }
 
+void ScaleFilter::initParameters()
+{
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
+  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1);
+}
+
 HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   //make sure we were able to initialize our converter
   ASSERT(m_pScaler);
-  //Call scaling conversion code
-  m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
-  m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
-  int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn);
-  ASSERT(res == 1);
-  lOutActualDataLength = m_nOutWidth * m_nOutHeight * m_nBytesPerPixel;
-  return S_OK;
-}
 
+  switch (m_eMode)
+  {
+    case MODE_ASPECT_RATIO_CORRECT_SCALING1:
+    {
+      if (m_pCropper)
+      {
+        int res = m_pCropper->Crop((void*)pBufferIn, (void*)m_pCropBuffer);
+        ASSERT(res == 1);
+        // assume its the same aspect ratio, just scale directly
+        m_pScaler->SetInDimensions(m_uiWidthAfterCropping, m_uiHeightAfterCropping);
+        m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
+        res = m_pScaler->Scale((void*)pBufferOut, (void*)m_pCropBuffer);
+        ASSERT(res == 1);
+        lOutActualDataLength = static_cast<long>(m_nOutWidth * m_nOutHeight * m_nBytesPerPixel);
+        return S_OK;
+      }
+      else
+      {
+        // assume its the same aspect ratio, just scale directly
+        m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
+        m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
+        int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn);
+        ASSERT(res == 1);
+        lOutActualDataLength = static_cast<long>(m_nOutWidth * m_nOutHeight * m_nBytesPerPixel);
+        return S_OK;
+      }
+      break;
+    }
+    case MODE_STANDARD:
+    default:
+    {
+      //Call scaling conversion code
+      m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
+      m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
+      int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn);
+      ASSERT(res == 1);
+      lOutActualDataLength = static_cast<long>(m_nOutWidth * m_nOutHeight * m_nBytesPerPixel);
+      return S_OK;
+      break;
+    }
+  }
+}
 
 HRESULT ScaleFilter::RecalculateFilterParameters()
 {
   // Update the number of out pixels
   m_nOutPixels = m_nOutWidth * m_nOutHeight;
+
+  if (m_pCropBuffer)
+  {
+    delete m_pCropBuffer;
+    m_pCropBuffer = nullptr;
+  }
+  if (m_pCropper)
+  {
+    delete m_pCropper;
+    m_pCropper = nullptr;
+  }
+  
+  m_uiTopCrop = 0;
+  m_uiBottomCrop = 0;
+  m_uiLeftCrop = 0;
+  m_uiRightCrop = 0;
+  m_uiWidthAfterCropping = 0;
+  m_uiHeightAfterCropping = 0;
+
+  switch (m_eMode)
+  {
+    case MODE_ASPECT_RATIO_CORRECT_SCALING1:
+    {
+      uint32_t uiTopBottomCrop = 0;
+      uint32_t uiLeftRightCrop = 0;
+      double dInAspectRatio = m_nInWidth / static_cast<double>(m_nInHeight);
+      double dOutAspectRatio = m_nOutWidth / static_cast<double>(m_nOutHeight);
+      double EPSILON = 0.001;
+      // check if the aspect ratios differ and cropping is necessary
+      if ( std::fabs(dInAspectRatio - dOutAspectRatio) > EPSILON)
+      {
+        if (artist::determineCropParameters(m_nInWidth, m_nInHeight, m_nOutWidth, m_nOutHeight, uiTopBottomCrop, uiLeftRightCrop))
+        {
+          m_uiWidthAfterCropping = m_nInWidth - uiLeftRightCrop;
+          m_uiHeightAfterCropping = m_nInHeight - uiTopBottomCrop;
+          // for now just divide (almost) equally
+          if (uiTopBottomCrop > 0)
+          {
+            m_uiTopCrop = uiTopBottomCrop / 2;
+            m_uiBottomCrop = uiTopBottomCrop - m_uiTopCrop;
+          }
+          if (uiLeftRightCrop > 0)
+          {
+            m_uiLeftCrop = uiLeftRightCrop / 2;
+            m_uiRightCrop = uiLeftRightCrop - m_uiLeftCrop;
+          }
+          ASSERT(m_uiTopCrop > 0 || m_uiBottomCrop > 0 || m_uiLeftCrop > 0 || m_uiRightCrop > 0);
+         
+          m_pCropper = new PicCropperRGB24Impl();
+          m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
+          // Create temp buffer for crop
+          m_pCropBuffer = new BYTE[static_cast<int>(m_uiWidthAfterCropping * m_uiHeightAfterCropping * m_nBytesPerPixel)];
+          m_pCropper->SetInDimensions(m_nInWidth, m_nInHeight);
+          m_pCropper->SetOutDimensions(m_uiWidthAfterCropping, m_uiHeightAfterCropping);
+          m_pCropper->SetCrop(m_uiLeftCrop, m_uiRightCrop, m_uiTopCrop, m_uiBottomCrop);
+        }
+        else
+        {
+          // this might occur as this method is called for every parameter change.
+          // in that case width might be valid for determineCropParameters, but height might not be.
+          // just ignore if this fails. In the worst case, no cropper is created and standard mode is applied
+        }
+      }
+      else
+      {
+        // same aspect ratio->don't need cropper
+      }
+      break;
+    }
+  }
   return S_OK;
 }

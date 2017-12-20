@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 
 #include "Stereo2MonoFilter.h"
-#include <Shared/StringUtil.h>
+#include <Util/StringUtil.h>
 
 Stereo2MonoFilter::Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr)
   : CCustomBaseFilter(NAME("CSIR RTVC Stereo2Mono Filter"), pUnk, CLSID_VPP_Stereo2MonoFilter),

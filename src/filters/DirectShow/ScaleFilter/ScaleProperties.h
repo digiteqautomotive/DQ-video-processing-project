@@ -32,11 +32,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/FilterPropertiesBase.h>
-
 #include <climits>
 #include "resource.h"
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <DirectShowExt/FilterPropertiesBase.h>
+#include <DirectShowExt/ParameterConstants.h>
+
 
 #define BUFFER_SIZE 256
 
@@ -69,10 +70,10 @@ public:
     setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
     setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
     // width
-    HRESULT hr = setEditTextFromIntFilterParameter(TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
+    HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
     if (FAILED(hr)) return hr;
     // height
-    hr = setEditTextFromIntFilterParameter(TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
     if (FAILED(hr)) return hr;
     return hr;
   }
@@ -80,10 +81,10 @@ public:
   HRESULT OnApplyChanges(void)
   {
     // width
-    HRESULT hr = setIntFilterParameterFromEditText(TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
+    HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
     if (FAILED(hr)) return hr;
     // height
-    hr = setIntFilterParameterFromEditText(TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
     if (FAILED(hr)) return hr;
     return S_OK;
   }

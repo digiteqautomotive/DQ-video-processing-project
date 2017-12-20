@@ -33,9 +33,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include <DirectShow/VideoMixingBase.h>
-#include <DirectShow/CSettingsInterface.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include <DirectShowExt/VideoMixingBase.h>
+#include <DirectShowExt/CSettingsInterface.h>
+#include "VersionInfo.h"
 
 // {48E4D730-389D-4bdc-BEC1-F178FA6DCDBA}
 static const GUID CLSID_VPP_VideoMixingFilter = 
@@ -59,8 +59,7 @@ class PicConcatBase;
  * Video Mixing Filter for RGB24 and RGB32 Media
  */
 class VideoMixingFilter	:	public VideoMixingBase,
-							public CSettingsInterface,
-							public ISpecifyPropertyPages
+							            public ISpecifyPropertyPages
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -87,6 +86,10 @@ public:
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
 	virtual void initParameters();
 
 	/// For configuration dialog
@@ -109,10 +112,6 @@ public:
 		if (riid == IID_ISpecifyPropertyPages)
 		{
 			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else if(riid == (IID_ISettingsInterface))
-		{
-			return GetInterface((ISettingsInterface*) this, ppv);
 		}
 		else
 		{

@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <cassert>
-#include <DirectShow/FilterPropertiesBase.h>
+#include <DirectShowExt/FilterPropertiesBase.h>
 
 #include "resource.h"
 

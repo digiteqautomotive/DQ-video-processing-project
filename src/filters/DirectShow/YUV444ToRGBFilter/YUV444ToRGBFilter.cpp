@@ -32,9 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "YUV444ToRGBFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/CustomMediaTypes.h>
-#include <Image/RealYUV444toRGB24Converter.h>
+#include <DirectShowExt/CustomMediaTypes.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/RealYUV444toRGB24Converter.h>
 
 YUV444toRGBFilter::YUV444toRGBFilter()
   : CCustomBaseFilter(NAME("CSIR VPP YUV444I 2 RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),

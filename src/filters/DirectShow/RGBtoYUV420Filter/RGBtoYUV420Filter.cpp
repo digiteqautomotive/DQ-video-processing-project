@@ -32,10 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "RGBtoYUV420Filter.h"
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/CustomMediaTypes.h>
-#include <Image/RealRGB24toYUV420Converter.h>
-#include <Image/RealRGB32toYUV420Converter.h>
+#include <DirectShowExt/DirectShowMediaFormats.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/RealRGB24toYUV420Converter.h>
+#include <ImageUtils/RealRGB32toYUV420Converter.h>
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
@@ -108,7 +108,11 @@ HRESULT RGBtoYUV420Filter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
 			}
 			if (pmt->subtype == MEDIASUBTYPE_RGB24)
 			{
-				m_pConverter = new RealRGB24toYUV420Converter(m_nInWidth, m_nInHeight, m_nChrominanceOffset);
+        // MERGE from VPP
+        // TODO: RTVC/artist code based has changed in mean-time.
+        // It seems like it defaults to 128 which is the desired value in any case
+        // TESTME/FIXME
+        m_pConverter = new RealRGB24toYUV420Converter(m_nInWidth, m_nInHeight , m_nChrominanceOffset);
         m_pConverter->SetFlip(m_bInvert);
         m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
 			}
@@ -140,7 +144,7 @@ HRESULT RGBtoYUV420Filter::GetMediaType( int iPosition, CMediaType *pMediaType )
 		}
 		// Change the output format to MEDIASUBTYPE_I420 
 		pMediaType->SetType(&MEDIATYPE_Video);
-		pMediaType->SetSubtype(&MEDIASUBTYPE_I420);
+    pMediaType->SetSubtype(&MEDIASUBTYPE_YUV420P_S);
 		pMediaType->SetFormatType(&FORMAT_VideoInfo);
 
 		// Get bitmap info header and modify
@@ -154,7 +158,7 @@ HRESULT RGBtoYUV420Filter::GetMediaType( int iPosition, CMediaType *pMediaType )
       pvi->bmiHeader.biHeight =  -1 * pvi->bmiHeader.biHeight; // get rid of -1
 
     // update sample sizes
-    unsigned uiSampleSize = static_cast<unsigned>(m_nInPixels * BYTES_PER_PIXEL_YUV420P);
+    unsigned uiSampleSize = static_cast<unsigned>(m_nInPixels * BYTES_PER_PIXEL_YUV420P_S);
     pvi->bmiHeader.biSizeImage = uiSampleSize;
     pMediaType->SetSampleSize( uiSampleSize );
 		return S_OK;
@@ -231,7 +235,7 @@ HRESULT RGBtoYUV420Filter::CheckTransform( const CMediaType *mtIn, const CMediaT
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
 	// Adding advert media type to this method
-	if ((mtOut->subtype != MEDIASUBTYPE_YUV420P) && (mtOut->subtype != MEDIASUBTYPE_I420) )
+	if (mtOut->subtype != MEDIASUBTYPE_YUV420P_S)
 	{
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
@@ -282,6 +286,10 @@ STDMETHODIMP RGBtoYUV420Filter::SetParameter( const char* type, const char* valu
   {
     if (m_pConverter)
     {
+      // MERGE from VPP
+      // TODO: RTVC/artist code based has changed in mean-time.
+      // It seems like it defaults to 128 which is the desired value in any case
+      // TESTME/FIXME
       m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
       m_pConverter->SetFlip(m_bInvert);
     }

@@ -33,13 +33,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 // CSIR includes
-#include <DirectShow/CustomBaseFilter.h>
+#include <DirectShowExt/CustomBaseFilter.h>
+#include "VersionInfo.h"
 
 // {BB0980EB-97F6-439a-847E-B94C2F5EFCD7}
-static const GUID CLSID_VPP_RGBtoYUV420ColorConverter = 
+static const GUID CLSID_VPP_RGBtoYUV420ColorConverter =
 { 0xbb0980eb, 0x97f6, 0x439a, { 0x84, 0x7e, 0xb9, 0x4c, 0x2f, 0x5e, 0xfc, 0xd7 } };
 // {353FCF3B-910A-4e47-9D2B-C410D21B1792}
-static const GUID CLSID_RGBtoYUV420Properties = 
+static const GUID CLSID_RGBtoYUV420Properties =
 { 0x353fcf3b, 0x910a, 0x4e47, { 0x9d, 0x2b, 0xc4, 0x10, 0xd2, 0x1b, 0x17, 0x92 } };
 
 // Parameters
@@ -54,7 +55,7 @@ class RGBtoYUV420Converter;
  * DirectShow Filter that converts RGB24 or RGB32 media to I420 format.
  */
 class RGBtoYUV420Filter : public CCustomBaseFilter,
-                          public ISpecifyPropertyPages
+  public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN
@@ -70,13 +71,13 @@ public:
   /**
    * @brief Static object-creation method (for the class factory)
    */
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
+  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr);
   /**
    * Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter
    */
   HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
   /**
-   * Used for Media Type Negotiation 
+   * Used for Media Type Negotiation
    * Returns an HRESULT value. Possible values include those shown in the following table.
    * <table border="0" cols="2"><tr valign="top"><td><b>Value</b></td><td><b>Description</b></td></TR><TR><TD>S_OK</TD><TD>Success</TD></TR><TR><TD>VFW_S_NO_MORE_ITEMS</TD><TD>Index out of range</TD></TR><TR><TD>E_INVALIDARG</TD><TD>Index less than zero</TD></TR></TABLE>
    * The output pin's CTransformOutputPin::GetMediaType method calls this method. The derived class must implement this method. For more information, see CBasePin::GetMediaType.
@@ -84,7 +85,7 @@ public:
    */
   HRESULT GetMediaType(int iPosition, CMediaType *pMediaType);
   /**
-   * The output pin's CTransformOutputPin::DecideBufferSize method calls this method. The derived class must implement this method. For more information, see CBaseOutputPin::DecideBufferSize. 
+   * The output pin's CTransformOutputPin::DecideBufferSize method calls this method. The derived class must implement this method. For more information, see CBaseOutputPin::DecideBufferSize.
    * @param pAlloc Pointer to the IMemAllocator interface on the output pin's allocator.
    * @param pProp Pointer to an ALLOCATOR_PROPERTIES structure that contains buffer requirements from the downstream input pin.
    * @return Value: Returns S_OK or another HRESULT value.
@@ -99,6 +100,10 @@ public:
    * @brief Overridden from CCustomBaseFilter to define allowed input types
    */
   virtual void InitialiseInputTypes();
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /**
    * @brief Overridden from CSettingsInterface to intialise filter parameters
    */
@@ -114,7 +119,7 @@ public:
   /**
    * @brief Sets the filter parameters
    */
-  STDMETHODIMP SetParameter( const char* type, const char* value);
+  STDMETHODIMP SetParameter(const char* type, const char* value);
   /**
    * @brief required for property page
    */
@@ -123,7 +128,7 @@ public:
     if (pPages == NULL) return E_POINTER;
     pPages->cElems = 1;
     pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-    if (pPages->pElems == NULL) 
+    if (pPages->pElems == NULL)
     {
       return E_OUTOFMEMORY;
     }

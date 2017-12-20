@@ -116,7 +116,7 @@ STDAPI RegisterFilters(BOOL bRegister)
   hr = CoInitialize(0);
   if (bRegister)
   {
-    hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualCam, L"Virtual Cam", achFileName, L"Both", L"InprocServer32");
+    hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualCam, L"CSIR VPP Virtual Cam", achFileName, L"Both", L"InprocServer32");
   }
 
   if (SUCCEEDED(hr))
@@ -133,7 +133,7 @@ STDAPI RegisterFilters(BOOL bRegister)
         rf2.dwMerit = MERIT_DO_NOT_USE;
         rf2.cPins = 1;
         rf2.rgPins = &AMSPinVCam;
-        hr = fm->RegisterFilter(CLSID_VPP_VirtualCam, L"Virtual Cam", &pMoniker, &CLSID_VideoInputDeviceCategory, NULL, &rf2);
+        hr = fm->RegisterFilter(CLSID_VPP_VirtualCam, L"CSIR VPP Virtual Cam", &pMoniker, &CLSID_VideoInputDeviceCategory, NULL, &rf2);
       }
       else
       {

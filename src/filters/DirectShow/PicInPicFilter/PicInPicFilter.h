@@ -32,10 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/VideoMixingBase.h>
-#include <DirectShow/CSettingsInterface.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include <DirectShowExt/CSettingsInterface.h>
+#include <DirectShowExt/VideoMixingBase.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include "VersionInfo.h"
 
 // {31AD3B24-52E5-4227-B1D7-687AB061C2DE}
 static const GUID CLSID_VPP_PicInPicFilter = 
@@ -44,13 +44,6 @@ static const GUID CLSID_VPP_PicInPicFilter =
 // {AA41A585-1DE0-43bd-8450-F04712130B6F}
 static const GUID CLSID_PicInPicProperties = 
 { 0xaa41a585, 0x1de0, 0x43bd, { 0x84, 0x50, 0xf0, 0x47, 0x12, 0x13, 0xb, 0x6f } };
-
-
-#ifdef _BUILD_FOR_SHORT
-typedef short yuvType;
-#else
-typedef signed char yuvType ;
-#endif
 
 // Forward declarations
 class PicInPicBase;
@@ -61,7 +54,6 @@ class PicScalerBase;
  * The filter should only be confgured after the inputs have been connected.
  */
 class PicInPicFilter	:	public VideoMixingBase,
-							          public CSettingsInterface,
 							          public ISpecifyPropertyPages
 {
 public:
@@ -89,6 +81,10 @@ public:
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
 	virtual void initParameters();
 
 	/// For configuration dialog
@@ -111,10 +107,6 @@ public:
 		if (riid == IID_ISpecifyPropertyPages)
 		{
 			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else if(riid == (IID_ISettingsInterface))
-		{
-			return GetInterface((ISettingsInterface*) this, ppv);
 		}
 		else
 		{

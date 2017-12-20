@@ -9,7 +9,7 @@ Scale parameters are settable via the ISettingsInterface COM interface.
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2015, CSIR
+Copyright (c) 2008 - 2016, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-#include <DirectShow/CustomBaseFilter.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include <cstdint>
+#include <DirectShowExt/CustomBaseFilter.h>
+#include "VersionInfo.h"
 
 // {60E0821D-9E6C-48f4-8E1C-1B25E67488F8}
 static const GUID CLSID_VPP_ScaleFilter =
@@ -44,14 +45,11 @@ static const GUID CLSID_VPP_ScaleFilter =
 static const GUID CLSID_ScaleProperties =
 { 0x1de541ce, 0x7ff7, 0x47be, { 0x9c, 0xe7, 0x5, 0x5e, 0x6c, 0x2b, 0xd5, 0x3f } };
 
-#ifdef _BUILD_FOR_SHORT
 typedef short yuvType;
-#else
-typedef signed char yuvType;
-#endif
 
 // Forward declarations
 class PicScalerBase;
+class PicCropperBase;
 
 /**
  * \ingroup DirectShowFilters
@@ -96,12 +94,12 @@ public:
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
   /// Overridden from CCustomBaseFilter
   virtual void InitialiseInputTypes();
-  ///Overridden from CSettingsInterface
-  virtual void initParameters()
+  virtual void doGetVersion(std::string& sVersion)
   {
-    addParameter(TARGET_WIDTH, &m_nOutWidth, 0);
-    addParameter(TARGET_HEIGHT, &m_nOutHeight, 0);
+    sVersion = VersionInfo::toString();
   }
+  ///Overridden from CSettingsInterface
+  virtual void initParameters();
   STDMETHODIMP SetParameter(const char* type, const char* value);
   STDMETHODIMP GetPages(CAUUID *pPages)
   {
@@ -141,4 +139,21 @@ private:
   PicScalerBase* m_pScaler;
   /// Stores bytes per needed to store pixel according to media type
   double m_nBytesPerPixel;
+
+  // Note: MODE_ASPECT_RATIO_CORRECT_SCALING1 is only supported for RGB24 for now
+  enum ScaleMode
+  {
+    MODE_STANDARD,
+    MODE_ASPECT_RATIO_CORRECT_SCALING1 // in this mode the original image is cropped to maintain the aspect ratio
+  };
+  int m_eMode;
+
+  uint32_t m_uiTopCrop;
+  uint32_t m_uiBottomCrop;
+  uint32_t m_uiRightCrop;
+  uint32_t m_uiLeftCrop;
+  uint32_t m_uiWidthAfterCropping;
+  uint32_t m_uiHeightAfterCropping;
+  PicCropperBase* m_pCropper;
+  BYTE* m_pCropBuffer;
 };
