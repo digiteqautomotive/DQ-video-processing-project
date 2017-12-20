@@ -33,9 +33,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-// CSIR includes
-#include <DirectShow/CustomBaseFilter.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include <DirectShowExt/CustomBaseFilter.h>
+#include "VersionInfo.h"
+#include "CropProperties.h"
 
 // {F5E69199-7AB2-40f0-BFC0-6938430F4F19}
 static const GUID CLSID_VPP_CropFilter =
@@ -91,6 +91,10 @@ public:
    * <table border="0" cols="2"> <tr valign="top"> <td  width="50%"><b>Value</b></td> <td width="50%"><b>Description</b></td> </tr> <tr valign="top"> <td width="50%">S_OK</td> <td width="50%">The media types are compatible.</td> </tr> <tr valign="top"> <td width="50%">VFW_E_TYPE_NOT_ACCEPTED</td> <td width="50%">The media types are not compatible.</td> </tr> </table>
    */
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
   /// Overridden from CSettingsInterface
   virtual void initParameters();
   /// Overridden from CSettingsInterface

@@ -32,14 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "stdafx.h"
-
+#include "AudioMixingFilter.h"
 #include <numeric>
 #include <algorithm>
-
-// CSIR includes
-#include "AudioMixingFilter.h"
-
-#include <DirectShow/CommonDefs.h>
 
 AudioMixingFilter::AudioMixingFilter()
   :CMultiIOBaseFilter("CSIR VPP Audio Mixer", 0, CLSID_VPP_AudioMixingFilter),
@@ -174,7 +169,7 @@ HRESULT AudioMixingFilter::Receive( IMediaSample *pSample, int nIndex )
 {
   CAutoLock lck(&m_csReceive);
   ASSERT(nIndex >= 0);
-  ASSERT (nIndex < m_vInputPins.size());
+  ASSERT ((unsigned)nIndex < m_vInputPins.size());
   ASSERT(pSample);
   ASSERT (m_vOutputPins[0] != NULL);
 

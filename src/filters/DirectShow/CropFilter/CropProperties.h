@@ -33,11 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 #include <cassert>
-#include <DirectShow/FilterPropertiesBase.h>
+#include <DirectShowExt/FilterParameterStringConstants.h>
+#include <DirectShowExt/FilterPropertiesBase.h>
+#include <DirectShowExt/ParameterConstants.h>
 
 #include "resource.h"
-
-#define BUFFER_SIZE 256
 
 /**
  * \ingroup DirectShowFilters
@@ -69,16 +69,16 @@ public:
     setSpinBoxRange(IDC_SPIN4, 0, SHRT_MAX);
 
     // top
-    HRESULT hr = setEditTextFromIntFilterParameter(TOP_CROP, IDC_EDIT_TOP);
+    HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TOP_CROP, IDC_EDIT_TOP);
     if (FAILED(hr)) return hr;
     // bottom
-    hr = setEditTextFromIntFilterParameter(BOTTOM_CROP, IDC_EDIT_BOTTOM);
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BOTTOM_CROP, IDC_EDIT_BOTTOM);
     if (FAILED(hr)) return hr;
     // left
-    hr = setEditTextFromIntFilterParameter(LEFT_CROP, IDC_EDIT_LEFT);
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_LEFT_CROP, IDC_EDIT_LEFT);
     if (FAILED(hr)) return hr;
     // right
-    hr = setEditTextFromIntFilterParameter(RIGHT_CROP, IDC_EDIT_RIGHT);
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_RIGHT_CROP, IDC_EDIT_RIGHT);
     if (FAILED(hr)) return hr;
 
     return hr;
@@ -87,16 +87,16 @@ public:
 	HRESULT OnApplyChanges(void)
 	{
     // top
-    HRESULT hr = setIntFilterParameterFromEditText(TOP_CROP, IDC_EDIT_TOP);
+    HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TOP_CROP, IDC_EDIT_TOP);
     assert(SUCCEEDED(hr));
     // bottom
-    hr = setIntFilterParameterFromEditText(BOTTOM_CROP, IDC_EDIT_BOTTOM);
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_BOTTOM_CROP, IDC_EDIT_BOTTOM);
     assert(SUCCEEDED(hr));
     // left
-    hr = setIntFilterParameterFromEditText(LEFT_CROP, IDC_EDIT_LEFT);
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_LEFT_CROP, IDC_EDIT_LEFT);
     assert(SUCCEEDED(hr));
     // right
-    hr = setIntFilterParameterFromEditText(RIGHT_CROP, IDC_EDIT_RIGHT);
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_RIGHT_CROP, IDC_EDIT_RIGHT);
     assert(SUCCEEDED(hr));
 		return S_OK;
 	} 
@@ -104,4 +104,3 @@ public:
 private:
 
 };
-

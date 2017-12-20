@@ -32,9 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "CropFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <Image/PicCropperRGB24Impl.h>
-#include <Image/PicCropperRGB32Impl.h>
+#include <DirectShowExt/ParameterConstants.h>
+#include <ImageUtils/PicCropperRGB24Impl.h>
+#include <ImageUtils/PicCropperRGB32Impl.h>
 
 CropFilter::CropFilter()
   : CCustomBaseFilter(NAME("CSIR VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
@@ -239,12 +239,12 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
 
 void CropFilter::initParameters()
 {
-  addParameter(TARGET_WIDTH, &m_nOutWidth, -1, true);
-  addParameter(TARGET_HEIGHT, &m_nOutHeight, -1, true);
-  addParameter(LEFT_CROP, &m_nLeftCrop, 0);
-  addParameter(RIGHT_CROP, &m_nRightCrop, 0);
-  addParameter(TOP_CROP, &m_nTopCrop, 0);
-  addParameter(BOTTOM_CROP, &m_nBottomCrop, 0);
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, -1, true);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, -1, true);
+  addParameter(FILTER_PARAM_LEFT_CROP, &m_nLeftCrop, 0);
+  addParameter(FILTER_PARAM_RIGHT_CROP, &m_nRightCrop, 0);
+  addParameter(FILTER_PARAM_TOP_CROP, &m_nTopCrop, 0);
+  addParameter(FILTER_PARAM_BOTTOM_CROP, &m_nBottomCrop, 0);
   RecalculateFilterParameters();
 }
 STDMETHODIMP CropFilter::SetParameter(const char* type, const char* value)

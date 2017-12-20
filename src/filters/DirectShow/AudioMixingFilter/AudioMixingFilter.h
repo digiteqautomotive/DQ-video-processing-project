@@ -32,9 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
-#include <DirectShow/MultiIOBaseFilter.h>
-#include <DirectShow/CSettingsInterface.h>
+#include <DirectShowExt/CSettingsInterface.h>
+#include <DirectShowExt/MultiIOBaseFilter.h>
+#include "VersionInfo.h"
 
 #include <deque>
 
@@ -51,7 +51,6 @@ static const GUID CLSID_AudioMixingProperties =
  * Audio Mixing Filter for PCM Mono Media
  */
 class AudioMixingFilter	:	public CMultiIOBaseFilter,
-							            public CSettingsInterface,
 							            public ISpecifyPropertyPages
 {
   typedef std::deque<IMediaSample*> MediaSampleQueue_t; 
@@ -84,6 +83,11 @@ public:
 
   STDMETHODIMP Stop();
   STDMETHODIMP Pause();
+
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
 
   virtual void InitialiseInputTypes()
   {
@@ -132,10 +136,6 @@ public:
 		if (riid == IID_ISpecifyPropertyPages)
 		{
 			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else if(riid == (IID_ISettingsInterface))
-		{
-			return GetInterface((ISettingsInterface*) this, ppv);
 		}
 		else
 		{
