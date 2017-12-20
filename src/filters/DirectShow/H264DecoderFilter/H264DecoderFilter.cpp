@@ -88,7 +88,7 @@ H264DecoderFilter::H264DecoderFilter()
   // Set default codec properties 
   if (m_pCodec)
   {
-    artist::configureDefaultH264CodecParameters(m_pCodec);
+    configureDefaultH264CodecParameters(m_pCodec);
     //16 = YUV
     //m_pCodec->SetParameter(IN_COLOUR, "16");
     //0 = RGB only RGB is supported as an output
@@ -180,7 +180,7 @@ HRESULT H264DecoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
 
 #if 1
       std::string sSps, sPps;
-      if (artist::extractParameterSetsFromFormatBlock(pmt, sSps, sPps))
+      if (extractParameterSetsFromFormatBlock(pmt, sSps, sPps))
       {
         SafeDeleteArray(m_pSeqParamSet);
         SafeDeleteArray(m_pPicParamSet);

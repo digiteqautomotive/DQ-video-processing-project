@@ -124,7 +124,7 @@ H264EncoderFilter::H264EncoderFilter()
 	// Set default codec properties 
 	if (m_pCodec)
 	{
-    artist::configureDefaultH264CodecParameters(m_pCodec);
+    configureDefaultH264CodecParameters(m_pCodec);
   }
 	else
 	{
