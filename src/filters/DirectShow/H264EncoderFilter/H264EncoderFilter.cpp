@@ -48,8 +48,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <wmcodecdsp.h>
 #include <H264v2/H264v2.h>
 #include <CodecUtils/ICodecv2.h>
-#include <artist/Media/CodecConfigurationUtil.h>
-#include <artist/Util/Conversion.h>
+#include <CodecUtils/CodecConfigurationUtil.h>
+#include <GeneralUtils/Conversion.h>
 
 const unsigned char g_startCode[] = { 0, 0, 0, 1};
 
