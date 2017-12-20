@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="ThinMediaPipeLine"
+	>
+	<Tool
+		Name="VCCustomBuildTool"
+		Description="Registering $(ProjectName) DLL"
+		CommandLine="regsvr32 /s  $(RELEASE_BUILD_DIR)\$(ProjectName).dll&#x0D;&#x0A;"
+		Outputs="DLL Registered"
+	/>
+	<UserMacro
+		Name="DEBUG_BUILD_DIR"
+		Value="D:\ProjectsNew\Build\Debug"
+		PerformEnvironmentSet="true"
+	/>
+	<UserMacro
+		Name="RELEASE_BUILD_DIR"
+		Value="D:\ProjectsNew\Build\Release"
+		PerformEnvironmentSet="true"
+	/>
+</VisualStudioPropertySheet>
