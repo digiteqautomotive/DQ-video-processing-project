@@ -58,3 +58,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // TODO: reference additional headers your program requires here
+#include <ArtistDecl.h>
