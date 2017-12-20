@@ -1,3 +1,9 @@
+2017/12/20
+- New rate control code for H264 codecs merged into project and project structure updated to new structure.
+New source code is now in the <vpp>/src directory. Only filter currently in this source branch are H264EncoderFilter
+and H264DecoderFilter. The other filters will be added gradually. Old source dir is still there for now
+but will be removed once all the source has been ported to the new structure.
+
 2015/12/08
 - Bug report in picture in picture filter by Russ. Unitialised mem caused crash in release mode when connecting to 1st input pin of PIP filter. 
 
