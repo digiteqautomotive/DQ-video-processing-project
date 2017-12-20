@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 #include <DirectShowExt/FilterPropertiesBase.h>
-#include <Util/StringUtil.h>
+#include "StringUtil.h"
 
 #include "resource.h"
 #define BUFFER_SIZE 256
