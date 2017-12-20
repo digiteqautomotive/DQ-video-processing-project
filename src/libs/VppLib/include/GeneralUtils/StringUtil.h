@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #endif
 #include <cstdlib>
-#include <artist/Util/Conversion.h>
+#include "Conversion.h"
 
 namespace artist {
 

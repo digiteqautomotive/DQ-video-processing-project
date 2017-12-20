@@ -46,7 +46,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cassert>
 #include <dvdmedia.h>
 #include <wmcodecdsp.h>
-#include <Codecs/H264v2/H264v2.h>
+#include <H264v2/H264v2.h>
 #include <CodecUtils/ICodecv2.h>
 #include <artist/Media/CodecConfigurationUtil.h>
 #include <artist/Util/Conversion.h>

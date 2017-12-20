@@ -43,7 +43,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "H264DecoderFilter.h"
 #include "wmcodecdsp.h"
 #include "Dvdmedia.h"
-#include <Codecs/H264v2/H264v2.h>
+#include <H264v2/H264v2.h>
 #include <CodecUtils/ICodecv2.h>
 #include <DirectShowExt/FilterParameterStringConstants.h>
 #include <DirectShowExt/ParameterConstants.h>
