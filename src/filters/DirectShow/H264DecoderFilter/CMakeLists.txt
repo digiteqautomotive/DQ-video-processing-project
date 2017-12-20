@@ -8,6 +8,14 @@ ${artistIncludes}
 ${artist_SOURCE_DIR}/../include/artist
 ${artistCodecIncludes}
 ${artistUtilIncludes}
+${VPP_DIR}/include
+${VPP_DIR}/include/CodecUtils
+${VPP_DIR}/include/GeneralUtils
+${VPP_DIR}/include/ImageUtils
+${VPP_DIR}/include/StreamUtils
+${vpp_SOURCE_DIR}/codecs/H264v2/include
+${vpp_SOURCE_DIR}/codecs/H264v2/include/H264v2
+${vpp_SOURCE_DIR}/codecs/H264v2/include/H264v2Codec
 )
  
 # Lib directories

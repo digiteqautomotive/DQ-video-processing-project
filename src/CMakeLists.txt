@@ -300,22 +300,17 @@ ${live555Includes}
 ENDIF(WIN32)
 
 SET(artistCodecIncludes
-${vpp_SOURCE_DIR}/Codecs
-${vpp_SOURCE_DIR}/Codecs/H263v2
-${vpp_SOURCE_DIR}/Codecs/H263v2Codec
-${vpp_SOURCE_DIR}/Codecs/H263v2SwitchCodec
-${vpp_SOURCE_DIR}/Codecs/H264v2
-${vpp_SOURCE_DIR}/Codecs/H264v2Codec
-${vpp_SOURCE_DIR}/Codecs/H264v2SwitchCodec
-${vpp_SOURCE_DIR}/Codecs/V264v2
-${vpp_SOURCE_DIR}/Codecs/V264v2Codec
+${vpp_SOURCE_DIR}/codecs/H264v2/include
+${vpp_SOURCE_DIR}/codecs/H264v2/include/H264v2
+${vpp_SOURCE_DIR}/codecs/H264v2/include/H264v2Codec
 )
 
 SET(artistUtilIncludes
-${vpp_SOURCE_DIR}/libs/CodecUtils
-${vpp_SOURCE_DIR}/libs/GeneralUtils
-${vpp_SOURCE_DIR}/libs/ImageUtils
-${vpp_SOURCE_DIR}/libs/StreamUtils
+${VPP_DIR}/include
+${VPP_DIR}/include/CodecUtils
+${VPP_DIR}/include/GeneralUtils
+${VPP_DIR}/include/ImageUtils
+${VPP_DIR}/include/StreamUtils
 )
 
 SET(live555Includes
@@ -389,7 +384,8 @@ IF(WIN32)
 SET(DsFilterLibs
 baseclasses
 VppLib
-#RtvcDirectShowExt
+RtvcDirectShowExt
+strmiids
 winmm
 comctl32
 )
@@ -420,6 +416,10 @@ ENDIF (UNIX)
 
 SET(USE_GLOBAL_VPP true)
 SET(GLOBAL_VPP_DIR
+${vpp_SOURCE_DIR}/libs/VppLib
+)
+
+set(VPP_DIR
 ${vpp_SOURCE_DIR}/libs/VppLib
 )
 
