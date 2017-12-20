@@ -1,14 +1,16 @@
 /** @file
 
-MODULE						: PicConcatRGB24Impl
+MODULE						: PicConcatRGB32Impl
 
-TAG								: PCRGB24I
+TAG								: PCRGB32I
 
-FILE NAME					: PicConcatRGB24Impl.h
+FILE NAME					: PicConcatRGB32Impl.h
 
-DESCRIPTION				: An RGB24 implementation derived from the general
-										PicConcatBase() class. Concatenate a packed RGB24 
-										image	to another packed RGB24 image.
+DESCRIPTION				: An RGB32 implementation derived from the general
+										PicConcatBase() class. Concatenate a packed RGB32 
+										image to another packed RGB32 image.
+
+REVISION HISTORY	: 
 
 COPYRIGHT					: (c)CSIR 2007-2017 all rights reserved
 
@@ -40,25 +42,25 @@ RESTRICTIONS			: Redistribution and use in source and binary forms, with or with
 										SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
-#ifndef _PICCONCATRGB24IMPL_H
-#define _PICCONCATRGB24IMPL_H
+#ifndef _PICCONCATRGB32IMPL_H
+#define _PICCONCATRGB32IMPL_H
 
 #include "PicConcatBase.h"
-#include "PicInPicRGB24Impl.h"
+#include "PicInPicRGB32Impl.h"
 
 /**
  * \ingroup ImageLib
- * An RGB24 implementation derived from the general
- * PicConcatBase() class. Concatenate a packed RGB24 
- * image	to another packed RGB24 image.
+ * An RGB32 implementation derived from the general
+ * PicConcatBase() class. Concatenate a packed RGB32 
+ * image to another packed RGB32 image.
  */
-class PicConcatRGB24Impl: public PicConcatBase
+class PicConcatRGB32Impl: public PicConcatBase
 {
 public:
 	// Construction and destruction.
-	PicConcatRGB24Impl(void);
-	PicConcatRGB24Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, int orient);
-	virtual ~PicConcatRGB24Impl(void);
+	PicConcatRGB32Impl(void);
+	PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, int orient);
+	virtual ~PicConcatRGB32Impl(void);
 
 	// Interface.
 	virtual int Concat(void* pImg1st, void* pImg2nd, void* pImg);
@@ -69,9 +71,9 @@ protected:
 
 protected:
 	// Members.
-	PicInPicRGB24Impl* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
+	PicInPicRGB32Impl* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
 
-};//end PicConcatRGB24Impl.
+};//end PicConcatRGB32Impl.
 
 
-#endif _PICCONCATRGB24IMPL_H
+#endif _PICCONCATRGB32IMPL_H
