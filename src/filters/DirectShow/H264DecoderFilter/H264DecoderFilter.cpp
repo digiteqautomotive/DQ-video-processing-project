@@ -45,15 +45,28 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Dvdmedia.h"
 #include <H264v2/H264v2.h>
 #include <CodecUtils/ICodecv2.h>
+#include <CodecUtils/CodecConfigurationUtil.h>
 #include <DirectShowExt/FilterParameterStringConstants.h>
 #include <DirectShowExt/ParameterConstants.h>
-#include <artist/DirectShow/VppH264Util.h>
-#include <artist/Media/CodecConfigurationUtil.h>
-#include <Util/CommonDefs.h>
-#include <Util/Conversion.h>
+#include <DirectShowExt/VppH264Util.h>
+#include <GeneralUtils/Conversion.h>
 
 const DWORD MAX_SUPPORTED_PROFILE = 66;
 const DWORD MAX_SUPPORTED_LEVEL = 20;
+
+#define SAFE_DELETE(a) if(a){delete a;a=NULL;}
+
+template< class T > void SafeDelete(T*& pVal)
+{
+  delete pVal;
+  pVal = NULL;
+}
+
+template< class T > void SafeDeleteArray(T*& pVal)
+{
+  delete[] pVal;
+  pVal = NULL;
+}
 
 H264DecoderFilter::H264DecoderFilter()
   : CCustomBaseFilter(NAME("CSIR VPP H264 Decoder"), 0, CLSID_VPP_H264Decoder),
