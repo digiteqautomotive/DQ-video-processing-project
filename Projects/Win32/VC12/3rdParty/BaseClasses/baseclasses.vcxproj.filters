@@ -15,198 +15,201 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(DSHOWBASECLASSES)\amextra.cpp">
+    <ClCompile Include="$(BASECLASSES)\amextra.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\amfilter.cpp">
+    <ClCompile Include="$(BASECLASSES)\amfilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\amvideo.cpp">
+    <ClCompile Include="$(BASECLASSES)\amvideo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\combase.cpp">
+    <ClCompile Include="$(BASECLASSES)\combase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\cprop.cpp">
+    <ClCompile Include="$(BASECLASSES)\cprop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\ctlutil.cpp">
+    <ClCompile Include="$(BASECLASSES)\ctlutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\ddmm.cpp">
+    <ClCompile Include="$(BASECLASSES)\ddmm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\dllentry.cpp">
+    <ClCompile Include="$(BASECLASSES)\dllentry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\dllsetup.cpp">
+    <ClCompile Include="$(BASECLASSES)\dllsetup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\mtype.cpp">
+    <ClCompile Include="$(BASECLASSES)\mtype.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\outputq.cpp">
+    <ClCompile Include="$(BASECLASSES)\outputq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\pstream.cpp">
+    <ClCompile Include="$(BASECLASSES)\pstream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\pullpin.cpp">
+    <ClCompile Include="$(BASECLASSES)\pullpin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\refclock.cpp">
+    <ClCompile Include="$(BASECLASSES)\refclock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\renbase.cpp">
+    <ClCompile Include="$(BASECLASSES)\renbase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\schedule.cpp">
+    <ClCompile Include="$(BASECLASSES)\schedule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\seekpt.cpp">
+    <ClCompile Include="$(BASECLASSES)\seekpt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\source.cpp">
+    <ClCompile Include="$(BASECLASSES)\source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\strmctl.cpp">
+    <ClCompile Include="$(BASECLASSES)\strmctl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\sysclock.cpp">
+    <ClCompile Include="$(BASECLASSES)\sysclock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\transfrm.cpp">
+    <ClCompile Include="$(BASECLASSES)\transfrm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\transip.cpp">
+    <ClCompile Include="$(BASECLASSES)\transip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\videoctl.cpp">
+    <ClCompile Include="$(BASECLASSES)\videoctl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\vtrans.cpp">
+    <ClCompile Include="$(BASECLASSES)\vtrans.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\winctrl.cpp">
+    <ClCompile Include="$(BASECLASSES)\winctrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\winutil.cpp">
+    <ClCompile Include="$(BASECLASSES)\winutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\wxdebug.cpp">
+    <ClCompile Include="$(BASECLASSES)\wxdebug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\wxlist.cpp">
+    <ClCompile Include="$(BASECLASSES)\wxlist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(DSHOWBASECLASSES)\wxutil.cpp">
+    <ClCompile Include="$(BASECLASSES)\wxutil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\JFO\PCIe_Video\baseclasses\lib\GetTickCount_ms.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(DSHOWBASECLASSES)\amextra.h">
+    <ClInclude Include="$(BASECLASSES)\amextra.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\amfilter.h">
+    <ClInclude Include="$(BASECLASSES)\amfilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\cache.h">
+    <ClInclude Include="$(BASECLASSES)\cache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\combase.h">
+    <ClInclude Include="$(BASECLASSES)\combase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\cprop.h">
+    <ClInclude Include="$(BASECLASSES)\cprop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\ctlutil.h">
+    <ClInclude Include="$(BASECLASSES)\ctlutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\ddmm.h">
+    <ClInclude Include="$(BASECLASSES)\ddmm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\dllsetup.h">
+    <ClInclude Include="$(BASECLASSES)\dllsetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\dxmperf.h">
+    <ClInclude Include="$(BASECLASSES)\dxmperf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\fourcc.h">
+    <ClInclude Include="$(BASECLASSES)\fourcc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\measure.h">
+    <ClInclude Include="$(BASECLASSES)\measure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\msgthrd.h">
+    <ClInclude Include="$(BASECLASSES)\msgthrd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\mtype.h">
+    <ClInclude Include="$(BASECLASSES)\mtype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\outputq.h">
+    <ClInclude Include="$(BASECLASSES)\outputq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\perfstruct.h">
+    <ClInclude Include="$(BASECLASSES)\perfstruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\pstream.h">
+    <ClInclude Include="$(BASECLASSES)\pstream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\pullpin.h">
+    <ClInclude Include="$(BASECLASSES)\pullpin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\refclock.h">
+    <ClInclude Include="$(BASECLASSES)\refclock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\reftime.h">
+    <ClInclude Include="$(BASECLASSES)\reftime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\renbase.h">
+    <ClInclude Include="$(BASECLASSES)\renbase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\schedule.h">
+    <ClInclude Include="$(BASECLASSES)\schedule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\seekpt.h">
+    <ClInclude Include="$(BASECLASSES)\seekpt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\source.h">
+    <ClInclude Include="$(BASECLASSES)\source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\streams.h">
+    <ClInclude Include="$(BASECLASSES)\streams.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\strmctl.h">
+    <ClInclude Include="$(BASECLASSES)\strmctl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\sysclock.h">
+    <ClInclude Include="$(BASECLASSES)\sysclock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\transfrm.h">
+    <ClInclude Include="$(BASECLASSES)\transfrm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\transip.h">
+    <ClInclude Include="$(BASECLASSES)\transip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\videoctl.h">
+    <ClInclude Include="$(BASECLASSES)\videoctl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\vtrans.h">
+    <ClInclude Include="$(BASECLASSES)\vtrans.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\winctrl.h">
+    <ClInclude Include="$(BASECLASSES)\winctrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\winutil.h">
+    <ClInclude Include="$(BASECLASSES)\winutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\wxdebug.h">
+    <ClInclude Include="$(BASECLASSES)\wxdebug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\wxlist.h">
+    <ClInclude Include="$(BASECLASSES)\wxlist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(DSHOWBASECLASSES)\wxutil.h">
+    <ClInclude Include="$(BASECLASSES)\wxutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

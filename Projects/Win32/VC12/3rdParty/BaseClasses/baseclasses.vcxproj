@@ -5,17 +5,33 @@
       <Configuration>Debug_MBCS</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_MBCS|x64">
+      <Configuration>Debug_MBCS</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release_MBCS|Win32">
       <Configuration>Release_MBCS</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_MBCS|x64">
+      <Configuration>Release_MBCS</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -29,7 +45,17 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
@@ -39,7 +65,17 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120</PlatformToolset>
@@ -50,13 +86,25 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -71,19 +119,39 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|Win32'">$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|Win32'">$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|x64'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|x64'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">strmbasd</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">strmbasd</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">strmbase</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">strmbase</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>D:\temp\videoprocessing\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LibraryPath>D:\temp\videoprocessing\x86</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -104,6 +172,24 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(LibDir)\strmbasd.lib</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -116,8 +202,24 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(LibDir)\strmbase.lib</OutputFile>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>D:\temp\videoprocessing\x86\Release\lib\strmbase.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>D:\temp\videoprocessing\Win64\Release\lib\strmbase.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|Win32'">
@@ -132,6 +234,24 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)strmbasd.lib</OutputFile>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MBCS|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -155,73 +275,90 @@
       <OutputFile>$(OutDir)strmbase.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_MBCS|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)strmbase.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(DSHOWBASECLASSES)\amextra.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\amfilter.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\amvideo.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\combase.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\cprop.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\ctlutil.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\ddmm.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\dllentry.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\dllsetup.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\mtype.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\outputq.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\pstream.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\pullpin.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\refclock.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\renbase.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\schedule.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\seekpt.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\source.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\strmctl.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\sysclock.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\transfrm.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\transip.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\videoctl.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\vtrans.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\winctrl.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\winutil.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\wxdebug.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\wxlist.cpp" />
-    <ClCompile Include="$(DSHOWBASECLASSES)\wxutil.cpp" />
+    <ClCompile Include="$(BASECLASSES)\amextra.cpp" />
+    <ClCompile Include="$(BASECLASSES)\amfilter.cpp" />
+    <ClCompile Include="$(BASECLASSES)\amvideo.cpp" />
+    <ClCompile Include="$(BASECLASSES)\combase.cpp" />
+    <ClCompile Include="$(BASECLASSES)\cprop.cpp" />
+    <ClCompile Include="$(BASECLASSES)\ctlutil.cpp" />
+    <ClCompile Include="$(BASECLASSES)\ddmm.cpp" />
+    <ClCompile Include="$(BASECLASSES)\dllentry.cpp" />
+    <ClCompile Include="$(BASECLASSES)\dllsetup.cpp" />
+    <ClCompile Include="$(BASECLASSES)\mtype.cpp" />
+    <ClCompile Include="$(BASECLASSES)\outputq.cpp" />
+    <ClCompile Include="$(BASECLASSES)\pstream.cpp" />
+    <ClCompile Include="$(BASECLASSES)\pullpin.cpp" />
+    <ClCompile Include="$(BASECLASSES)\refclock.cpp" />
+    <ClCompile Include="$(BASECLASSES)\renbase.cpp" />
+    <ClCompile Include="$(BASECLASSES)\schedule.cpp" />
+    <ClCompile Include="$(BASECLASSES)\seekpt.cpp" />
+    <ClCompile Include="$(BASECLASSES)\source.cpp" />
+    <ClCompile Include="$(BASECLASSES)\strmctl.cpp" />
+    <ClCompile Include="$(BASECLASSES)\sysclock.cpp" />
+    <ClCompile Include="$(BASECLASSES)\transfrm.cpp" />
+    <ClCompile Include="$(BASECLASSES)\transip.cpp" />
+    <ClCompile Include="$(BASECLASSES)\videoctl.cpp" />
+    <ClCompile Include="$(BASECLASSES)\vtrans.cpp" />
+    <ClCompile Include="$(BASECLASSES)\winctrl.cpp" />
+    <ClCompile Include="$(BASECLASSES)\winutil.cpp" />
+    <ClCompile Include="$(BASECLASSES)\wxdebug.cpp" />
+    <ClCompile Include="$(BASECLASSES)\wxlist.cpp" />
+    <ClCompile Include="$(BASECLASSES)\wxutil.cpp" />
+    <ClCompile Include="C:\JFO\PCIe_Video\baseclasses\lib\GetTickCount_ms.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(DSHOWBASECLASSES)\amextra.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\amfilter.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\cache.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\combase.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\cprop.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\ctlutil.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\ddmm.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\dllsetup.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\dxmperf.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\fourcc.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\measure.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\msgthrd.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\mtype.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\outputq.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\perfstruct.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\pstream.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\pullpin.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\refclock.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\reftime.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\renbase.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\schedule.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\seekpt.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\source.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\streams.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\strmctl.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\sysclock.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\transfrm.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\transip.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\videoctl.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\vtrans.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\winctrl.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\winutil.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\wxdebug.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\wxlist.h" />
-    <ClInclude Include="$(DSHOWBASECLASSES)\wxutil.h" />
+    <ClInclude Include="$(BASECLASSES)\amextra.h" />
+    <ClInclude Include="$(BASECLASSES)\amfilter.h" />
+    <ClInclude Include="$(BASECLASSES)\cache.h" />
+    <ClInclude Include="$(BASECLASSES)\combase.h" />
+    <ClInclude Include="$(BASECLASSES)\cprop.h" />
+    <ClInclude Include="$(BASECLASSES)\ctlutil.h" />
+    <ClInclude Include="$(BASECLASSES)\ddmm.h" />
+    <ClInclude Include="$(BASECLASSES)\dllsetup.h" />
+    <ClInclude Include="$(BASECLASSES)\dxmperf.h" />
+    <ClInclude Include="$(BASECLASSES)\fourcc.h" />
+    <ClInclude Include="$(BASECLASSES)\measure.h" />
+    <ClInclude Include="$(BASECLASSES)\msgthrd.h" />
+    <ClInclude Include="$(BASECLASSES)\mtype.h" />
+    <ClInclude Include="$(BASECLASSES)\outputq.h" />
+    <ClInclude Include="$(BASECLASSES)\perfstruct.h" />
+    <ClInclude Include="$(BASECLASSES)\pstream.h" />
+    <ClInclude Include="$(BASECLASSES)\pullpin.h" />
+    <ClInclude Include="$(BASECLASSES)\refclock.h" />
+    <ClInclude Include="$(BASECLASSES)\reftime.h" />
+    <ClInclude Include="$(BASECLASSES)\renbase.h" />
+    <ClInclude Include="$(BASECLASSES)\schedule.h" />
+    <ClInclude Include="$(BASECLASSES)\seekpt.h" />
+    <ClInclude Include="$(BASECLASSES)\source.h" />
+    <ClInclude Include="$(BASECLASSES)\streams.h" />
+    <ClInclude Include="$(BASECLASSES)\strmctl.h" />
+    <ClInclude Include="$(BASECLASSES)\sysclock.h" />
+    <ClInclude Include="$(BASECLASSES)\transfrm.h" />
+    <ClInclude Include="$(BASECLASSES)\transip.h" />
+    <ClInclude Include="$(BASECLASSES)\videoctl.h" />
+    <ClInclude Include="$(BASECLASSES)\vtrans.h" />
+    <ClInclude Include="$(BASECLASSES)\winctrl.h" />
+    <ClInclude Include="$(BASECLASSES)\winutil.h" />
+    <ClInclude Include="$(BASECLASSES)\wxdebug.h" />
+    <ClInclude Include="$(BASECLASSES)\wxlist.h" />
+    <ClInclude Include="$(BASECLASSES)\wxutil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

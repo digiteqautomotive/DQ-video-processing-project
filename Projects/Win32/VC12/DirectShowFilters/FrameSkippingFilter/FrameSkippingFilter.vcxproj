@@ -93,8 +93,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"
-</Command>
+      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"</Command>
       <Outputs>DLL registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -130,7 +129,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);D:\temp\videoprocessing\Source;D:\temp\videoprocessing\Source\RtvcLib</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FRAMESKIPPINGFILTER_EXPORTS;_BUILD_FOR_SHORT_NO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -153,8 +152,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
-</Command>
+      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"</Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -194,6 +192,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(BASECLASSES);D:\temp\videoprocessing\Source;D:\temp\videoprocessing\Source\RtvcLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcDirectShow.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
