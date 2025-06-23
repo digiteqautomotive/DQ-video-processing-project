@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CropFilter", "DirectShowFilters\CropFilter\CropFilter.vcxproj", "{420C1281-9A86-4F5F-B36F-686138A54592}"
 EndProject
@@ -107,6 +107,7 @@ Global
 		{0259B0A2-D2A1-4F9E-B702-2BF27119BDB7}.Release|Win32.ActiveCfg = Release|Win32
 		{0259B0A2-D2A1-4F9E-B702-2BF27119BDB7}.Release|Win32.Build.0 = Release|Win32
 		{0259B0A2-D2A1-4F9E-B702-2BF27119BDB7}.Release|x64.ActiveCfg = Release|x64
+		{0259B0A2-D2A1-4F9E-B702-2BF27119BDB7}.Release|x64.Build.0 = Release|x64
 		{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}.Debug|Win32.Build.0 = Debug|Win32
 		{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}.Debug|x64.ActiveCfg = Debug|Win32
@@ -120,6 +121,7 @@ Global
 		{B493B382-8041-40AB-8252-B94DFF585283}.Release|Win32.ActiveCfg = Release|Win32
 		{B493B382-8041-40AB-8252-B94DFF585283}.Release|Win32.Build.0 = Release|Win32
 		{B493B382-8041-40AB-8252-B94DFF585283}.Release|x64.ActiveCfg = Release|x64
+		{B493B382-8041-40AB-8252-B94DFF585283}.Release|x64.Build.0 = Release|x64
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}.Debug|Win32.ActiveCfg = Debug|Win32
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}.Debug|Win32.Build.0 = Debug|Win32
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}.Debug|x64.ActiveCfg = Debug|Win32
@@ -243,6 +245,7 @@ Global
 		{54073435-B115-402D-A26A-C30649B9E32B}.Release|Win32.ActiveCfg = Release|Win32
 		{54073435-B115-402D-A26A-C30649B9E32B}.Release|Win32.Build.0 = Release|Win32
 		{54073435-B115-402D-A26A-C30649B9E32B}.Release|x64.ActiveCfg = Release|x64
+		{54073435-B115-402D-A26A-C30649B9E32B}.Release|x64.Build.0 = Release|x64
 		{D2C91DE1-EC29-4214-BFA8-BFDCF96849DD}.Debug|Win32.ActiveCfg = Debug|Win32
 		{D2C91DE1-EC29-4214-BFA8-BFDCF96849DD}.Debug|Win32.Build.0 = Debug|Win32
 		{D2C91DE1-EC29-4214-BFA8-BFDCF96849DD}.Debug|x64.ActiveCfg = Debug|x64
