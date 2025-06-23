@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include <Image/PicScalerRGB24Impl.h>
+#include <Image/PicScalerRGB32Impl.h>
 #include <Image/PicScalerYUV420PImpl.h>
 
 ScaleFilter::ScaleFilter()
@@ -74,6 +75,7 @@ CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 void ScaleFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
 }
 
@@ -95,21 +97,26 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
     if (pmt->majortype == MEDIATYPE_Video)
     {
       //The scaler might already exist if the filter has been connected previously
-      if (m_pScaler)
+      if(m_pScaler)
       {
         delete m_pScaler;
         m_pScaler = NULL;
       }
-      if (pmt->subtype == MEDIASUBTYPE_RGB24)
-      {
-        m_pScaler = new PicScalerRGB24Impl();
+	  if(pmt->subtype==MEDIASUBTYPE_RGB24)
+	  {
+		m_pScaler = new PicScalerRGB24Impl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
-      }
-      else if (pmt->subtype == MEDIASUBTYPE_YUV420P)
-      {
-        m_pScaler = new PicScalerYUV420PImpl();
+	  }
+	  else if(pmt->subtype==MEDIASUBTYPE_RGB32)
+	  {
+		m_pScaler = new PicScalerRGB32Impl();
+        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
+	  }
+	  else if(pmt->subtype==MEDIASUBTYPE_YUV420P)
+	  {
+		m_pScaler = new PicScalerYUV420PImpl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_YUV420P;
-      }
+	  }
     }
   }
   return hr;
@@ -146,7 +153,12 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     pBi->biWidth = m_nOutWidth;
     ASSERT(pBi->biWidth > 0);
     // Set size
-    pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_RGB24;
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB32)
+        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_RGB32;
+    else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P)
+        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_YUV420P;
+    else
+        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_RGB24;
     pMediaType->lSampleSize = pBi->biSizeImage;
 
     // Adjust recs
@@ -210,6 +222,13 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
   if (mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+  }
+  if (mtIn->subtype == MEDIASUBTYPE_RGB32)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_RGB32)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

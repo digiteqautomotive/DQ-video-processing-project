@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YuvSource\YuvSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YuvSource\YuvOutputPin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="YuvSource.def">

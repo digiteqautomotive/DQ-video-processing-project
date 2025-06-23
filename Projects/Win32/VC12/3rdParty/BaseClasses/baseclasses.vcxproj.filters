@@ -102,7 +102,7 @@
     <ClCompile Include="$(BASECLASSES)\wxutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\JFO\PCIe_Video\baseclasses\lib\GetTickCount_ms.c">
+    <ClCompile Include="$(BASECLASSES)\GetTickCount_ms.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

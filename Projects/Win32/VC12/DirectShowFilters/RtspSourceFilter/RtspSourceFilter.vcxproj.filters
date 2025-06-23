@@ -45,6 +45,12 @@
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\RtspSourceFilter\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\RtspSourceFilter\AsyncRtspClientSessionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\RtspSourceFilter\AsyncRtspClientAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="RtspSourceFilter.def">

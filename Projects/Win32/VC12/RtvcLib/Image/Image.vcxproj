@@ -101,8 +101,11 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
-      <AdditionalIncludeDirectories>D:\temp\videoprocessing\Source\RtvcLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Lib>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\libRtvc$(ProjectName).lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -115,8 +118,11 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
-      <AdditionalIncludeDirectories>D:\temp\videoprocessing\Source\RtvcLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Lib>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\libRtvc$(ProjectName).lib</OutputFile>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -126,10 +132,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\temp\videoprocessing\Source\RtvcLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Lib>
-      <OutputFile>D:\temp\videoprocessing\x86\Release\lib\libRtvc$(ProjectName).lib</OutputFile>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\libRtvc$(ProjectName).lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,11 +146,11 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\temp\videoprocessing\Source\RtvcLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Lib>
-      <OutputFile>D:\temp\videoprocessing\Win64\Release\lib\libRtvc$(ProjectName).lib</OutputFile>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\libRtvc$(ProjectName).lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -166,6 +172,7 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGBBase.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUV420PImpl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420CCIR601ConverterVer16.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420Converter.cpp" />

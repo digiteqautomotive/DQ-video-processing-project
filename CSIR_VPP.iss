@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
-#define MyAppPath ".\x86\Release\ScaleFilter.dll"
+#define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
 ;#define MyAppVersion "1.1.0"
 #define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
@@ -59,30 +59,99 @@ Name: "filters"; Description: "{#MyAppName} Direct Show filters"; Types: full cu
 
 [Files]
 Source: {#MyAppPath}; DestDir: "{app}"; Components: filters; Flags: ignoreversion
-Source: ".\x86\Release\ScaleFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Win64\Release\ScaleFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\x86\Release\CropFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Win64\Release\CropFilter.dll "; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\license.txt"; DestDir: "{app}"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\Win32\Release\AudioMixingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\AudioMixingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\CropFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\CropFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\FrameSkippingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\FrameSkippingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\RotateFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\RotateFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\ScaleFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\SkewingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\SkewingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\Stereo2MonoFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\Stereo2MonoFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\Tee.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\Tee.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\TimestampLoggerFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\TimestampLoggerFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\YUV420ToRGBFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\YUV420ToRGBFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\YuvSource.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\YuvSource.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
 
-;Source: ".\MSVC2010SP1_Redist\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstallx86
-;Source: ".\MSVC2010SP1_Redist\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstallx64
+
+Source: ".\redist\VC2013\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstallx86
+Source: ".\redist\VC2013\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstallx64
 
 [Run]
 ; conditional installation Check for Visual Studio Redistributable
 Filename: "{tmp}\vcredist_x86.exe"; Check: VCRedistNeedsInstallx86
 Filename: "{tmp}\vcredist_x64.exe"; Check: VCRedistNeedsInstallx64
 
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\ScaleFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\ScaleFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\AudioMixingFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\AudioMixingFilter.dll"""; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\CropFilter.dll"""
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\CropFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\FrameSkippingFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\FrameSkippingFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RotateFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RotateFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RtspSourceFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RtspSourceFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\ScaleFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\ScaleFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\SkewingFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\SkewingFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\Stereo2MonoFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\Stereo2MonoFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\Tee.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\Tee.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\TimestampLoggerFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\TimestampLoggerFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VideoMixingFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\VideoMixingFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YUV420ToRGBFilter.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YUV420ToRGBFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YuvSource.dll"""
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YuvSource.dll"""; Check: IsWin64;
+
 
 [UninstallRun]
 
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\ScaleFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\ScaleFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\AudioMixingFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\AudioMixingFilter.dll\"""; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\CropFilter.dll\"""
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\CropFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\FrameSkippingFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\FrameSkippingFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RotateFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RotateFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RtspSourceFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RtspSourceFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\ScaleFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\ScaleFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\SkewingFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\SkewingFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\Stereo2MonoFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\Stereo2MonoFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\Tee.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\Tee.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\TimestampLoggerFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\TimestampLoggerFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VideoMixingFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\VideoMixingFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YUV420ToRGBFilter.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YUV420ToRGBFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YuvSource.dll\"""
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YuvSource.dll\"""; Check: IsWin64;
 
 
 [Icons]
@@ -163,6 +232,12 @@ const
   VC_2010_SP1_REDIST_X64              = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';
   VC_2010_SP1_REDIST_IA64             = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';
 
+  VC_2013_REDIST_X86                  = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
+  VC_2013_REDIST_X86_                 = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
+  VC_2013_REDIST_X64                  = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
+  VC_2013_REDIST_X64_                 = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
+
+
 function MsiQueryProductState(szProduct: string): INSTALLSTATE; 
   external 'MsiQueryProductState{#AW}@msi.dll stdcall';
 
@@ -182,8 +257,8 @@ begin
   // this statement, the following won't install your VC redist only when
   // the Visual C++ 2010 Redist (x86) and Visual C++ 2010 SP1 Redist(x86)
   // are installed for the current user
-  r1 := VCVersionInstalled(VC_2010_REDIST_X86);
-  r2 := VCVersionInstalled(VC_2010_SP1_REDIST_X86);
+  r1 := VCVersionInstalled(VC_2013_REDIST_X86);
+  r2 := VCVersionInstalled(VC_2013_REDIST_X86_);
   Result := not (r1 or r2);
 end;
 
@@ -196,8 +271,8 @@ begin
     Result := false;
   end
   else begin
-    r1 := VCVersionInstalled(VC_2010_REDIST_X64);
-    r2 := VCVersionInstalled(VC_2010_SP1_REDIST_X64);
+    r1 := VCVersionInstalled(VC_2013_REDIST_X64);
+    r2 := VCVersionInstalled(VC_2013_REDIST_X64_);
     Result := not (r1 or r2);
   end
 end;
