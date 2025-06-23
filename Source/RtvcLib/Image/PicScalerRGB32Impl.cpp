@@ -68,29 +68,32 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 	unsigned char*	pSrc		= (unsigned char*)pInImg;
 	unsigned char*	pDst		= (unsigned char*)pOutImg;
 	
-	double scalex = ((double)_widthIn)/((double)_widthOut);
-	double scaley = ((double)_heightIn)/((double)_heightOut);
+	//double scalex = ((double)_widthIn)/((double)_widthOut);
+	//double scaley = ((double)_heightIn)/((double)_heightOut);
 
 	int x,y,posx,posy,i,j;
+        int accuX, accuY;
 
+	accuY = posy = 0;
 	for(y = 0; y < _heightOut; y++)
 	{
-		posy = (int)((scaley * (double)y) + 0.5);
-		if(posy < 0)	posy = 0;
-		else if(posy >= _heightIn) posy = _heightIn-1;
+		//posy = (int)((scaley * (double)y) + 0.5);
+		//if(posy < 0)	posy = 0;
+		//else if(posy >= _heightIn) posy = _heightIn-1;
 
+		accuX = posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
-			posx = (int)((scalex * (double)x) + 0.5);
-			if(posx < 0) posx = 0;
-			else if(posx >= _widthIn) posx = _widthIn-1;
+			//posx = (int)((scalex * (double)x) + 0.5);
+			//if(posx < 0) posx = 0;
+			//else if(posx >= _widthIn) posx = _widthIn-1;
 
 			/// Apply a weighted 3x3 FIR filter.
 			int ai = (posy*_widthIn*4) + (posx*4);
 			int b = 7 * (int)(*(pSrc + ai));
 			int g = 7 * (int)(*(pSrc + (ai+1)));
 			int r = 7 * (int)(*(pSrc + (ai+2)));
-		        int a = 7 * (int)(*(pSrc + (ai+3)));
+		        //int a = 7 * (int)(*(pSrc + (ai+3)));
 			for(i = -1; i <= 1; i++)
 			{
 				int row = posy + i;
@@ -106,7 +109,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 					b += (int)(*(pSrc + aii));
 					g += (int)(*(pSrc + (aii+1)));
 					r += (int)(*(pSrc + (aii+2)));
-                                        a += (int)(*(pSrc + (aii+3)));
+                                        //a += (int)(*(pSrc + (aii+3)));	// do not filter missing compound
 				}//end for j...
 			}//end for i...
 
@@ -115,10 +118,16 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 			*(pDst + ao)		= (unsigned char)((b + 8) >> 4);
 			*(pDst + (ao+1))	= (unsigned char)((g + 8) >> 4);
 			*(pDst + (ao+2))	= (unsigned char)((r + 8) >> 4);
-			*(pDst + (ao+3))	= (unsigned char)((a + 8) >> 4);
+			*(pDst + (ao+3))	= *(pSrc + (ai+3));		//(unsigned char)((a + 8) >> 4);
 
+			accuX += _widthIn;			// DAA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
 		}//end for x...
 		
+		accuY += _heightIn;				// DAA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;
 	}//end for y...
 
 	return(1);

@@ -68,22 +68,25 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, void* pInImg)
 	unsigned char*	pSrc		= (unsigned char*)pInImg;
 	unsigned char*	pDst		= (unsigned char*)pOutImg;
 	
-	double scalex = ((double)_widthIn)/((double)_widthOut);
-	double scaley = ((double)_heightIn)/((double)_heightOut);
+	//double scalex = ((double)_widthIn)/((double)_widthOut);
+	//double scaley = ((double)_heightIn)/((double)_heightOut);
 
 	int x,y,posx,posy,i,j;
+        int accuY, accuX;
 
+        accuY = posy = 0;
 	for(y = 0; y < _heightOut; y++)
 	{
-		posy = (int)((scaley * (double)y) + 0.5);
-		if(posy < 0)	posy = 0;
-		else if(posy >= _heightIn) posy = _heightIn-1;
+		//posy = (int)((scaley * (double)y) + 0.5);
+		//if(posy < 0)	posy = 0;
+		//else if(posy >= _heightIn) posy = _heightIn-1;
 
+		accuX = posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
-			posx = (int)((scalex * (double)x) + 0.5);
-			if(posx < 0) posx = 0;
-			else if(posx >= _widthIn) posx = _widthIn-1;
+			//posx = (int)((scalex * (double)x) + 0.5);
+			//if(posx < 0) posx = 0;
+			//else if(posx >= _widthIn) posx = _widthIn-1;
 
 			/// Apply a weighted 3x3 FIR filter.
 			int ai = (posy*_widthIn*3) + (posx*3);
@@ -111,14 +114,19 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, void* pInImg)
 
 			/// Round before scaling.
 			int ao = (y*_widthOut*3) + (x*3);
-			*(pDst + ao)			= (unsigned char)((b + 8) >> 4);
+			*(pDst + ao)		= (unsigned char)((b + 8) >> 4);
 			*(pDst + (ao+1))	= (unsigned char)((g + 8) >> 4);
 			*(pDst + (ao+2))	= (unsigned char)((r + 8) >> 4);
 
+			accuX += _widthIn;			// DAA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
 		}//end for x...
-		
+
+		accuY += _heightIn;				// DAA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;
 	}//end for y...
 
 	return(1);
 }//end Scale.
-

@@ -171,6 +171,7 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB24Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGBBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUV420PImpl.cpp" />

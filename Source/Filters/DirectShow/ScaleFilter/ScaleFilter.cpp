@@ -39,6 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomMediaTypes.h>
 #include <Image/PicScalerRGB24Impl.h>
 #include <Image/PicScalerRGB32Impl.h>
+#include <Image/PicScalerARGB32Impl.h>
 #include <Image/PicScalerYUV420PImpl.h>
 
 ScaleFilter::ScaleFilter()
@@ -76,6 +77,7 @@ void ScaleFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
 }
 
@@ -102,21 +104,26 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         delete m_pScaler;
         m_pScaler = NULL;
       }
-	  if(pmt->subtype==MEDIASUBTYPE_RGB24)
-	  {
-		m_pScaler = new PicScalerRGB24Impl();
+      if(pmt->subtype==MEDIASUBTYPE_RGB24)
+      {
+	m_pScaler = new PicScalerRGB24Impl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
-	  }
-	  else if(pmt->subtype==MEDIASUBTYPE_RGB32)
-	  {
-		m_pScaler = new PicScalerRGB32Impl();
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_RGB32)
+      {
+      	m_pScaler = new PicScalerRGB32Impl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
-	  }
-	  else if(pmt->subtype==MEDIASUBTYPE_YUV420P)
-	  {
-		m_pScaler = new PicScalerYUV420PImpl();
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_ARGB32)
+      {
+      	m_pScaler = new PicScalerARGB32Impl();
+        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_YUV420P)
+      {
+        m_pScaler = new PicScalerYUV420PImpl();
         m_nBytesPerPixel = BYTES_PER_PIXEL_YUV420P;
-	  }
+      }
     }
   }
   return hr;
@@ -153,7 +160,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     pBi->biWidth = m_nOutWidth;
     ASSERT(pBi->biWidth > 0);
     // Set size
-    if(pMediaType->subtype==MEDIASUBTYPE_RGB32)
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
         pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_RGB32;
     else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P)
         pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_YUV420P;
@@ -226,9 +233,9 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
   }
-  if (mtIn->subtype == MEDIASUBTYPE_RGB32)
+  if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_RGB32)
+    if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
