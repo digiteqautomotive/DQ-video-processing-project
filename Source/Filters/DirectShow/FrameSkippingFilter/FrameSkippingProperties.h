@@ -66,7 +66,7 @@ public:
     ;
   }
 
-  BOOL OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+  INT_PTR OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)			// Fix by JFO
   {
     // Let the parent class handle the message.
     return FilterPropertiesBase::OnReceiveMessage(hwnd, uMsg, wParam, lParam);
