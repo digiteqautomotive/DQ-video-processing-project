@@ -28,7 +28,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -93,8 +93,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32 /s $(DebugBuildDir)\$(ProjectName)D.dll
-</Command>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -119,13 +118,12 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CustomBuildStep>
-      <Command>regsvr32 /s $(DebugBuildDir)\$(ProjectName)D.dll
-</Command>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -148,7 +146,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -165,7 +163,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>H264EncoderFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -176,8 +174,11 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -193,7 +194,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>H264EncoderFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -203,8 +204,11 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\..\..\Source\Filters\DirectShow\H264EncoderFilter\H264EncoderFilter.rc" />

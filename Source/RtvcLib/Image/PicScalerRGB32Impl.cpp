@@ -71,46 +71,51 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 	//double scalex = ((double)_widthIn)/((double)_widthOut);
 	//double scaley = ((double)_heightIn)/((double)_heightOut);
 
-	int x,y,posx,posy,i,j;
+	int x,y,posx,posy,i;
         int accuX, accuY;
 
 	accuY = posy = 0;
 	for(y = 0; y < _heightOut; y++)
 	{
-		//posy = (int)((scaley * (double)y) + 0.5);
-		//if(posy < 0)	posy = 0;
-		//else if(posy >= _heightIn) posy = _heightIn-1;
+		const int pRow[3] = {						// Calculate row starts only once per row
+				((posy==0) ? 0 : (4*_widthIn*(posy-1))),
+				4*_widthIn*posy,
+				((posy+1>=_heightIn) ? (4*_widthIn*(_heightIn-1)) : (4*_widthIn*(posy+1))) };
 
 		accuX = posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
-			//posx = (int)((scalex * (double)x) + 0.5);
-			//if(posx < 0) posx = 0;
-			//else if(posx >= _widthIn) posx = _widthIn-1;
-
 			/// Apply a weighted 3x3 FIR filter.
-			int ai = (posy*_widthIn*4) + (posx*4);
-			int b = 7 * (int)(*(pSrc + ai));
-			int g = 7 * (int)(*(pSrc + (ai+1)));
-			int r = 7 * (int)(*(pSrc + (ai+2)));
-		        //int a = 7 * (int)(*(pSrc + (ai+3)));
-			for(i = -1; i <= 1; i++)
-			{
-				int row = posy + i;
-				if(row < 0)	row = 0;
-				else if(row >= _heightIn) row = _heightIn-1;
-				for(j = -1; j <= 1; j++)
-				{
-					int col = posx + j;
-					if(col < 0) col = 0;
-					else if(col >= _widthIn) col = _widthIn-1;
+			unsigned b = 0;
+			unsigned g = 0;
+			unsigned r = 0;
 
-					int aii = (row*_widthIn*4) + (col*4);
-					b += (int)(*(pSrc + aii));
-					g += (int)(*(pSrc + (aii+1)));
-					r += (int)(*(pSrc + (aii+2)));
-                                        //a += (int)(*(pSrc + (aii+3)));	// do not filter missing compound
-				}//end for j...
+			for(i = 0; i <= 2; i++)
+			{				
+				int aii = pRow[i] + 4 * ((posx==0) ? (0) : (posx - 1));
+				b += (*(pSrc + aii));
+				g += (*(pSrc + (aii+1)));
+				r += (*(pSrc + (aii+2)));
+                //a += (int)(*(pSrc + (aii+3)));	// do not filter missing compound
+
+				if(posx>0) aii+=4;
+				if(i==1)
+				{
+				  b += 8 * (*(pSrc + aii));
+				  g += 8 * (*(pSrc + (aii+1)));
+				  r += 8 * (*(pSrc + (aii+2)));
+				}
+				else
+				{
+				  b += (*(pSrc + aii));
+				  g += (*(pSrc + (aii+1)));
+				  r += (*(pSrc + (aii+2)));
+				}                                
+
+				if(posx+1 < _widthIn) aii+=4;
+				b += (*(pSrc + aii));
+				g += (*(pSrc + (aii+1)));
+				r += (*(pSrc + (aii+2)));
 			}//end for i...
 
 			/// Round before scaling.
@@ -118,14 +123,14 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 			*(pDst + ao)		= (unsigned char)((b + 8) >> 4);
 			*(pDst + (ao+1))	= (unsigned char)((g + 8) >> 4);
 			*(pDst + (ao+2))	= (unsigned char)((r + 8) >> 4);
-			*(pDst + (ao+3))	= *(pSrc + (ai+3));		//(unsigned char)((a + 8) >> 4);
+			*(pDst + (ao+3))	= *(pSrc + (pRow[1]+posx*4));		//(unsigned char)((a + 8) >> 4);
 
-			accuX += _widthIn;			// DAA integer only algorithm
+			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;
 			accuX = accuX % _widthOut;
 		}//end for x...
 		
-		accuY += _heightIn;				// DAA integer only algorithm
+		accuY += _heightIn;				// DDA integer only algorithm
                 posy += accuY / _heightOut;
                 accuY = accuY % _heightOut;
 	}//end for y...

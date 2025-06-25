@@ -37,6 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Shared/CommonDefs.h>
 #include <Shared/Conversion.h>
 
+#include "Filters/DirectShow/FilterParameters.h"		// JFO Fix
+
+
 // HACK for backwards compatibility with pre-CMake projects
 #ifndef VPP_CMAKE_BUILD
 // Define used to switch between the actual switching version of the codec and the non switching

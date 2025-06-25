@@ -176,12 +176,12 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, void* pInImg)
 			*(pDstU + ao) = (scaleType)((chrU + 8) >> 4);
 			*(pDstV + ao) = (scaleType)((chrV + 8) >> 4);
 
-			accuX += _widthIn;			// DAA integer only algorithm
+			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;
 			accuX = accuX % _widthOut;
 		}//end for x...
 
-		accuY += _heightIn;				// DAA integer only algorithm
+		accuY += _heightIn;				// DDA integer only algorithm
                 posy += accuY / _heightOut;
                 accuY = accuY % _heightOut;		
 	}//end for y...

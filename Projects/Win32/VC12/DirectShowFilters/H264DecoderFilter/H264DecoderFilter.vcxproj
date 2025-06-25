@@ -28,7 +28,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -68,12 +68,11 @@
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32  /s $(DebugBuildDir)\$(ProjectName)D.dll
-</Command>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Src\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT_NO;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -94,17 +93,16 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CustomBuildStep>
-      <Command>regsvr32  /s $(DebugBuildDir)\$(ProjectName)D.dll
-</Command>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Src\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT_NO;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -123,12 +121,12 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -139,7 +137,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>H264DecoderFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -150,12 +148,15 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -166,7 +167,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcCodecUtils.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>H264DecoderFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -176,8 +177,11 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib;..\..\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>@rem regsvr32 /s $(ReleaseBuildDir)\$(ProjectName).dll</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\H264DecoderFilter\DLLSetup.cpp" />

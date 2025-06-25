@@ -15,26 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Source\Codecs\H264v2\H264v2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Source\Codecs\H264v2\stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Source\Codecs\H264v2Codec\H264v2Codec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Source\Codecs\H264v2Codec\H264v2CodecHeader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\GeneralUtils\MeasurementTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\Source\Codecs\H264v2\ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Source\Codecs\H264v2\H264v2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,8 +27,13 @@
     <ClCompile Include="..\..\..\..\..\Source\Codecs\H264v2Codec\H264v2CodecHeader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\GeneralUtils\MeasurementTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Source\Codecs\H264v2\H264v2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\Codecs\H264v2\stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

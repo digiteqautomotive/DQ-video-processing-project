@@ -28,7 +28,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -39,7 +39,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -104,11 +104,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;comctl32.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(BuildDir)\Debug\$(ProjectName)d.dll</OutputFile>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>PicInPicFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -116,6 +117,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,22 +136,24 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;comctl32.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(BuildDir)\Debug\$(ProjectName)d.dll</OutputFile>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>PicInPicFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
+      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
 </Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
@@ -160,10 +164,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;comctl32.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(BuildDir)\Release\$(ProjectName).dll</OutputFile>
+      <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;comctl32.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>PicInPicFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -173,11 +179,12 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CustomBuildStep>
-      <Command>regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
+      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
 </Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
@@ -188,10 +195,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>STRMBASE.lib;Msvcrt.lib;comctl32.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(BuildDir)\Release\$(ProjectName).dll</OutputFile>
+      <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;comctl32.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>PicInPicFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -200,6 +209,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
+      <AdditionalLibraryDirectories>..\..\$(PlatformName)\$(ConfigurationName)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

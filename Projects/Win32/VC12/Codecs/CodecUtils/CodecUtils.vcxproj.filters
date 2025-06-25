@@ -326,5 +326,8 @@
     <ClCompile Include="..\..\..\..\..\Source\Codecs\CodecUtils\MotionEstimatorH264ImplMultiresCrossVer2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\GeneralUtils\MeasurementTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

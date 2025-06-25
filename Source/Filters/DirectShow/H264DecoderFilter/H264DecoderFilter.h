@@ -30,13 +30,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Meraka includes
 #include <DirectShow/CustomBaseFilter.h>
-#include <DirectShow/CustomMediaTypes.h>
+//#include <DirectShowExt/DirectShowMediaFormats.h>
 #include <DirectShow/NotifyCodes.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include "VersionInfo.h"
+
 
 // {4F722923-7E4D-4263-926D-2A1F405B2619}
 static const GUID CLSID_VPP_H264Decoder = 
 { 0x4f722923, 0x7e4d, 0x4263, { 0x92, 0x6d, 0x2a, 0x1f, 0x40, 0x5b, 0x26, 0x19 } };
+
+
+/// Custom RTVC H264 media format
+// {BDF25152-046B-4509-8E55-6C73831C8DC4}
+static const GUID MEDIASUBTYPE_H264M = 
+{ 0xbdf25152, 0x46b, 0x4509, { 0x8e, 0x55, 0x6c, 0x73, 0x83, 0x1c, 0x8d, 0xc4 } };
+/// Custom RTVC H264 media format
+// {BDF25152-046B-4509-8E55-6C73831C8DC4}
+static const GUID MEDIASUBTYPE_VPP_H264 =
+{ 0xbdf25152, 0x46b, 0x4509, { 0x8e, 0x55, 0x6c, 0x73, 0x83, 0x1c, 0x8d, 0xc4 } };
+
 
 // Forward
 class ICodecv2;
@@ -81,13 +93,17 @@ public:
   */
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
+  virtual void doGetVersion(std::string& sVersion)
+  {
+    sVersion = VersionInfo::toString();
+  }
+
   ///Overridden from CSettingsInterface
   virtual void initParameters(){;}
   ///Overridden from CSettingsInterface
   STDMETHODIMP GetParameter( const char* type, int* length, void* value );
   ///Overridden from CSettingsInterface
   STDMETHODIMP SetParameter( const char* type, const char* value);
-
 
   /// Overridden from CCustomBaseFilter
   virtual void InitialiseInputTypes();
