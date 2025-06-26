@@ -72,6 +72,7 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
         int accuX, accuY;
 
 	accuY = posy = 0;
+	int ao = 0;			
 	for(y = 0; y < _heightOut; y++)
 	{
 		const int pRow[3] = {						// Calculate row starts only once per row
@@ -84,10 +85,10 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 		{
 
 			/// Apply a weighted 3x3 FIR filter.
-			unsigned b = 0;
-			unsigned g = 0;
-			unsigned r = 0;
-		    unsigned a = 0;
+			unsigned b = 8;
+			unsigned g = 8;
+			unsigned r = 8;
+			unsigned a = 8;
 
 			for(i = 0; i <= 2; i++)
 			{				
@@ -121,11 +122,12 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 			}//end for i...
 
 			/// Round before scaling.
-			int ao = (y*_widthOut*4) + (x*4);
-			*(pDst + ao)		= (unsigned char)((b + 8) >> 4);
-			*(pDst + (ao+1))	= (unsigned char)((g + 8) >> 4);
-			*(pDst + (ao+2))	= (unsigned char)((r + 8) >> 4);
-			*(pDst + (ao+3))	= (unsigned char)((a + 8) >> 4);
+			//int ao = (y*_widthOut*4) + (x*4);
+			*(pDst + ao)		= (unsigned char)(b >> 4);
+			*(pDst + (ao+1))	= (unsigned char)(g >> 4);
+			*(pDst + (ao+2))	= (unsigned char)(r >> 4);
+			*(pDst + (ao+3))	= (unsigned char)(a >> 4);
+			ao += 4;
 
 			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;

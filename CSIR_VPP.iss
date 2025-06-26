@@ -47,6 +47,16 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 
 [Components]
 Name: "filters"; Description: "{#MyAppName} Direct Show filters"; Types: full custom
+Name: "AudioMixingFilter"; Description: "AudioMixingFilter Direct Show filter"; Types: full custom
+Name: "CropFilter"; Description: "CropFilter Direct Show filter"; Types: full custom
+Name: "FramerateDisplayFilter"; Description: "FramerateDisplayFilter Direct Show filter"; Types: full custom
+Name: "FrameSkippingFilter"; Description: "FrameSkippingFilter Direct Show filter"; Types: full custom
+Name: "H264filters"; Description: "H264 related Direct Show filters"; Types: full custom
+Name: "PicInPicFilter"; Description: "PicInPicFilter Direct Show filter"; Types: full custom
+Name: "RGBtoYUV420Filter"; Description: "RGBtoYUV420Filter Direct Show filter"; Types: full custom
+Name: "RotateFilter"; Description: "RotateFilter Direct Show filter"; Types: full custom
+Name: "RtspSourceFilter"; Description: "RtspSourceFilter Direct Show filter"; Types: full custom
+Name: "ScaleFilter"; Description: "ScaleFilter Direct Show filter"; Types: full custom
 ;lName: "examples"; Description: "Example files"; Types: full
 
 [Tasks]
@@ -59,25 +69,33 @@ Name: "filters"; Description: "{#MyAppName} Direct Show filters"; Types: full cu
 
 [Files]
 Source: {#MyAppPath}; DestDir: "{app}"; Components: filters; Flags: ignoreversion
-Source: ".\license.txt"; DestDir: "{app}"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\Win32\Release\AudioMixingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\AudioMixingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\CropFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\CropFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\FramerateDisplayFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\FramerateDisplayFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\FrameSkippingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\FrameSkippingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\PicInPicFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\PicInPicFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\RGBtoYUV420Filter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\RGBtoYUV420Filter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\RotateFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\RotateFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\ScaleFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\license.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\Win32\Release\AudioMixingFilter.dll"; DestDir: "{app}\Win32"; Components: AudioMixingFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\AudioMixingFilter.dll"; DestDir: "{app}\Win64"; Components: AudioMixingFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\CropFilter.dll"; DestDir: "{app}\Win32"; Components: CropFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\CropFilter.dll"; DestDir: "{app}\Win64"; Components: CropFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\FramerateDisplayFilter.dll"; DestDir: "{app}\Win32"; Components: FramerateDisplayFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\FramerateDisplayFilter.dll"; DestDir: "{app}\Win64"; Components: FramerateDisplayFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\FrameSkippingFilter.dll"; DestDir: "{app}\Win32"; Components: FrameSkippingFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\FrameSkippingFilter.dll"; DestDir: "{app}\Win64"; Components: FrameSkippingFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\H264v2.dll"; DestDir: "{app}\Win32"; Components: H264filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\H264v2.dll"; DestDir: "{app}\Win64"; Components: H264filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\H264Source.dll"; DestDir: "{app}\Win32"; Components: H264filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\H264Source.dll"; DestDir: "{app}\Win64"; Components: H264filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\H264EncoderFilter.dll"; DestDir: "{app}\Win32"; Components: H264filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\H264EncoderFilter.dll"; DestDir: "{app}\Win64"; Components: H264filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\H264DecoderFilter.dll"; DestDir: "{app}\Win32"; Components: H264filters; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\H264DecoderFilter.dll"; DestDir: "{app}\Win64"; Components: H264filters; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\PicInPicFilter.dll"; DestDir: "{app}\Win32"; Components: PicInPicFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\PicInPicFilter.dll"; DestDir: "{app}\Win64"; Components: PicInPicFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\RGBtoYUV420Filter.dll"; DestDir: "{app}\Win32"; Components: RGBtoYUV420Filter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\RGBtoYUV420Filter.dll"; DestDir: "{app}\Win64"; Components: RGBtoYUV420Filter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\RotateFilter.dll"; DestDir: "{app}\Win32"; Components: RotateFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\RotateFilter.dll"; DestDir: "{app}\Win64"; Components: RotateFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win32"; Components: RtspSourceFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win64"; Components: RtspSourceFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"; DestDir: "{app}\Win32"; Components: ScaleFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\ScaleFilter.dll"; DestDir: "{app}\Win64"; Components: ScaleFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\SkewingFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\SkewingFilter.dll"; DestDir: "{app}\Win64"; Components: filters; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\Stereo2MonoFilter.dll"; DestDir: "{app}\Win32"; Components: filters; Flags: ignoreversion
@@ -102,24 +120,30 @@ Source: ".\redist\VC2013\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafter
 Filename: "{tmp}\vcredist_x86.exe"; Check: VCRedistNeedsInstallx86
 Filename: "{tmp}\vcredist_x64.exe"; Check: VCRedistNeedsInstallx64
 
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\AudioMixingFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\AudioMixingFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\CropFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\CropFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\FramerateDisplayFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\FramerateDisplayFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\FrameSkippingFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\FrameSkippingFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\PicInPicFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\PicInPicFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RGBtoYUV420Filter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RGBtoYUV420Filter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RotateFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RotateFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RtspSourceFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RtspSourceFilter.dll"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\ScaleFilter.dll"""
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\ScaleFilter.dll"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\AudioMixingFilter.dll"""; Components: AudioMixingFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\AudioMixingFilter.dll"""; Components: AudioMixingFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\CropFilter.dll"""; Components: CropFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\CropFilter.dll"""; Components: CropFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\FramerateDisplayFilter.dll"""; Components: FramerateDisplayFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\FramerateDisplayFilter.dll"""; Components: FramerateDisplayFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\FrameSkippingFilter.dll"""; Components: FrameSkippingFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\FrameSkippingFilter.dll"""; Components: FrameSkippingFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\H264Source.dll"""; Components: H264filters
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\H264Source.dll"""; Components: H264filters; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\H264EncoderFilter.dll"""; Components: H264filters
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\H264EncoderFilter.dll"""; Components: H264filters; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\H264DecoderFilter.dll"""; Components: H264filters
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\H264DecoderFilter.dll"""; Components: H264filters; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\PicInPicFilter.dll"""; Components: PicInPicFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\PicInPicFilter.dll"""; Components: PicInPicFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RGBtoYUV420Filter.dll"""; Components: RGBtoYUV420Filter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RGBtoYUV420Filter.dll"""; Components: RGBtoYUV420Filter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RotateFilter.dll"""; Components: RotateFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RotateFilter.dll"""; Components: RotateFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RtspSourceFilter.dll"""; Components: RtspSourceFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RtspSourceFilter.dll"""; Components: RtspSourceFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\ScaleFilter.dll"""; Components: ScaleFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\ScaleFilter.dll"""; Components: ScaleFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\SkewingFilter.dll"""
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\SkewingFilter.dll"""; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\Stereo2MonoFilter.dll"""
@@ -138,24 +162,30 @@ Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YuvSource.dll"""; Check:
 
 [UninstallRun]
 
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\AudioMixingFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\AudioMixingFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\CropFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\CropFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\FramerateDisplayFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\FramerateDisplayFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\FrameSkippingFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\FrameSkippingFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\PicInPicFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\PicInPicFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RGBtoYUV420Filter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RGBtoYUV420Filter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RotateFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RotateFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RtspSourceFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RtspSourceFilter.dll\"""; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\ScaleFilter.dll\"""
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\ScaleFilter.dll\"""; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\AudioMixingFilter.dll\"""; Components: AudioMixingFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\AudioMixingFilter.dll\"""; Components: AudioMixingFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\CropFilter.dll\"""; Components: CropFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\CropFilter.dll\"""; Components: CropFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\FramerateDisplayFilter.dll\"""; Components: FramerateDisplayFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\FramerateDisplayFilter.dll\"""; Components: FramerateDisplayFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\FrameSkippingFilter.dll\"""; Components: FrameSkippingFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\FrameSkippingFilter.dll\"""; Components: FrameSkippingFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\H264Source.dll\"""; Components: H264filters
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\H264Source.dll\"""; Components: H264filters; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\H264EncoderFilter.dll\"""; Components: H264filters
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\H264EncoderFilter.dll\"""; Components: H264filters; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\H264DecoderFilter.dll\"""; Components: H264filters
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\H264DecoderFilter.dll\"""; Components: H264filters; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\PicInPicFilter.dll\"""; Components: PicInPicFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\PicInPicFilter.dll\"""; Components: PicInPicFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RGBtoYUV420Filter.dll\"""; Components: RGBtoYUV420Filter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RGBtoYUV420Filter.dll\"""; Components: RGBtoYUV420Filter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RotateFilter.dll\"""; Components: RotateFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RotateFilter.dll\"""; Components: RotateFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RtspSourceFilter.dll\"""; Components: RtspSourceFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RtspSourceFilter.dll\"""; Components: RtspSourceFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\ScaleFilter.dll\"""; Components: ScaleFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\ScaleFilter.dll\"""; Components: ScaleFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\SkewingFilter.dll\"""
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\SkewingFilter.dll\"""; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\Stereo2MonoFilter.dll\"""

@@ -75,6 +75,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
         int accuX, accuY;
 
 	accuY = posy = 0;
+        int ao = 0;
 	for(y = 0; y < _heightOut; y++)
 	{
 		const int pRow[3] = {						// Calculate row starts only once per row
@@ -96,7 +97,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 				b += (*(pSrc + aii));
 				g += (*(pSrc + (aii+1)));
 				r += (*(pSrc + (aii+2)));
-                //a += (int)(*(pSrc + (aii+3)));	// do not filter missing compound
+				//a += (int)(*(pSrc + (aii+3)));	// do not filter missing compound
 
 				if(posx>0) aii+=4;
 				if(i==1)
@@ -116,24 +117,25 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 				b += (*(pSrc + aii));
 				g += (*(pSrc + (aii+1)));
 				r += (*(pSrc + (aii+2)));
-			}//end for i...
+			} //end for i...
 
 			/// Round before scaling.
-			int ao = (y*_widthOut*4) + (x*4);
+			//int ao = (y*_widthOut*4) + (x*4);	//- no need to calculate for every pixel
 			*(pDst + ao)		= (unsigned char)(b >> 4);
 			*(pDst + (ao+1))	= (unsigned char)(g >> 4);
 			*(pDst + (ao+2))	= (unsigned char)(r >> 4);
-			*(pDst + (ao+3))	= *(pSrc + (pRow[1]+posx*4+3));		//(unsigned char)((a + 8) >> 4);
+			*(pDst + (ao+3))	= *(pSrc + (pRow[1]+posx*4+3));		// A compound is unused. (unsigned char)((a + 8) >> 4);
+			ao += 4;
 
 			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;
 			accuX = accuX % _widthOut;
-		}//end for x...
+		} //end for x...
 		
 		accuY += _heightIn;				// DDA integer only algorithm
                 posy += accuY / _heightOut;
                 accuY = accuY % _heightOut;
-	}//end for y...
+	} //end for y...
 
 	return(1);
 }//end Scale.
