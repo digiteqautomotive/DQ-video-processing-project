@@ -56,5 +56,5 @@ public:
 
 	/// Interface.
 	H264v2Codec* GetCodecInstance(void);
-	void				 ReleaseCodecInstance(ICodecv2* pInst);
+	void	ReleaseCodecInstance(ICodecv2* pInst);
 };	///end H264v2Factory.

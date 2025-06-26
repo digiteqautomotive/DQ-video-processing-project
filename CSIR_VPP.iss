@@ -3,7 +3,7 @@
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-;#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.3.0"
 #define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
 #define MyAppURL "http://videoprocessing.sourceforge.net/"
@@ -36,7 +36,7 @@ AppendDefaultDirName=yes
 ;SetupLogging=yes
 ;AppMutex=PAT_Controller_Mutex
 LicenseFile=license.txt
-;AppCopyright=Copyright (C) 2022
+;AppCopyright=Copyright (C) 2025
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

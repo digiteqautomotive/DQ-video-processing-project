@@ -2,6 +2,7 @@ Software License Agreement (BSD License)
 
 Copyright (c) 2017, Meraka Institute
 All rights reserved.
+Recompilled and repacked by Jaroslav Fojtik 2025 Digiteq Automotive
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

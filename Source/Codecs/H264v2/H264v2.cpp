@@ -47,20 +47,20 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     return TRUE;
 }
 
-H264v2Factory::H264v2Factory(void)
+H264V2_API H264v2Factory::H264v2Factory(void)
 {
 }//end constructor.
 
-H264v2Factory::~H264v2Factory(void)
+H264V2_API H264v2Factory::~H264v2Factory(void)
 {
 }//end destructor.
 
-H264v2Codec* H264v2Factory::GetCodecInstance(void)
+H264V2_API H264v2Codec* H264v2Factory::GetCodecInstance(void)
 {
 	return(new H264v2Codec());
 }//end GetCodecInstance.
 
-void H264v2Factory::ReleaseCodecInstance(ICodecv2* pInst)
+H264V2_API void H264v2Factory::ReleaseCodecInstance(ICodecv2* pInst)
 {
 	if(pInst != NULL)
 	{

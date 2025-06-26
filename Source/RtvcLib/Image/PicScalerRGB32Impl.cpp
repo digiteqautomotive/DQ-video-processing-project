@@ -86,9 +86,9 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 		for(x = 0; x < _widthOut; x++)
 		{
 			/// Apply a weighted 3x3 FIR filter.
-			unsigned b = 0;
-			unsigned g = 0;
-			unsigned r = 0;
+			unsigned b = 8;
+			unsigned g = 8;
+			unsigned r = 8;
 
 			for(i = 0; i <= 2; i++)
 			{				
@@ -120,10 +120,10 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 
 			/// Round before scaling.
 			int ao = (y*_widthOut*4) + (x*4);
-			*(pDst + ao)		= (unsigned char)((b + 8) >> 4);
-			*(pDst + (ao+1))	= (unsigned char)((g + 8) >> 4);
-			*(pDst + (ao+2))	= (unsigned char)((r + 8) >> 4);
-			*(pDst + (ao+3))	= *(pSrc + (pRow[1]+posx*4));		//(unsigned char)((a + 8) >> 4);
+			*(pDst + ao)		= (unsigned char)(b >> 4);
+			*(pDst + (ao+1))	= (unsigned char)(g >> 4);
+			*(pDst + (ao+2))	= (unsigned char)(r >> 4);
+			*(pDst + (ao+3))	= *(pSrc + (pRow[1]+posx*4+3));		//(unsigned char)((a + 8) >> 4);
 
 			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;
