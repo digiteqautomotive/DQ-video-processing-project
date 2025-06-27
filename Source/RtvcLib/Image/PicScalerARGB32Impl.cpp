@@ -35,16 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
-#include <stdio.h>
-#endif
-
-#include <string.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "PicScalerARGB32Impl.h"
 
@@ -65,7 +56,7 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 	if( (pOutImg == NULL) || (pInImg == NULL) )
 		return(0);
 
-	unsigned char*	pSrc		= (unsigned char*)pInImg;
+	const unsigned char*	pSrc	= (unsigned char*)pInImg;
 	unsigned char*	pDst		= (unsigned char*)pOutImg;
 	
 	int x,y,posx,posy,i;
@@ -103,22 +94,22 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 				  b += 8 * (*(pSrc + aii));
 				  g += 8 * (*(pSrc + (aii+1)));
 				  r += 8 * (*(pSrc + (aii+2)));
-                  a += 8 * (*(pSrc + (aii+3)));
+				  a += 8 * (*(pSrc + (aii+3)));
 				}
 				else
 				{
 				  b += (*(pSrc + aii));
 				  g += (*(pSrc + (aii+1)));
 				  r += (*(pSrc + (aii+2)));
-                  a += (*(pSrc + (aii+3)));
+				  a += (*(pSrc + (aii+3)));
 				}
 
 				if(posx+1 < _widthIn) aii+=4;
-			    b += (*(pSrc + aii));
+				b += (*(pSrc + aii));
 				g += (*(pSrc + (aii+1)));
 				r += (*(pSrc + (aii+2)));
-                a += (*(pSrc + (aii+3)));				
-			}//end for i...
+				a += (*(pSrc + (aii+3)));				
+			} //end for i...
 
 			/// Round before scaling.
 			//int ao = (y*_widthOut*4) + (x*4);
@@ -131,12 +122,12 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;
 			accuX = accuX % _widthOut;
-		}//end for x...
+		} //end for x...
 		
 		accuY += _heightIn;				// DDA integer only algorithm
                 posy += accuY / _heightOut;
                 accuY = accuY % _heightOut;
-	}//end for y...
+	} //end for y...
 
 	return(1);
 }//end Scale.

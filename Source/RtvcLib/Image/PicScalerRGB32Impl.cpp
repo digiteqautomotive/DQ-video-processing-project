@@ -35,16 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
-#include <stdio.h>
-#endif
-
-#include <string.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "PicScalerRGB32Impl.h"
 
@@ -65,7 +56,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 	if( (pOutImg == NULL) || (pInImg == NULL) )
 		return(0);
 
-	unsigned char*	pSrc		= (unsigned char*)pInImg;
+	const unsigned char*	pSrc	= (unsigned char*)pInImg;
 	unsigned char*	pDst		= (unsigned char*)pOutImg;
 	
 	int x, y, posx, posy, i;

@@ -125,7 +125,8 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 		
 		// Get the bitmap info header and adapt the cropped 
 		//make sure that it's a video info header
-		ASSERT(pMediaType->formattype == FORMAT_VideoInfo);
+		if(pMediaType->formattype != FORMAT_VideoInfo)
+		    return VFW_E_TYPE_NOT_ACCEPTED;
 		VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
 		//Now we need to calculate the size of the output image
 		BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
@@ -151,10 +152,10 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 			}
 		}
 		pBi->biHeight = m_nOutHeight;
-		ASSERT(pBi->biHeight > 0);
+		if(pBi->biHeight <= 0) return E_INVALIDARG;
 
 		pBi->biWidth = m_nOutWidth;
-		ASSERT(pBi->biWidth > 0);
+		if(pBi->biWidth <= 0) return E_INVALIDARG;
 		pBi->biSizeImage = pBi->biWidth * pBi->biHeight * m_nBytesPerPixel;
 
 		pVih->rcSource.top = 0;
