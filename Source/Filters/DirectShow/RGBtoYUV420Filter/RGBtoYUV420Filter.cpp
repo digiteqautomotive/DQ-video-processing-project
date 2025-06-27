@@ -154,7 +154,7 @@ HRESULT RGBtoYUV420Filter::GetMediaType( int iPosition, CMediaType *pMediaType )
       pvi->bmiHeader.biHeight =  -1 * pvi->bmiHeader.biHeight; // get rid of -1
 
     // update sample sizes
-    unsigned uiSampleSize = static_cast<unsigned>(m_nInPixels * BYTES_PER_PIXEL_YUV420P);
+    unsigned uiSampleSize = static_cast<unsigned>((m_nInPixels * BITS_PER_PIXEL_YUV420P)/8);
     pvi->bmiHeader.biSizeImage = uiSampleSize;
     pMediaType->SetSampleSize( uiSampleSize );
 		return S_OK;

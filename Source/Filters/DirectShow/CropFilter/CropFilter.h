@@ -116,7 +116,7 @@ private:
   /// Pointer to our picture cropper
   PicCropperBase* m_pCropper;
   BYTE* m_pCropBuffer;
-  int m_nBytesPerPixel;
+  unsigned m_nBitsPerPixel;
   //Member variables which affect the transform
   int m_nLeftCrop;
   int m_nRightCrop;

@@ -139,7 +139,7 @@ HRESULT YUV420toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 #else
 
     pbmi->biBitCount = 24;
-    pbmi->biSizeImage = m_nInPixels * BYTES_PER_PIXEL_RGB24;
+    pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB24/8;
 
 #endif
 
@@ -236,7 +236,7 @@ HRESULT YUV420toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
   m_pConverter->Convert((void*)pY, (void*)pU, (void*)pV, (void*)pBufferOut);
   DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV420 to RGB Directly")));
   //RGB24 stores 3 Bytes per pixel
-  lOutActualDataLength = m_nInPixels * BYTES_PER_PIXEL_RGB24;
+  lOutActualDataLength = m_nInPixels * BITS_PER_PIXEL_RGB24/8;
   return S_OK;
 }
 

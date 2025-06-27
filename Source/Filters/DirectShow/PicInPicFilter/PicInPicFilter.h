@@ -172,7 +172,7 @@ private:
   /// target picture scaler used if secondary picture output dimensions != input picture dimensions
   PicScalerBase* m_pSubPicScaler;
 	/// Stores bytes per needed to store pixel according to media type
-	double m_nBytesPerPixel;
+  unsigned m_nBitsPerPixel;
   /// buffer to scale secondary image into if required
   BYTE* m_pBufferForScaledSecondaryImage;
 };

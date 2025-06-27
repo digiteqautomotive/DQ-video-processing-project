@@ -147,7 +147,7 @@ private:
 	/// Pointer to our picture rotation class
 	PicRotateBase* m_pRotate;
 
-	int m_nBytesPerPixel;
+	unsigned m_nBitsPerPixel;
 
 	/// 0 = Don't rotate
 	/// 1 = 90 deg Clockwise

@@ -138,7 +138,7 @@ protected:
 	REFERENCE_TIME m_tStopTime2;	
 
 	/// Stores bytes per needed to store pixel according to media type
-	double m_nBytesPerPixel;
+	unsigned m_nBitsPerPixel;
 
   unsigned m_uiEndOfStreamCount;
   unsigned m_uiBeginFlushCount;

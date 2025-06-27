@@ -43,5 +43,5 @@ PicRotateRGB32Impl::~PicRotateRGB32Impl()
 
 int PicRotateRGB32Impl::BytesPerPixel()
 {
-	return BYTES_PER_PIXEL_RGB32;
+	return BITS_PER_PIXEL_RGB32/8;
 }

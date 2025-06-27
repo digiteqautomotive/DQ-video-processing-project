@@ -123,13 +123,13 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 	{
 		int nWidth = m_pPicConcat->Get1stWidth();
 		int nHeight = m_pPicConcat->Get1stHeight();
-		memcpy(pBufferOut, m_pSampleBuffers[0], nWidth * nHeight* m_nBytesPerPixel);
+		memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth * nHeight* m_nBitsPerPixel)/8);
 	}
 	else
 	{
 		int nWidth = m_pPicConcat->Get2ndWidth();
 		int nHeight = m_pPicConcat->Get2ndHeight();
-		memcpy(pBufferOut, m_pSampleBuffers[1], nWidth * nHeight* m_nBytesPerPixel);
+		memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth * nHeight* m_nBitsPerPixel)/8);
 	}
 
 	pOutSample->SetActualDataLength(m_nOutputSize);
@@ -401,12 +401,12 @@ HRESULT VideoMixingFilter::CreateVideoMixer( const CMediaType *pMediaType, int n
 		if (pMediaType->subtype == MEDIASUBTYPE_RGB24)
 		{
 			m_pPicConcat = new PicConcatRGB24Impl();
-			m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
+			m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
 		}
 		else if (pMediaType->subtype == MEDIASUBTYPE_RGB32)
 		{
 			m_pPicConcat = new PicConcatRGB32Impl();
-			m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
+			m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
 		}
 	}
 	return S_OK;
@@ -459,14 +459,14 @@ HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPI
 
 HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
 {
-	if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB24)
+	if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
 	{
 		if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
 		{
 			return S_OK;
 		}
 	}
-	else if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB32)
+	else if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
 	{
 		if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB32)
 		{

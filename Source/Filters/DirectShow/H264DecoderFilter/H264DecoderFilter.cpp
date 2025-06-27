@@ -499,7 +499,7 @@ HRESULT H264DecoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
       if (nResult)
       {
         //Encoding was successful
-        lOutActualDataLength = m_nInWidth * m_nInHeight * BYTES_PER_PIXEL_RGB24;
+        lOutActualDataLength = m_nInWidth * m_nInHeight * (BITS_PER_PIXEL_RGB24/8);
       }
       else
       {

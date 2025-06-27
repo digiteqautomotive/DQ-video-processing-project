@@ -49,7 +49,7 @@ PicInPicFilter::PicInPicFilter()
 	m_pPicInPic(NULL),
 	m_pTargetPicScaler(NULL),
 	m_pSubPicScaler(NULL),
-  m_nBytesPerPixel(0.0),
+  m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL)
 {
 	m_pSampleBuffers[0] = NULL;
@@ -156,7 +156,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 		else
 		{
       // copy the primary image
-      memcpy(pBufferOut, m_pSampleBuffers[0], m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBytesPerPixel);
+      memcpy(pBufferOut, m_pSampleBuffers[0], (m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBitsPerPixel)/8);
 		}
     
     if (m_pSubPicScaler)
@@ -178,7 +178,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 		}
 		else
 		{
-      memcpy(pBufferOut, m_pSampleBuffers[0], m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBytesPerPixel);
+      memcpy(pBufferOut, m_pSampleBuffers[0], (m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBitsPerPixel)/8);
 		}
  	}
  	else
@@ -186,7 +186,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     int nWidth = m_nOutputWidth;
     int nHeight = m_nOutputHeight;
 		// TODO: is zeros the right filler
-		memset(pBufferOut, 0, nWidth * nHeight* m_nBytesPerPixel);
+		memset(pBufferOut, 0, (nWidth * nHeight* m_nBitsPerPixel)/8);
 
     if (m_pSubPicScaler)
     {
@@ -303,7 +303,7 @@ HRESULT PicInPicFilter::CreateVideoMixer( const CMediaType *pMediaType, int nInd
 	{
     ASSERT(pMediaType->subtype == MEDIASUBTYPE_RGB24);
     m_pPicInPic = new PicInPicRGB24Impl();
-    m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
+    m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
 	}
 
 	return S_OK;
@@ -317,7 +317,7 @@ HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFO
     // if target width and height have been set use those dimensions
     nOutputWidth = m_nTargetWidth;
     nOutputHeight = m_nTargetHeight;
-    nOutputSize = m_nOutputWidth * m_nOutputHeight * m_nBytesPerPixel;
+    nOutputSize = (m_nOutputWidth * m_nOutputHeight * m_nBitsPerPixel) / 8;
   }
   else
   {
@@ -334,7 +334,7 @@ HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFO
 
 HRESULT PicInPicFilter::CheckOutputType( const CMediaType* pMediaType )
 {
-	if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB24)
+	if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
 	{
 		if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
 		{
@@ -440,7 +440,7 @@ void PicInPicFilter::reconfigure()
         delete m_pBufferForScaledSecondaryImage;
         m_pBufferForScaledSecondaryImage = NULL;
       }
-      m_pBufferForScaledSecondaryImage = new BYTE[m_nSubPictureWidth * m_nSubPictureHeight * m_nBytesPerPixel];
+      m_pBufferForScaledSecondaryImage = new BYTE[(m_nSubPictureWidth * m_nSubPictureHeight * m_nBitsPerPixel)/8];
     }
     else
     {

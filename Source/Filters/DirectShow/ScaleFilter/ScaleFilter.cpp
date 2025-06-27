@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ScaleFilter::ScaleFilter()
   : CCustomBaseFilter(NAME("CSIR VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
-  m_nBytesPerPixel(BYTES_PER_PIXEL_RGB24)
+  m_nBitsPerPixel(BITS_PER_PIXEL_RGB24)
 {
   //Call the initialize input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -107,22 +107,22 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       if(pmt->subtype==MEDIASUBTYPE_RGB24)
       {
 	m_pScaler = new PicScalerRGB24Impl();
-        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
+        m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32)
       {
       	m_pScaler = new PicScalerRGB32Impl();
-        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
+        m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_ARGB32)
       {
       	m_pScaler = new PicScalerARGB32Impl();
-        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
+        m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_YUV420P)
       {
         m_pScaler = new PicScalerYUV420PImpl();
-        m_nBytesPerPixel = BYTES_PER_PIXEL_YUV420P;
+        m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
       }
     }
   }
@@ -162,11 +162,11 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pBi->biWidth <= 0) return E_INVALIDARG;
     // Set size
     if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
-        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_RGB32;
+        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P)
-        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_YUV420P;
+        pBi->biSizeImage = (pBi->biWidth * pBi->biHeight * BITS_PER_PIXEL_YUV420P) / 8;
     else
-        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * BYTES_PER_PIXEL_RGB24;
+        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * (BITS_PER_PIXEL_RGB24 / 8);
     pMediaType->lSampleSize = pBi->biSizeImage;
 
     // Adjust recs
@@ -188,8 +188,8 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
   // Leaving this var so that we can cater for RGB32 at a later stage
-  pProp->cbBuffer = m_nOutPixels * m_nBytesPerPixel;
-  if (m_nBytesPerPixel == BYTES_PER_PIXEL_YUV420P)
+  pProp->cbBuffer = (m_nOutPixels * m_nBitsPerPixel)/8;
+  if (m_nBitsPerPixel == BITS_PER_PIXEL_YUV420P)
   {
     //Adjust the buffer requirements for our custom format
     pProp->cbBuffer *= sizeof(yuvType);
@@ -289,7 +289,7 @@ HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lA
   m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
   int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn);
   ASSERT(res == 1);
-  lOutActualDataLength = m_nOutWidth * m_nOutHeight * m_nBytesPerPixel;
+  lOutActualDataLength = (m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
   return S_OK;
 }
 

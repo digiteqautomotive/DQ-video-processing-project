@@ -40,7 +40,7 @@ CropFilter::CropFilter()
   : CCustomBaseFilter(NAME("CSIR VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
   m_pCropper(NULL),
   m_pCropBuffer(NULL),
-  m_nBytesPerPixel(BYTES_PER_PIXEL_RGB24),
+  m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
   m_nStride(0),
   m_nPadding(0)
 {
@@ -112,17 +112,17 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
       if (pmt->subtype == MEDIASUBTYPE_RGB24)
       {
         m_pCropper = new PicCropperRGB24Impl();
-        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB24;
+        m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
         // Create temp buffer for crop
-        m_pCropBuffer = new BYTE[m_nOutWidth * m_nOutHeight * m_nBytesPerPixel];
+        m_pCropBuffer = new BYTE[(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel)/8];
 
       }
       else if (pmt->subtype == MEDIASUBTYPE_RGB32)
       {
         m_pCropper = new PicCropperRGB32Impl();
-        m_nBytesPerPixel = BYTES_PER_PIXEL_RGB32;
+        m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
         // Create temp buffer for crop
-        m_pCropBuffer = new BYTE[m_nOutWidth * m_nOutHeight * m_nBytesPerPixel];
+        m_pCropBuffer = new BYTE[(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel)/8];
       }
     }
     RecalculateFilterParameters();
@@ -158,7 +158,7 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     pBi->biWidth = m_nOutWidth;
     ASSERT(pBi->biWidth > 0);
-    pBi->biSizeImage = pBi->biWidth * pBi->biHeight * m_nBytesPerPixel;
+    pBi->biSizeImage = (pBi->biWidth * pBi->biHeight * m_nBitsPerPixel)/8;
 
     pVih->rcSource.top = 0;
     pVih->rcSource.left = 0;
@@ -180,7 +180,7 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 HRESULT CropFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
   // Adding padding to take stride into account
-  pProp->cbBuffer = (m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBytesPerPixel;
+  pProp->cbBuffer = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
 
   if (pProp->cbAlign == 0)
   {
@@ -284,7 +284,7 @@ HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lAc
   BYTE* pFrom = m_pCropBuffer;
   BYTE* pTo = pBufferOut;
 
-  int nBytesPerLine = m_nOutWidth * m_nBytesPerPixel;
+  int nBytesPerLine = (m_nOutWidth * m_nBitsPerPixel) / 8;
   for (size_t i = 0; i < (size_t)m_nOutHeight; i++)
   {
     memcpy(pTo, pFrom, nBytesPerLine);
@@ -296,7 +296,7 @@ HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lAc
       pTo++;
     }
   }
-  lOutActualDataLength = (m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBytesPerPixel;
+  lOutActualDataLength = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
   return S_OK;
 }
 
@@ -319,7 +319,7 @@ void CropFilter::RecalculateFilterParameters()
   }
 #else
   m_nStride = ((((m_nOutWidth * m_nBitCount) + 31) & ~31) >> 3);
-  m_nPadding = m_nStride - (m_nBytesPerPixel * m_nOutWidth);
+  m_nPadding = m_nStride - (m_nBitsPerPixel * m_nOutWidth)/8;
 #endif
 }
 

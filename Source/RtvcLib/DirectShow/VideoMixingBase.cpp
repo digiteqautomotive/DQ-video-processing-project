@@ -171,7 +171,7 @@ HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, in
 			bmh1->biSizeImage = m_nOutputSize;
 			//Set sample size
 			pMediaType->SetSampleSize(m_nOutputSize);
-      if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB24)
+      if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
         pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
 #ifdef RTVC_SUPPORT_RGB32
       else if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB32)

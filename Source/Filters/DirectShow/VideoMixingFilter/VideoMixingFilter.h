@@ -135,5 +135,5 @@ private:
 	PicConcatBase* m_pPicConcat;
 
 	/// Stores bytes per needed to store pixel according to media type
-	double m_nBytesPerPixel;
+	unsigned m_nBitsPerPixel;
 };

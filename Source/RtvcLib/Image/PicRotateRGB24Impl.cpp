@@ -44,5 +44,5 @@ PicRotateRGB24Impl::~PicRotateRGB24Impl()
 
 int PicRotateRGB24Impl::BytesPerPixel()
 {
-	return BYTES_PER_PIXEL_RGB24;
+	return BITS_PER_PIXEL_RGB24/8;
 }

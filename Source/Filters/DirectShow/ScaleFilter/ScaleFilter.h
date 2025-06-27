@@ -58,8 +58,7 @@ class PicScalerBase;
  * Scale Filter for RGB24 and YUV420P Media
  * Scale parameters are settable via the ISettingsInterface COM interface.
  */
-class ScaleFilter : public CCustomBaseFilter,
-  public ISpecifyPropertyPages
+class ScaleFilter : public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN;
@@ -140,5 +139,5 @@ private:
   /// Pointer to our picture scaler
   PicScalerBase* m_pScaler;
   /// Stores bytes per needed to store pixel according to media type
-  double m_nBytesPerPixel;
+  int m_nBitsPerPixel;
 };
