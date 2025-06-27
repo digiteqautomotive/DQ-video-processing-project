@@ -68,14 +68,10 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 	unsigned char*	pSrc		= (unsigned char*)pInImg;
 	unsigned char*	pDst		= (unsigned char*)pOutImg;
 	
-	//double scalex = ((double)_widthIn)/((double)_widthOut);
-	//double scaley = ((double)_heightIn)/((double)_heightOut);
-
-	int x,y,posx,posy,i;
+	int x, y, posx, posy, i;
         int accuX, accuY;
 
 	accuY = posy = 0;
-        int ao = 0;
 	for(y = 0; y < _heightOut; y++)
 	{
 		const int pRow[3] = {						// Calculate row starts only once per row
@@ -87,7 +83,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 		for(x = 0; x < _widthOut; x++)
 		{
 			/// Apply a weighted 3x3 FIR filter.
-			unsigned b = 8;
+			unsigned b = 8;			// rounding offset +8
 			unsigned g = 8;
 			unsigned r = 8;
 
@@ -97,7 +93,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 				b += (*(pSrc + aii));
 				g += (*(pSrc + (aii+1)));
 				r += (*(pSrc + (aii+2)));
-				//a += (int)(*(pSrc + (aii+3)));	// do not filter missing compound
+				//a += (int)(*(pSrc + (aii+3)));	// do not filter missing 'a' compound
 
 				if(posx>0) aii+=4;
 				if(i==1)
@@ -121,11 +117,11 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 
 			/// Round before scaling.
 			//int ao = (y*_widthOut*4) + (x*4);	//- no need to calculate for every pixel
-			*(pDst + ao)		= (unsigned char)(b >> 4);
-			*(pDst + (ao+1))	= (unsigned char)(g >> 4);
-			*(pDst + (ao+2))	= (unsigned char)(r >> 4);
-			*(pDst + (ao+3))	= *(pSrc + (pRow[1]+posx*4+3));		// A compound is unused. (unsigned char)((a + 8) >> 4);
-			ao += 4;
+			pDst[0]	= (unsigned char)(b >> 4);
+			pDst[1]	= (unsigned char)(g >> 4);
+			pDst[2] = (unsigned char)(r >> 4);
+			pDst[3] = *(pSrc + (pRow[1]+posx*4+3));		// 'a' compound is unused. (unsigned char)((a + 8) >> 4);
+			pDst += 4;
 
 			accuX += _widthIn;			// DDA integer only algorithm
 			posx += accuX / _widthOut;

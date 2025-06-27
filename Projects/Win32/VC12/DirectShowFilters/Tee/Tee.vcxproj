@@ -105,7 +105,7 @@
       <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>Tee.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -134,7 +134,7 @@
       <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>Tee.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -160,7 +160,7 @@
       <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>strmiids.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>Tee.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -189,7 +189,7 @@
       <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>strmiids.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>Tee.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
