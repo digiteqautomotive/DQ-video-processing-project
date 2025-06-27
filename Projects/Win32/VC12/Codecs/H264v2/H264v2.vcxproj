@@ -117,7 +117,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libRtvcCodecUtils.lib;Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libRtvcCodecUtilsD.lib;Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -149,7 +149,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libRtvcCodecUtils.lib;Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libRtvcCodecUtilsD.lib;Msvcrtd.lib;Winmm.lib;strmbasd.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

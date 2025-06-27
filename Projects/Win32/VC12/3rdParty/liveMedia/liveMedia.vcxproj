@@ -90,7 +90,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\$(ProjectName).lib</OutputFile>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\$(ProjectName)D.lib</OutputFile>
     </Lib>
     <PostBuildEvent>
       <Command>
@@ -107,7 +107,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\$(ProjectName).lib</OutputFile>
+      <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\$(ProjectName)D.lib</OutputFile>
     </Lib>
     <PostBuildEvent>
       <Command>

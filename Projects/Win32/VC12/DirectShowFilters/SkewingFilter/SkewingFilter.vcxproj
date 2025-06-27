@@ -64,8 +64,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(DebugBuildDir)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(DebugBuildDir)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(BuildDir)\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(BuildDir)\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
@@ -93,8 +93,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -125,8 +124,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CustomBuildStep>
-      <Command>regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -155,8 +153,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CustomBuildStep>
-      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -186,8 +183,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CustomBuildStep>
-      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>

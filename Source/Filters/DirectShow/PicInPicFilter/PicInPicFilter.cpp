@@ -425,7 +425,7 @@ void PicInPicFilter::reconfigure()
 
     if (iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
     {
-      ASSERT(m_nBytesPerPixel == BYTES_PER_PIXEL_RGB24);
+      ASSERT(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24);
       if (!m_pSubPicScaler)
       {
         m_pSubPicScaler = new PicScalerRGB24Impl();

@@ -89,8 +89,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CustomBuildStep>
-      <Command>regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -122,8 +121,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <CustomBuildStep>
-      <Command>regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -153,8 +151,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <CustomBuildStep>
-      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
@@ -184,8 +181,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CustomBuildStep>
-      <Command>@rem regsvr32 /s "$(BuildDir)\Release\$(ProjectName).dll"
-</Command>
+      <Command>@rem regsvr32 /s  "$(BuildDir)\Debug\$(ProjectName)d.dll"</Command>
       <Outputs>DLL Registered;%(Outputs)</Outputs>
     </CustomBuildStep>
     <ClCompile>
