@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2.1 of the License, or (at your
+Free Software Foundation; either version 3 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -13,7 +13,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
-// Copyright (c) 1996-2014, Live Networks, Inc.  All rights reserved
+// Copyright (c) 1996-2025, Live Networks, Inc.  All rights reserved
 // A subclass of "RTSPServer" that creates "ServerMediaSession"s on demand,
 // based on whether or not the specified stream name exists as a file
 // Implementation
@@ -26,16 +26,18 @@ DynamicRTSPServer*
 DynamicRTSPServer::createNew(UsageEnvironment& env, Port ourPort,
 			     UserAuthenticationDatabase* authDatabase,
 			     unsigned reclamationTestSeconds) {
-  int ourSocket = setUpOurSocket(env, ourPort);
-  if (ourSocket == -1) return NULL;
+  int ourSocketIPv4 = setUpOurSocket(env, ourPort, AF_INET);
+  int ourSocketIPv6 = setUpOurSocket(env, ourPort, AF_INET6);
+  if (ourSocketIPv4 < 0 && ourSocketIPv6 < 0) return NULL;
 
-  return new DynamicRTSPServer(env, ourSocket, ourPort, authDatabase, reclamationTestSeconds);
+  return new DynamicRTSPServer(env, ourSocketIPv4, ourSocketIPv6, ourPort,
+			       authDatabase, reclamationTestSeconds);
 }
 
-DynamicRTSPServer::DynamicRTSPServer(UsageEnvironment& env, int ourSocket,
+DynamicRTSPServer::DynamicRTSPServer(UsageEnvironment& env, int ourSocketIPv4, int ourSocketIPv6,
 				     Port ourPort,
 				     UserAuthenticationDatabase* authDatabase, unsigned reclamationTestSeconds)
-  : RTSPServerSupportingHTTPStreaming(env, ourSocket, ourPort, authDatabase, reclamationTestSeconds) {
+  : RTSPServer(env, ourSocketIPv4, ourSocketIPv6, ourPort, authDatabase, reclamationTestSeconds) {
 }
 
 DynamicRTSPServer::~DynamicRTSPServer() {
@@ -44,15 +46,18 @@ DynamicRTSPServer::~DynamicRTSPServer() {
 static ServerMediaSession* createNewSMS(UsageEnvironment& env,
 					char const* fileName, FILE* fid); // forward
 
-ServerMediaSession*
-DynamicRTSPServer::lookupServerMediaSession(char const* streamName) {
+void DynamicRTSPServer
+::lookupServerMediaSession(char const* streamName,
+			   lookupServerMediaSessionCompletionFunc* completionFunc,
+			   void* completionClientData,
+			   Boolean isFirstLookupInSession) {
   // First, check whether the specified "streamName" exists as a local file:
   FILE* fid = fopen(streamName, "rb");
-  Boolean fileExists = fid != NULL;
+  Boolean const fileExists = fid != NULL;
 
   // Next, check whether we already have a "ServerMediaSession" for this file:
-  ServerMediaSession* sms = RTSPServer::lookupServerMediaSession(streamName);
-  Boolean smsExists = sms != NULL;
+  ServerMediaSession* sms = getServerMediaSession(streamName);
+  Boolean const smsExists = sms != NULL;
 
   // Handle the four possibilities for "fileExists" and "smsExists":
   if (!fileExists) {
@@ -61,26 +66,32 @@ DynamicRTSPServer::lookupServerMediaSession(char const* streamName) {
       removeServerMediaSession(sms);
     }
 
-    return NULL;
+    sms = NULL;
   } else {
-    if (smsExists) { 
+    if (smsExists && isFirstLookupInSession) { 
       // Remove the existing "ServerMediaSession" and create a new one, in case the underlying
       // file has changed in some way:
       removeServerMediaSession(sms); 
+      sms = NULL;
     } 
 
-    sms = createNewSMS(envir(), streamName, fid); 
-    addServerMediaSession(sms); 
-    fclose(fid);
+    if (sms == NULL) {
+      sms = createNewSMS(envir(), streamName, fid); 
+      addServerMediaSession(sms);
+    }
 
-    return sms;
+    fclose(fid);
+  }
+
+  if (completionFunc != NULL) {
+    (*completionFunc)(completionClientData, sms);
   }
 }
 
 // Special code for handling Matroska files:
 struct MatroskaDemuxCreationState {
   MatroskaFileServerDemux* demux;
-  char watchVariable;
+  EventLoopWatchVariable watchVariable;
 };
 static void onMatroskaDemuxCreation(MatroskaFileServerDemux* newDemux, void* clientData) {
   MatroskaDemuxCreationState* creationState = (MatroskaDemuxCreationState*)clientData;
@@ -92,7 +103,7 @@ static void onMatroskaDemuxCreation(MatroskaFileServerDemux* newDemux, void* cli
 // Special code for handling Ogg files:
 struct OggDemuxCreationState {
   OggFileServerDemux* demux;
-  char watchVariable;
+  EventLoopWatchVariable watchVariable;
 };
 static void onOggDemuxCreation(OggFileServerDemux* newDemux, void* clientData) {
   OggDemuxCreationState* creationState = (OggDemuxCreationState*)clientData;
@@ -201,6 +212,7 @@ static ServerMediaSession* createNewSMS(UsageEnvironment& env,
     sms->addSubsession(DVVideoFileServerMediaSubsession::createNew(env, fileName, reuseSource));
   } else if (strcmp(extension, ".mkv") == 0 || strcmp(extension, ".webm") == 0) {
     // Assumed to be a Matroska file (note that WebM ('.webm') files are also Matroska files)
+    OutPacketBuffer::maxSize = 300000; // allow for some possibly large VP8 or VP9 frames
     NEW_SMS("Matroska video+audio+(optional)subtitles");
 
     // Create a Matroska file server demultiplexor for the specified file.

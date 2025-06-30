@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2.1 of the License, or (at your
+Free Software Foundation; either version 3 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2014 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2025 Live Networks, Inc.  All rights reserved.
 // A data structure that represents a session that consists of
 // potentially multiple (audio and/or video) sub-sessions
 // (This data structure is used for media *streamers* - i.e., servers.
@@ -24,17 +24,8 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #ifndef _SERVER_MEDIA_SESSION_HH
 #define _SERVER_MEDIA_SESSION_HH
 
-#ifndef _MEDIA_HH
-#include "Media.hh"
-#endif
-#ifndef _FRAMED_SOURCE_HH
-#include "FramedSource.hh"
-#endif
-#ifndef _GROUPEID_HH
-#include "GroupEId.hh"
-#endif
-#ifndef _RTP_INTERFACE_HH
-#include "RTPInterface.hh" // for ServerRequestAlternativeByteHandler
+#ifndef _RTCP_HH
+#include "RTCP.hh"
 #endif
 
 class ServerMediaSubsession; // forward
@@ -52,7 +43,7 @@ public:
                               char const* mediumName,
                               ServerMediaSession*& resultSession);
 
-  char* generateSDPDescription(); // based on the entire session
+  char* generateSDPDescription(int addressFamily); // based on the entire session
       // Note: The caller is responsible for freeing the returned string
 
   char const* streamName() const { return fStreamName; }
@@ -66,6 +57,11 @@ public:
     // a result < 0 means: subsession durations differ; the result is -(the largest).
     // a result > 0 means: this is the duration of a bounded session
 
+  virtual void noteLiveness();
+    // called whenever a client - accessing this media - notes liveness.
+    // The default implementation does nothing, but subclasses can redefine this - e.g., if you
+    // want to remove long-unused "ServerMediaSession"s from the server.
+
   unsigned referenceCount() const { return fReferenceCount; }
   void incrementReferenceCount() { ++fReferenceCount; }
   void decrementReferenceCount() { if (fReferenceCount > 0) --fReferenceCount; }
@@ -73,9 +69,12 @@ public:
 
   void deleteAllSubsessions();
     // Removes and deletes all subsessions added by "addSubsession()", returning us to an 'empty' state
-    // Note: If you have already added this "ServerMediaSession" to a "RTSPServer" then, before calling this function,
+    // Note: If you have already added this "ServerMediaSession" to a server then, before calling this function,
     //   you must first close any client connections that use it,
-    //   by calling "RTSPServer::closeAllClientSessionsForServerMediaSession()".
+    //   by calling "GenericMediaServer::closeAllClientSessionsForServerMediaSession()".
+
+  Boolean streamingUsesSRTP; // by default, False
+  Boolean streamingIsEncrypted; // by default, False
 
 protected:
   ServerMediaSession(UsageEnvironment& env, char const* streamName,
@@ -125,15 +124,16 @@ class ServerMediaSubsession: public Medium {
 public:
   unsigned trackNumber() const { return fTrackNumber; }
   char const* trackId();
-  virtual char const* sdpLines() = 0;
+  virtual char const* sdpLines(int addressFamily) = 0;
   virtual void getStreamParameters(unsigned clientSessionId, // in
-				   netAddressBits clientAddress, // in
+				   struct sockaddr_storage const& clientAddress, // in
 				   Port const& clientRTPPort, // in
 				   Port const& clientRTCPPort, // in
 				   int tcpSocketNum, // in (-1 means use UDP, not TCP)
 				   unsigned char rtpChannelId, // in (used if TCP)
 				   unsigned char rtcpChannelId, // in (used if TCP)
-				   netAddressBits& destinationAddress, // in out
+				   TLSState* tlsState, // in (used if TCP)
+				   struct sockaddr_storage& destinationAddress, // in out
 				   u_int8_t& destinationTTL, // in out
 				   Boolean& isMulticast, // out
 				   Port& serverRTPPort, // out
@@ -164,6 +164,12 @@ public:
   virtual void setStreamScale(unsigned clientSessionId, void* streamToken, float scale);
   virtual float getCurrentNPT(void* streamToken);
   virtual FramedSource* getStreamSource(void* streamToken);
+  virtual void getRTPSinkandRTCP(void* streamToken,
+				 RTPSink*& rtpSink, RTCPInstance*& rtcp) = 0;
+     // Returns pointers to the "RTPSink" and "RTCPInstance" objects for "streamToken".
+     // (This can be useful if you want to get the associated 'Groupsock' objects, for example.)
+     // You must not delete these objects, or start/stop playing them; instead, that is done
+     // using the "startStream()" and "deleteStream()" functions.
   virtual void deleteStream(unsigned clientSessionId, void*& streamToken);
 
   virtual void testScaleFactor(float& scale); // sets "scale" to the actual supported scale
@@ -173,11 +179,6 @@ public:
   virtual void getAbsoluteTimeRange(char*& absStartTime, char*& absEndTime) const;
     // Subclasses can reimplement this iff they support seeking by 'absolute' time.
 
-  // The following may be called by (e.g.) SIP servers, for which the
-  // address and port number fields in SDP descriptions need to be non-zero:
-  void setServerAddressAndPortForSDP(netAddressBits addressBits,
-				     portNumBits portBits);
-
 protected: // we're a virtual base class
   ServerMediaSubsession(UsageEnvironment& env);
   virtual ~ServerMediaSubsession();
@@ -186,8 +187,7 @@ protected: // we're a virtual base class
       // returns a string to be delete[]d
 
   ServerMediaSession* fParentSession;
-  netAddressBits fServerAddressForSDP;
-  portNumBits fPortNumForSDP;
+  u_int32_t fSRTP_ROC; // horrible hack for SRTP; when the ROC changes, regenerate the SDP
 
 private:
   friend class ServerMediaSession;

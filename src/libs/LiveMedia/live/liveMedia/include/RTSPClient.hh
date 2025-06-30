@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2.1 of the License, or (at your
+Free Software Foundation; either version 3 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2014 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2025 Live Networks, Inc.  All rights reserved.
 // A generic RTSP client - for a single "rtsp://" URL
 // C++ header
 
@@ -30,8 +30,13 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #ifndef _DIGEST_AUTHENTICATION_HH
 #include "DigestAuthentication.hh"
 #endif
+#ifndef _TLS_STATE_HH
+#include "TLSState.hh"
+#endif
+#ifndef OMIT_REGISTER_HANDLING
 #ifndef _RTSP_SERVER_HH
 #include "RTSPServer.hh" // For the optional "HandlerForREGISTERCommand" mini-server
+#endif
 #endif
 
 class RTSPClient: public Medium {
@@ -145,6 +150,11 @@ public:
       // Issues an aggregate RTSP "GET_PARAMETER" command on "session", then returns the "CSeq" sequence number that was used in the command.
       // (The "responseHandler" and "authenticator" parameters are as described for "sendDescribeCommand".)
 
+  void setRequireValue(char const* requireValue = NULL);
+      // Sets a string to be used as the value of a "Require:" header to be included in
+      // subsequent RTSP commands.  Call "setRequireValue()" again (i.e., with no parameter)
+      // to clear this (and so stop "Require:" headers from being included in subsequent cmds).
+
   void sendDummyUDPPackets(MediaSession& session, unsigned numDummyPackets = 2);
   void sendDummyUDPPackets(MediaSubsession& subsession, unsigned numDummyPackets = 2);
       // Sends short 'dummy' (i.e., non-RTP or RTCP) UDP packets towards the server, to increase
@@ -152,6 +162,10 @@ public:
       // (If we requested RTP-over-TCP streaming, then these functions have no effect.)
       // Our implementation automatically does this just prior to sending each "PLAY" command;
       // You should not call these functions yourself unless you know what you're doing.
+
+  void setSpeed(MediaSession& session, float speed = 1.0f);
+      // Set (recorded) media download speed to given value to support faster download using 'Speed:'
+      // option on 'PLAY' command.
 
   Boolean changeResponseHandler(unsigned cseq, responseHandler* newResponseHandler);
       // Changes the response handler for the previously-performed command (whose operation returned "cseq").
@@ -165,13 +179,17 @@ public:
 			      char const* sourceName,
 			      RTSPClient*& resultClient);
 
-  static Boolean parseRTSPURL(UsageEnvironment& env, char const* url,
-			      char*& username, char*& password, NetAddress& address, portNumBits& portNum, char const** urlSuffix = NULL);
+  Boolean parseRTSPURL(char const* url,
+		       char*& username, char*& password, NetAddress& address, portNumBits& portNum, char const** urlSuffix = NULL);
       // Parses "url" as "rtsp://[<username>[:<password>]@]<server-address-or-name>[:<port>][/<stream-name>]"
       // (Note that the returned "username" and "password" are either NULL, or heap-allocated strings that the caller must later delete[].)
 
   void setUserAgentString(char const* userAgentName);
       // sets an alternative string to be used in RTSP "User-Agent:" headers
+
+  void disallowBasicAuthentication() { fAllowBasicAuthentication = False; }
+      // call this if you don't want the server to request 'Basic' authentication
+      // (which would cause the client to send usernames and passwords over the net).
 
   unsigned sessionTimeoutParameter() const { return fSessionTimeoutParameter; }
 
@@ -235,6 +253,7 @@ protected:
 				   char const*& protocolStr,
 				   char*& extraHeaders, Boolean& extraHeadersWereAllocated);
       // used to implement "sendRequest()"; subclasses may reimplement this (e.g., when implementing a new command name)
+  virtual int connectToServer(int socketNum, portNumBits remotePortNum); // used to implement "openConnection()"; result values: -1: failure; 0: pending; 1: success
 
 private: // redefined virtual functions
   virtual Boolean isRTSPClient() const;
@@ -251,6 +270,7 @@ private:
     void putAtHead(RequestRecord* request); // "request" must not be NULL
     RequestRecord* findByCSeq(unsigned cseq);
     Boolean isEmpty() const { return fHead == NULL; }
+    void reset();
 
   private:
     RequestRecord* fHead;
@@ -259,9 +279,10 @@ private:
 
   void resetTCPSockets();
   void resetResponseBuffer();
-  int openConnection(); // -1: failure; 0: pending; 1: success
-  int connectToServer(int socketNum, portNumBits remotePortNum); // used to implement "openConnection()"; result values are the same
+  int openConnection(); // result values: -1: failure; 0: pending; 1: success
   char* createAuthenticatorString(char const* cmd, char const* url);
+  char* createBlocksizeString(Boolean streamUsingTCP);
+  char* createKeyMgmtString(char const* url, MediaSubsession const& subsession);
   void handleRequestError(RequestRecord* request);
   Boolean parseResponseCode(char const* line, unsigned& responseCode, char const*& responseString);
   void handleIncomingRequest();
@@ -270,13 +291,15 @@ private:
 			       char*& serverAddressStr, portNumBits& serverPortNum,
 			       unsigned char& rtpChannelId, unsigned char& rtcpChannelId);
   Boolean parseScaleParam(char const* paramStr, float& scale);
+  Boolean parseSpeedParam(char const* paramStr, float& speed);
   Boolean parseRTPInfoParams(char const*& paramStr, u_int16_t& seqNum, u_int32_t& timestamp);
   Boolean handleSETUPResponse(MediaSubsession& subsession, char const* sessionParamsStr, char const* transportParamsStr,
 			      Boolean streamUsingTCP);
-  Boolean handlePLAYResponse(MediaSession& session, MediaSubsession& subsession,
-                             char const* scaleParamsStr, char const* rangeParamsStr, char const* rtpInfoParamsStr);
+  Boolean handlePLAYResponse(MediaSession* session, MediaSubsession* subsession,
+                             char const* scaleParamsStr, const char* speedParamsStr,
+			     char const* rangeParamsStr, char const* rtpInfoParamsStr);
   Boolean handleTEARDOWNResponse(MediaSession& session, MediaSubsession& subsession);
-  Boolean handleGET_PARAMETERResponse(char const* parameterName, char*& resultValueString);
+  Boolean handleGET_PARAMETERResponse(char const* parameterName, char*& resultValueString, char* resultValueStringEnd);
   Boolean handleAuthenticationFailure(char const* wwwAuthenticateParamsStr);
   Boolean resendCommand(RequestRecord* request);
   char const* sessionURL(MediaSession const& session) const;
@@ -302,11 +325,21 @@ private:
   void incomingDataHandler1();
   void handleResponseBytes(int newBytesRead);
 
+  // Writing/reading data over a (already set-up) connection:
+  int write(const char* data, unsigned count);
+  int read(u_int8_t* buffer, unsigned bufferSize);
+
+public:
+  u_int16_t desiredMaxIncomingPacketSize;
+    // If set to a value >0, then a "Blocksize:" header with this value (minus an allowance for
+    // IP, UDP, and RTP headers) will be sent with each "SETUP" request.
+
 protected:
   int fVerbosityLevel;
   unsigned fCSeq; // sequence number, used in consecutive requests
   Authenticator fCurrentAuthenticator;
-  netAddressBits fServerAddress;
+  Boolean fAllowBasicAuthentication;
+  struct sockaddr_storage fServerAddress;
 
 private:
   portNumBits fTunnelOverHTTPPortNum;
@@ -320,14 +353,23 @@ private:
   char* fResponseBuffer;
   unsigned fResponseBytesAlreadySeen, fResponseBufferBytesLeft;
   RequestQueue fRequestsAwaitingConnection, fRequestsAwaitingHTTPTunneling, fRequestsAwaitingResponse;
+  char* fRequireStr;
 
   // Support for tunneling RTSP-over-HTTP:
   char fSessionCookie[33];
   unsigned fSessionCookieCounter;
   Boolean fHTTPTunnelingConnectionIsPending;
+
+  // Optional support for TLS:
+  ClientTLSState fTLS;
+  ClientTLSState fPOSTSocketTLS; // used only for RTSP-over-HTTPS
+  ClientTLSState* fInputTLS;
+  ClientTLSState* fOutputTLS;
+  friend class ClientTLSState;
 };
 
 
+#ifndef OMIT_REGISTER_HANDLING
 ////////// HandlerServerForREGISTERCommand /////////
 
 // A simple server that creates a new "RTSPClient" object whenever a "REGISTER" request arrives (specifying the "rtsp://" URL
@@ -341,10 +383,10 @@ public:
 						    Port ourPort = 0, UserAuthenticationDatabase* authDatabase = NULL,
 						    int verbosityLevel = 0, char const* applicationName = NULL);
       // If ourPort.num() == 0, we'll choose the port number ourself.  (Use the following function to get it.)
-  portNumBits serverPortNum() const { return ntohs(fRTSPServerPort.num()); }
+  portNumBits serverPortNum() const { return ntohs(fServerPort.num()); }
 
 protected:
-  HandlerServerForREGISTERCommand(UsageEnvironment& env, onRTSPClientCreationFunc* creationFunc, int ourSocket, Port ourPort,
+  HandlerServerForREGISTERCommand(UsageEnvironment& env, onRTSPClientCreationFunc* creationFunc, int ourSocketIPv4, int ourSocketIPv6, Port ourPort,
 				  UserAuthenticationDatabase* authDatabase, int verbosityLevel, char const* applicationName);
       // called only by createNew();
   virtual ~HandlerServerForREGISTERCommand();
@@ -355,9 +397,12 @@ protected:
       // of "RTSPClient" instead, then subclass this class, and redefine this virtual function.
 
 protected: // redefined virtual functions
-  virtual char const* allowedCommandNames(); // we support "OPTIONS" and "REGISTER" only
-  virtual Boolean weImplementREGISTER(char const* proxyURLSuffix, char*& responseStr); // redefined to return True
-  virtual void implementCmd_REGISTER(char const* url, char const* urlSuffix, int socketToRemoteServer,
+  virtual char const* allowedCommandNames(); // "OPTIONS", "REGISTER", and (perhaps) "DEREGISTER" only
+  virtual Boolean weImplementREGISTER(char const* cmd/*"REGISTER" or "DEREGISTER"*/,
+				      char const* proxyURLSuffix, char*& responseStr);
+      // redefined to return True (for cmd=="REGISTER")
+  virtual void implementCmd_REGISTER(char const* cmd/*"REGISTER" or "DEREGISTER"*/,
+				     char const* url, char const* urlSuffix, int socketToRemoteServer,
 				     Boolean deliverViaTCP, char const* proxyURLSuffix);
 
 private:
@@ -365,5 +410,6 @@ private:
   int fVerbosityLevel;
   char* fApplicationName;
 };
+#endif
 
 #endif

@@ -1,7 +1,7 @@
 /**********
 This library is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the
-Free Software Foundation; either version 2.1 of the License, or (at your
+Free Software Foundation; either version 3 of the License, or (at your
 option) any later version. (See <http://www.gnu.org/copyleft/lesser.html>.)
 
 This library is distributed in the hope that it will be useful, but WITHOUT
@@ -14,7 +14,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
 // "liveMedia"
-// Copyright (c) 1996-2014 Live Networks, Inc.  All rights reserved.
+// Copyright (c) 1996-2025 Live Networks, Inc.  All rights reserved.
 // A 'ServerMediaSubsession' object that creates new, unicast, "RTPSink"s
 // on demand.
 // C++ header
@@ -43,15 +43,16 @@ protected: // we're a virtual base class
   virtual ~OnDemandServerMediaSubsession();
 
 protected: // redefined virtual functions
-  virtual char const* sdpLines();
+  virtual char const* sdpLines(int addressFamily);
   virtual void getStreamParameters(unsigned clientSessionId,
-				   netAddressBits clientAddress,
+				   struct sockaddr_storage const& clientAddress,
                                    Port const& clientRTPPort,
                                    Port const& clientRTCPPort,
 				   int tcpSocketNum,
                                    unsigned char rtpChannelId,
                                    unsigned char rtcpChannelId,
-                                   netAddressBits& destinationAddress,
+				   TLSState* tlsState,
+                                   struct sockaddr_storage& destinationAddress,
 				   u_int8_t& destinationTTL,
                                    Boolean& isMulticast,
                                    Port& serverRTPPort,
@@ -72,6 +73,8 @@ protected: // redefined virtual functions
   virtual void setStreamScale(unsigned clientSessionId, void* streamToken, float scale);
   virtual float getCurrentNPT(void* streamToken);
   virtual FramedSource* getStreamSource(void* streamToken);
+  virtual void getRTPSinkandRTCP(void* streamToken,
+				 RTPSink*& rtpSink, RTCPInstance*& rtcp);
   virtual void deleteStream(unsigned clientSessionId, void*& streamToken);
 
 protected: // new virtual functions, possibly redefined by subclasses
@@ -98,17 +101,40 @@ protected: // new virtual functions, defined by all subclasses
 				    unsigned char rtpPayloadTypeIfDynamic,
 				    FramedSource* inputSource) = 0;
 
+protected: // new virtual functions, may be redefined by a subclass:
+  virtual Groupsock* createGroupsock(struct sockaddr_storage const& addr, Port port);
+  virtual RTCPInstance* createRTCP(Groupsock* RTCPgs, unsigned totSessionBW, /* in kbps */
+				   unsigned char const* cname, RTPSink* sink);
+
 public:
   void multiplexRTCPWithRTP() { fMultiplexRTCPWithRTP = True; }
-  // An alternative to passing the "multiplexRTCPWithRTP" parameter as True in the constructor
+    // An alternative to passing the "multiplexRTCPWithRTP" parameter as True in the constructor
 
-private:
+  void setRTCPAppPacketHandler(RTCPAppHandlerFunc* handler, void* clientData);
+    // Sets a handler to be called if a RTCP "APP" packet arrives from any future client.
+    // (Any current clients are not affected; any "APP" packets from them will continue to be
+    // handled by whatever handler existed when the client sent its first RTSP "PLAY" command.)
+    // (Call with (NULL, NULL) to remove an existing handler - for future clients only)
+
+  void sendRTCPAppPacket(u_int8_t subtype, char const* name,
+			 u_int8_t* appDependentData, unsigned appDependentDataSize);
+    // Sends a custom RTCP "APP" packet to the most recent client (if "reuseFirstSource" was False),
+    // or to all current clients (if "reuseFirstSource" was True).
+    // The parameters correspond to their
+    // respective fields as described in the RTP/RTCP definition (RFC 3550).
+    // Note that only the low-order 5 bits of "subtype" are used, and only the first 4 bytes
+    // of "name" are used.  (If "name" has fewer than 4 bytes, or is NULL,
+    // then the remaining bytes are '\0'.)
+
+protected:
   void setSDPLinesFromRTPSink(RTPSink* rtpSink, FramedSource* inputSource,
 			      unsigned estBitrate);
       // used to implement "sdpLines()"
 
 protected:
   char* fSDPLines;
+  u_int8_t* fMIKEYStateMessage; // used if we're streaming SRTP
+  unsigned fMIKEYStateMessageSize; // ditto
   HashTable* fDestinationsHashTable; // indexed by client session id
 
 private:
@@ -117,6 +143,8 @@ private:
   Boolean fMultiplexRTCPWithRTP;
   void* fLastStreamToken;
   char fCNAME[100]; // for RTCP
+  RTCPAppHandlerFunc* fAppHandlerTask;
+  void* fAppHandlerClientData;
   friend class StreamState;
 };
 
@@ -127,23 +155,26 @@ private:
 
 class Destinations {
 public:
-  Destinations(struct in_addr const& destAddr,
+  Destinations(struct sockaddr_storage const& destAddr,
                Port const& rtpDestPort,
                Port const& rtcpDestPort)
     : isTCP(False), addr(destAddr), rtpPort(rtpDestPort), rtcpPort(rtcpDestPort) {
   }
-  Destinations(int tcpSockNum, unsigned char rtpChanId, unsigned char rtcpChanId)
+  Destinations(int tcpSockNum, unsigned char rtpChanId, unsigned char rtcpChanId,
+	       TLSState* tlsSt)
     : isTCP(True), rtpPort(0) /*dummy*/, rtcpPort(0) /*dummy*/,
-      tcpSocketNum(tcpSockNum), rtpChannelId(rtpChanId), rtcpChannelId(rtcpChanId) {
+      tcpSocketNum(tcpSockNum), rtpChannelId(rtpChanId), rtcpChannelId(rtcpChanId),
+      tlsState(tlsSt) {
   }
 
 public:
   Boolean isTCP;
-  struct in_addr addr;
+  struct sockaddr_storage addr;
   Port rtpPort;
   Port rtcpPort;
   int tcpSocketNum;
   unsigned char rtpChannelId, rtcpChannelId;
+  TLSState* tlsState;
 };
 
 class StreamState {
@@ -155,12 +186,14 @@ public:
 	      Groupsock* rtpGS, Groupsock* rtcpGS);
   virtual ~StreamState();
 
-  void startPlaying(Destinations* destinations,
+  void startPlaying(Destinations* destinations, unsigned clientSessionId,
 		    TaskFunc* rtcpRRHandler, void* rtcpRRHandlerClientData,
 		    ServerRequestAlternativeByteHandler* serverRequestAlternativeByteHandler,
                     void* serverRequestAlternativeByteHandlerClientData);
   void pause();
-  void endPlaying(Destinations* destinations);
+  void sendRTCPAppPacket(u_int8_t subtype, char const* name,
+			 u_int8_t* appDependentData, unsigned appDependentDataSize);
+  void endPlaying(Destinations* destinations, unsigned clientSessionId);
   void reclaim();
 
   unsigned& referenceCount() { return fReferenceCount; }
@@ -169,6 +202,7 @@ public:
   Port const& serverRTCPPort() const { return fServerRTCPPort; }
 
   RTPSink* rtpSink() const { return fRTPSink; }
+  RTCPInstance* rtcpInstance() const { return fRTCPInstance; }
 
   float streamDuration() const { return fStreamDuration; }
 
