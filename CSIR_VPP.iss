@@ -59,7 +59,7 @@ Name: "RtspSourceFilter"; Description: "RtspSourceFilter Direct Show filter"; Ty
 Name: "ScaleFilter"; Description: "ScaleFilter Direct Show filter"; Types: full custom
 Name: "SkewingFilter"; Description: "SkewingFilter Direct Show filter"; Types: full custom
 Name: "Stereo2MonoFilter"; Description: "Stereo2MonoFilter Direct Show filter"; Types: full custom
-Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types: full
+Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types:
 Name: "TimestampLoggerFilter"; Description: "TimestampLoggerFilter Direct Show filter"; Types: full custom
 Name: "VideoMixingFilter"; Description: "VideoMixingFilter Direct Show filter"; Types: full custom
 Name: "YUV420ToRGBFilter"; Description: "YUV420ToRGBFilter Direct Show filter"; Types: full custom

@@ -48,6 +48,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -178,7 +179,14 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGBBase.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32Impl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32ImplA.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUV420PImpl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420CCIR601ConverterVer16.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420Converter.cpp" />
@@ -228,7 +236,17 @@
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RGBtoYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\YUV420toRGBConverter.h" />
   </ItemGroup>
+  <ItemGroup>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerARGB32_x64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </MASM>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>
