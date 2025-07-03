@@ -63,7 +63,8 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
         int accuX, accuY;
 
 	accuY = posy = 0;
-	for(y = 0; y < _heightOut; y++)
+	y = labs(_heightOut);
+        while(y-- > 0)	
 	{
 		const int pRow[3] = {						// Calculate row starts only once per row
 				((posy==0) ? 0 : (4*_widthIn*(posy-1))),
@@ -86,7 +87,7 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 				b += (*(pSrc + aii));
 				g += (*(pSrc + (aii+1)));
 				r += (*(pSrc + (aii+2)));
-                a += (*(pSrc + (aii+3)));
+				a += (*(pSrc + (aii+3)));
 
 			    if(posx>0) aii+=4;
 				if(i==1)

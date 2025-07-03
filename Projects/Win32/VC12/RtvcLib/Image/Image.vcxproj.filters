@@ -108,6 +108,9 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32ImplA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32ImplA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatBase.h">
@@ -220,8 +223,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerARGB32_x64.asm">
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerARGB32_x64.asm">
       <Filter>Source Files</Filter>
-    </None>
+    </MASM>
   </ItemGroup>
 </Project>

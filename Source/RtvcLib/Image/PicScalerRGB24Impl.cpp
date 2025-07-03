@@ -63,7 +63,8 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, void* pInImg)
         int accuY, accuX;
 
         accuY = posy = 0;
-	for(y = 0; y < _heightOut; y++)
+	y = labs(_heightOut);
+        while(y-- > 0)	
 	{
 		const int pRow[3] = {						// Calculate row starts only once per row
 			((posy==0) ? 0 : (3*_widthIn*(posy-1))),
@@ -120,7 +121,7 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, void* pInImg)
 		accuY += _heightIn;				// DDA integer only algorithm
                 posy += accuY / _heightOut;
                 accuY = accuY % _heightOut;
-	}//end for y...
+	} //end for y...
 
 	return(1);
-}//end Scale.
+} //end Scale.

@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: PicScalerRGB32ImplA
+MODULE				: PicScalerARGB32ImplA
 
-FILE NAME			: PicScalerRGB32ImplA.cpp
+FILE NAME			: PicScalerARGB32ImplA.cpp
 
 DESCRIPTION			: An RGB32 implementation derived from the general
 					PicScalerBase() class. Scale a packed RGB32 image
@@ -10,7 +10,7 @@ DESCRIPTION			: An RGB32 implementation derived from the general
 					Note that the upscaling is limited to 2x either 
 					dimension.
 
-NOTE:	This code replaces PicScalerRGB32Impl.cpp and must not be compilled together with this file.
+NOTE:	This code replaces PicScalerARGB32Impl.cpp and must not be compilled together with this file.
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -21,10 +21,10 @@ All rights reserved.
 */
 #include <stdlib.h>
 
-#include "PicScalerRGB32Impl.h"
+#include "PicScalerARGB32Impl.h"
 
 
-extern "C" void ScaleRowAsmRGB32(void *pDst, unsigned _widthOut, void **pSrcRows, unsigned _widthIn);
+extern "C" void ScaleRowAsmARGB32(void *pDst, unsigned _widthOut, void **pSrcRows, unsigned _widthIn);
 
 /*
 ===========================================================================
@@ -38,7 +38,7 @@ memory size checking is done and is delegated to the calling process.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
+int PicScalerARGB32Impl::Scale(void* pOutImg, void* pInImg)
 {
   if((pOutImg == NULL) || (pInImg == NULL))
 	return(0);
@@ -56,7 +56,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
       pSrcRows[1] = (unsigned char*)pInImg + 4*_widthIn*posy;
       pSrcRows[2] = (unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
 
-      ScaleRowAsmRGB32(pDst, _widthOut, (void**)pSrcRows, _widthIn);
+      ScaleRowAsmARGB32(pDst, _widthOut, (void**)pSrcRows, _widthIn);
 		
       pDst += 4 * _widthOut;
       accuY += _heightIn;				// DDA integer only algorithm
@@ -66,4 +66,3 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
 
 	return(1);
 }//end Scale.
-
