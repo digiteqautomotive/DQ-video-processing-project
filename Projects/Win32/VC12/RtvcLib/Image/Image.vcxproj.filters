@@ -111,6 +111,9 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32ImplA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24ImplA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatBase.h">

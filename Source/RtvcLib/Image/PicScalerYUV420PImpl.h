@@ -64,7 +64,7 @@ public:
 	virtual ~PicScalerYUV420PImpl(void) {}
 
 	// Interface.
-	int Scale(void* pOutImg, void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg);
 
 };//end PicScalerYUV420PImpl.
 

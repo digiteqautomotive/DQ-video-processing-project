@@ -33,12 +33,12 @@ memory size checking is done and is delegated to the calling process.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
+int PicScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
 	if( (pOutImg == NULL) || (pInImg == NULL) )
 		return(0);
 
-	const unsigned char*	pSrc	= (unsigned char*)pInImg;
+	const unsigned char*	pSrc	= (const unsigned char*)pInImg;
 	unsigned char*	pDst		= (unsigned char*)pOutImg;
 	
 	int x, y, posx, posy, i;

@@ -56,7 +56,7 @@ public:
 	virtual ~PicScalerRGB32Impl(void) {}
 
 	// Interface.
-	int Scale(void* pOutImg, void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg);
 
 };//end PicScalerRGB32Impl.
 

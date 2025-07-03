@@ -1,16 +1,16 @@
 /** @file
 
-MODULE				: PicScalerARGB32ImplA
+MODULE				: PicScalerRGB24ImplA
 
-FILE NAME			: PicScalerARGB32ImplA.cpp
+FILE NAME			: PicScalerRGB24ImplA.cpp
 
-DESCRIPTION			: An RGB32 implementation derived from the general
-					PicScalerBase() class. Scale a packed RGB32 image
-					to the dimensions of another packed RGB32 image.
+DESCRIPTION			: An RGB24 implementation derived from the general
+					PicScalerBase() class. Scale a packed RGB24 image
+					to the dimensions of another packed RGB24 image.
 					Note that the upscaling is limited to 2x either 
 					dimension.
 
-NOTE:	This code replaces PicScalerARGB32Impl.cpp and must not be compilled together with this file.
+NOTE:	This code replaces PicScalerRGB24Impl.cpp and must not be compilled together with this file.
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -21,10 +21,10 @@ All rights reserved.
 */
 #include <stdlib.h>
 
-#include "PicScalerARGB32Impl.h"
+#include "PicScalerRGB24Impl.h"
 
 
-extern "C" void ScaleRowAsmARGB32(void *pDst, unsigned _widthOut, void * const * pSrcRows, unsigned _widthIn);
+extern "C" void ScaleRowAsmRGB24(void *pDst, unsigned _widthOut, void * const* pSrcRows, unsigned _widthIn);
 
 /*
 ===========================================================================
@@ -38,7 +38,7 @@ memory size checking is done and is delegated to the calling process.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
+int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 {
   if((pOutImg == NULL) || (pInImg == NULL))
 	return(0);
@@ -52,17 +52,18 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
    y = labs(_heightOut);
    while(y-- > 0)
    {
-      pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
-      pSrcRows[1] = (const unsigned char*)pInImg + 4*_widthIn*posy;
-      pSrcRows[2] = (const unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
+      pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (3*_widthIn*(posy-1)));
+      pSrcRows[1] = (const unsigned char*)pInImg + 3*_widthIn*posy;
+      pSrcRows[2] = (const unsigned char*)pInImg + 3*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
 
-      ScaleRowAsmARGB32(pDst, _widthOut, (void**)pSrcRows, _widthIn);
+      ScaleRowAsmRGB24(pDst, _widthOut, (void*const*)pSrcRows, _widthIn);
 		
-      pDst += 4 * _widthOut;
+      pDst += 3 * _widthOut;
       accuY += _heightIn;				// DDA integer only algorithm
       posy += accuY / _heightOut;
       accuY = accuY % _heightOut;
    } //end for y...
 
-  return(1);
+	return(1);
 }//end Scale.
+

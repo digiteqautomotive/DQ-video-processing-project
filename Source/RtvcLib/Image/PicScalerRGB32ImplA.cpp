@@ -24,7 +24,7 @@ All rights reserved.
 #include "PicScalerRGB32Impl.h"
 
 
-extern "C" void ScaleRowAsmRGB32(void *pDst, unsigned _widthOut, void **pSrcRows, unsigned _widthIn);
+extern "C" void ScaleRowAsmRGB32(void *pDst, unsigned _widthOut, void * const* pSrcRows, unsigned _widthIn);
 
 /*
 ===========================================================================
@@ -38,12 +38,12 @@ memory size checking is done and is delegated to the calling process.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
+int PicScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
   if((pOutImg == NULL) || (pInImg == NULL))
 	return(0);
 
-   unsigned char *pSrcRows[3];
+   const unsigned char *pSrcRows[3];
    unsigned char *pDst		= (unsigned char*)pOutImg;	
    int y, posy;
    int accuY;
@@ -52,11 +52,11 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, void* pInImg)
    y = labs(_heightOut);
    while(y-- > 0)
    {
-      pSrcRows[0] = (unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
-      pSrcRows[1] = (unsigned char*)pInImg + 4*_widthIn*posy;
-      pSrcRows[2] = (unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
+      pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
+      pSrcRows[1] = (const unsigned char*)pInImg + 4*_widthIn*posy;
+      pSrcRows[2] = (const unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
 
-      ScaleRowAsmRGB32(pDst, _widthOut, (void**)pSrcRows, _widthIn);
+      ScaleRowAsmRGB32(pDst, _widthOut, (void*const*)pSrcRows, _widthIn);
 		
       pDst += 4 * _widthOut;
       accuY += _heightIn;				// DDA integer only algorithm
