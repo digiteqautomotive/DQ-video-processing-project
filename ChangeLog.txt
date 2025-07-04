@@ -1,6 +1,6 @@
 
 - Removed all floating point operations per frame, use only integer with shifted decimal point
-- Rewritten Scale filter to assembly.
+- Rewritten Scale filter to assembly for x64 and Win32 platforms.
 - Updated 11 years old LGPL library life555
 
 ----------------------------- 2025/06/20 - RELEASE v1.3.0 -------------------------------------------------------------------------------------------------

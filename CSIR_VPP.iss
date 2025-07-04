@@ -210,11 +210,11 @@ Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YuvSource.dll\"""; Co
 
 
 [Icons]
-;Name: "{group}\{#MyAppName}"; Filename: "{app}\PATGUI.exe"
+;Name: "{group}\{#MyAppName}"; Filename: "{app}\xyzGUI.exe"
 ;Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 ;Name: "{group}\User Manual"; Filename: "{app}\doc\ANTAR-B2-CP-UMA-0001-NEX.pdf"
-;Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\PATGUI.exe "; Tasks: desktopicon\user
-;Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\PATGUI.exe "; Tasks: desktopicon\common
+;Name: "{userdesktop}\{#MyAppName}"; Filename: "{app}\xyzGUI.exe "; Tasks: desktopicon\user
+;Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\xyzGUI.exe "; Tasks: desktopicon\common
 
 
 [Registry]
