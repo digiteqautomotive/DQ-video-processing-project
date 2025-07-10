@@ -53,7 +53,7 @@ memory size checking is done and is delegated to the calling process.
 */
 int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 {
-	if( (pOutImg == NULL) || (pInImg == NULL) )
+	if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
 		return(0);
 
 	const unsigned char* pSrc	= (const unsigned char*)pInImg;
@@ -62,7 +62,8 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 	int x, y, posx, posy, i;
         int accuY, accuX;
 
-        accuY = posy = 0;
+        accuY = _heightIn / 2;
+        posy = 0;
 	y = labs(_heightOut);
         while(y-- > 0)	
 	{
@@ -71,7 +72,8 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 			3*_widthIn*posy,
 			((posy+1>=_heightIn) ? (3*_widthIn*(_heightIn-1)) : (3*_widthIn*(posy+1)))};
 
-		accuX = posx = 0;
+		accuX = _widthIn / 2;
+                posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
 			/// Apply a weighted 3x3 FIR filter.

@@ -113,7 +113,7 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 			} //end for i...
 
 			/// Round before scaling.
-			//int ao = (y*_widthOut*4) + (x*4);
+			//pDst = (unsigned char*)pOutImg + (y*_widthOut*4) + (x*4);
 			pDst[0]	= (unsigned char)(b >> 4);
 			pDst[1]	= (unsigned char)(g >> 4);
 			pDst[2]	= (unsigned char)(r >> 4);

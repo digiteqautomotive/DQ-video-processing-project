@@ -153,20 +153,21 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     //Now we need to calculate the size of the output image
     BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
 
-    // Set height
+	// Set height
     pBi->biHeight = m_nOutHeight;
-    if(pBi->biHeight <= 0) return E_INVALIDARG;
+    if(pBi->biHeight == 0) return E_INVALIDARG;
 
-    // Set width
+	// Set width
     pBi->biWidth = m_nOutWidth;
     if(pBi->biWidth <= 0) return E_INVALIDARG;
-    // Set size
+
+	// Set size
     if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
-        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * (BITS_PER_PIXEL_RGB32 / 8);
+        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P)
-        pBi->biSizeImage = (pBi->biWidth * pBi->biHeight * BITS_PER_PIXEL_YUV420P) / 8;
+        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
     else
-        pBi->biSizeImage = pBi->biWidth * pBi->biHeight * (BITS_PER_PIXEL_RGB24 / 8);
+        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
     pMediaType->lSampleSize = pBi->biSizeImage;
 
     // Adjust recs
@@ -289,7 +290,7 @@ HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lA
   m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
   int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn);
   ASSERT(res == 1);
-  lOutActualDataLength = (m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
+  lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
   return S_OK;
 }
 

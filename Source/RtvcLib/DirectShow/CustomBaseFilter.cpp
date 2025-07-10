@@ -95,7 +95,7 @@ HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
 			//Set these values now so we don't have to repeat it for each transform
 			m_nInHeight = abs(m_videoInHeader.bmiHeader.biHeight);
 			m_nInWidth = m_videoInHeader.bmiHeader.biWidth;
-			m_nInPixels = m_nInHeight * m_nInWidth;
+			m_nInPixels = abs(m_nInHeight * m_nInWidth);
 			m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
 		}
     else if (pmt->formattype == FORMAT_VideoInfo2)

@@ -574,7 +574,7 @@ LastColumn0:
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
 	shr	ax,4
-	mov	[rdi+2],al
+	mov	[rdi],al
 
 		; G compound
 	inc	rsi
@@ -614,7 +614,7 @@ LastColumn0:
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
 	shr	ax,4
-	mov	[rdi],al
+	mov	[rdi+2],al
 	add	rdi,3
 
 		; DDA integer only algorithm

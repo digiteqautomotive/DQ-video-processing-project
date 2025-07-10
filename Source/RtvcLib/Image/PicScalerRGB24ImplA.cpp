@@ -40,7 +40,7 @@ memory size checking is done and is delegated to the calling process.
 */
 int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 {
-  if((pOutImg == NULL) || (pInImg == NULL))
+  if(pOutImg == NULL || pInImg == NULL || _heightIn==0)
 	return(0);
 
    const unsigned char *pSrcRows[3];

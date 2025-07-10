@@ -87,6 +87,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stereo2MonoFilter", "Direct
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1} = {382B7FFF-3C67-4370-8D39-2FB7FD1693E1}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestImage", "RtvcLib\TestImage.vcxproj", "{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{00930375-8B79-4D36-9B1F-E45D3EAC51A0} = {00930375-8B79-4D36-9B1F-E45D3EAC51A0}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -294,6 +299,14 @@ Global
 		{5E76AEF2-B927-4398-AF79-8228B8C496BE}.Release|Win32.Build.0 = Release|Win32
 		{5E76AEF2-B927-4398-AF79-8228B8C496BE}.Release|x64.ActiveCfg = Release|x64
 		{5E76AEF2-B927-4398-AF79-8228B8C496BE}.Release|x64.Build.0 = Release|x64
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Debug|Win32.Build.0 = Debug|Win32
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Debug|x64.ActiveCfg = Debug|x64
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Debug|x64.Build.0 = Debug|x64
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Release|Win32.ActiveCfg = Release|Win32
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Release|Win32.Build.0 = Release|Win32
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Release|x64.ActiveCfg = Release|x64
+		{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

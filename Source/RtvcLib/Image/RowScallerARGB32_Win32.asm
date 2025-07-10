@@ -39,7 +39,7 @@ local	RestDDA: DWORD
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
 	jz	toend
-	mov	ecx,[ebx+8]
+	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
 	jz	toend
 
@@ -48,7 +48,7 @@ local	RestDDA: DWORD
 	jz	toend
 	dec	eax
 	shl	eax,2		; 4*with_in
-	add	eax,[ecx]	; END PTR
+	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
 
 	xor	edx,edx
@@ -320,7 +320,7 @@ local	RestDDA: DWORD
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
 	jz	toend
-	mov	ecx,[ebx+8]
+	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
 	jz	toend
 
@@ -329,7 +329,7 @@ local	RestDDA: DWORD
 	jz	toend
 	dec	eax
 	shl	eax,2		; 4*with_in
-	add	eax,[ecx]	; END PTR
+	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
 
 	xor	edx,edx
@@ -569,7 +569,7 @@ local	RestDDA: DWORD
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
 	jz	toend
-	mov	ecx,[ebx+8]
+	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
 	jz	toend
 
@@ -578,7 +578,7 @@ local	RestDDA: DWORD
 	jz	toend
 	dec	eax
 	shl	eax,2		; 4*with_in
-	add	eax,[ecx]	; END PTR
+	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
 
 	xor	edx,edx
