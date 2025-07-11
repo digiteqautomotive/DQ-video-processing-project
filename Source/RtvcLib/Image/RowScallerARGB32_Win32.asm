@@ -51,7 +51,9 @@ local	RestDDA: DWORD
 	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
 
-	xor	edx,edx
+	mov	eax,-1
+	jmp	CorrectionDDA0
+
 LoopPix0:
 	mov	RestDDA,edx
 
@@ -64,7 +66,7 @@ LoopPix0:
 	sub	OutCouter,1
 	jc	toend			; <0
 	cmp	StopPtr,edx
-	jge	LastColumn0
+	jle	LastColumn0
 	mov	esi,4
 LastColumn0:
 			; R compound
@@ -82,6 +84,8 @@ LastColumn0:
 	add	al, byte ptr[ecx+esi]
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -103,6 +107,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
@@ -122,6 +128,8 @@ LastColumn0:
 	add	al, byte ptr[ecx+esi]
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0	
 	shr	ax,4
 	stosb
@@ -143,18 +151,25 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
 		; DDA integer only algorithm
 	mov	eax,RestDDA
+CorrectionDDA0:
 	add	eax,_widthIn		;accuX += _widthIn;	
 	xor	edx,edx
 	div	_widthOut		;posx += accuX / _widthOut;
 		;edx already set	accuX = accuX % _widthOut;
 	or	eax,eax			; zet Z flag
 	jz	LoopPix0
+
 	dec	eax
+	mov	ebx,StopPtr
+	sub	ebx,4
+	mov	StopPtr,ebx
 	jmp	Col1andUp
 
 
@@ -176,7 +191,7 @@ LoopCol1:
 
 	mov	esi,4
 	cmp	StopPtr,edx
-	jge	LastColumn
+	jle	LastColumn
 	mov	esi,8
 LastColumn:
 		; R compound
@@ -197,6 +212,8 @@ LastColumn:
 	add	al, byte ptr[ecx+esi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -221,6 +238,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
@@ -243,6 +262,8 @@ LastColumn:
 	add	al, byte ptr[ecx+esi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0	
 	shr	ax,4
 	stosb
@@ -266,6 +287,8 @@ LastColumn:
 	add	al, byte ptr[ecx+esi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -326,13 +349,15 @@ local	RestDDA: DWORD
 
 	mov	eax,_widthIn
 	or	eax,eax
-	jz	toend
+	jz	toend	
 	dec	eax
 	shl	eax,2		; 4*with_in
 	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
 
-	xor	edx,edx
+	mov	eax,-1
+	jmp	CorrectionDDA0
+
 LoopPix0:
 	mov	RestDDA,edx
 
@@ -345,7 +370,7 @@ LoopPix0:
 	sub	OutCouter,1
 	jc	toend			; <0
 	cmp	StopPtr,edx
-	jge	LastColumn0
+	jle	LastColumn0
 	mov	esi,4
 LastColumn0:
 			; R compound
@@ -363,6 +388,8 @@ LastColumn0:
 	add	al, byte ptr[ecx+esi]
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -384,6 +411,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
@@ -403,7 +432,9 @@ LastColumn0:
 	add	al, byte ptr[ecx+esi]
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
-	adc	ah,0	
+	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
@@ -413,6 +444,7 @@ LastColumn0:
 
 		; DDA integer only algorithm
 	mov	eax,RestDDA
+CorrectionDDA0:
 	add	eax,_widthIn		;accuX += _widthIn;	
 	xor	edx,edx
 	div	_widthOut		;posx += accuX / _widthOut;
@@ -420,6 +452,10 @@ LastColumn0:
 	or	eax,eax			; zet Z flag
 	jz	LoopPix0
 	dec	eax
+
+	mov	ebx,StopPtr
+	sub	ebx,4
+	mov	StopPtr,ebx
 	jmp	Col1andUp
 
 
@@ -439,9 +475,9 @@ LoopCol1:
 	mov	[ebx],eax
 	mov	ebx,eax
 
-	mov	esi,4
+	mov	esi,4	
 	cmp	StopPtr,edx
-	jge	LastColumn
+	jle	LastColumn
 	mov	esi,8
 LastColumn:
 		; R compound
@@ -462,6 +498,8 @@ LastColumn:
 	add	al, byte ptr[ecx+esi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -486,6 +524,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
@@ -508,6 +548,8 @@ LastColumn:
 	add	al, byte ptr[ecx+esi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0	
 	shr	ax,4
 	stosb
@@ -577,11 +619,14 @@ local	RestDDA: DWORD
 	or	eax,eax
 	jz	toend
 	dec	eax
-	shl	eax,2		; 4*with_in
+	mov	edx,3		; 4*with_in
+	mul	edx
 	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
 
-	xor	edx,edx
+	mov	eax,-1
+	jmp	CorrectionDDA0
+
 LoopPix0:
 	mov	RestDDA,edx
 
@@ -594,7 +639,7 @@ LoopPix0:
 	sub	OutCouter,1
 	jc	toend			; <0
 	cmp	StopPtr,edx
-	jge	LastColumn0
+	jle	LastColumn0
 	mov	esi,3
 LastColumn0:
 			; R compound
@@ -612,6 +657,8 @@ LastColumn0:
 	add	al, byte ptr[ecx+esi]
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -633,6 +680,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0	
 	shr	ax,4
 	stosb
 
@@ -652,12 +701,15 @@ LastColumn0:
 	add	al, byte ptr[ecx+esi]
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
-	adc	ah,0	
+	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0		
 	shr	ax,4
 	stosb
 
 		; DDA integer only algorithm
 	mov	eax,RestDDA
+CorrectionDDA0:
 	add	eax,_widthIn		;accuX += _widthIn;	
 	xor	edx,edx
 	div	_widthOut		;posx += accuX / _widthOut;
@@ -665,6 +717,10 @@ LastColumn0:
 	or	eax,eax			; zet Z flag
 	jz	LoopPix0
 	dec	eax
+
+	mov	ebx,StopPtr
+	sub	ebx,3
+	mov	StopPtr,ebx
 	jmp	Col1andUp
 
 
@@ -686,7 +742,7 @@ LoopCol1:
 
 	mov	esi,3
 	cmp	StopPtr,edx
-	jge	LastColumn
+	jle	LastColumn
 	mov	esi,6
 LastColumn:
 		; R compound
@@ -708,6 +764,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0	
 	shr	ax,4
 	stosb
 
@@ -731,6 +789,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0	
 	shr	ax,4
 	stosb
 
@@ -753,7 +813,9 @@ LastColumn:
 	add	al, byte ptr[ecx+esi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
-	adc	ah,0	
+	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0		
 	shr	ax,4
 	stosb
 

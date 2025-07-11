@@ -53,7 +53,7 @@ memory size checking is done and is delegated to the calling process.
 */
 int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
-	if( (pOutImg == NULL) || (pInImg == NULL) )
+	if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
 		return(0);
 
 	const unsigned char*	pSrc	= (unsigned char*)pInImg;
@@ -62,18 +62,27 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 	int x,y,posx,posy,i;
         int accuX, accuY;
 
-	accuY = posy = 0;
-	y = labs(_heightOut);
+	accuY = -1;
+        posy = 0;
+	y = _heightOut;
         while(y-- > 0)	
 	{
+		accuY += _heightIn;				// DDA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;
+
 		const int pRow[3] = {						// Calculate row starts only once per row
 				((posy==0) ? 0 : (4*_widthIn*(posy-1))),
 				4*_widthIn*posy,
 				((posy+1>=_heightIn) ? (4*_widthIn*(_heightIn-1)) : (4*_widthIn*(posy+1))) };
 
-		accuX = posx = 0;
+		accuX = -1;
+		posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
+			accuX += _widthIn;			// DDA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
 
 			/// Apply a weighted 3x3 FIR filter.
 			unsigned b = 8;			// rounding offset +8
@@ -118,16 +127,8 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 			pDst[1]	= (unsigned char)(g >> 4);
 			pDst[2]	= (unsigned char)(r >> 4);
 			pDst[3]	= (unsigned char)(a >> 4);
-			pDst += 4;
-
-			accuX += _widthIn;			// DDA integer only algorithm
-			posx += accuX / _widthOut;
-			accuX = accuX % _widthOut;
-		} //end for x...
-		
-		accuY += _heightIn;				// DDA integer only algorithm
-                posy += accuY / _heightOut;
-                accuY = accuY % _heightOut;
+			pDst += 4;			
+		} //end for x...		
 	} //end for y...
 
 	return(1);

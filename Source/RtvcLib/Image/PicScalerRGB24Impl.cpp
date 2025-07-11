@@ -62,20 +62,28 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 	int x, y, posx, posy, i;
         int accuY, accuX;
 
-        accuY = _heightIn / 2;
+        accuY = -1;
         posy = 0;
-	y = labs(_heightOut);
+	y = _heightOut;
         while(y-- > 0)	
 	{
+		accuY += _heightIn;				// DDA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;
+
 		const int pRow[3] = {						// Calculate row starts only once per row
 			((posy==0) ? 0 : (3*_widthIn*(posy-1))),
 			3*_widthIn*posy,
 			((posy+1>=_heightIn) ? (3*_widthIn*(_heightIn-1)) : (3*_widthIn*(posy+1)))};
 
-		accuX = _widthIn / 2;
+		accuX = -1;
                 posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
+			accuX += _widthIn;			// DDA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
+
 			/// Apply a weighted 3x3 FIR filter.
 			unsigned b = 8;			// rounding offset +8
 			unsigned g = 8;
@@ -114,15 +122,7 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 			pDst[1]	= (unsigned char)(g >> 4);
 			pDst[2]	= (unsigned char)(r >> 4);
 			pDst += 3;                      
-
-			accuX += _widthIn;			// DDA integer only algorithm
-			posx += accuX / _widthOut;
-			accuX = accuX % _widthOut;
-		} //end for x...
-
-		accuY += _heightIn;				// DDA integer only algorithm
-                posy += accuY / _heightOut;
-                accuY = accuY % _heightOut;
+		} //end for x...		
 	} //end for y...
 
 	return(1);

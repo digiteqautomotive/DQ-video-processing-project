@@ -27,7 +27,8 @@ ScaleRowAsmARGB32 proc \
 	or	R11,R11
 	jz	toend
 	mov	R12,rdx		; _widthOut
-	xor	rdx,rdx		; AccuX
+	or	rdx,rdx
+	jz	toend		; _widthOut==0
 
 	or	R8,R8
 	jz	toend
@@ -46,11 +47,14 @@ ScaleRowAsmARGB32 proc \
 	shl	R13,2		; 4*with_in
 	add	R13,R10		; END PTR
 
+	mov	rdx,-1		; AccuX
+	jmp	CorrectionDDA0
+
 LoopPix0:mov	rsi,0
 	sub	rcx,1
 	jc	toend			; <0
 	cmp	R13,R10
-	jge	LastColumn0
+	jle	LastColumn0
 	mov	rsi,4
 LastColumn0:
 			; R compound
@@ -68,6 +72,8 @@ LastColumn0:
 	add	al, byte ptr[R9+RSI]
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	mov	bl,al
@@ -89,6 +95,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	bh,al
 
@@ -108,6 +116,8 @@ LastColumn0:
 	add	al, byte ptr[R9+RSI]
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	rol	ebx,16
 	shr	ax,4
@@ -130,6 +140,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	bh,al
 
@@ -138,6 +150,7 @@ LastColumn0:
 	add	rdi,4
 
 		; DDA integer only algorithm
+CorrectionDDA0:
 	add	rdx,R11		;accuX += _widthIn;	
 	mov	rax,rdx
 	xor	rdx,rdx
@@ -146,6 +159,7 @@ LastColumn0:
 	or	rax,rax			; zet Z flag
 	jz	LoopPix0
 	dec	rax
+	sub	R13,4
 	jmp	Col1andUp
 	
 
@@ -154,7 +168,7 @@ LastColumn0:
 LoopCol1:
 	mov	rsi,4
 	cmp	R13,R10
-	jge	LastColumn
+	jle	LastColumn
 	mov	rsi,8
 LastColumn:
 			; R compound
@@ -175,6 +189,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	mov	bl,al
@@ -199,6 +215,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	bh,al
 
@@ -221,6 +239,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	rol	ebx,16
 	shr	ax,4
@@ -245,6 +265,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	mov	bh,al
@@ -296,7 +318,8 @@ ScaleRowAsmRGB32 proc \
 	or	R11,R11
 	jz	toend
 	mov	R12,rdx		; _widthOut
-	xor	rdx,rdx		; AccuX
+	or	rdx,rdx
+	jz	toend		; _widthOut==0
 
 	or	R8,R8
 	jz	toend
@@ -315,11 +338,14 @@ ScaleRowAsmRGB32 proc \
 	shl	R13,2		; 4*with_in
 	add	R13,R10		; END PTR
 
+	mov	rdx,-1		; AccuX
+	jmp	CorrectionDDA0
+
 LoopPix0:mov	rsi,0
 	sub	rcx,1
 	jc	toend			; <0
 	cmp	R13,R10
-	jge	LastColumn0
+	jle	LastColumn0
 	mov	rsi,4
 LastColumn0:
 			; R compound
@@ -337,6 +363,8 @@ LastColumn0:
 	add	al, byte ptr[R9+RSI]
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	mov	bl,al
@@ -358,6 +386,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	bh,al
 
@@ -378,6 +408,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	rol	ebx,16
 	shr	ax,4
 	mov	bl,al
@@ -390,7 +422,7 @@ LastColumn0:
 	mov	[rdi], ebx
 	add	rdi,4
 
-		; DDA integer only algorithm
+CorrectionDDA0:		; DDA integer only algorithm
 	add	rdx,R11		;accuX += _widthIn;	
 	mov	rax,rdx
 	xor	rdx,rdx
@@ -399,6 +431,7 @@ LastColumn0:
 	or	rax,rax			; zet Z flag
 	jz	LoopPix0
 	dec	rax
+	sub	R13,4
 	jmp	Col1andUp
 	
 
@@ -407,7 +440,7 @@ LastColumn0:
 LoopCol1:
 	mov	rsi,4
 	cmp	R13,R10
-	jge	LastColumn
+	jle	LastColumn
 	mov	rsi,8
 LastColumn:
 			; R compound
@@ -428,6 +461,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	mov	bl,al
@@ -452,6 +487,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	bh,al
 
@@ -474,6 +511,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	rol	ebx,16
 	shr	ax,4
@@ -530,7 +569,8 @@ ScaleRowAsmRGB24 proc \
 	or	R11,R11
 	jz	toend
 	mov	R12,rdx		; _widthOut
-	xor	rdx,rdx		; AccuX
+	or	rdx,rdx
+	jz	toend		; _widthOut==0
 
 	or	R8,R8
 	jz	toend
@@ -550,11 +590,15 @@ ScaleRowAsmRGB24 proc \
 	add	rax,R10
 	mov	R13,rax		; END PTR
 
+	mov	rdx,-1		; AccuX
+	jmp	CorrectionDDA0
+
+
 LoopPix0:mov	rsi,0
 	sub	rcx,1
 	jc	toend			; <0
 	cmp	R13,R10
-	jge	LastColumn0
+	jle	LastColumn0
 	mov	rsi,3
 LastColumn0:
 			; R compound
@@ -572,6 +616,8 @@ LastColumn0:
 	add	al, byte ptr[R9+RSI]
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	mov	[rdi],al
@@ -593,6 +639,8 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	[rdi+1],al
 
@@ -613,11 +661,13 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	mov	[rdi+2],al
 	add	rdi,3
 
-		; DDA integer only algorithm
+CorrectionDDA0:		; DDA integer only algorithm
 	add	rdx,R11		;accuX += _widthIn;	
 	mov	rax,rdx
 	xor	rdx,rdx
@@ -626,6 +676,7 @@ LastColumn0:
 	or	rax,rax			; zet Z flag
 	jz	LoopPix0
 	dec	rax
+	sub	R13,3
 	jmp	Col1andUp
 	
 
@@ -634,7 +685,7 @@ LastColumn0:
 LoopCol1:
 	mov	rsi,3
 	cmp	R13,R10
-	jge	LastColumn
+	jle	LastColumn
 	mov	rsi,6
 LastColumn:
 			; R compound
@@ -655,6 +706,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0
 	shr	ax,4
 	stosb
@@ -679,6 +732,8 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
 	adc	ah,0
+	add	al,8			; rounding correction
+	adc	ah,0
 	shr	ax,4
 	stosb
 
@@ -701,6 +756,8 @@ LastColumn:
 	add	al, byte ptr[R9+rsi]	; right middle point
 	adc	ah,0
 	add	al, byte ptr[R10+rsi]	; right bottom point
+	adc	ah,0
+	add	al,8			; rounding correction
 	adc	ah,0	
 	shr	ax,4
 	stosb

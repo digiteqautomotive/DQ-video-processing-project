@@ -3,8 +3,8 @@
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.3.1"
-#define MyAppVersion GetFileVersion(MyAppPath)
+#define MyAppVersion "1.3.2"
+;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
 #define MyAppURL "http://videoprocessing.sourceforge.net/"
 
@@ -28,7 +28,7 @@ DefaultDirName={pf}\{#MyAppName}
 UsePreviousAppDir=yes
 DefaultGroupName={#MyAppName}
 OutputDir=output_file
-OutputBaseFilename=CSIR_VPP_DshowFiltersInstaller
+OutputBaseFilename=CSIR_VPP_DshowFiltersInstaller-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 Uninstallable=yes

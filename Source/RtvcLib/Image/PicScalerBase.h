@@ -61,7 +61,7 @@ public:
 	// Construction and destruction.
 	PicScalerBase(void) {_widthOut = 1; _heightOut = 1; _widthIn = 1; _heightIn = 1; }
 	PicScalerBase(int widthOut, int heightOut, int widthIn, int heightIn) 
-	{	_widthOut = widthOut; _heightOut = heightOut; _widthIn = widthIn; _heightIn = heightIn; }
+	  {_widthOut = labs(widthOut); _heightOut = labs(heightOut); _widthIn = labs(widthIn); _heightIn = labs(heightIn);}
 	virtual ~PicScalerBase(void) {}
 
 	// Interface.
@@ -69,18 +69,18 @@ public:
 
 	// Member interface.
 	int	GetOutWidth(void)		{ return(_widthOut); }
-	int	GetOutHeight(void)	{ return(_heightOut); }
+	int	GetOutHeight(void)		{ return(_heightOut); }
 	int	GetInWidth(void)		{ return(_widthIn); }
 	int	GetInHeight(void)		{ return(_heightIn); }
   
-	void SetOutDimensions(int widthOut, int heightOut)	{_widthOut = widthOut; _heightOut = heightOut; }
-	void SetInDimensions(int widthIn, int heightIn)			{_widthIn = widthIn; _heightIn = heightIn; }
+	void SetOutDimensions(int widthOut, int heightOut)	{_widthOut = labs(widthOut); _heightOut = labs(heightOut); }
+	void SetInDimensions(int widthIn, int heightIn)		{_widthIn = labs(widthIn); _heightIn = labs(heightIn); }
 
 // Private methods.
 protected:
 	// Members.
-	int	_widthOut;	/// Image dimensions to fit to.
-	int	_heightOut;
+	int _widthOut;		/// Image dimensions to fit to.
+	int _heightOut;
 	int _widthIn;		/// Image dimensions to scale from.
 	int _heightIn;
 

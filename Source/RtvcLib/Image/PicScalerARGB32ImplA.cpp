@@ -40,28 +40,30 @@ memory size checking is done and is delegated to the calling process.
 */
 int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
-  if(pOutImg == NULL || pInImg == NULL || _heightIn==0)
-	return(0);
+  if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
+		return(0);
 
    const unsigned char *pSrcRows[3];
    unsigned char *pDst		= (unsigned char*)pOutImg;	
    int y, posy;
    int accuY;
 
-   accuY = posy = 0;
-   y = labs(_heightOut);
+   accuY = -1;
+   posy = 0;
+   y = _heightOut;
    while(y-- > 0)
    {
+      accuY += _heightIn;				// DDA integer only algorithm
+      posy += accuY / _heightOut;
+      accuY = accuY % _heightOut;
+
       pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
       pSrcRows[1] = (const unsigned char*)pInImg + 4*_widthIn*posy;
       pSrcRows[2] = (const unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
 
       ScaleRowAsmARGB32(pDst, _widthOut, (void**)pSrcRows, _widthIn);
 		
-      pDst += 4 * _widthOut;
-      accuY += _heightIn;				// DDA integer only algorithm
-      posy += accuY / _heightOut;
-      accuY = accuY % _heightOut;
+      pDst += 4 * _widthOut;      
    } //end for y...
 
   return(1);

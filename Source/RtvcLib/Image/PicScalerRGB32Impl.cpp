@@ -35,7 +35,7 @@ memory size checking is done and is delegated to the calling process.
 */
 int PicScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
-	if( (pOutImg == NULL) || (pInImg == NULL) )
+	if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
 		return(0);
 
 	const unsigned char*	pSrc	= (const unsigned char*)pInImg;
@@ -44,22 +44,32 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 	int x, y, posx, posy, i;
         int accuX, accuY;
 
-	accuY = posy = 0;
-	y = labs(_heightOut);
+	accuY = -1;
+        posy = 0;
+	y = _heightOut;
         while(y-- > 0)
 	{
+		accuY += _heightIn;				// DDA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;
+
 		const int pRow[3] = {						// Calculate row starts only once per row
 				((posy==0) ? 0 : (4*_widthIn*(posy-1))),
 				4*_widthIn*posy,
 				((posy+1>=_heightIn) ? (4*_widthIn*(_heightIn-1)) : (4*_widthIn*(posy+1))) };
 
-		accuX = posx = 0;
+		accuX = -1;
+		posx = 0;
 		for(x = 0; x < _widthOut; x++)
 		{
 			/// Apply a weighted 3x3 FIR filter.
 			unsigned b = 8;			// rounding offset +8
 			unsigned g = 8;
 			unsigned r = 8;
+
+			accuX += _widthIn;			// DDA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
 
 			for(i = 0; i <= 2; i++)
 			{				
@@ -96,15 +106,7 @@ int PicScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 			pDst[2] = (unsigned char)(r >> 4);
 			pDst[3] = *(pSrc + (pRow[1]+posx*4+3));		// 'a' compound is unused. (unsigned char)((a + 8) >> 4);
 			pDst += 4;
-
-			accuX += _widthIn;			// DDA integer only algorithm
-			posx += accuX / _widthOut;
-			accuX = accuX % _widthOut;
 		} //end for x...
-		
-		accuY += _heightIn;				// DDA integer only algorithm
-                posy += accuY / _heightOut;
-                accuY = accuY % _heightOut;
 	} //end for y...
 
 	return(1);
