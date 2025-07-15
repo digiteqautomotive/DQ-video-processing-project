@@ -85,8 +85,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -107,8 +106,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -129,8 +127,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -151,8 +148,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -213,8 +209,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -238,8 +233,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -263,8 +257,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -288,8 +281,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -389,8 +381,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -411,8 +402,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -433,8 +423,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -499,8 +488,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -524,8 +512,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -549,8 +536,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -658,8 +644,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -680,8 +665,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -702,8 +686,7 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0		
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -764,8 +747,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -789,8 +771,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -814,8 +795,7 @@ LastColumn:
 	adc	ah,0
 	add	al, byte ptr[edx+esi]	; right bottom point
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0		
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 

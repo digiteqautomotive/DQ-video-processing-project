@@ -1,4 +1,10 @@
 
+----------------------------- 2025/07/11 - RELEASE v1.3.2 -------------------------------------------------------------------------------------------------
+
+- Added unit tests for scale RGB32, ARGB32, RGB24 video formats
+- Tested scale filter for nagative height
+
+----------------------------- 2025/06/30 - RELEASE v1.3.1 -------------------------------------------------------------------------------------------------
 - Removed all floating point operations per frame, use only integer with shifted decimal point
 - Rewritten Scale filter to assembly for x64 and Win32 platforms.
 - Updated 11 years old LGPL library life555

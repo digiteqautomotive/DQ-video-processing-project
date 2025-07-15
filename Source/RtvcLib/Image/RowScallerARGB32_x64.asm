@@ -60,94 +60,86 @@ LastColumn0:
 			; R compound
 	movzx	ax, byte ptr[R9]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10]	; left bottom point
-	adc	ah,0
+	movzx	bx, byte ptr[R8]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	shr	ax,4
-	mov	bl,al
+	mov	bl, byte ptr[R9]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
+	ror	rax,12
 
 		; G compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+1]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+1]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+1]	; left bottom point
-	adc	ah,0
+	mov	bl, byte ptr[R8+1]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+1]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+1]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R9+1]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bh,al
+	ror	rax,8
 
 		; B compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+2]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+2]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+2]	; left bottom point
-	adc	ah,0
+	mov	bl, byte ptr[R8+2]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+2]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+2]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	rol	ebx,16
+	mov	bl, byte ptr[R9+2]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bl,al
+	ror	rax,8
 
 		; A compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+3]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+3]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+3]	; left bottom point
-	adc	ah,0
+	mov	bl, byte ptr[R8+3]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+3]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+3]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R9+3]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bh,al
 
-	rol	ebx,16
-	mov	[rdi], ebx
-	add	rdi,4
+	rol	rax,24
+	stosd
 
 		; DDA integer only algorithm
 CorrectionDDA0:
@@ -174,107 +166,98 @@ LastColumn:
 			; R compound
 	movzx	ax, byte ptr[R9+4]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+4]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+4]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	shr	ax,4
-	mov	bl,al
+	movzx	bx, byte ptr[R8]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+4]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+4]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
+	ror	rax,12
 
 		; G compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+5]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+1]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+1]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+1]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+5]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+5]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R8+1]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+1]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+1]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+5]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+5]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bh,al
+	ror	rax,8
 
 		; B compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+6]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+2]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+2]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+2]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+6]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+6]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	rol	ebx,16
+	mov	bl, byte ptr[R8+2]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+2]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+2]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+6]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+6]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bl,al
+	ror	rax,8
 
 		; A compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+7]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+3]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+3]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+3]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+7]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+7]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R8+3]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+3]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+3]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+7]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+7]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bh,al
+	rol	rax,24
 	
-	rol	ebx,16
-	mov	[rdi], ebx
-	add	rdi,4
-
+	stosd
 			; DDA integer only algorithm
 	add	rdx,R11		;accuX += _widthIn;	
 	mov	rax,rdx
@@ -351,23 +334,21 @@ LastColumn0:
 			; R compound
 	movzx	ax, byte ptr[R9]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10]	; left bottom point
-	adc	ah,0
+	movzx	bx, byte ptr[R8]	; left top point
+	add	ax,bx
+	movzx	bx, byte ptr[R10]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	shr	ax,4
-	mov	bl,al
+	movzx	bx, byte ptr[R9]	; left middle point
+	add	ax,bx
+	movzx	bx, byte ptr[R8+RSI]
+	add	ax,bx
+	movzx	bx, byte ptr[R9+RSI]
+	add	ax,bx
+	movzx	bx, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
+	shl	eax,20			; Rxxx
 
 		; G compound
 	inc	rsi
@@ -386,10 +367,9 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bh,al
+	ror	eax,8			; GRxx
 
 		; B compound
 	inc	rsi
@@ -408,19 +388,15 @@ LastColumn0:
 	adc	ah,0
 	add	al, byte ptr[R10+RSI]
 	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	rol	ebx,16
-	shr	ax,4
-	mov	bl,al
+	add	ax,8			; rounding correction
+	shr	ax,4			; GRxB
 
 		; A compound ... missing in RGB32
-	mov	al, byte ptr[R9+3]	; center point
-	mov	bh, al
+	mov	bl, byte ptr[R9+3]	; center point
+	mov	ah, bl
 
-	rol	ebx,16
-	mov	[rdi], ebx
-	add	rdi,4
+	rol	eax,16			; ABGR
+	stosd
 
 CorrectionDDA0:		; DDA integer only algorithm
 	add	rdx,R11		;accuX += _widthIn;	
@@ -446,85 +422,78 @@ LastColumn:
 			; R compound
 	movzx	ax, byte ptr[R9+4]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+4]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+4]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	shr	ax,4
-	mov	bl,al
+	movzx	bx, byte ptr[R8]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+4]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+4]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
+	shl	eax,20			; Rxxx
 
 		; G compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+5]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+1]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+1]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+1]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+5]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+5]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R8+1]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+1]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+1]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+5]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+5]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
-	mov	bh,al
+	ror	eax,8			; GRxx
 
 		; B compound
 	inc	rsi
 	movzx	ax, byte ptr[R9+6]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+2]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+2]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+2]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+6]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+6]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
-	rol	ebx,16
-	shr	ax,4
-	mov	bl,al
+	mov	bl, byte ptr[R8+2]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+2]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+2]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+6]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+6]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
+	shr	ax,4			; GRxB
 
 		; A compound ... missing in RGB32
-	mov	al, byte ptr[R9+7]
-	mov	bh, al
+	mov	bl, byte ptr[R9+7]	; GRAB
+	mov	ah,bl
 	
-	rol	ebx,16
-	mov	[rdi], ebx
-	add	rdi,4
+	rol	eax,16			; ABGR
+	stosd
 
 			; DDA integer only algorithm
 	add	rdx,R11		;accuX += _widthIn;	
@@ -604,21 +573,20 @@ LastColumn0:
 			; R compound
 	movzx	ax, byte ptr[R9]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10]	; left bottom point
-	adc	ah,0
+	movzx	bx, byte ptr[R8]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R9]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
 	mov	[rdi],al
 
@@ -626,21 +594,20 @@ LastColumn0:
 	inc	rsi
 	movzx	ax, byte ptr[R9+1]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+1]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+1]	; left bottom point
-	adc	ah,0
+	movzx	bx, byte ptr[R8+1]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+1]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+1]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R9+1]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
 	mov	[rdi+1],al
 
@@ -648,21 +615,20 @@ LastColumn0:
 	inc	rsi
 	movzx	ax, byte ptr[R9+2]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+2]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+2]	; left bottom point
-	adc	ah,0
+	movzx	bx, byte ptr[R8+2]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+2]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+2]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	mov	bl, byte ptr[R9+2]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
 	mov	[rdi+2],al
 	add	rdi,3
@@ -691,24 +657,23 @@ LastColumn:
 			; R compound
 	movzx	ax, byte ptr[R9+3]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+3]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+3]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	movzx	bx,byte ptr[R8]		; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+3]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+3]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -716,24 +681,23 @@ LastColumn:
 	inc	rsi
 	movzx	ax, byte ptr[R9+4]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+1]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+1]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+1]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+4]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+4]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0
+	movzx	bx, byte ptr[R8+1]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+1]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+1]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+4]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+4]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 
@@ -741,24 +705,23 @@ LastColumn:
 	inc	rsi
 	movzx	ax, byte ptr[R9+5]
 	shl	ax,3			; 4*center point
-	add	al, byte ptr[R8+2]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R9+2]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R10+2]	; left bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+5]	; middle top point
-	adc	ah,0
-	add	al, byte ptr[R10+5]	; middle bottom point
-	adc	ah,0
-	add	al, byte ptr[R8+rsi]	; right top point
-	adc	ah,0
-	add	al, byte ptr[R9+rsi]	; right middle point
-	adc	ah,0
-	add	al, byte ptr[R10+rsi]	; right bottom point
-	adc	ah,0
-	add	al,8			; rounding correction
-	adc	ah,0	
+	movzx	bx, byte ptr[R8+2]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+2]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+2]	; left bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+5]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+5]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R9+rsi]	; right middle point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx
+	add	ax,8			; rounding correction
 	shr	ax,4
 	stosb
 

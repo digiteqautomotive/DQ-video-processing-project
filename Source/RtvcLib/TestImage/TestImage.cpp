@@ -10,6 +10,9 @@
 #include "Image/PicScalerRGB32Impl.h"
 
 
+extern "C" unsigned long long GetTickCount_us(void);
+
+
 class OrigScalerRGB24Impl: public PicScalerBase
 {
 public:
@@ -98,7 +101,7 @@ public:
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
 
-};//end PicScalerRGB32Impl.
+}; //end PicScalerRGB32Impl.
 
 int OrigScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
@@ -259,10 +262,10 @@ int i;
     BlobIn[i] = i;
   }
 
-  for(int WithIn=0; WithIn<5; WithIn++)
-   for(int HeightIn=0; HeightIn<5; HeightIn++)
-    for(int WithOut=0; WithOut<5; WithOut++)
-     for(int HeightOut=0; HeightOut<5; HeightOut++)
+  for(int WithIn=0; WithIn<6; WithIn++)
+   for(int HeightIn=0; HeightIn<6; HeightIn++)
+    for(int WithOut=0; WithOut<6; WithOut++)
+     for(int HeightOut=0; HeightOut<6; HeightOut++)
      {
        {
          int InSize = 3 * WithIn * HeightIn;
@@ -342,6 +345,68 @@ int i;
   free(BlobIn);
   free(BlobOut);
   free(BlobTest);
+
+  BlobIn = (unsigned char *)malloc(1920*1080*4);
+  BlobOut = (unsigned char *)malloc(1920*1080*4);
+  BlobTest = NULL;
+
+  printf("\n\nBenchmarks:");
+  unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
+  {
+    PicScalerRGB24Impl picScalerRGB24(1920,1080,800,600);
+    DurationMin = ~0;
+    for(i=0; i<10; i++)
+    {
+      TimeStampB = GetTickCount_us();
+      picScalerRGB24.Scale(BlobOut,BlobIn);
+      TimeStampE = GetTickCount_us();
+      Duration = TimeStampE - TimeStampB;
+      if(DurationMin > Duration) DurationMin=Duration;
+    }
+    printf("\nScale RGB24 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+
+    PicScalerRGB32Impl picScalerRGB32(1920,1080,800,600);
+    DurationMin = ~0;
+    for(i=0; i<10; i++)
+    {
+      TimeStampB = GetTickCount_us();
+      picScalerRGB32.Scale(BlobOut,BlobIn);
+      TimeStampE = GetTickCount_us();
+      Duration = TimeStampE - TimeStampB;
+      if(DurationMin > Duration) DurationMin=Duration;
+    }
+    printf("\nScale RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+
+    PicScalerARGB32Impl picScalerARGB32(1920,1080,800,600);
+    DurationMin = ~0;
+    for(i=0; i<10; i++)
+    {
+      TimeStampB = GetTickCount_us();
+      picScalerARGB32.Scale(BlobOut,BlobIn);
+      TimeStampE = GetTickCount_us();
+      Duration = TimeStampE - TimeStampB;
+      if(DurationMin > Duration) DurationMin=Duration;
+    }
+    printf("\nScale ARGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+
+/*
+    OrigScalerRGB32Impl origScalerRGB32(1920,1080,800,600);
+    DurationMin = ~0;
+    for(i=0; i<10; i++)
+    {
+      TimeStampB = GetTickCount_us();
+      origScalerRGB32.Scale(BlobOut,BlobIn);
+      TimeStampE = GetTickCount_us();
+      Duration = TimeStampE - TimeStampB;
+      if(DurationMin > Duration) DurationMin=Duration;
+    }
+    printf("\nScale Orig RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+*/
+    
+  }
+
+  free(BlobIn);
+  free(BlobOut);
   return 0;
 
 ReturnErr:

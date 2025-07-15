@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\lib\GetTickCount_ms.c" />
     <ClCompile Include="..\..\..\..\Source\RtvcLib\TestImage\TestImage.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
