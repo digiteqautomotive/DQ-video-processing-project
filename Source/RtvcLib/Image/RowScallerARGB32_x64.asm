@@ -50,7 +50,7 @@ ScaleRowAsmARGB32 proc \
 	mov	rdx,-1		; AccuX
 	jmp	CorrectionDDA0
 
-LoopPix0:mov	rsi,0
+LoopPix0:xor	rsi,rsi
 	sub	rcx,1
 	jc	toend			; <0
 	cmp	R13,R10
@@ -324,7 +324,7 @@ ScaleRowAsmRGB32 proc \
 	mov	rdx,-1		; AccuX
 	jmp	CorrectionDDA0
 
-LoopPix0:mov	rsi,0
+LoopPix0:xor	rsi,rsi
 	sub	rcx,1
 	jc	toend			; <0
 	cmp	R13,R10
@@ -336,16 +336,16 @@ LastColumn0:
 	shl	ax,2			; 2*center point
 	movzx	bx, byte ptr[R8]	; left top point
 	add	ax,bx
-	movzx	bx, byte ptr[R10]	; left bottom point
+	mov	bl, byte ptr[R10]	; left bottom point
 	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	movzx	bx, byte ptr[R9]	; left middle point
+	mov	bl, byte ptr[R9]	; left middle point
 	add	ax,bx
-	movzx	bx, byte ptr[R8+RSI]
+	mov	bl, byte ptr[R8+RSI]
 	add	ax,bx
-	movzx	bx, byte ptr[R9+RSI]
+	mov	bl, byte ptr[R9+RSI]
 	add	ax,bx
-	movzx	bx, byte ptr[R10+RSI]
+	mov	bl, byte ptr[R10+RSI]
 	add	ax,bx
 	add	ax,8			; rounding correction
 	shl	eax,20			; Rxxx
@@ -354,19 +354,19 @@ LastColumn0:
 	inc	rsi
 	movzx	ax, byte ptr[R9+1]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+1]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+1]	; left bottom point
-	adc	ah,0
+	mov	bl, byte ptr[R8+1]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+1]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+1]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
+	mov	bl, byte ptr[R9+1]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
 	add	ax,8			; rounding correction
 	shr	ax,4
 	ror	eax,8			; GRxx
@@ -375,19 +375,19 @@ LastColumn0:
 	inc	rsi
 	movzx	ax, byte ptr[R9+2]
 	shl	ax,2			; 2*center point
-	add	al, byte ptr[R8+2]	; left top point
-	adc	ah,0
-	add	al, byte ptr[R10+2]	; left bottom point
-	adc	ah,0
+	mov	bl, byte ptr[R8+2]	; left top point
+	add	ax,bx
+	mov	bl, byte ptr[R10+2]	; left bottom point
+	add	ax,bx
 	shl	ax,1			; 4*center point + 2*(.....)
-	add	al, byte ptr[R9+2]	; left middle point
-	adc	ah,0
-	add	al, byte ptr[R8+RSI]
-	adc	ah,0
-	add	al, byte ptr[R9+RSI]
-	adc	ah,0
-	add	al, byte ptr[R10+RSI]
-	adc	ah,0
+	mov	bl, byte ptr[R9+2]	; left middle point
+	add	ax,bx
+	mov	bl, byte ptr[R8+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R9+RSI]
+	add	ax,bx
+	mov	bl, byte ptr[R10+RSI]
+	add	ax,bx
 	add	ax,8			; rounding correction
 	shr	ax,4			; GRxB
 
@@ -500,8 +500,8 @@ LastColumn:
 	mov	rax,rdx
 	xor	rdx,rdx
 	div	R12		;posx += accuX / _widthOut;
-	;rdx already set	accuX = accuX % _widthOut;
-	or	rax,rax			; zet Z flag
+	;			accuX = accuX % _widthOut;	rdx already set
+	or	rax,rax			; set Z flag
 	jz	NoIncSrc
 Col1andUp:
 	shl	rax,2		; *4
@@ -563,7 +563,7 @@ ScaleRowAsmRGB24 proc \
 	jmp	CorrectionDDA0
 
 
-LoopPix0:mov	rsi,0
+LoopPix0:xor	rsi,rsi
 	sub	rcx,1
 	jc	toend			; <0
 	cmp	R13,R10
