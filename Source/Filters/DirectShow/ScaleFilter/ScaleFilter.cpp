@@ -42,6 +42,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Image/PicScalerARGB32Impl.h>
 #include <Image/PicScalerYUV420PImpl.h>
 
+#ifdef USE_MMX
+#include <Image/PicScalerARGB32MMX.h>
+#endif
+#ifdef USE_SSE
+ #include <Image/PicScalerARGB32SSE.h>
+#endif
+
+
+extern "C" unsigned GetFeaturesCPU(void);
+
+
+unsigned char FeaturesCPU = 0x80;
+
+
 ScaleFilter::ScaleFilter()
   : CCustomBaseFilter(NAME("CSIR VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
@@ -98,6 +112,8 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
     //Determine whether we are connected to a RGB24 or 32 source
     if (pmt->majortype == MEDIATYPE_Video)
     {
+      if(FeaturesCPU == 0x80) FeaturesCPU=GetFeaturesCPU();
+
       //The scaler might already exist if the filter has been connected previously
       if(m_pScaler)
       {
@@ -111,12 +127,32 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32)
       {
-      	m_pScaler = new PicScalerRGB32Impl();
+#ifdef USE_SSE
+	if(FeaturesCPU & 2)
+	    m_pScaler = new PicScalerARGB32SSE();
+	else
+#endif
+#ifdef USE_MMX
+	if(FeaturesCPU & 1)
+	    m_pScaler = new PicScalerARGB32MMX();
+	else
+#endif
+      	    m_pScaler = new PicScalerRGB32Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_ARGB32)
       {
-      	m_pScaler = new PicScalerARGB32Impl();
+#ifdef USE_SSE
+	if(FeaturesCPU & 2)
+	    m_pScaler = new PicScalerARGB32SSE();
+	else
+#endif
+#ifdef USE_MMX
+	if(FeaturesCPU & 1)
+	    m_pScaler = new PicScalerARGB32MMX();
+	else
+#endif
+      	    m_pScaler = new PicScalerARGB32Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_YUV420P)

@@ -114,6 +114,12 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24ImplA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32MMX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32SSE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatBase.h">
@@ -230,6 +236,24 @@
       <Filter>Source Files</Filter>
     </MASM>
     <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerARGB32_Win32.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerMMX_Win32.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerMMX_x64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\ToolsCPU_Win32.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\ToolsCPU_x64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerSSE_x64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerSSE_Win32.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>

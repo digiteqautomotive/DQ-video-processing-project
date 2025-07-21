@@ -3,7 +3,7 @@
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.3.2"
+#define MyAppVersion "1.4.0"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
 #define MyAppURL "http://videoprocessing.sourceforge.net/"
@@ -256,6 +256,7 @@ const
   INSTALLSTATE_DEFAULT = 5;      // The product is installed for the current user.
 
   // Microsoft Visual C++ Redistributable Package is installed at "c:\WINDOWS\WinSxS\"
+  // https://qtechbabble.wordpress.com/2017/08/08/microsoft-visual-c-redistributables-msi-product-codes/
   VC_2005_REDIST_X86                  = '{A49F249F-0C91-497F-86DF-B2585E8E76B7}';
   VC_2005_REDIST_X64                  = '{6E8E85E8-CE4B-4FF5-91F7-04999C9FAE6A}';
   VC_2005_REDIST_IA64                 = '{03ED71EA-F531-4927-AABD-1C31BCE8E187}';
