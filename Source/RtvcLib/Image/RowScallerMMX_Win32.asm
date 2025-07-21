@@ -23,11 +23,9 @@ ScaleRowAsmARGB32MMX proc \
         _widthOut:DWORD, \
         pSrcRows:DWORD, \
         _widthIn:ptr byte
-local	OutCouter: DWORD
+local	OutCounter: DWORD
 local	StopPtr: DWORD
-local	RestDDA: DWORD
 
-	clc
 	mov	edi,pDst	; pDst edi=destination pointer
 	or	edi,edi
 	jz	toend		; NULL pointer test
@@ -35,27 +33,28 @@ local	RestDDA: DWORD
 	mov	eax,_widthOut
 	or	eax,eax
 	jz	toend
-	mov	OutCouter,eax
+	inc	eax
+	mov	OutCounter,eax
 
-	mov	ebx,pSrcRows
+	mov	edx,pSrcRows
+	or	edx,edx		; Zero array ptr must be tested first
+	jz	toend	
+	mov	ecx,[edx+4]	; Middle line
+	or	ecx,ecx
+	jz	toend
+	mov	esi,[edx+8]	; Bottom line - 3rd row pointer
+	or	esi,esi
+	jz	toend
+	mov	ebx,[edx]	; Top line
 	or	ebx,ebx
-	jz	toend
-	mov	ecx,[ebx]
-	or	ecx,ecx
-	jz	toend
-	mov	ecx,[ebx+4]
-	or	ecx,ecx
-	jz	toend
-	mov	ecx,[ebx+8]	; 3rd row pointer
-	or	ecx,ecx
 	jz	toend
 
 	mov	eax,_widthIn
 	or	eax,eax
 	jz	toend
 	dec	eax
-	shl	eax,2		; 4*with_in
-	add	eax,ecx		; END PTR
+	shl	eax,2		; 4*(with_in-1)
+	add	eax,esi		; END PTR
 	mov	StopPtr,EAX
 
 	pxor	mm0,mm0
@@ -67,15 +66,8 @@ local	RestDDA: DWORD
 	jmp	CorrectionDDA0
 
 LoopPix0:
-	mov	RestDDA,edx
-
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]		; Middle line
-	mov	edx,[ebx+8]		; Bottom line
-	mov	ebx,[ebx]		; Top line
-
-	sub	OutCouter,1
-	jc	toend			; <0
+	dec	OutCounter
+	jz	toend			; <0
 	
 	movd	mm1,dword ptr [ecx]	; 2*center point
 	punpcklbw mm1,mm0
@@ -86,14 +78,14 @@ LoopPix0:
 	punpcklbw mm2,mm0	
 	paddusw	mm1,mm2
 	
-	movd	mm2,dword ptr [edx]	; left bottom point
+	movd	mm2,dword ptr [esi]	; left bottom point
 	punpcklbw mm2,mm0
 	paddusw	mm1,mm2
 	psllw	mm1,1
 	
-	paddusw	mm1,mm3			; left middle point
+	paddusw	mm1,mm3			; left middle point same as center point
 
-	cmp	StopPtr,edx
+	cmp	StopPtr,esi
 	jle	LastColumn0
 	
 	movd	mm2,dword ptr [ebx+4]
@@ -104,7 +96,7 @@ LoopPix0:
 	punpcklbw mm2,mm0
 	paddusw	mm1,mm2
 	
-	movd	mm2,dword ptr [edx+4]	
+	movd	mm2,dword ptr [esi+4]	
 	jmp	AddCorrection0
 
 LastColumn0:
@@ -116,7 +108,7 @@ LastColumn0:
 	punpcklbw mm2,mm0
 	paddusw	mm1,mm2
 	
-	movd	mm2,dword ptr [edx]	
+	movd	mm2,dword ptr [esi]	
 
 AddCorrection0:
 	punpcklbw mm2,mm0
@@ -131,7 +123,7 @@ AddCorrection0:
 	add	edi,4	
 
 		; DDA integer only algorithm
-	mov	eax,RestDDA
+	mov	eax,edx			;RestDDA
 CorrectionDDA0:
 	add	eax,_widthIn		;accuX += _widthIn;	
 	xor	edx,edx
@@ -141,27 +133,17 @@ CorrectionDDA0:
 	jz	LoopPix0
 
 	dec	eax
-	mov	ebx,StopPtr
-	sub	ebx,4
-	mov	StopPtr,ebx
+	sub	StopPtr,4
 	jmp	Col1andUp
 
 
 ;-----------------------------------------------------------------
 	; Pixel No 0 processed
 LoopCol1:
-	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]
+	add	ebx,eax
 	add	ecx,eax
-	mov	[ebx+4],ecx
-	mov	edx,[ebx+8]
-	add	edx,eax
-	mov	[ebx+8],edx
-	add	eax,[ebx]
-	mov	[ebx],eax
-	mov	ebx,eax
+	add	esi,eax
 
 	movd	mm1,dword ptr [ecx+4]	; 2*center point
 	punpcklbw mm1,mm0
@@ -175,7 +157,7 @@ LoopCol1:
 	punpcklbw mm2,mm0	
 	paddusw	mm1,mm2
 
-	movd	mm2,dword ptr [edx]	; left bottom point
+	movd	mm2,dword ptr [esi]	; left bottom point
 	punpcklbw mm2,mm0	
 	paddusw	mm1,mm2
 
@@ -183,11 +165,11 @@ LoopCol1:
 	punpcklbw mm2,mm0	
 	paddusw	mm1,mm2
 
-	movd	mm2,dword ptr [edx+4]	; middle bottom point
+	movd	mm2,dword ptr [esi+4]	; middle bottom point
 	punpcklbw mm2,mm0	
 	paddusw	mm1,mm2
 
-	cmp	StopPtr,edx
+	cmp	StopPtr,esi
 	jle	LastColumn
 	
 	movd	mm2,dword ptr [ebx+8]	; right top point
@@ -198,7 +180,7 @@ LoopCol1:
 	punpcklbw mm2,mm0
 	paddusw	mm1,mm2
 	
-	movd	mm2,dword ptr [edx+8] ; right bottom point
+	movd	mm2,dword ptr [esi+8] ; right bottom point
 	jmp	AddCorrection
 
 LastColumn:
@@ -210,7 +192,7 @@ LastColumn:
 	punpcklbw mm2,mm0
 	paddusw	mm1,mm2
 	
-	movd	mm2,dword ptr [edx+4] ; right bottom point
+	movd	mm2,dword ptr [esi+4] ; right bottom point
 	
 AddCorrection:
 	punpcklbw mm2,mm0
@@ -225,7 +207,7 @@ AddCorrection:
 	add	edi,4
 
 			; DDA integer only algorithm
-	mov	eax,RestDDA
+	mov	eax,edx			;RestDDA
 	add	eax,_widthIn		;accuX += _widthIn;	
 	xor	edx,edx
 	div	_widthOut		;posx += accuX / _widthOut;
@@ -233,8 +215,8 @@ AddCorrection:
 Col1andUp:
 	shl	eax,2		; *4
 
-NoIncSrc:sub	OutCouter,1
-	jnc	LoopCol1
+NoIncSrc:dec	OutCounter
+	jnz	LoopCol1
 
 
 toend:
