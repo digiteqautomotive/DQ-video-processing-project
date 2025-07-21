@@ -62,7 +62,7 @@ LoopPix0:
 	mov	edx,[ebx+8]		; Bottom line
 	mov	ebx,[ebx]		; Top line
 
-	mov	esi,0
+	xor	esi,esi
 	sub	OutCouter,1
 	jc	toend			; <0
 	cmp	StopPtr,edx
@@ -358,7 +358,7 @@ LoopPix0:
 	mov	edx,[ebx+8]		; Bottom line
 	mov	ebx,[ebx]		; Top line
 
-	mov	esi,0
+	xor	esi,esi
 	sub	OutCouter,1
 	jc	toend			; <0
 	cmp	StopPtr,edx
@@ -621,7 +621,7 @@ LoopPix0:
 	mov	edx,[ebx+8]		; Bottom line
 	mov	ebx,[ebx]		; Top line
 
-	mov	esi,0
+	xor	esi,esi
 	sub	OutCouter,1
 	jc	toend			; <0
 	cmp	StopPtr,edx

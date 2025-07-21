@@ -256,6 +256,38 @@ int i;
   BlobIn = (unsigned char *)malloc(16384);
   BlobOut = (unsigned char *)malloc(16384);
   BlobTest = (unsigned char *)malloc(16384);
+  
+  {
+    BlobIn[0] = 0xFF;
+    BlobIn[1] = 0xFF;
+    BlobIn[2] = 0xFF;
+    PicScalerRGB24Impl picScalerRGB24(1,1,1,1);
+
+    picScalerRGB24.Scale(BlobOut,BlobIn);
+    if(BlobOut[0]!=0xFF || BlobOut[1]!= 0xFF || BlobOut[2]!=0xFF)
+    {
+      printf("\nRGB24 picScalerRGB24 on 0xFF overflows [%2.2X,%2.2X,%2.2X].", BlobOut[0], BlobOut[1], BlobOut[2]);
+      goto ReturnErr;
+    }
+
+    BlobIn[3] = 0xFF;
+    PicScalerRGB32Impl picScalerRGB32(1,1,1,1);
+
+    picScalerRGB32.Scale(BlobOut,BlobIn);
+    if(BlobOut[0]!=0xFF || BlobOut[1]!= 0xFF || BlobOut[2]!=0xFF || BlobOut[3]!=0xFF)
+    {
+      printf("\nRGB32 picScalerRGB32 on 0xFF overflows [%2.2X,%2.2X,%2.2X(%2.2X)].", BlobOut[0], BlobOut[1], BlobOut[2], BlobOut[3]);
+      goto ReturnErr;
+    }
+
+    PicScalerARGB32Impl picScalerARGB32(1,1,1,1);
+    picScalerARGB32.Scale(BlobOut,BlobIn);
+    if(BlobOut[0]!=0xFF || BlobOut[1]!= 0xFF || BlobOut[2]!=0xFF || BlobOut[3]!=0xFF)
+    {
+      printf("\nARGB32 picScalerARGB32 on 0xFF overflows [%2.2X,%2.2X,%2.2X,%2.2X].", BlobOut[0], BlobOut[1], BlobOut[2], BlobOut[3]);
+      goto ReturnErr;
+    }
+  }
 
   for(i=0; i<16384; i++)
   {
