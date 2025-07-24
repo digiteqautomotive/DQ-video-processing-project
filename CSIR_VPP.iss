@@ -3,7 +3,7 @@
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.4.0"
+#define MyAppVersion "1.4.1"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
 #define MyAppURL "http://videoprocessing.sourceforge.net/"
@@ -249,6 +249,7 @@ end;
 type
   INSTALLSTATE = Longint;
 const
+// Look into: Computer\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\
   INSTALLSTATE_INVALIDARG = -2;  // An invalid parameter was passed to the function.
   INSTALLSTATE_UNKNOWN = -1;     // The product is neither advertised or installed.
   INSTALLSTATE_ADVERTISED = 1;   // The product is advertised but not installed.
@@ -288,11 +289,13 @@ const
   VC_2010_SP1_REDIST_X64              = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';
   VC_2010_SP1_REDIST_IA64             = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';
 
-  VC_2013_REDIST_X86                  = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
-  VC_2013_REDIST_X86_                 = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
+  VC_2013_REDIST_X86                  = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';  // 12.0.21005
+  VC_2013_REDIST_X86_                 = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';  // 12.0.30501
+  VC_2013_REDIST_X86_2                = '{D401961D-3A20-3AC7-943B-6139D5BD490A}';  // 12.0.40664
   VC_2013_REDIST_X64                  = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
   VC_2013_REDIST_X64_                 = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
-
+  VC_2013_REDIST_X64_2                = '{042D26EF-3DBE-4C25-95D3-4C1B11B235A7}';  // 12.0.40664 - Not working from unknown reason.                                         
+                                                          
 
 function MsiQueryProductState(szProduct: string): INSTALLSTATE; 
   external 'MsiQueryProductState{#AW}@msi.dll stdcall';
@@ -306,7 +309,7 @@ end;
 
 function VCRedistNeedsInstallx86: Boolean;
 var
-  r1, r2: Boolean;
+  r1, r2, r3: Boolean;
 begin
   // here the Result must be True when you need to install your VCRedist
   // or False when you don't need to, so now it's upon you how you build
@@ -315,13 +318,14 @@ begin
   // are installed for the current user
   r1 := VCVersionInstalled(VC_2013_REDIST_X86);
   r2 := VCVersionInstalled(VC_2013_REDIST_X86_);
-  Result := not (r1 or r2);
+  r3 := VCVersionInstalled(VC_2013_REDIST_X86_2);
+  Result := not (r1 or r2 or r3);
 end;
 
 
 function VCRedistNeedsInstallx64: Boolean;
 var
-  r1, r2: Boolean;
+  r1, r2, r3: Boolean;
 begin
   if not IsWin64 then begin
     Result := false;
@@ -329,6 +333,7 @@ begin
   else begin
     r1 := VCVersionInstalled(VC_2013_REDIST_X64);
     r2 := VCVersionInstalled(VC_2013_REDIST_X64_);
-    Result := not (r1 or r2);
+    r3 := VCVersionInstalled(VC_2013_REDIST_X64_2);
+    Result := not (r1 or r2 or r3);
   end
 end;
