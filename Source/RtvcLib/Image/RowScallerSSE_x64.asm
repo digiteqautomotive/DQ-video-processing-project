@@ -49,8 +49,8 @@ ScaleRowAsmARGB32SSE proc \
 	shl	R13,2		; 4*with_in
 	add	R13,R10		; END PTR
 
-	pxor	xmm0,xmm0
-	mov	eax,08080808h
+	xorps	xmm0,xmm0
+	mov	eax,08080808h		; rounding offset 8
 	movd	xmm4,eax
 	punpcklbw xmm4,xmm0
 
@@ -130,19 +130,16 @@ CorrectionDDA0:
 ;-----------------------------------------------------------------
 	; Pixel No 0 processed
 LoopCol1:
-	movd	xmm1,dword ptr [R9+4]	; 2*center point
+	movd	xmm1,dword ptr [R9+4]	; center point
 	punpcklbw xmm1,xmm0
-	psllw	xmm1,3
-	
-	movd	xmm2,dword ptr [R8]	; left top point
-	punpcklbw xmm2,xmm0	
-	paddusw	xmm1,xmm2
-	
+	psllw	xmm1,3			; 8*center point
+
 	movd	xmm2,dword ptr [R9]	; left middle point
 	punpcklbw xmm2,xmm0	
 	paddusw	xmm1,xmm2
 
-	movd	xmm2,dword ptr [R10]	; left bottom point
+	;mov	rax,[R8]
+	movd	xmm2,dword ptr [R8]		; left top point
 	punpcklbw xmm2,xmm0	
 	paddusw	xmm1,xmm2
 
@@ -150,9 +147,24 @@ LoopCol1:
 	punpcklbw xmm2,xmm0	
 	paddusw	xmm1,xmm2
 
+	movd	xmm2,dword ptr [R10]	; left bottom point
+	punpcklbw xmm2,xmm0	
+	paddusw	xmm1,xmm2
+
 	movd	xmm2,dword ptr [R10+4]	; middle bottom point
 	punpcklbw xmm2,xmm0	
 	paddusw	xmm1,xmm2
+
+;	movlps	xmm3,qword ptr [R8]	; left top point + middle top point	
+;	punpcklbw xmm3,xmm0
+	
+;	movlps	xmm2,qword ptr [R10]	; left bottom point + middle bottom point
+;	punpcklbw xmm2,xmm0	
+;	paddusw	xmm2,xmm3
+
+;	paddusw	xmm1,xmm2
+;	movhlps	xmm2,xmm2		; get upper half to lower half
+;	paddusw	xmm1,xmm2
 
 	cmp	R13,R10
 	jle	LastColumn
