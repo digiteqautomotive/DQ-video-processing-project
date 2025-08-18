@@ -211,6 +211,8 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P)
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
+    else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU)
+       pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
     else
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
     pMediaType->lSampleSize = pBi->biSizeImage;
@@ -283,6 +285,20 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
   if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_YUY2 || mtIn->subtype == MEDIASUBTYPE_YUYV)
+  {
+    if(mtOut->subtype != MEDIASUBTYPE_YUY2 && mtOut->subtype != MEDIASUBTYPE_YUYV)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+  }
+  if (mtIn->subtype == MEDIASUBTYPE_YVYU)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_YVYU)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
