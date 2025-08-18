@@ -76,7 +76,8 @@ CUnknown * WINAPI YUV420toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 void YUV420toRGBFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420,	  &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
 }
 
 

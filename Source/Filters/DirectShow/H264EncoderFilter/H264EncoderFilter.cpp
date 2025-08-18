@@ -110,7 +110,7 @@ CUnknown * WINAPI H264EncoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 void H264EncoderFilter::InitialiseInputTypes()
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24,		&FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24,	&FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P,	&FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420,	&FORMAT_VideoInfo);
 }
@@ -128,15 +128,11 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     {
       m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_RGB24);
     }
-    else if (pmt->subtype == MEDIASUBTYPE_YUV420P)
+    else if (pmt->subtype==MEDIASUBTYPE_YUV420P || pmt->subtype == MEDIASUBTYPE_I420 || pmt->subtype == MEDIASUBTYPE_YV12)
     {
       // NOTE: RG: _BUILD_FOR_SHORT has been elminated outside of the H.264 codec
       // We will only use 8 bit YUV outside of the codec!
       //m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_YUV420P);
-      m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_YUV420P8);
-    }
-    else if (pmt->subtype == MEDIASUBTYPE_I420)
-    {
       m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_YUV420P8);
     }
 

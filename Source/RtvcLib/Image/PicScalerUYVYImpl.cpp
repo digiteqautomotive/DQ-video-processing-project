@@ -1,13 +1,12 @@
 /** @file
 
-MODULE				: PicScalerYUYVImpl
+MODULE				: PicScalerUYVYImpl
 
-FILE NAME			: PicScalerYUYVImpl.cpp
+FILE NAME			: PicScalerUYVYImpl.cpp
 
-DESCRIPTION			: An YUYV implementation derived from the general
-				  PicScalerBase() class. Scale a packed YUYV image
-				  to the dimensions of another packed YUYV image.
-				  Note: This class is capable to scale YVYU as well.
+DESCRIPTION			: An UYVY implementation derived from the general
+				  PicScalerBase() class. Scale a packed UYVY image
+				  to the dimensions of another packed UYVY image.					
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -36,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdlib.h>
 
-#include "PicScalerYUYVImpl.h"
+#include "PicScalerUYVYImpl.h"
 
 /*
 ===========================================================================
@@ -46,10 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.
-@param pOutImg	: Packed YUYV format main base image.
-@param pInImg		: Packed YUYV format smaller sub image.
+@param pOutImg	: Packed UYVY format main base image.
+@param pInImg		: Packed UYVY format smaller sub image.
 @return			: 0 = failed, 1 = success. */
-int PicScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
+int PicScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg)
 {
   if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
       return(0);
@@ -86,7 +85,7 @@ int PicScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
       unsigned Y = 8;			// rounding offset +8
       for(i=0; i<=2; i++)
       {				
-        int aii = pRow[i] + 2 * ((posx==0) ? (0) : (posx - 1));
+        int aii = pRow[i] + 1 + 2*((posx==0) ? (0) : (posx - 1));
 	Y += (*(pSrc + aii));
 
         if(posx>0) aii+=2;
@@ -103,7 +102,7 @@ int PicScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
       } //end for i...
 			/// Round before scaling.
       //pDst = (unsigned char*)pOutImg + (y*_widthOut*4) + (x*4);
-      pDst[x*2]	= (unsigned char)(Y >> 4);
+      pDst[x*2+1]	= (unsigned char)(Y >> 4);
     }
 
     accuX = -1;
@@ -119,27 +118,27 @@ int PicScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
       for(i=0; i<=2; i++)
       {				
         int aii = pRow[i] + 4 * ((posx==0) ? (0) : (posx - 1));
-	U += (*(pSrc + aii+1));
-	V += (*(pSrc + aii+3));
+	U += (*(pSrc + aii+0));
+	V += (*(pSrc + aii+2));
 
         if(posx>0) aii+=4;
         if(i==1)
         {
-          U += 8 * (*(pSrc + aii+1));
-          V += 8 * (*(pSrc + aii+3));
+          U += 8 * (*(pSrc + aii+0));
+          V += 8 * (*(pSrc + aii+2));
 	}
 	else
 	{
-          U += (*(pSrc + aii+1));
-          V += (*(pSrc + aii+3));
+          U += (*(pSrc + aii+0));
+          V += (*(pSrc + aii+2));
 	}
 	if(posx+1 < _widthIn/2) aii+=4;
-	U += (*(pSrc + aii+1));
-        V += (*(pSrc + aii+3));
+	U += (*(pSrc + aii+0));
+        V += (*(pSrc + aii+2));
       } //end for i...
 
-      (pDst)[x*4+1] = U >> 4;
-      (pDst)[x*4+3] = V >> 4;
+      (pDst)[x*4+0] = U >> 4;
+      (pDst)[x*4+2] = V >> 4;
     } //end for x...
 
     pDst += _widthOut * 2;

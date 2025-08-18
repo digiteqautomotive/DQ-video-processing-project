@@ -230,6 +230,7 @@
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NoExtensions</EnableEnhancedInstructionSet>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerUYVYImpl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUV420PImpl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

@@ -231,7 +231,7 @@ HRESULT RGBtoYUV420Filter::CheckTransform( const CMediaType *mtIn, const CMediaT
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
 	// Adding advert media type to this method
-	if ((mtOut->subtype != MEDIASUBTYPE_YUV420P) && (mtOut->subtype != MEDIASUBTYPE_I420) )
+	if(mtOut->subtype!=MEDIASUBTYPE_YUV420P && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
 	{
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}

@@ -42,6 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Image/PicScalerARGB32Impl.h>
 #include <Image/PicScalerYUV420PImpl.h>
 #include <Image/PicScalerYUYVImpl.h>
+#include <Image/PicScalerUYVYImpl.h>
 
 #ifdef USE_MMX
 #include <Image/PicScalerARGB32MMX.h>
@@ -52,6 +53,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 extern "C" unsigned GetFeaturesCPU(void);
+
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 
 unsigned char FeaturesCPU = 0x80;
@@ -96,7 +99,10 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
 }
 
 HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
@@ -156,18 +162,23 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
 	    m_pScaler = new PicScalerARGB32MMX();
 	else
 #endif
-      	    m_pScaler = new PicScalerARGB32Impl();
+        m_pScaler = new PicScalerARGB32Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_YUV420P)
+      else if(pmt->subtype==MEDIASUBTYPE_YUV420P || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12)
       {
         m_pScaler = new PicScalerYUV420PImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
       } else
       if(pmt->subtype==MEDIASUBTYPE_YUYV || pmt->subtype==MEDIASUBTYPE_YUY2 || pmt->subtype==MEDIASUBTYPE_YVYU)
       {
-        m_pScaler = new PicScalerYUYVImpl();
+        m_pScaler = new PicScalerYUYVImpl();		// YVYU and YUYV are different, but the can use a same scaller.
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;
+      }
+      if(pmt->subtype==MEDIASUBTYPE_UYVY)
+      {
+        m_pScaler = new PicScalerUYVYImpl();
+        m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same as UYVY
       }
     }
   }
@@ -209,9 +220,10 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 	// Set size
     if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
-    else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P)
+    else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
-    else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU)
+    else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
+            pMediaType->subtype==MEDIASUBTYPE_UYVY)
        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
     else
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
@@ -269,53 +281,68 @@ HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIE
 
 HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
-  //Make sure the input and output types are related
+	//Make sure the input and output types are related
   if (mtOut->majortype != MEDIATYPE_Video)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  //Subtypes
+  	// Video format
+  if (mtOut->formattype != FORMAT_VideoInfo)
+  {
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+	//Subtypes
   if (mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB24)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
-  }
+    return S_OK;
+  } 
   if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
-  }
-  if(mtIn->subtype == MEDIASUBTYPE_YUY2 || mtIn->subtype == MEDIASUBTYPE_YUYV)
+    return S_OK;
+  } 
+  if(mtIn->subtype==MEDIASUBTYPE_YUY2 || mtIn->subtype==MEDIASUBTYPE_YUYV)
   {
-    if(mtOut->subtype != MEDIASUBTYPE_YUY2 && mtOut->subtype != MEDIASUBTYPE_YUYV)
+    if(mtOut->subtype!=MEDIASUBTYPE_YUY2 && mtOut->subtype!=MEDIASUBTYPE_YUYV)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
-  }
+    return S_OK;
+  } 
   if (mtIn->subtype == MEDIASUBTYPE_YVYU)
   {
     if (mtOut->subtype != MEDIASUBTYPE_YVYU)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
+    return S_OK;
   }
-  if (mtIn->subtype == MEDIASUBTYPE_YUV420P)
+  if (mtIn->subtype == MEDIASUBTYPE_UYVY)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_YUV420P)
+    if (mtOut->subtype != MEDIASUBTYPE_UYVY)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
-  }
-  // Video format
-  if (mtOut->formattype != FORMAT_VideoInfo)
+    return S_OK;
+  } 
+  if(mtIn->subtype==MEDIASUBTYPE_YUV420P || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
   {
-    return VFW_E_TYPE_NOT_ACCEPTED;
+    if(mtOut->subtype!=MEDIASUBTYPE_YUV420P && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
   }
-  return S_OK;
+	// No known subtype match.
+  return VFW_E_TYPE_NOT_ACCEPTED;
 }
 
 
