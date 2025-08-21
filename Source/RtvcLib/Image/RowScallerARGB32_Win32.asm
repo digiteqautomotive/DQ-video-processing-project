@@ -20,7 +20,7 @@ local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
 
-	clc
+	cld
 	mov	edi,pDst	; pDst edi=destination pointer
 	or	edi,edi
 	jz	toend		; NULL pointer test
@@ -316,7 +316,7 @@ local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
 
-	clc
+	cld
 	mov	edi,pDst	; pDst edi=destination pointer
 	or	edi,edi
 	jz	toend		; NULL pointer test
@@ -578,7 +578,7 @@ local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
 
-	clc
+	cld
 	mov	edi,pDst	; pDst edi=destination pointer
 	or	edi,edi
 	jz	toend		; NULL pointer test
@@ -605,7 +605,7 @@ local	RestDDA: DWORD
 	or	eax,eax
 	jz	toend
 	dec	eax
-	mov	edx,3		; 4*with_in
+	mov	edx,3		; 3*with_in
 	mul	edx
 	add	eax,ecx		; END PTR
 	mov	StopPtr,EAX
@@ -815,6 +815,380 @@ toend:
         ret                     ; _cdecl return
 
 ScaleRowAsmRGB24 endp
+
+
+
+;void ScaleRowAsmYp2(void *pDst, unsigned _widthOut, void **pSrcRows, unsigned _widthIn);
+        public  ScaleRowAsmYp2
+ScaleRowAsmYp2 proc \
+        uses edi esi ebx \
+        pDst:ptr byte, \
+        _widthOut:DWORD, \
+        pSrcRows:DWORD, \
+        _widthIn:ptr byte
+local	OutCouter: DWORD
+local	StopPtr: DWORD
+local	RestDDA: DWORD
+local	Row0: DWORD
+local	Row1: DWORD
+local	Row2: DWORD
+
+	mov	edi,pDst	; pDst edi=destination pointer
+	or	edi,edi
+	jz	toend		; NULL pointer test
+
+	mov	eax,_widthOut
+	or	eax,eax
+	jz	toend
+	mov	OutCouter,eax
+
+	mov	ebx,pSrcRows
+	or	ebx,ebx
+	jz	toend
+	mov	ecx,[ebx]
+	or	ecx,ecx	
+	mov	Row0,ecx
+	jz	toend	
+	mov	ecx,[ebx+4]
+	or	ecx,ecx
+	mov	Row1,ecx
+	jz	toend
+	mov	ecx,[ebx+8]	; 3rd row pointer
+	or	ecx,ecx
+	jz	toend
+	mov	Row2,ecx
+
+	mov	eax,_widthIn
+	or	eax,eax
+	jz	toend
+	dec	eax
+	shl	eax,1		; 2*with_in
+	add	eax,ecx		; END PTR
+	mov	StopPtr,EAX
+
+	mov	eax,-1
+	jmp	CorrectionDDA0
+
+LoopPix0:
+	mov	RestDDA,edx
+
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
+
+	xor	esi,esi
+	sub	OutCouter,1
+	jc	toend			; <0
+	cmp	StopPtr,edx
+	jle	LastColumn0
+	mov	esi,2
+LastColumn0:
+			; Y compound
+	movzx	ax, byte ptr[ecx]
+	shl	ax,2			; 2*center point
+	add	al, byte ptr[ebx]	; left top point
+	adc	ah,0
+	add	al, byte ptr[edx]	; left bottom point
+	adc	ah,0
+	shl	ax,1			; 4*center point + 2*(.....)
+	add	al, byte ptr[ecx]	; left middle point
+	adc	ah,0
+	add	al, byte ptr[ebx+esi]
+	adc	ah,0
+	add	al, byte ptr[ecx+esi]
+	adc	ah,0
+	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	ax,8			; rounding correction
+	shr	ax,4
+	mov	[edi],al
+	add	edi,2
+
+		; DDA integer only algorithm
+	mov	eax,RestDDA
+CorrectionDDA0:
+	add	eax,_widthIn		;accuX += _widthIn;	
+	xor	edx,edx
+	div	_widthOut		;posx += accuX / _widthOut;
+		;edx already set	accuX = accuX % _widthOut;
+	or	eax,eax			; zet Z flag
+	jz	LoopPix0
+	dec	eax
+
+	mov	ebx,StopPtr
+	sub	ebx,2
+	mov	StopPtr,ebx
+	jmp	Col1andUp
+
+
+;-----------------------------------------------------------------
+	; Pixel No 0 processed
+LoopCol1:
+	mov	RestDDA,edx
+
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
+	add	ebx,eax
+	add	ecx,eax
+	add	edx,eax
+	mov	Row0,ebx
+	mov	Row1,ecx
+	mov	Row2,edx
+
+	mov	esi,2
+	cmp	StopPtr,edx
+	jle	LastColumn
+	mov	esi,4
+LastColumn:
+		; R compound
+	movzx	ax, byte ptr[ecx+2]
+	shl	ax,3			; 4*center point
+	add	al, byte ptr[ebx]	; left top point
+	adc	ah,0
+	add	al, byte ptr[ecx]	; left middle point
+	adc	ah,0
+	add	al, byte ptr[edx]	; left bottom point
+	adc	ah,0
+	add	al, byte ptr[ebx+2]	; middle top point
+	adc	ah,0
+	add	al, byte ptr[edx+2]	; middle bottom point
+	adc	ah,0
+	add	al, byte ptr[ebx+esi]	; right top point
+	adc	ah,0
+	add	al, byte ptr[ecx+esi]	; right middle point
+	adc	ah,0
+	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	ax,8			; rounding correction
+	shr	ax,4
+	mov	[edi],al
+
+	add	edi,2
+			; DDA integer only algorithm
+	mov	eax,RestDDA
+	add	eax,_widthIn		;accuX += _widthIn;	
+	xor	edx,edx
+	div	_widthOut		;posx += accuX / _widthOut;
+	;edx already set	accuX = accuX % _widthOut;
+Col1andUp:
+	shl	eax,1			; *2
+
+NoIncSrc:sub	OutCouter,1
+	jnc	LoopCol1
+
+toend:
+        ret                     ; _cdecl return
+
+ScaleRowAsmYp2 endp
+
+
+
+;void ScaleRowAsmUVp4(void *pDst, unsigned _widthOut, void **pSrcRows, unsigned _widthIn);
+        public  ScaleRowAsmUVp4
+ScaleRowAsmUVp4 proc \
+        uses edi esi ebx \
+        pDst:ptr byte, \
+        _widthOut:DWORD, \
+        pSrcRows:DWORD, \
+        _widthIn:ptr byte
+local	OutCouter: DWORD
+local	StopPtr: DWORD
+local	RestDDA: DWORD
+
+	mov	edi,pDst	; pDst edi=destination pointer
+	or	edi,edi
+	jz	toend		; NULL pointer test
+
+	mov	eax,_widthOut
+	or	eax,eax
+	jz	toend
+	mov	OutCouter,eax
+
+	mov	ebx,pSrcRows
+	or	ebx,ebx
+	jz	toend
+	mov	ecx,[ebx]
+	or	ecx,ecx
+	jz	toend
+	mov	ecx,[ebx+4]
+	or	ecx,ecx
+	jz	toend
+	mov	ecx,[ebx+8]	; 3rd row pointer
+	or	ecx,ecx
+	jz	toend
+
+	mov	eax,_widthIn
+	or	eax,eax
+	jz	toend
+	dec	eax
+	shl	eax,2		; 4*with_in
+	add	eax,ecx		; END PTR
+	mov	StopPtr,EAX
+
+	mov	eax,-1
+	jmp	CorrectionDDA0
+
+LoopPix0:
+	mov	RestDDA,edx
+
+	mov	ebx,pSrcRows
+	mov	ecx,[ebx+4]		; Middle line
+	mov	edx,[ebx+8]		; Bottom line
+	mov	ebx,[ebx]		; Top line
+
+	xor	esi,esi
+	sub	OutCouter,1
+	jc	toend			; <0
+	cmp	StopPtr,edx
+	jle	LastColumn0
+	mov	esi,4
+LastColumn0:
+			; U compound
+	movzx	ax, byte ptr[ecx]
+	shl	ax,2			; 2*center point
+	add	al, byte ptr[ebx]	; left top point
+	adc	ah,0
+	add	al, byte ptr[edx]	; left bottom point
+	adc	ah,0
+	shl	ax,1			; 4*center point + 2*(.....)
+	add	al, byte ptr[ecx]	; left middle point
+	adc	ah,0
+	add	al, byte ptr[ebx+esi]
+	adc	ah,0
+	add	al, byte ptr[ecx+esi]
+	adc	ah,0
+	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	ax,8			; rounding correction
+	shr	ax,4
+	mov	[edi],al
+
+				; V compound
+	add	esi,2
+	movzx	ax, byte ptr[ecx+2]
+	shl	ax,2			; 2*center point
+	add	al, byte ptr[ebx+2]	; left top point
+	adc	ah,0
+	add	al, byte ptr[edx+2]	; left bottom point
+	adc	ah,0
+	shl	ax,1			; 4*center point + 2*(.....)
+	add	al, byte ptr[ecx+2]	; left middle point
+	adc	ah,0
+	add	al, byte ptr[ebx+esi]
+	adc	ah,0
+	add	al, byte ptr[ecx+esi]
+	adc	ah,0
+	add	al, byte ptr[edx+esi]
+	adc	ah,0
+	add	ax,8			; rounding correction
+	shr	ax,4
+	mov	[edi+2],al
+
+	add	edi,4
+
+		; DDA integer only algorithm
+	mov	eax,RestDDA
+CorrectionDDA0:
+	add	eax,_widthIn		;accuX += _widthIn;	
+	xor	edx,edx
+	div	_widthOut		;posx += accuX / _widthOut;
+		;edx already set	accuX = accuX % _widthOut;
+	or	eax,eax			; zet Z flag
+	jz	LoopPix0
+	dec	eax
+
+	mov	ebx,StopPtr
+	sub	ebx,4
+	mov	StopPtr,ebx
+	jmp	Col1andUp
+
+;-----------------------------------------------------------------
+	; Pixel No 0 processed
+LoopCol1:
+	mov	RestDDA,edx
+
+	mov	ebx,pSrcRows
+	mov	ecx,[ebx+4]
+	add	ecx,eax
+	mov	[ebx+4],ecx
+	mov	edx,[ebx+8]
+	add	edx,eax
+	mov	[ebx+8],edx
+	add	eax,[ebx]
+	mov	[ebx],eax
+	mov	ebx,eax
+
+	mov	esi,4
+	cmp	StopPtr,edx
+	jle	LastColumn
+	mov	esi,8
+LastColumn:
+		; U compound
+	movzx	ax, byte ptr[ecx+4]
+	shl	ax,3			; 4*center point
+	add	al, byte ptr[ebx]	; left top point
+	adc	ah,0
+	add	al, byte ptr[ecx]	; left middle point
+	adc	ah,0
+	add	al, byte ptr[edx]	; left bottom point
+	adc	ah,0
+	add	al, byte ptr[ebx+4]	; middle top point
+	adc	ah,0
+	add	al, byte ptr[edx+4]	; middle bottom point
+	adc	ah,0
+	add	al, byte ptr[ebx+esi]	; right top point
+	adc	ah,0
+	add	al, byte ptr[ecx+esi]	; right middle point
+	adc	ah,0
+	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	ax,8			; rounding correction
+	shr	ax,4
+	mov	[edi],al
+
+		; V compound
+	add	esi,2
+	movzx	ax, byte ptr[ecx+6]
+	shl	ax,3			; 4*center point
+	add	al, byte ptr[ebx+2]	; left top point
+	adc	ah,0
+	add	al, byte ptr[ecx+2]	; left middle point
+	adc	ah,0
+	add	al, byte ptr[edx+2]	; left bottom point
+	adc	ah,0
+	add	al, byte ptr[ebx+6]	; middle top point
+	adc	ah,0
+	add	al, byte ptr[edx+6]	; middle bottom point
+	adc	ah,0
+	add	al, byte ptr[ebx+esi]	; right top point
+	adc	ah,0
+	add	al, byte ptr[ecx+esi]	; right middle point
+	adc	ah,0
+	add	al, byte ptr[edx+esi]	; right bottom point
+	adc	ah,0
+	add	ax,8			; rounding correction
+	shr	ax,4
+	mov	[edi+2],al
+
+	add	edi,4
+			; DDA integer only algorithm
+	mov	eax,RestDDA
+	add	eax,_widthIn		;accuX += _widthIn;	
+	xor	edx,edx
+	div	_widthOut		;posx += accuX / _widthOut;
+	;edx already set	accuX = accuX % _widthOut;
+Col1andUp:
+	shl	eax,2			; *4
+
+NoIncSrc:sub	OutCouter,1
+	jnc	LoopCol1
+
+toend:
+        ret                     ; _cdecl return
+
+ScaleRowAsmUVp4 endp
+
 
 
         end

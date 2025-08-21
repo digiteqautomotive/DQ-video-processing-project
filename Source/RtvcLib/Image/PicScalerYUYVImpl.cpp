@@ -76,7 +76,7 @@ int PicScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
 
     accuX = -1;
     posx = 0;
-    for(x=0; x<_widthOut; x++)	// Y compound
+    for(x=0; x<_widthOut; x++)	// X compound
     {
       accuX += _widthIn;			// DDA integer only algorithm
       posx += accuX / _widthOut;

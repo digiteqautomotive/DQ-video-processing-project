@@ -10,6 +10,7 @@
 #include "Image/PicScalerRGB32Impl.h"
 #include "Image/PicScalerARGB32MMX.h"
 #include "Image/PicScalerARGB32SSE.h"
+#include "Image/PicScalerYUYVImpl.h"
 
 
 extern "C"
@@ -98,6 +99,8 @@ int OrigScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
   return(1);
 }//end Scale.
 
+
+///////////////////////////////////////////////////////////////////////////
 
 class OrigScalerARGB32Impl: public PicScalerBase
 {
@@ -244,12 +247,244 @@ int OrigScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 			*(pDst + (ao+1))	= (unsigned char)((g + 8) >> 4);
 			*(pDst + (ao+2))	= (unsigned char)((r + 8) >> 4);
 			*(pDst + (ao+3))	= a;
-		}//end for x...
+		} //end for x...
 		
-	}//end for y...
+	} //end for y...
 
 	return(1);
-}//end Scale.
+} //end Scale.
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class OrigScalerUYVYImpl: public PicScalerBase
+{
+public:
+	// Construction and destruction.
+	OrigScalerUYVYImpl(void) { }
+	OrigScalerUYVYImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
+	virtual ~OrigScalerUYVYImpl(void) {}
+
+	// Interface.
+	int Scale(void* pOutImg, const void* pInImg);
+
+}; //end OrigScalerUYVYImpl.
+
+
+int OrigScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg)
+{
+  if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
+      return(0);
+
+  const unsigned char*	pSrc	= (unsigned char*)pInImg;
+  unsigned char*	pDst	= (unsigned char*)pOutImg;
+	
+  int x, y, posx, posy, i;
+  int accuX, accuY;
+
+  accuY = -1;
+  posy = 0;
+  y = _heightOut;
+  while(y-- > 0)	
+  {
+    accuY += _heightIn;				// DDA integer only algorithm
+    posy += accuY / _heightOut;
+    accuY = accuY % _heightOut;
+
+    const unsigned pRow[3] = {						// Calculate row starts only once per row
+			((posy==0) ? 0 : (2*_widthIn*(posy-1))),
+			2*_widthIn*posy,
+			((posy+1>=_heightIn) ? (2*_widthIn*(_heightIn-1)) : (2*_widthIn*(posy+1))) };
+
+    accuX = -1;
+    posx = 0;
+    for(x=0; x<_widthOut; x++)	// Y compound
+    {
+      accuX += _widthIn;			// DDA integer only algorithm
+      posx += accuX / _widthOut;
+      accuX = accuX % _widthOut;
+
+			/// Apply a weighted 3x3 FIR filter.
+      unsigned Y = 8;			// rounding offset +8
+      for(i=0; i<=2; i++)
+      {				
+        int aii = pRow[i] + 1 + 2*((posx==0) ? (0) : (posx - 1));
+	Y += (*(pSrc + aii));
+
+        if(posx>0) aii+=2;
+        if(i==1)
+        {
+          Y += 8 * (*(pSrc + aii));
+	}
+	else
+	{
+          Y += (*(pSrc + aii));
+	}
+	if(posx+1 < _widthIn) aii+=2;
+	Y += (*(pSrc + aii));
+      } //end for i...
+			/// Round before scaling.
+      //pDst = (unsigned char*)pOutImg + (y*_widthOut*4) + (x*4);
+      pDst[x*2+1]	= (unsigned char)(Y >> 4);
+    }
+
+    accuX = -1;
+    posx = 0;
+    for(x=0; x<_widthOut/2; x++)	// U and V compounds
+    {
+      accuX += _widthIn/2;			// DDA integer only algorithm
+      posx += accuX / (_widthOut/2);
+      accuX = accuX % (_widthOut/2);
+      unsigned U = 8;
+      unsigned V = 8;
+
+      for(i=0; i<=2; i++)
+      {				
+        int aii = pRow[i] + 4 * ((posx==0) ? (0) : (posx - 1));
+	U += (*(pSrc + aii+0));
+	V += (*(pSrc + aii+2));
+
+        if(posx>0) aii+=4;
+        if(i==1)
+        {
+          U += 8 * (*(pSrc + aii+0));
+          V += 8 * (*(pSrc + aii+2));
+	}
+	else
+	{
+          U += (*(pSrc + aii+0));
+          V += (*(pSrc + aii+2));
+	}
+	if(posx+1 < _widthIn/2) aii+=4;
+	U += (*(pSrc + aii+0));
+        V += (*(pSrc + aii+2));
+      } //end for i...
+
+      (pDst)[x*4+0] = U >> 4;
+      (pDst)[x*4+2] = V >> 4;
+    } //end for x...
+
+    pDst += _widthOut * 2;
+  } //end for y...
+
+  return(1);
+} //end Scale.
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+class OrigScalerYUYVImpl: public PicScalerBase
+{
+public:
+	// Construction and destruction.
+	OrigScalerYUYVImpl(void) { }
+	OrigScalerYUYVImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
+	virtual ~OrigScalerYUYVImpl(void) {}
+
+	// Interface.
+	int Scale(void* pOutImg, const void* pInImg);
+
+}; //end OrigScalerUYVYImpl.
+
+
+int OrigScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
+{
+  if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
+      return(0);
+
+  const unsigned char*	pSrc	= (unsigned char*)pInImg;
+  unsigned char*	pDst	= (unsigned char*)pOutImg;
+	
+  int x, y, posx, posy, i;
+  int accuX, accuY;
+
+  accuY = -1;
+  posy = 0;
+  y = _heightOut;
+  while(y-- > 0)	
+  {
+    accuY += _heightIn;				// DDA integer only algorithm
+    posy += accuY / _heightOut;
+    accuY = accuY % _heightOut;
+
+    const unsigned pRow[3] = {						// Calculate row starts only once per row
+			((posy==0) ? 0 : (2*_widthIn*(posy-1))),
+			2*_widthIn*posy,
+			((posy+1>=_heightIn) ? (2*_widthIn*(_heightIn-1)) : (2*_widthIn*(posy+1))) };
+
+    accuX = -1;
+    posx = 0;
+    for(x=0; x<_widthOut; x++)	// X compound
+    {
+      accuX += _widthIn;			// DDA integer only algorithm
+      posx += accuX / _widthOut;
+      accuX = accuX % _widthOut;
+
+			/// Apply a weighted 3x3 FIR filter.
+      unsigned Y = 8;			// rounding offset +8
+      for(i=0; i<=2; i++)
+      {				
+        int aii = pRow[i] + 2 * ((posx==0) ? (0) : (posx - 1));
+	Y += (*(pSrc + aii));
+
+        if(posx>0) aii+=2;
+        if(i==1)
+        {
+          Y += 8 * (*(pSrc + aii));
+	}
+	else
+	{
+          Y += (*(pSrc + aii));
+	}
+	if(posx+1 < _widthIn) aii+=2;
+	Y += (*(pSrc + aii));
+      } //end for i...
+			/// Round before scaling.
+      //pDst = (unsigned char*)pOutImg + (y*_widthOut*4) + (x*4);
+      pDst[x*2]	= (unsigned char)(Y >> 4);
+    }
+
+    accuX = -1;
+    posx = 0;
+    for(x=0; x<_widthOut/2; x++)	// U and V compounds
+    {
+      accuX += _widthIn/2;			// DDA integer only algorithm
+      posx += accuX / (_widthOut/2);
+      accuX = accuX % (_widthOut/2);
+      unsigned U = 8;
+      unsigned V = 8;
+
+      for(i=0; i<=2; i++)
+      {				
+        int aii = pRow[i] + 4 * ((posx==0) ? (0) : (posx - 1));
+	U += (*(pSrc + aii+1));
+	V += (*(pSrc + aii+3));
+
+        if(posx>0) aii+=4;
+        if(i==1)
+        {
+          U += 8 * (*(pSrc + aii+1));
+          V += 8 * (*(pSrc + aii+3));
+	}
+	else
+	{
+          U += (*(pSrc + aii+1));
+          V += (*(pSrc + aii+3));
+	}
+	if(posx+1 < _widthIn/2) aii+=4;
+	U += (*(pSrc + aii+1));
+        V += (*(pSrc + aii+3));
+      } //end for i...
+
+      (pDst)[x*4+1] = U >> 4;
+      (pDst)[x*4+3] = V >> 4;
+    } //end for x...
+
+    pDst += _widthOut * 2;
+  } //end for y...
+
+  return(1);
+} //end Scale.
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -466,6 +701,41 @@ int i;
 
      }
 
+//--------------------------------------------------------------------------------------
+
+  for(int WithIn=0; WithIn<6; WithIn+=2)
+   for(int HeightIn=0; HeightIn<5; HeightIn++)
+    for(int WithOut=0; WithOut<6; WithOut+=2)
+     for(int HeightOut=0; HeightOut<5; HeightOut++)
+     {
+       {
+         int InSize = 2 * WithIn * HeightIn;
+         int OutSize = 2 * WithOut * HeightOut;
+         if(InSize==0) OutSize=0;
+         PicScalerYUYVImpl picScalerYUYV(WithOut,HeightOut,WithIn,HeightIn);
+         OrigScalerYUYVImpl origScalerYUYV(WithOut,HeightOut,WithIn,HeightIn);
+
+         memcpy(BlobOut,BlobIn,16);
+         memcpy(BlobTest,BlobIn,16);
+         memset(BlobOut+16,0xFE,OutSize);
+         memset(BlobTest+16,0xFC,OutSize);
+         memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+         memcpy(BlobTest+16+OutSize,BlobIn,16); // reference tail
+
+         picScalerYUYV.Scale(BlobOut+16,BlobIn+16);
+         origScalerYUYV.Scale(BlobTest+16,BlobIn+16);
+
+         int pos = memcmp(BlobTest, BlobOut, OutSize+32);
+         if(pos)
+         {
+           printf("\nYUYV Compare error %ux%u -> %ux%u; pos=%d.", WithIn, HeightIn, WithOut, HeightOut, pos);
+           goto ReturnErr;
+         }
+
+       }
+     }
+
+
   printf("\nAll tests passed OK.");
   free(BlobIn);
   free(BlobOut);
@@ -561,6 +831,18 @@ int i;
       if(DurationMin > Duration) DurationMin=Duration;
     }
     printf("\nScale Orig RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+
+    PicScalerYUYVImpl PicScalerYUYV(1920,1080,800,600);
+    DurationMin = ~0;
+    for(i=0; i<10; i++)
+    {
+      TimeStampB = GetTickCount_us();
+      PicScalerYUYV.Scale(BlobOut,BlobIn);
+      TimeStampE = GetTickCount_us();
+      Duration = TimeStampE - TimeStampB;
+      if(DurationMin > Duration) DurationMin=Duration;
+    }
+    printf("\nScale YUYV from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
     
   }
 

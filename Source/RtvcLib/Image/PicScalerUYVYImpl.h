@@ -45,8 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \ingroup ImageLib
  * An UYVY implementation derived from the general
  * PicScalerBase() class. Scale a packed UYVY image
- * to the dimensions of another packed UYVY image.
- */
+ * to the dimensions of another packed UYVY image. */
 class PicScalerUYVYImpl: public PicScalerBase
 {
 public:
@@ -58,7 +57,7 @@ public:
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
 
-};//end PicScalerUYVYImpl.
+}; //end PicScalerUYVYImpl.
 
 
 #endif	// _PICSCALERUYVYIMPL_H
