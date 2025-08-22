@@ -847,25 +847,26 @@ LoopCol1:
 	jle	LastColumn
 	mov	rsi,4
 LastColumn:
-			; R compound
+			; Y compound
 	movzx	ax, byte ptr[R9+2]
 	shl	ax,3			; 4*center point
-	movzx	bx,byte ptr[R8]		; left top point
-	add	ax,bx
-	mov	bl, byte ptr[R9]	; left middle point
-	add	ax,bx
-	mov	bl, byte ptr[R10]	; left bottom point
-	add	ax,bx
-	mov	bl, byte ptr[R8+2]	; middle top point
-	add	ax,bx
-	mov	bl, byte ptr[R10+2]	; middle bottom point
-	add	ax,bx
-	mov	bl, byte ptr[R8+rsi]	; right top point
+	movzx	bx, byte ptr[R9]	; left middle point
 	add	ax,bx
 	mov	bl, byte ptr[R9+rsi]	; right middle point
 	add	ax,bx
-	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	mov	bl,byte ptr[R8]		; left top point
 	add	ax,bx
+	mov	bl, byte ptr[R8+2]	; middle top point
+	add	ax,bx
+	mov	bl, byte ptr[R8+rsi]	; right top point
+	add	ax,bx
+	mov	bl, byte ptr[R10]	; left bottom point
+	add	ax,bx	
+	mov	bl, byte ptr[R10+2]	; middle bottom point
+	add	ax,bx
+	mov	bl, byte ptr[R10+rsi]	; right bottom point
+	add	ax,bx	
+	
 	add	ax,8			; rounding correction
 	shr	ax,4
 	mov	[rdi],al
@@ -972,7 +973,7 @@ LastColumn0:
 	add	rsi,2
 	movzx	ax, byte ptr[R9+2]
 	shl	ax,2			; 2*center point
-	movzx	bx, byte ptr[R8+2]	; left top point
+	mov	bl, byte ptr[R8+2]	; left top point
 	add	ax,bx
 	mov	bl, byte ptr[R10+2]	; left bottom point
 	add	ax,bx

@@ -1,6 +1,6 @@
 import os, re
 
-ext_list = ["exp", "idb", "ilk", "ipch", "lib", "manifest", "ncb", "obj", "pch", "pdb", "tlog"]
+ext_list = ["exp", "idb", "ilk", "ipch", "lib", "manifest", "map", "ncb", "obj", "pch", "pdb", "tlog"]
 
 total_size_bytes = 0
 for dirname, dirnames, filenames in os.walk('.'):

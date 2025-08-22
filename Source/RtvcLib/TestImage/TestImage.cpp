@@ -848,6 +848,7 @@ int i;
 
   free(BlobIn);
   free(BlobOut);
+  free(BlobTest);
   return 0;
 
 ReturnErr:

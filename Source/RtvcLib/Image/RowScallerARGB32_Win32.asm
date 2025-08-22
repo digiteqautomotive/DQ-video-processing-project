@@ -19,6 +19,9 @@ ScaleRowAsmARGB32 proc \
 local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
+local	Row0: DWORD
+local	Row1: DWORD
+local	Row2: DWORD
 
 	cld
 	mov	edi,pDst	; pDst edi=destination pointer
@@ -35,12 +38,15 @@ local	RestDDA: DWORD
 	jz	toend
 	mov	ecx,[ebx]
 	or	ecx,ecx
+	mov	Row0,ecx
 	jz	toend
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
+	mov	Row1,ecx
 	jz	toend
 	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
+	mov	Row2,ecx
 	jz	toend
 
 	mov	eax,_widthIn
@@ -57,10 +63,9 @@ local	RestDDA: DWORD
 LoopPix0:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]		; Middle line
-	mov	edx,[ebx+8]		; Bottom line
-	mov	ebx,[ebx]		; Top line
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
 
 	xor	esi,esi
 	sub	OutCouter,1
@@ -174,16 +179,15 @@ CorrectionDDA0:
 LoopCol1:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
+	add	ebx,eax
 	add	ecx,eax
-	mov	[ebx+4],ecx
-	mov	edx,[ebx+8]
 	add	edx,eax
-	mov	[ebx+8],edx
-	add	eax,[ebx]
-	mov	[ebx],eax
-	mov	ebx,eax
+	mov	Row0,ebx
+	mov	Row1,ecx
+	mov	Row2,edx
 
 	mov	esi,4
 	cmp	StopPtr,edx
@@ -315,6 +319,9 @@ ScaleRowAsmRGB32 proc \
 local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
+local	Row0: DWORD
+local	Row1: DWORD
+local	Row2: DWORD
 
 	cld
 	mov	edi,pDst	; pDst edi=destination pointer
@@ -331,12 +338,15 @@ local	RestDDA: DWORD
 	jz	toend
 	mov	ecx,[ebx]
 	or	ecx,ecx
+	mov	Row0,ecx
 	jz	toend
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
+	mov	Row1,ecx
 	jz	toend
 	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
+	mov	Row2,ecx
 	jz	toend
 
 	mov	eax,_widthIn
@@ -353,10 +363,9 @@ local	RestDDA: DWORD
 LoopPix0:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]		; Middle line
-	mov	edx,[ebx+8]		; Bottom line
-	mov	ebx,[ebx]		; Top line
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line	
 
 	xor	esi,esi
 	sub	OutCouter,1
@@ -453,16 +462,15 @@ CorrectionDDA0:
 LoopCol1:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
+	add	ebx,eax
 	add	ecx,eax
-	mov	[ebx+4],ecx
-	mov	edx,[ebx+8]
 	add	edx,eax
-	mov	[ebx+8],edx
-	add	eax,[ebx]
-	mov	[ebx],eax
-	mov	ebx,eax
+	mov	Row0,ebx
+	mov	Row1,ecx
+	mov	Row2,edx
 
 	mov	esi,4	
 	cmp	StopPtr,edx
@@ -577,6 +585,9 @@ ScaleRowAsmRGB24 proc \
 local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
+local	Row0: DWORD
+local	Row1: DWORD
+local	Row2: DWORD
 
 	cld
 	mov	edi,pDst	; pDst edi=destination pointer
@@ -589,16 +600,19 @@ local	RestDDA: DWORD
 	mov	OutCouter,eax
 
 	mov	ebx,pSrcRows
-	or	ebx,ebx
+	or	ebx,ebx	
 	jz	toend
 	mov	ecx,[ebx]
 	or	ecx,ecx
+	mov	Row0,ecx
 	jz	toend
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
+	mov	Row1,ecx
 	jz	toend
 	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
+	mov	Row2,ecx
 	jz	toend
 
 	mov	eax,_widthIn
@@ -616,10 +630,9 @@ local	RestDDA: DWORD
 LoopPix0:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]		; Middle line
-	mov	edx,[ebx+8]		; Bottom line
-	mov	ebx,[ebx]		; Top line
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line	
 
 	xor	esi,esi
 	sub	OutCouter,1
@@ -712,16 +725,15 @@ CorrectionDDA0:
 LoopCol1:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
+	add	ebx,eax
 	add	ecx,eax
-	mov	[ebx+4],ecx
-	mov	edx,[ebx+8]
 	add	edx,eax
-	mov	[ebx+8],edx
-	add	eax,[ebx]
-	mov	[ebx],eax
-	mov	ebx,eax
+	mov	Row0,ebx
+	mov	Row1,ecx
+	mov	Row2,edx
 
 	mov	esi,3
 	cmp	StopPtr,edx
@@ -995,6 +1007,9 @@ ScaleRowAsmUVp4 proc \
 local	OutCouter: DWORD
 local	StopPtr: DWORD
 local	RestDDA: DWORD
+local	Row0: DWORD
+local	Row1: DWORD
+local	Row2: DWORD
 
 	mov	edi,pDst	; pDst edi=destination pointer
 	or	edi,edi
@@ -1010,12 +1025,15 @@ local	RestDDA: DWORD
 	jz	toend
 	mov	ecx,[ebx]
 	or	ecx,ecx
+	mov	Row0,ecx
 	jz	toend
 	mov	ecx,[ebx+4]
 	or	ecx,ecx
+	mov	Row1,ecx
 	jz	toend
 	mov	ecx,[ebx+8]	; 3rd row pointer
 	or	ecx,ecx
+	mov	Row2,ecx
 	jz	toend
 
 	mov	eax,_widthIn
@@ -1032,10 +1050,9 @@ local	RestDDA: DWORD
 LoopPix0:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]		; Middle line
-	mov	edx,[ebx+8]		; Bottom line
-	mov	ebx,[ebx]		; Top line
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
 
 	xor	esi,esi
 	sub	OutCouter,1
@@ -1108,16 +1125,15 @@ CorrectionDDA0:
 LoopCol1:
 	mov	RestDDA,edx
 
-	mov	ebx,pSrcRows
-	mov	ecx,[ebx+4]
+	mov	ebx,Row0		; Top line
+	mov	ecx,Row1		; Middle line
+	mov	edx,Row2		; Bottom line
+	add	ebx,eax
 	add	ecx,eax
-	mov	[ebx+4],ecx
-	mov	edx,[ebx+8]
 	add	edx,eax
-	mov	[ebx+8],edx
-	add	eax,[ebx]
-	mov	[ebx],eax
-	mov	ebx,eax
+	mov	Row0,ebx
+	mov	Row1,ecx
+	mov	Row2,edx
 
 	mov	esi,4
 	cmp	StopPtr,edx
