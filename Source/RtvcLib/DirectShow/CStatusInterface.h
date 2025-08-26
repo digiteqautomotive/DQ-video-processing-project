@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: CStatusInterface
+MODULE				: DirectShow
 
 FILE NAME			: CStatusInterface.h
 
@@ -21,7 +21,7 @@ DESCRIPTION			: Implementation of COM IStatusInterface
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2013, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once 
 
-#include <DirectShow/StatusInterface.h>
+#include "StatusInterface.h"
 #include <Windows.h>
 
 /**
@@ -57,25 +57,39 @@ class CStatusInterface : public IStatusInterface
 {
 public:
 	/// Constructor
-	CStatusInterface();
+    CStatusInterface();
 
-	STDMETHODIMP GetNotificationMessage( char* szMessage, int nBufferSize );
+    STDMETHODIMP GetVersion(char* szVersion, int nBufferSize);
+
+    STDMETHODIMP GetNotificationMessage( char* szMessage, int nBufferSize );
     STDMETHODIMP SetNotificationMessage( const char* szMessage );
-    /// Sets the error string and notifies the application using the media event sink if set
-	STDMETHODIMP SetLastError( std::string sError, bool bNotifyApplication = false);
+  /// Sets the error string and notifies the application using the media event sink if set
+    STDMETHODIMP SetLastError(const char* szLastError, bool bNotifyApplication = false);
 	/// Returns the last error that occurred in the filter
-	STDMETHODIMP GetLastError( std::string& sError );
+    STDMETHODIMP GetLastError( char* szLastError, int nBufferSize);
 	/// Mutator for media event sink which enables notification via Windows message passing
-	STDMETHODIMP SetMediaEventSink( IMediaEventSink* pEventSink );
+    STDMETHODIMP SetMediaEventSink( IMediaEventSink* pEventSink );
 	/// Mutator for friendly ID
-	STDMETHODIMP SetFriendlyID( long lId );
+    STDMETHODIMP SetFriendlyID( long lId );
 	/// Accessor for friendly ID
-	STDMETHODIMP GetFriendlyID( long& lId );
+    STDMETHODIMP GetFriendlyID( long& lId );
 
 protected:
+  virtual void doGetVersion(std::string& sVersion) = 0;
+  /**
+   * @brief Helper method that can be used by sub-classes
+   */
+  void notify(const std::string& sMessage);
+  /**
+   * @brief Helper method that can be used by sub-classes
+   */
+  void notifyError(const std::string& sMessage, bool bNotifyApp);
+
 	/// This method notifies the application with the specified params
 	void NotifyApplication(long lEventCode, LONG_PTR lEventParam1);
 
+  /// String to store notification message
+  std::string m_sNotification;
 	/// String to store last error
 	std::string m_sLastError;
 	/// Event sink used for windows message passing notification

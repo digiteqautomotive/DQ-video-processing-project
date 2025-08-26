@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: MultiIOBaseFilter
+MODULE				: DirectShow
 
 FILE NAME			: MultiIOBaseFilter.h
 
@@ -10,7 +10,7 @@ DESCRIPTION			: This base class takes care of doing most of the menial work when
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,18 +34,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #pragma once
-
 #pragma warning(push)     // disable for this header only
 #pragma warning(disable:4312)
-// DirectShow
 #include <streams.h>
 #pragma warning(pop)      // restore original warning level
-
-//STL
 #include <vector>
 #include <string>
 #include <map>
-
+#include "CSettingsInterface.h"
+#include "CStatusInterface.h"
 #include "MultiIOInputPin.h"
 #include "MultiIOOutputPin.h"
 
@@ -69,13 +66,17 @@ enum RTVC_DIRECTION
  * This base class takes care of doing most of the menial work when writing a transform filter that 
  * has multiple input and output pins.
  */
-class CMultiIOBaseFilter : public CBaseFilter
+class CMultiIOBaseFilter : public CBaseFilter,
+                           public CSettingsInterface, 
+                           public CStatusInterface
 {
 	friend class CMultiIOInputPin;
 	friend class CMultiIOOutputPin;
 		
 public:
-	CMultiIOBaseFilter(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid);
+  DECLARE_IUNKNOWN;
+  
+  CMultiIOBaseFilter(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid);
 	virtual ~CMultiIOBaseFilter(void);
 	
 	void Initialise();
@@ -86,6 +87,8 @@ public:
 	virtual CBasePin * GetPin(int n);
 	/// Method needed to connect pins based on their names
 	virtual STDMETHODIMP FindPin(LPCWSTR Id, IPin **ppPin);
+  /// Returns number of connected input pins
+  unsigned GetConnectedInputCount() const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Input pin methods
@@ -98,10 +101,8 @@ public:
 	virtual HRESULT Receive(IMediaSample *pSample, int nIndex ) PURE;
 	/// Standard setup for output sample
 	virtual HRESULT InitializeOutputSample(IMediaSample *pSample, IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex);
-
-	//////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////
+  /// override this to publicize our interfaces
+  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 	/// Input input pin creation management methods
 	virtual int InitialNumberOfInputPins();
 	/// Input output pin creation management methods
@@ -170,7 +171,6 @@ protected:
 private:
 	bool m_bInitialised;
 
-	//#######################################################################################
 	//Nested helper class and methods for media type storage and search
 	class CIOMediaType
 	{
@@ -206,5 +206,4 @@ private:
 	/// Map to link pin indexes to input type
 	MEDIA_TYPE_MAP m_mInputTypeMap;
 	MEDIA_TYPE_MAP m_mOutputTypeMap;
-	//#######################################################################################
 };

@@ -33,7 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "stdafx.h"
 #include "DirectShowHelper.h"
-#include <Shared/StringUtil.h>
+
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
+
+
 
 CDirectShowHelper::CDirectShowHelper()
 {;}
@@ -178,9 +182,14 @@ HRESULT CDirectShowHelper::GetFilterByCategory( IBaseFilter** gottaFilter, LPCWS
 
 HRESULT CDirectShowHelper::GetFilterByCategory( IBaseFilter** gottaFilter, std::string sMatchName, GUID Category )
 {
+#ifdef _CONVERT_WITH_ATL
 	WCHAR* wszName = StringUtil::stlToWide(sMatchName);
-	HRESULT hr = CDirectShowHelper::GetFilterByCategory(gottaFilter, wszName, Category);
+        HRESULT hr = CDirectShowHelper::GetFilterByCategory(gottaFilter, wszName, Category);
 	delete wszName;
+#else
+        std::wstring wszName = StringUtil::stringToWideString(sMatchName);
+        HRESULT hr = CDirectShowHelper::GetFilterByCategory(gottaFilter, wszName.c_str(), Category);
+#endif	
 	return hr;
 }
 

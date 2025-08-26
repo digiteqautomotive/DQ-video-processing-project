@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "FrameSkippingFilter.h"
 #include <set>
-#include <Shared/StringUtil.h>
+#include "GeneralUtils/StringUtil.h"
 
 FrameSkippingFilter::FrameSkippingFilter(LPUNKNOWN pUnk, HRESULT *pHr)
   : CTransInPlaceFilter(NAME("CSIR VPP Frame Skipping Filter"), pUnk, CLSID_VPP_FrameSkippingFilter, pHr, false),
@@ -145,7 +145,7 @@ HRESULT FrameSkippingFilter::Run(REFERENCE_TIME tStart)
     }
 
     // populate to be played
-    for (size_t iCount = 1; iCount <= m_uiTotalFrames; ++iCount)
+    for(unsigned iCount = 1; iCount <= m_uiTotalFrames; ++iCount)
     {
       auto found = toBeSkipped.find(iCount);
       if (found == toBeSkipped.end())

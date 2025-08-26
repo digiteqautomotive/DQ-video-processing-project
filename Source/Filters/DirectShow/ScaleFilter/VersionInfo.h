@@ -3,15 +3,15 @@
 #include <sstream>
 #include <string>
 
-const unsigned MAJOR_VERSION = 0;
+const unsigned MAJOR_VERSION = 1;
 const unsigned MINOR_VERSION = 0;
 const unsigned BUILD_VERSION = 0;
 
 /// 0.0.0: - Initial release of filter with version control
+/// 1.0.0: - Auto aspect-ratio maintaining crop
 
-class VersionInfo
+struct VersionInfo
 {
-public:
   static std::string toString()
   {
     std::ostringstream ostr;

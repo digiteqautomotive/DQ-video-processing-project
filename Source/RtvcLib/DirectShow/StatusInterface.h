@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: StatusInterface
+MODULE				: DirectShow
 
 FILE NAME			: StatusInterface.h
 
@@ -8,7 +8,7 @@ DESCRIPTION			: COM Status interface class for application - filter communicatio
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2013, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //This file needs to be included - else we get a linker error for the GUID
 #include <INITGUID.H>
 
+#if (_MSC_VER == 1800)
+#pragma warning(push)     // warning C4005: '__useHeader' : macro redefinition caused by SDK7 VS2013 combination
+#pragma warning(disable:4005)
+#endif
 #include <Windows.h>
+#if (_MSC_VER == 1800)
+#pragma warning(pop)      // restore original warning level
+#endif
 #include <string>
 
 #pragma warning(push)     // disable for this header only
@@ -61,26 +68,23 @@ in from which filter the notification came.
 
 //Smart Pointers
 DEFINE_GUID( IID_IStatusInterface, /* 60178ec0-c670-11d0-837a-0000f80220b9 */
-			0x8bd6af85, 
-			0xd262, 
-			0x4dbe, 
-			0xb2, 0x53, 0xfa, 0x8, 0xb4, 0xe3, 0x12, 0x5b
-			);
+            0x8bd6af85, 
+            0xd262, 
+            0x4dbe, 
+            0xb2, 0x53, 0xfa, 0x8, 0xb4, 0xe3, 0x12, 0x5b
+            );
 
-#undef  INTERFACE
+#undef INTERFACE
 #define INTERFACE   IStatusInterface
 DECLARE_INTERFACE_( IStatusInterface, IUnknown )
 {
-	// *** methods ***
-
-    // HACK FOR RTVC compatibility
-    STDMETHOD(GetNotificationMessage)( char* szError, int nBufferSize) = 0;
-    STDMETHOD(SetNotificationMessage)( const char* szError ) = 0;
-
-	STDMETHOD(GetLastError)( std::string& sError ) = 0;
-	STDMETHOD(SetLastError)( std::string sError, bool bNotifyApplication) = 0;
-	STDMETHOD(SetMediaEventSink) (IMediaEventSink* pEventSink) = 0;
-	//We need an id for when we perform a callback
-	STDMETHOD(SetFriendlyID) ( long lId) = 0;
-	STDMETHOD(GetFriendlyID) ( long& lId) = 0;
+  STDMETHOD(GetVersion)(char* szVersion, int nBufferSize) = 0;
+  STDMETHOD(GetNotificationMessage)( char* szError, int nBufferSize) = 0;
+  STDMETHOD(SetNotificationMessage)( const char* szError ) = 0;
+  STDMETHOD(GetLastError)(char* szLastError, int nBufferSize) = 0;
+  STDMETHOD(SetLastError)(const char* szLastError, bool bNotifyApplication) = 0;
+  STDMETHOD(SetMediaEventSink) (IMediaEventSink* pEventSink) = 0;
+  //We need an id for when we perform a callback
+  STDMETHOD(SetFriendlyID) ( long lId) = 0;
+  STDMETHOD(GetFriendlyID) ( long& lId) = 0;
 };

@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: MultiIOBaseFilter
+MODULE				: DirectShow
 
 FILE NAME			: MultiIOBaseFilter.cpp
 
@@ -8,7 +8,7 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,16 +31,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
+#include "stdafx.h"
 #include "MultiIOBaseFilter.h"
-
 #include "MultiIOInputPin.h"
 #include "MultiIOOutputPin.h"
+#include "../GeneralUtils/StringUtil.h"
+#include "../GeneralUtils/Conversion.h"
 
-#include <Shared/StringUtil.h>
-#include <Shared/Conversion.h>
-
-//#include <atlconv.h>
-//#pragma comment(lib, "atls.lib")
+#ifdef ARTIST
+using namespace artist;
+#endif
 
 CMultiIOBaseFilter::CMultiIOBaseFilter(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid)
 : CBaseFilter(pObjectName, lpUnk, &m_csFilter, clsid),
@@ -178,18 +178,22 @@ STDMETHODIMP CMultiIOBaseFilter::FindPin( LPCWSTR Id, IPin **ppPin )
 	ValidateReadWritePtr(ppPin,sizeof(IPin *));
 
 	//Parse Id and get string number
-  std::string sId = StringUtil::wideToStl(Id);
+  std::string sId = StringUtil::wideStringToString(Id);
   std::string sType = sId.substr(0, 5);
 	if (sType == "Input")
 	{
     std::string sIdCount = sId.substr(6);
-    int nId = convert<int>(sIdCount);
+    bool bDummy;
+    int nId = convert<int>(sIdCount, bDummy);
+    ASSERT(bDummy);
 		*ppPin = GetPin(nId);
 	}
 	else if (sType == "Outpu")
 	{
     std::string sIdCount = sId.substr(7);
-    int nId = convert<int>(sIdCount);
+    bool bDummy;
+    int nId = convert<int>(sIdCount, bDummy);
+    ASSERT(bDummy);
 		*ppPin = GetPin((int)m_vInputPins.size() + nId);
 	} 
 	else 
@@ -211,14 +215,42 @@ STDMETHODIMP CMultiIOBaseFilter::FindPin( LPCWSTR Id, IPin **ppPin )
 	return hr;
 }
 
+STDMETHODIMP CMultiIOBaseFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if (riid == (IID_ISettingsInterface))
+  {
+    return GetInterface((ISettingsInterface*) this, ppv);
+  }
+  else if (riid == IID_IStatusInterface)
+  {
+    return GetInterface((IStatusInterface*) this, ppv);
+  }
+  else
+  {
+    return CBaseFilter::NonDelegatingQueryInterface(riid, ppv);
+  }
+}
+
+unsigned CMultiIOBaseFilter::GetConnectedInputCount() const
+{
+  unsigned uiConnected = 0;
+  for (size_t i = 0; i < m_vInputPins.size(); ++i)
+  {
+    if (m_vInputPins[i]->IsConnected())
+    {
+      ++uiConnected;
+    }
+  }
+  return uiConnected;
+}
+
 void CMultiIOBaseFilter::CreateInputPin()
 {
 	HRESULT hr;
   std::ostringstream ostr;
   ostr << "Input " << m_vInputPins.size();
-  wchar_t* wszId = StringUtil::stlToWide(ostr.str());
-	CMultiIOInputPin* pInputPin = new CMultiIOInputPin(this, &m_csFilter, &hr, wszId, (int)m_vInputPins.size());
-  delete wszId;
+  std::wstring wsId = StringUtil::stringToWideString(ostr.str());
+	CMultiIOInputPin* pInputPin = new CMultiIOInputPin(this, &m_csFilter, &hr, wsId.c_str(), (int)m_vInputPins.size());
 	pInputPin->AddRef();
 	m_vInputPins.push_back(pInputPin);
 	// ensure enumerator is refreshed
@@ -230,10 +262,8 @@ void CMultiIOBaseFilter::CreateOutputPin()
 	HRESULT hr;
   std::ostringstream ostr;
   ostr << "Output " << m_vInputPins.size();
-  wchar_t* wszId = StringUtil::stlToWide(ostr.str());
-	CMultiIOOutputPin* pOutputPin = new CMultiIOOutputPin(this, &m_csFilter, &hr, wszId, (int)m_vOutputPins.size());
-  delete wszId;
-
+  std::wstring wsId = StringUtil::stringToWideString(ostr.str());
+	CMultiIOOutputPin* pOutputPin = new CMultiIOOutputPin(this, &m_csFilter, &hr, wsId.c_str(), (int)m_vOutputPins.size());
   pOutputPin->AddRef();
 	m_vOutputPins.push_back(pOutputPin);
 	// ensure enumerator is refreshed

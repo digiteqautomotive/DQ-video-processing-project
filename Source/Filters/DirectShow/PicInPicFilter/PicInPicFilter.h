@@ -61,7 +61,6 @@ class PicScalerBase;
  * The filter should only be confgured after the inputs have been connected.
  */
 class PicInPicFilter	:	public VideoMixingBase,
-							          public CSettingsInterface,
 							          public ISpecifyPropertyPages
 {
 public:

@@ -9,7 +9,7 @@ Scale parameters are settable via the ISettingsInterface COM interface.
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2015, CSIR
+Copyright (c) 2008 - 2016, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@ typedef signed char yuvType;
 // Forward declarations
 class PicScalerBase;
 
+
 /**
  * \ingroup DirectShowFilters
  * Scale Filter for RGB24 and YUV420P Media
@@ -95,12 +96,10 @@ public:
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
   /// Overridden from CCustomBaseFilter
   virtual void InitialiseInputTypes();
+  virtual void doGetVersion(std::string& sVersion);
+
   ///Overridden from CSettingsInterface
-  virtual void initParameters()
-  {
-    addParameter(TARGET_WIDTH, &m_nOutWidth, 0);
-    addParameter(TARGET_HEIGHT, &m_nOutHeight, 0);
-  }
+  virtual void initParameters();  
   STDMETHODIMP SetParameter(const char* type, const char* value);
   STDMETHODIMP GetPages(CAUUID *pPages)
   {

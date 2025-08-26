@@ -35,7 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //**** Adding the TimingFilter
 #include "TimestampLoggerFilter.h"
-#include <Shared/StringUtil.h>
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
 
 //To calculate the time now
 #include <iostream>

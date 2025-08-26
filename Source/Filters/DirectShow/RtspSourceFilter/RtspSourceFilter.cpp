@@ -37,7 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RtspSourceFilter.h"
 #include "RtspSourceOutputPin.h"
 
-#include <Shared/StringUtil.h>
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
 
 const unsigned TIMEOUT_MILLISECONDS = 3000;
 

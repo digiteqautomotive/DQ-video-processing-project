@@ -9,7 +9,7 @@ Supports using smart COM pointers
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,4 +61,8 @@ DECLARE_INTERFACE_(ICodecControlInterface, IUnknown)
   STDMETHOD(SetGroupId)(int iGroupId) = 0;
   /// Method to trigger IDR frame
   STDMETHOD(GenerateIdr)() = 0;
+  /// Method to query bitrate in kbps
+  STDMETHOD(GetBitrateKbps)(int& uiBitrateKbps) = 0;
+  /// Method to set bitrate in kbps
+  STDMETHOD(SetBitrateKbps)(int uiBitrateKbps) = 0;
 };

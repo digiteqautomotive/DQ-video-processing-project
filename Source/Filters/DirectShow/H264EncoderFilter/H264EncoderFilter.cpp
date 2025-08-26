@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "stdafx.h"
 #include "H264EncoderFilter.h"
+#include "VersionInfo.h"
 
 //Codec classes
 #include <Codecs/H264v2/H264v2.h>
@@ -722,5 +723,10 @@ STDMETHODIMP H264EncoderFilter::GenerateIdr()
   CAutoLock lck(&m_csCodec);
   m_pCodec->Restart();
   return S_OK;
+}
+
+void H264EncoderFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }
 

@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MediaParameterExtractor.h"
 
 // RTVC
-#include <Shared/StringUtil.h>
+#include "GeneralUtils/StringUtil.h"
 
 MediaParameterExtractor::MediaParameterExtractor()
 {

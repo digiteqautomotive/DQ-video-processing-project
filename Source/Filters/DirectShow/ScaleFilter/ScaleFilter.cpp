@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include "ScaleFilter.h"
+#include "VersionInfo.h"
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include <Image/PicScalerRGB24Impl.h>
@@ -369,6 +370,17 @@ STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
   }
 }
 
+
+void ScaleFilter::initParameters()
+{
+  addParameter(TARGET_WIDTH, &m_nOutWidth, 0);
+  addParameter(TARGET_HEIGHT, &m_nOutHeight, 0);
+//  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
+//  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
+//  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1);
+}
+
+
 HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   //make sure we were able to initialize our converter
@@ -388,4 +400,10 @@ HRESULT ScaleFilter::RecalculateFilterParameters()
   // Update the number of out pixels
   m_nOutPixels = m_nOutWidth * m_nOutHeight;
   return S_OK;
+}
+
+
+void ScaleFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

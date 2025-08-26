@@ -37,8 +37,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "H264OutputPin.h"
 #include <Codecs/H264v2/H264v2.h>
 #include <Codecs/CodecUtils/ICodecv2.h>
-#include <Shared/Conversion.h>
-#include <Shared/StringUtil.h>
+#include "GeneralUtils/Conversion.h"
+
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 {

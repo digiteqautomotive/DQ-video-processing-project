@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: NotifyCodes
+MODULE				: DirectShow
 
 FILE NAME			: NotifyCodes.h
 
@@ -10,7 +10,7 @@ DESCRIPTION			: This file stores codes for the windows events which are sent to 
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,4 +45,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \brief The default event that is sent to the main application if a filter calls SetLastError() 
 of the IStatusInterface class with bNotifyApplication = true.
 */
-#define WM_TM_GRAPHNOTIFY  EC_USER + 5
+#define WM_GRAPHNOTIFY_CRIT  EC_USER + 13
+#define WM_GRAPHNOTIFY_INFO  EC_USER + 14
+#define WM_GRAPHNOTIFY_SIGNAL_LOST    EC_USER + 7
+#define WM_GRAPHNOTIFY_SIGNAL_FOUND   EC_USER + 8
+#define WM_GRAPHNOTIFY_END_OF_SEGMENT EC_USER + 9
+#define WM_GRAPHNOTIFY_XMLP_EOF  EC_USER + 10

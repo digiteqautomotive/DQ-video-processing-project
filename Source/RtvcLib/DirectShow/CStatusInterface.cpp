@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: CStatusInterface
+MODULE				: DirectShow
 
 FILE NAME			: CStatusInterface.cpp
 
@@ -8,7 +8,7 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2013, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,9 +32,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "stdafx.h"
+#include "CStatusInterface.h"
+#include "NotifyCodes.h"
 
-#include <DirectShow/CStatusInterface.h>
-#include <DirectShow/NotifyCodes.h>
+const int MAX_MESSAGE_LENGTH = 512;
 
 CStatusInterface::CStatusInterface()
 : m_sLastError(""),
@@ -42,45 +43,61 @@ m_pMediaEventSink(NULL),
 m_lFriendlyId(-1)
 {}
 
+STDMETHODIMP CStatusInterface::GetVersion(char* szVersion, int nBufferSize)
+{
+  std::string sVersion;
+  doGetVersion(sVersion);
+  if (sVersion.length() >= static_cast<size_t>(nBufferSize))
+  {
+    return E_NOT_SUFFICIENT_BUFFER;
+  }
+  memcpy(szVersion, sVersion.c_str(), sVersion.length());
+  // add null terminator
+  szVersion[sVersion.length()] = '\0';
+  return S_OK;
+}
+
 STDMETHODIMP CStatusInterface::GetNotificationMessage( char* szMessage, int nBufferSize)
 {
-  return E_FAIL;
-  //int nLength = strlen(m_szNotification);
-  //if (nLength >= nBufferSize)
-  //{
-  //  // If this happens we know that we have to increase the buffer size
-  //  return E_FAIL;
-  //}
-  //memcpy(szMessage, m_szNotification, nLength);
-  //return S_OK;
+  int nLength = m_sNotification.length();
+  if (nLength >= nBufferSize)
+  {
+    // If this happens we know that we have to increase the buffer size
+    return E_FAIL;
+  }
+  memcpy(szMessage, m_sNotification.c_str(), nLength);
+  return S_OK;
 }
 
 STDMETHODIMP CStatusInterface::SetNotificationMessage( const char* szMessage )
 {
-  return E_FAIL;
-  //if (strlen(szMessage) > MAX_MESSAGE_LENGTH)
-  //  return E_FAIL;
-  //// Clear memory first
-  //ZeroMemory(m_szNotification, MAX_MESSAGE_LENGTH);
-  //memcpy(m_szNotification, szMessage, strlen(szMessage));
-  //NotifyApplication(WM_GRAPHNOTIFY_INFO, m_lFriendlyId);
-  //return S_OK;
+  if (strlen(szMessage) > MAX_MESSAGE_LENGTH)
+    return E_FAIL;
+  m_sNotification = std::string(szMessage, strlen(szMessage));
+  NotifyApplication(WM_GRAPHNOTIFY_INFO, m_lFriendlyId);
+  return S_OK;
 }
 
-STDMETHODIMP CStatusInterface::SetLastError( std::string sError, bool bNotifyApplication)
+STDMETHODIMP CStatusInterface::SetLastError(const char* szLastError, bool bNotifyApplication)
 {
-	m_sLastError = sError;
+	m_sLastError = std::string(szLastError);
 	if (bNotifyApplication)
 	{
-		NotifyApplication(WM_TM_GRAPHNOTIFY, m_lFriendlyId);
+    NotifyApplication(WM_GRAPHNOTIFY_CRIT, m_lFriendlyId);
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CStatusInterface::GetLastError( std::string& sError )
+STDMETHODIMP CStatusInterface::GetLastError(char* szLastError, int nBufferSize)
 {
-	sError = m_sLastError;
-	return S_OK;
+  if (m_sLastError.length() >= static_cast<size_t>(nBufferSize))
+  {
+    // If this happens we know that we have to increase the buffer size
+    return E_NOT_SUFFICIENT_BUFFER;
+  }
+  memcpy(szLastError, m_sLastError.c_str(), m_sLastError.length());
+  szLastError[m_sLastError.size()] = '\0';
+  return S_OK;
 }
 
 STDMETHODIMP CStatusInterface::SetMediaEventSink( IMediaEventSink* pEventSink )
@@ -107,3 +124,14 @@ void CStatusInterface::NotifyApplication( long lEventCode, LONG_PTR lEventParam1
 	if (m_pMediaEventSink)
 		m_pMediaEventSink->Notify(lEventCode, m_lFriendlyId, lEventParam1);
 }
+
+void CStatusInterface::notify(const std::string& sMessage)
+{
+  SetNotificationMessage(sMessage.c_str());
+}
+
+void CStatusInterface::notifyError(const std::string& sMessage, bool bNotifyApp)
+{
+  SetLastError(sMessage.c_str(), bNotifyApp);
+}
+

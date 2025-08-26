@@ -24,9 +24,6 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\CustomBaseFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\DirectShowHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\MultiIOBaseFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,6 +37,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VideoMixingBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\DirectShowHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

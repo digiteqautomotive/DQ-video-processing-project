@@ -56,8 +56,7 @@ class PicCropperBase;
  * Scale Filter for RGB24 and YUV420P Media
  * Scale parameters are settable via the ISettingsInterface COM interface.
  */
-class ScaleFilter : public CCustomBaseFilter,
-  public ISpecifyPropertyPages
+class ScaleFilter : public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN;

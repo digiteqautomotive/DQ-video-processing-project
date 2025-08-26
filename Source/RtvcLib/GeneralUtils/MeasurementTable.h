@@ -9,7 +9,7 @@ FILE NAME			: MeasurementTable.h
 DESCRIPTION		: A class to hold measurement data in the form of a table
 								with a set number of columns and rows.
 
-COPYRIGHT			: (c)CSIR 2007-2013 all rights resevered
+COPYRIGHT			: (c)CSIR 2007-2017 all rights resevered
 
 LICENSE				: Software License Agreement (BSD License)
 
@@ -60,7 +60,7 @@ public:
 public:
 	int		Create(int columns, int rows);
 	void	Destroy(void);
-	int		Save(char* filename, char* delimiter, int withHeadings);
+	int		Save(const char* filename, const char* delimiter, int withHeadings);
 
 	virtual void		WriteItem(int col, int row, int x)		{ _ppTable[row][col] = (double)x; }
 	virtual void		WriteItem(int col, int row, double x) { _ppTable[row][col] = x; }

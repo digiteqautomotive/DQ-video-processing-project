@@ -105,7 +105,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;DIRECTSHOW_EXPORTS;__USING_GMFBRIDGE;BOOST_ALL_NO_LIB;BOOST_ALL_DYN_LINK;BOOST_LIB_DIAGNOSTIC;_CRT_SECURE_NO_DEPRECATE;RTVC_ADD_GRAPH_TO_ROT;WIN32</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;DIRECTSHOW_EXPORTS;__USING_GMFBRIDGE;BOOST_ALL_NO_LIB;BOOST_ALL_DYN_LINK;BOOST_LIB_DIAGNOSTIC;_CRT_SECURE_NO_DEPRECATE;RTVC_ADD_GRAPH_TO_ROT;WIN32;ARTIST;_CONVERT_WITH_ATL</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>

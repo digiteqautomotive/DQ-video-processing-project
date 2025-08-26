@@ -8,7 +8,7 @@ DESCRIPTION            : Video mixing base class for RGB24 and RGB32 media
                      
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include <DirectShow/MultiIOBaseFilter.h>
+#include "MultiIOBaseFilter.h"
 
 /**
  * \ingroup DirectShowLib

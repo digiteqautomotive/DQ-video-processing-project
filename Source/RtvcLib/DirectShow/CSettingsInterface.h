@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: CSettingsInterface
+MODULE				: DirectShow
 
 FILE NAME			: CSettingsInterface.h
 
@@ -10,7 +10,7 @@ DESCRIPTION			: The implementation of the COM ISettingsInterface
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,40 +93,40 @@ protected:
 	virtual void initParameters() = 0; 
 
 	/// The addParameter methods should be called from inside initParameters at start up
-	/// @param[in] szParamName The name of the parameter that should be reverted to its previous value
+	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] nDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char* szParamName, int* pAddr, int nDefaultValue, bool bReadOnly = false, std::vector<int> vAllowedValues = std::vector<int>());
+	virtual void addParameter(const std::string& sParamName, int* pAddr, int nDefaultValue, bool bReadOnly = false, std::vector<int> vAllowedValues = std::vector<int>());
 	/// The addParameter methods should be called from inside initParameters at start up
-  /// @param[in] szParamName The name of the parameter that should be reverted to its previous value
+  /// @param[in] sParamName The name of the parameter that should be reverted to its previous value
   /// @param[in] pAddr A pointer to the member variable that will store the value
   /// @param[in] uiDefaultValue An optional default value for the member variable
   /// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
   /// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-  virtual void addParameter(const char* szParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly = false, std::vector<unsigned> vAllowedValues = std::vector<unsigned>());
+  virtual void addParameter(const std::string& sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly = false, std::vector<unsigned> vAllowedValues = std::vector<unsigned>());
 	/// The addParameter methods should be called from inside initParameters at start up
-	/// @param[in] szParamName The name of the parameter that should be reverted to its previous value
+	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] szDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-  virtual void addParameter(const char* szParamName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly = false, std::vector<std::string> vAllowedValues = std::vector<std::string>());
+  virtual void addParameter(const std::string& sParamName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly = false, std::vector<std::string> vAllowedValues = std::vector<std::string>());
 	/// The addParameter methods should be called from inside initParameters at start up
-	/// @param[in] szParamName The name of the parameter that should be reverted to its previous value
+	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] bDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char* szParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly = false, std::vector<bool> vAllowedValues = std::vector<bool>());
+  virtual void addParameter(const std::string& sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly = false, std::vector<bool> vAllowedValues = std::vector<bool>());
 	/// The addParameter methods should be called from inside initParameters at start up
-	/// @param[in] szParamName The name of the parameter that should be reverted to its previous value
+	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] dDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char* szParamName, double* pAddr, double dDefaultValue, bool bReadOnly = false, std::vector<double> vAllowedValues = std::vector<double>());
+  virtual void addParameter(const std::string& sParamName, double* pAddr, double dDefaultValue, bool bReadOnly = false, std::vector<double> vAllowedValues = std::vector<double>());
 
 private:
 

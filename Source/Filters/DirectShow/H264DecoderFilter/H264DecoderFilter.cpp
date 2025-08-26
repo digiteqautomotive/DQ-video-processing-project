@@ -111,10 +111,12 @@ CUnknown * WINAPI H264DecoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 void H264DecoderFilter::InitialiseInputTypes()
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_VPP_H264,		&FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AVC1,		    &FORMAT_MPEG2Video);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_VPP_H264, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AVC1, &FORMAT_MPEG2Video);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_H264, &FORMAT_MPEG2Video);
   //RG Test 18012008
-  AddInputType(&MEDIATYPE_Stream, &MEDIASUBTYPE_VPP_H264,		&FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Stream, &MEDIASUBTYPE_VPP_H264,  &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Stream, &MEDIASUBTYPE_H264,  &FORMAT_VideoInfo);
 }
 
 // TODO: refactor from H264Source
@@ -168,7 +170,7 @@ HRESULT H264DecoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     m_pCodec->SetParameter("autoipicture",			"1");
     m_pCodec->SetParameter("ipicturefraction",		"0");
 
-    if (pmt->subtype == MEDIASUBTYPE_VPP_H264)
+    if(pmt->subtype==MEDIASUBTYPE_VPP_H264 || pmt->subtype==MEDIASUBTYPE_H264)
     {
       // Check for private codec data
       // Store SPS and PPS in media format header
@@ -563,7 +565,7 @@ HRESULT H264DecoderFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
   }
 
   // Check subtypes
-  if (mtIn->subtype == MEDIASUBTYPE_VPP_H264 || mtIn->subtype == MEDIASUBTYPE_AVC1)
+  if(mtIn->subtype==MEDIASUBTYPE_H264 || mtIn->subtype==MEDIASUBTYPE_VPP_H264 || mtIn->subtype==MEDIASUBTYPE_AVC1)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB24)
     {
