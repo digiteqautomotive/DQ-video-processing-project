@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <Image/PicRotateRGB24Impl.h>
 #include <Image/PicRotateRGB32Impl.h>
+#include "../VersionInfo.h"
+
 
 RotateFilter::RotateFilter()
 : CCustomBaseFilter(NAME("CSIR VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
@@ -374,3 +376,8 @@ void RotateFilter::RecalculateFilterParameters()
 	}
 }
 
+
+void RotateFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
+}

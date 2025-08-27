@@ -4,39 +4,44 @@ MODULE				: H264EncoderProperties
 
 FILE NAME			: H264EncoderProperties.h
 
-DESCRIPTION			: Properties for H264 encoder filter.
+DESCRIPTION			: Properties for H264 Encoder filter.
 
-LICENSE	: GNU Lesser General Public License
+LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2014, Meraka Institute
 All rights reserved.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* Neither the name of the Meraka Institute nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
 #pragma once
 
-#include <DirectShow/FilterPropertiesBase.h>
-#include <Shared/Conversion.h>
-
+#include "DirectShow/FilterPropertiesBase.h"
+#include "GeneralUtils/Conversion.h"
+#include <cassert>
 #include <climits>
 #include "resource.h"
 
 #define BUFFER_SIZE 256
 
-const int RADIO_BUTTON_IDS[] = {IDC_RADIO_VPP, IDC_RADIO_H264, IDC_RADIO_AVC1};
+const int RADIO_BUTTON_IDS[] = { IDC_RADIO_VPP, IDC_RADIO_H264, IDC_RADIO_AVC1 };
 
 class H264EncoderProperties : public FilterPropertiesBase
 {
@@ -53,7 +58,7 @@ public:
   }
 
   H264EncoderProperties::H264EncoderProperties(IUnknown *pUnk) : 
-  FilterPropertiesBase(NAME("H264 Properties"), pUnk, IDD_SWITCH_DIALOG, IDS_SWITCH_CAPTION)
+    FilterPropertiesBase(NAME("H264 Properties"), pUnk, IDD_H264PROP_DIALOG, IDD_H264PROP_CAPTION)
   {;}
 
   INT_PTR OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -67,37 +72,70 @@ public:
     initialiseControls();
 
     // Mode of operation
-    HRESULT hr = setComboTextFromFilterParameter(MODE_OF_OPERATION_H264, IDC_CMB_MODE_OF_OPERATION);
-
+    HRESULT hr = setComboTextFromFilterParameter(CODEC_PARAM_MODE_OF_OPERATION, IDC_CMB_MODE_OF_OPERATION);
+    
     // frame bit limit
-    hr = setEditTextFromIntFilterParameter(FRAME_BIT_LIMIT, IDC_EDIT_BITRATE_LIMIT);
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_FRAME_BIT_LIMIT, IDC_EDIT_BITRATE_LIMIT);
     if (FAILED(hr)) return hr;
 
     // Quality
-    hr = setEditTextFromIntFilterParameter(QUALITY, IDC_EDIT_QUALITY);
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_QUALITY, IDC_EDIT_QUALITY);
     if (FAILED(hr)) return hr;
 
     // I-Frame period
-    hr = setEditTextFromIntFilterParameter(IFRAME_PERIOD, IDC_EDIT_IFRAME_PERIOD);
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_IFRAME_PERIOD, IDC_EDIT_IFRAME_PERIOD);
+    if (FAILED(hr)) return hr;
+
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_I_PICTURE_MULTIPLIER, IDC_EDIT_IPICTURE_MULT);
     if (FAILED(hr)) return hr;
 
     // notify
-    hr = setCheckBoxFromBoolFilterParameter(NOTIFYONIFRAME, IDC_CHECK_NOTIFY);
-    ASSERT(SUCCEEDED(hr));
+    hr = setCheckBoxFromBoolFilterParameter(CODEC_PARAM_NOTIFYONIFRAME, IDC_CHECK_NOTIFY);
+    assert(SUCCEEDED(hr));
+
+    // max bits per frame
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_MAX_BITS_PER_FRAME, IDC_EDIT_MAX_BITS_PER_FRAME);
+    if (FAILED(hr)) return hr;
+
+    // num control frames
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_NUM_RATE_CONTROL_FRAMES, IDC_EDIT_NUM_RATE_CONTROL_FRAMES);
+    if (FAILED(hr)) return hr;
+
+    // max dist
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_MAX_DISTORTION, IDC_EDIT_MAX_DIST);
+    if (FAILED(hr)) return hr;
+
+    // DMAX
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_IPICTURE_DMAX_MULTIPLIER, IDC_EDIT_IPICTURE_DMAX_MULT);
+    if (FAILED(hr)) return hr;
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_IPICTURE_DMAX_FRACTION, IDC_EDIT_IPICTURE_DMAX_FRAC);
+    if (FAILED(hr)) return hr;
+
+    // intra QP
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_MINIMUM_INTRA_QP, IDC_EDIT_MIN_INTRA_QP);
+    if (FAILED(hr)) return hr;
+
+    // inter QP
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_MINIMUM_INTER_QP, IDC_EDIT_MIN_INTER_QP);
+    if (FAILED(hr)) return hr;
+
+    // rate overshoot percent
+    hr = setEditTextFromIntFilterParameter(CODEC_PARAM_RATE_OVERSHOOT_PERCENT, IDC_EDIT_RATE_OVERSHOOT_PERCENT);
+    if (FAILED(hr)) return hr;
 
     // H264 type
     int nLength = 0;
     char szBuffer[BUFFER_SIZE];
-    hr = m_pSettingsInterface->GetParameter(H264_TYPE, sizeof(szBuffer), szBuffer, &nLength);
+    hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_H264_OUTPUT_TYPE, sizeof(szBuffer), szBuffer, &nLength);
     if (SUCCEEDED(hr))
     {
       int nH264Type = atoi(szBuffer);
       int nRadioID = RADIO_BUTTON_IDS[nH264Type];
       long lResult = SendMessage(				// returns LRESULT in lResult
         GetDlgItem(m_Dlg, nRadioID),		// handle to destination control
-        (UINT) BM_SETCHECK,					// message ID
-        (WPARAM) 1,							// = 0; not used, must be zero
-        (LPARAM) 0							// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
+        (UINT)BM_SETCHECK,					// message ID
+        (WPARAM)1,							// = 0; not used, must be zero
+        (LPARAM)0							// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
         );
       return S_OK;
     }
@@ -112,39 +150,69 @@ public:
   HRESULT OnApplyChanges(void)
   {
     // mode of operation
-    HRESULT hr = setIntFilterParameterFromEditText(MODE_OF_OPERATION_H264, IDC_CMB_MODE_OF_OPERATION);
+    HRESULT hr = setIntFilterParameterFromEditText(CODEC_PARAM_MODE_OF_OPERATION, IDC_CMB_MODE_OF_OPERATION);
     if (FAILED(hr)) return hr;
 
     // frame bit limit
-    hr = setIntFilterParameterFromEditText(FRAME_BIT_LIMIT, IDC_EDIT_BITRATE_LIMIT);
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_FRAME_BIT_LIMIT, IDC_EDIT_BITRATE_LIMIT);
     if (FAILED(hr)) return hr;
 
     // quality
-    hr = setIntFilterParameterFromEditText(QUALITY, IDC_EDIT_QUALITY);
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_QUALITY, IDC_EDIT_QUALITY);
     if (FAILED(hr)) return hr;
 
     // i-frame period
-    hr = setIntFilterParameterFromEditText(IFRAME_PERIOD, IDC_EDIT_IFRAME_PERIOD);
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_IFRAME_PERIOD, IDC_EDIT_IFRAME_PERIOD);
     if (FAILED(hr)) return hr;
 
     // notify
-    hr = setBoolFilterParameterFromCheckBox(NOTIFYONIFRAME, IDC_CHECK_NOTIFY);
+    hr = setBoolFilterParameterFromCheckBox(CODEC_PARAM_NOTIFYONIFRAME, IDC_CHECK_NOTIFY);
     if (FAILED(hr)) return hr;
 
-    //// use MS H264 decoder
-    //hr = setBoolFilterParameterFromCheckBox(USE_MS_H264, IDC_USE_MS_H264);
+    // use MS H264 decoder
+    hr = setBoolFilterParameterFromCheckBox(FILTER_PARAM_USE_MS_H264, IDC_USE_MS_H264);
+
+    // max bits per frame
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_MAX_BITS_PER_FRAME, IDC_EDIT_MAX_BITS_PER_FRAME);
+    if (FAILED(hr)) return hr;
+
+    // num control frames
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_NUM_RATE_CONTROL_FRAMES, IDC_EDIT_NUM_RATE_CONTROL_FRAMES);
+    if (FAILED(hr)) return hr;
+
+    // max dist
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_MAX_DISTORTION, IDC_EDIT_MAX_DIST);
+    if (FAILED(hr)) return hr;
+
+    // DMAX
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_IPICTURE_DMAX_MULTIPLIER, IDC_EDIT_IPICTURE_DMAX_MULT);
+    if (FAILED(hr)) return hr;
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_IPICTURE_DMAX_FRACTION, IDC_EDIT_IPICTURE_DMAX_FRAC);
+    if (FAILED(hr)) return hr;
+
+    // intra QP
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_MINIMUM_INTRA_QP, IDC_EDIT_MIN_INTRA_QP);
+    if (FAILED(hr)) return hr;
+
+    // inter QP
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_MINIMUM_INTER_QP, IDC_EDIT_MIN_INTER_QP);
+    if (FAILED(hr)) return hr;
+
+    // rate overshoot percent
+    hr = setIntFilterParameterFromEditText(CODEC_PARAM_RATE_OVERSHOOT_PERCENT, IDC_EDIT_RATE_OVERSHOOT_PERCENT);
+    if (FAILED(hr)) return hr;
+
     for (int i = 0; i <= 2; ++i)
     {
       int nRadioID = RADIO_BUTTON_IDS[i];
-      int iCheck = SendMessage( GetDlgItem(m_Dlg, nRadioID),	(UINT) BM_GETCHECK,	0, 0);
+      int iCheck = SendMessage(GetDlgItem(m_Dlg, nRadioID), (UINT)BM_GETCHECK, 0, 0);
       if (iCheck != 0)
       {
-        std::string sID = toString(i);
-        HRESULT hr = m_pSettingsInterface->SetParameter(H264_TYPE, sID.c_str());
+        std::string sID = std::to_string(i);
+        HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_H264_OUTPUT_TYPE, sID.c_str());
         break;
       }
     }
-
     return hr;
   } 
 
@@ -160,15 +228,28 @@ private:
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE_OF_OPERATION), CB_ADDSTRING,	    0, (LPARAM)"0");
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE_OF_OPERATION), CB_SELECTSTRING,  0, (LPARAM)"0");
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE_OF_OPERATION), CB_INSERTSTRING,  1, (LPARAM)"1");
-    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE_OF_OPERATION), CB_SETMINVISIBLE, 2, 0);
+    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE_OF_OPERATION), CB_INSERTSTRING,  2, (LPARAM)"2");
+    SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE_OF_OPERATION), CB_SETMINVISIBLE, 3, 0);
 
     // set spin box ranges
     // Frame bit limit
-    setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
+    setSpinBoxRange(IDC_SPIN1, 0, UINT_MAX);
     // I-frame period
-    setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
+    setSpinBoxRange(IDC_SPIN2, 0, UINT_MAX);
     // Quality
-    setSpinBoxRange(IDC_SPIN3, 0, MAX_QP);
+    setSpinBoxRange(IDC_SPIN3, 0, D_MAX_QUALITY_H264);
+    setSpinBoxRange(IDC_SPIN4, 0, INT_MAX);
+    setSpinBoxRange(IDC_SPIN5, 0, 9999); 
+    setSpinBoxRange(IDC_SPIN6, 0, INT_MAX);
+    // DMAX
+    setSpinBoxRange(IDC_SPIN7, 0, 9);
+    setSpinBoxRange(IDC_SPIN8, 0, 9);
+    // intra QP
+    setSpinBoxRange(IDC_SPIN9, 0, D_MAX_QUALITY_H264);
+    // inter
+    setSpinBoxRange(IDC_SPIN10, 0, D_MAX_QUALITY_H264);
+    // rate overshoot percent
+    setSpinBoxRange(IDC_SPIN11, 0, 1000);
   }
 };
 

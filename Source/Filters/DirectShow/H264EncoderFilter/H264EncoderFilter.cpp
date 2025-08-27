@@ -1,44 +1,58 @@
 /** @file
 
-MODULE				: H264
+MODULE:
+ 
+TAG: 
 
-FILE NAME			: H264DecoderFilter.cpp
+FILE NAME: 
 
-DESCRIPTION			: H.264 encoder filter implementation
+DESCRIPTION: 
 
-LICENSE	: GNU Lesser General Public License
+COPYRIGHT: (c)CSIR 2007-2018 all rights reserved
 
-Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+LICENSE: Software License Agreement (BSD License)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+RESTRICTIONS: 
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+1. Redistributions of source code must retain the above copyright notice, this 
+list of conditions and the following disclaimer.
 
-You should have received a copy of the GNU Lesser General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+2. Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation and/or 
+other materials provided with the distribution.
 
+3. Neither the name of the copyright holder nor the names of its contributors may 
+be used to endorse or promote products derived from this software without specific 
+prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
+
 #include "stdafx.h"
 #include "H264EncoderFilter.h"
-#include "VersionInfo.h"
-
-//Codec classes
-#include <Codecs/H264v2/H264v2.h>
-#include <Codecs/CodecUtils/ICodecv2.h>
-
-#include <Shared/Conversion.h>
-#include <Shared/CommonDefs.h>
-
+#include <cassert>
 #include <dvdmedia.h>
 #include <wmcodecdsp.h>
+#include "Codecs/H264v2/H264v2.h"
+#include "Codecs/CodecUtils/ICodecv2.h"
+#include "Codecs/CodecUtils/CodecConfigurationUtil.h"
+#include <GeneralUtils/Conversion.h>
+#include "../DirectShowFilterGuids.h"
+#include "DirectShow/DirectShowMediaFormats.h"
+#include "../VersionInfo.h"
+
 
 // HACK for backwards compatibility with pre-CMake projects
 #ifndef VPP_CMAKE_BUILD
@@ -50,8 +64,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #endif
 
+const unsigned char g_startCode[] = { 0, 0, 0, 1};
+
+/// ***: Basic implementation is complete
+/// Setting two additional rows and columns to zero values for now due to the large 32 Pixel motion estimation range!
+
+/// Should be
+/// 352x288 Flags for auto iframe detection
+/// (352/16) * (288/16) = 22 * 18 = 396 16x16 macroblocks
+/// The adverts will take up 
+/// 96 Pixels (6 macroblocks) on the left of the image
+/// 64 Pixels (4 macroblocks) at the bottom of the image
+/// Note that the image mask is inverted: the viewed image has the adverts at the left and at the BOTTOM
+bool g_pAutoIframeDetectFlags_352x288[396] =	{				  //  ____  Extra zero columns for now - see comment *** above
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Extra zero row for now - see comment *** above
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Extra zero row for now - see comment *** above
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+												};
+/// 352x288 Flags for auto iframe detection
+/// (176/16) * (144/16) = 11 * 9  = 99  16x16 macroblocks
+/// The adverts will take up 
+/// 48 Pixels (3 macroblocks) on the left of the image
+/// 32 Pixels (2 macroblocks) at the bottom of the image
+bool g_pAutoIframeDetectFlags_176x144[99] =		{    //  	 ____	Extra zero columns for now - see comment *** above
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Extra zero row for now - see comment *** above
+													0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Extra zero row for now - see comment *** above
+													0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+													0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+												};
+
+const REFERENCE_TIME FPS_25 = UNITS / 25;
+
+const unsigned MINIMUM_BUFFER_SIZE = 5024;
 H264EncoderFilter::H264EncoderFilter()
-  :CCustomBaseFilter(NAME("CSIR VPP H264 Encoder"), 0, CLSID_VPP_H264Encoder),
+  : CCustomBaseFilter(NAME("CSIR H264 Encoder"), 0, CLSID_RTVC_H264Encoder),
   m_pCodec(NULL),
   m_nFrameBitLimit(0),
   m_bNotifyOnIFrame(false),
@@ -60,102 +124,91 @@ H264EncoderFilter::H264EncoderFilter()
   m_pPicParamSet(0),
   m_uiPicParamSetLen(0),
   m_uiIFramePeriod(0),
-  m_uiCurrentFrame(0)
+  m_uiCurrentFrame(0),
+  m_rtFrameLength(FPS_25),
+  m_tStart(0),
+  m_tStop(m_rtFrameLength)
 {
-  //Call the initialise input method to load all acceptable input types for this filter
-  InitialiseInputTypes();
-  initParameters();
-  H264v2Factory factory;
-  m_pCodec = factory.GetCodecInstance();
-  // Set default codec properties 
-  if (m_pCodec)
-  {
-    //Set default quality to 16
-    m_pCodec->SetParameter( QUALITY, "1");
-    //16 = YUV
-    m_pCodec->SetParameter(IN_COLOUR, "16");
-    //16 = YUV
-    m_pCodec->SetParameter(OUT_COLOUR, "16");
-    // This multiplies the bit size of every i-frame by 2
-    m_pCodec->SetParameter(I_PICTURE_MULTIPLIER, "2");
+	//Call the initialise input method to load all acceptable input types for this filter
+	InitialiseInputTypes();
+	initParameters();
+	H264v2Factory factory;
+	m_pCodec = factory.GetCodecInstance();
+	// Set default codec properties 
+	if (m_pCodec)
+	{
+    configureDefaultH264CodecParameters(m_pCodec);
   }
-  else
-  {
-    SetLastError("Unable to create H264 Encoder from Factory.", true);
-  }
+	else
+	{
+		SetLastError("Unable to create H264 Encoder from Factory.", true);
+	}
 }
 
 H264EncoderFilter::~H264EncoderFilter()
 {
-  if (m_pCodec)
-  {
-    m_pCodec->Close();
-    H264v2Factory factory;
-    factory.ReleaseCodecInstance(m_pCodec);
-  }
+	if (m_pCodec)
+	{
+		m_pCodec->Close();
+		H264v2Factory factory;
+		factory.ReleaseCodecInstance(m_pCodec);
+	}
 
-  SafeDeleteArray(m_pSeqParamSet);
-  SafeDeleteArray(m_pPicParamSet);
+  if (m_pSeqParamSet) delete[] m_pSeqParamSet; m_pSeqParamSet = NULL;
+  if (m_pPicParamSet) delete[] m_pPicParamSet; m_pPicParamSet = NULL;
 }
 
 CUnknown * WINAPI H264EncoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
-  H264EncoderFilter *pFilter = new H264EncoderFilter();
-  if (pFilter== NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
-  return pFilter;
+	H264EncoderFilter *pFilter = new H264EncoderFilter();
+	if (pFilter== NULL) 
+	{
+		*pHr = E_OUTOFMEMORY;
+	}
+	return pFilter;
 }
 
-
+ 
 void H264EncoderFilter::InitialiseInputTypes()
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24,	&FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P,	&FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420,	&FORMAT_VideoInfo);
+	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24,		&FORMAT_VideoInfo);
+	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S,	&FORMAT_VideoInfo);
+  // TODO
+#if 0
+	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420,	&FORMAT_VideoInfo);
+#endif
 }
 
 
 HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
 {
-  HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
-  if (direction == PINDIR_INPUT)
-  {
+	HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
+	if (direction == PINDIR_INPUT)
+	{
     // try close just in case
     m_pCodec->Close();
 
     if (pmt->subtype == MEDIASUBTYPE_RGB24)
+		{
+      m_pCodec->SetParameter(CODEC_PARAM_IN_COLOUR, D_IN_COLOUR_RGB24);
+		}
+		else if (pmt->subtype == MEDIASUBTYPE_YUV420P_S)
+		{
+      m_pCodec->SetParameter(CODEC_PARAM_IN_COLOUR, D_IN_COLOUR_YUV420P);
+		}
+    // TODO
+#if 0
+    else if (pmt->subtype == MEDIASUBTYPE_I420)
     {
-      m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_RGB24);
-    }
-    else if (pmt->subtype==MEDIASUBTYPE_YUV420P || pmt->subtype == MEDIASUBTYPE_I420 || pmt->subtype == MEDIASUBTYPE_YV12)
-    {
-      // NOTE: RG: _BUILD_FOR_SHORT has been elminated outside of the H.264 codec
-      // We will only use 8 bit YUV outside of the codec!
-      //m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_YUV420P);
-      m_pCodec->SetParameter(IN_COLOUR, IN_COLOUR_YUV420P8);
-    }
-
-    m_pCodec->SetParameter(IMAGE_WIDTH, toString(m_nInWidth).c_str());
-    m_pCodec->SetParameter(IMAGE_HEIGHT, toString(m_nInHeight).c_str());
-
-    // NB: New codec settings for auto-iframe detection: These settings need to correlate to the settings of the DECODER
-    m_pCodec->SetParameter("unrestrictedmotion",	"1");
-    m_pCodec->SetParameter("extendedpicturetype",	"1");
-    m_pCodec->SetParameter("unrestrictedmotion",	"1");
-    m_pCodec->SetParameter("advancedintracoding",	"1");
-    m_pCodec->SetParameter("alternativeintervlc",	"1");
-    m_pCodec->SetParameter("modifiedquant",			  "1");
-    m_pCodec->SetParameter("autoipicture",			  "1");
-    m_pCodec->SetParameter("ipicturefraction",		"0");
-
-    // On Windows we will always flip the color-converted image by default
-    m_pCodec->SetParameter("flip",		            "1");
+      m_pCodec->SetParameter(CODEC_PARAM_IN_COLOUR, D_IN_COLOUR_YUV420P8);
+		}
+#endif
+    m_pCodec->SetParameter(FILTER_PARAM_WIDTH, std::to_string(m_nInWidth).c_str());
+    m_pCodec->SetParameter(FILTER_PARAM_HEIGHT, std::to_string(m_nInHeight).c_str());
 
     // generate sequence and picture parameter sets
-    SafeDeleteArray(m_pSeqParamSet);
-    SafeDeleteArray(m_pPicParamSet);
+    if (m_pSeqParamSet) delete[] m_pSeqParamSet; m_pSeqParamSet = NULL;
+    if (m_pPicParamSet) delete[] m_pPicParamSet; m_pPicParamSet = NULL;
 
     // set the selected parameter set numbers 
     m_pCodec->SetParameter((char *)"seq param set",  "0");
@@ -166,7 +219,7 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     m_pSeqParamSet = new unsigned char[100];
     if(!m_pCodec->Code(NULL, m_pSeqParamSet, 100 * 8))
     {
-      SafeDeleteArray(m_pSeqParamSet);
+      if (m_pSeqParamSet) delete[] m_pSeqParamSet; m_pSeqParamSet = NULL;
       SetLastError(m_pCodec->GetErrorStr(), true);
       return hr;
     }
@@ -182,10 +235,10 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     m_pPicParamSet = new unsigned char[100];
     if(!m_pCodec->Code(NULL, m_pPicParamSet, 100 * 8))
     {
-      SafeDeleteArray(m_pPicParamSet);
-      SafeDeleteArray(m_pSeqParamSet);
+      if (m_pSeqParamSet) delete[] m_pSeqParamSet; m_pSeqParamSet = NULL;
+      if (m_pPicParamSet) delete[] m_pPicParamSet; m_pPicParamSet = NULL;
       SetLastError(m_pCodec->GetErrorStr(), true);
-      return hr;
+      return E_FAIL;
     }
     else
     {
@@ -200,26 +253,49 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     m_pCodec->SetParameter((char *)("picture coding type"),	  "0");	///< I-frame = H264V2_INTRA.
     m_pCodec->SetParameter((char *)("generate param set on open"),  "1");
 
-    if (!m_pCodec->Open())
-    {
-      //Houston: we have a failure
-      char* szErrorStr = m_pCodec->GetErrorStr();
-      printf("%s\n", szErrorStr);
-      SetLastError(szErrorStr, true);
-      return hr;
-    }
-  }
-  return hr;
+		if (!m_pCodec->Open())
+		{
+			//Houston: we have a failure
+			char* szErrorStr = m_pCodec->GetErrorStr();
+			printf("%s\n", szErrorStr);
+			SetLastError(szErrorStr, true);
+      return E_FAIL;
+		}
+
+		//// Apply the i-frame auto detect flags only if this input is an advert media type
+		//if ( pmt->subtype == MEDIASUBTYPE_RGB24_ADVERT || pmt->subtype == MEDIASUBTYPE_YUV420P_ADVERT)
+		//{
+		//	// Now that the codec is open: get the inner access interface
+		//	ICodecInnerAccess* pInnerAccess = dynamic_cast<ICodecInnerAccess*>(dynamic_cast<H264v2Codec*>(m_pCodec));
+		//	if (pInnerAccess)
+		//	{
+		//		bool* pFlags = NULL;
+		//		if (m_nInWidth == 352 && m_nInHeight == 288)
+		//		{
+		//			pFlags = g_pAutoIframeDetectFlags_352x288;
+		//		}
+		//		else if (m_nInWidth == 176 && m_nInHeight == 144)
+		//		{
+		//			pFlags = g_pAutoIframeDetectFlags_176x144;
+		//		}
+
+		//		if (pFlags)
+		//			pInnerAccess->SetMember(AUTO_IFRAME_DETECT_FLAG, static_cast<void*>(pFlags));
+		//		// Else the ICodecInnerAccess interface will use a default
+		//	}
+		//}
+	}
+	return hr;
 }
 
 HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 {
-  if (iPosition < 0)
-  {
-    return E_INVALIDARG;
-  }
-  else if (iPosition == 0)
-  {
+	if (iPosition < 0)
+	{
+		return E_INVALIDARG;
+	}
+	else if (iPosition == 0)
+	{
     if (m_nH264Type == H264_VPP)
     {
       // Get the input pin's media type and return this as the output media type - we want to retain
@@ -231,11 +307,11 @@ HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
       }
 
       pMediaType->subtype = MEDIASUBTYPE_VPP_H264;
-
       ASSERT(pMediaType->formattype == FORMAT_VideoInfo);
       VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
       BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
 
+      REFERENCE_TIME avgTimePerFrame = pVih->AvgTimePerFrame;
       // For compressed formats, this value is the implied bit 
       // depth of the uncompressed image, after the image has been decoded.
       if (pBi->biBitCount != 24)
@@ -280,7 +356,17 @@ HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
     }
     else if (m_nH264Type == H264_H264)
     {
-      pMediaType->InitMediaType();    
+      // Get the input pin's media type and return this as the output media type - we want to retain
+      // all the information about the image
+      HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
+      if (FAILED(hr))
+      {
+        return hr;
+      }
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+      REFERENCE_TIME avgTimePerFrame = pVih->AvgTimePerFrame;
+   
+      pMediaType->InitMediaType();
       pMediaType->SetType(&MEDIATYPE_Video);
       pMediaType->SetSubtype(&MEDIASUBTYPE_H264);
       pMediaType->SetFormatType(&FORMAT_VideoInfo2);
@@ -294,11 +380,7 @@ HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
       pvi2->bmiHeader.biSize = m_nInWidth * m_nInHeight * 3;
       pvi2->bmiHeader.biSizeImage = DIBSIZE(pvi2->bmiHeader);
       pvi2->bmiHeader.biCompression = DWORD('1cva');
-      //pvi2->AvgTimePerFrame = m_tFrame;
-      //pvi2->AvgTimePerFrame = 1000000;
-      const REFERENCE_TIME FPS_25 = UNITS / 25;
-      pvi2->AvgTimePerFrame = FPS_25;
-      //SetRect(&pvi2->rcSource, 0, 0, m_cx, m_cy);
+      pvi2->AvgTimePerFrame = avgTimePerFrame;
       SetRect(&pvi2->rcSource, 0, 0, m_nInWidth, m_nInHeight);
       pvi2->rcTarget = pvi2->rcSource;
 
@@ -307,7 +389,17 @@ HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
     }
     else if (m_nH264Type == H264_AVC1)
     {
-      pMediaType->InitMediaType();    
+      // Get the input pin's media type and return this as the output media type - we want to retain
+      // all the information about the image
+      HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
+      if (FAILED(hr))
+      {
+        return hr;
+      }
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+      REFERENCE_TIME avgTimePerFrame = pVih->AvgTimePerFrame;
+
+      pMediaType->InitMediaType();
       pMediaType->SetType(&MEDIATYPE_Video);
       pMediaType->SetSubtype(&MEDIASUBTYPE_AVC1);
       pMediaType->SetFormatType(&FORMAT_MPEG2Video);
@@ -346,10 +438,7 @@ HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
       pvi2->bmiHeader.biHeight = m_nInHeight;
       pvi2->bmiHeader.biSizeImage = DIBSIZE(pvi2->bmiHeader);
       pvi2->bmiHeader.biCompression = DWORD('1cva');
-      //pvi2->AvgTimePerFrame = m_tFrame;
-      //pvi2->AvgTimePerFrame = 1000000;
-      const REFERENCE_TIME FPS_25 = UNITS / 25;
-      pvi2->AvgTimePerFrame = FPS_25;
+      pvi2->AvgTimePerFrame = avgTimePerFrame;
       //SetRect(&pvi2->rcSource, 0, 0, m_cx, m_cy);
       SetRect(&pvi2->rcSource, 0, 0, m_nInWidth, m_nInHeight);
       pvi2->rcTarget = pvi2->rcSource;
@@ -358,18 +447,18 @@ HRESULT H264EncoderFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
       pvi2->dwPictAspectRatioY = m_nInHeight;
     }
     return S_OK;
-  }
-  return VFW_S_NO_MORE_ITEMS;
+	}
+	return VFW_S_NO_MORE_ITEMS;
 }
 
 HRESULT H264EncoderFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp )
 {
-  AM_MEDIA_TYPE mt;
-  HRESULT hr = m_pOutput->ConnectionMediaType(&mt);
-  if (FAILED(hr))
-  {
-    return hr;
-  }
+	AM_MEDIA_TYPE mt;
+	HRESULT hr = m_pOutput->ConnectionMediaType(&mt);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 
   if (m_nH264Type == H264_H264)
   {
@@ -397,30 +486,30 @@ HRESULT H264EncoderFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
     pProp->cbBuffer = DIBSIZE(*pbmi);
   }
 
-  if (pProp->cbAlign == 0)
-  {
-    pProp->cbAlign = 1;
-  }
-  if (pProp->cBuffers == 0)
-  {
-    pProp->cBuffers = 1;
-  }
-  // Release the format block.
-  FreeMediaType(mt);
+	if (pProp->cbAlign == 0)
+	{
+		pProp->cbAlign = 1;
+	}
+	if (pProp->cBuffers == 0)
+	{
+		pProp->cBuffers = 1;
+	}
+	// Release the format block.
+	FreeMediaType(mt);
 
-  // Set allocator properties.
-  ALLOCATOR_PROPERTIES Actual;
-  hr = pAlloc->SetProperties(pProp, &Actual);
-  if (FAILED(hr)) 
-  {
-    return hr;
-  }
-  // Even when it succeeds, check the actual result.
-  if (pProp->cbBuffer > Actual.cbBuffer) 
-  {
-    return E_FAIL;
-  }
-  return S_OK;
+	// Set allocator properties.
+	ALLOCATOR_PROPERTIES Actual;
+	hr = pAlloc->SetProperties(pProp, &Actual);
+	if (FAILED(hr)) 
+	{
+		return hr;
+	}
+	// Even when it succeeds, check the actual result.
+	if (pProp->cbBuffer > Actual.cbBuffer) 
+	{
+		return E_FAIL;
+	}
+	return S_OK;
 }
 
 inline unsigned H264EncoderFilter::getParameterSetLength() const
@@ -431,7 +520,7 @@ inline unsigned H264EncoderFilter::getParameterSetLength() const
 inline unsigned H264EncoderFilter::copySequenceAndPictureParameterSetsIntoBuffer( BYTE* pBuffer )
 {
   // The SPS and PPS contain start code
-  ASSERT(m_uiSeqParamSetLen > 0 && m_uiPicParamSetLen > 0);
+  assert (m_uiSeqParamSetLen > 0 && m_uiPicParamSetLen > 0);
   memcpy(pBuffer, (void*)m_pSeqParamSet, m_uiSeqParamSetLen);
   pBuffer += m_uiSeqParamSetLen;
   memcpy(pBuffer, m_pPicParamSet, m_uiPicParamSetLen);
@@ -439,16 +528,28 @@ inline unsigned H264EncoderFilter::copySequenceAndPictureParameterSetsIntoBuffer
   return getParameterSetLength();
 }
 
+HRESULT H264EncoderFilter::Transform( IMediaSample *pSource, IMediaSample *pDest )
+{
+  HRESULT hr = CCustomBaseFilter::Transform(pSource, pDest);
+#if 0
+  pDest->SetTime( &m_tStart, &m_tStop );
+  // inc
+  m_tStart = m_tStop;
+  m_tStop += m_rtFrameLength;
+#endif
+  return hr;
+}
+
 HRESULT H264EncoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   // lock filter so that it can not be reconfigured during a code operation
   CAutoLock lck(&m_csCodec);
   lOutActualDataLength = 0;
-  //make sure we were able to initialise our Codec
-  if (m_pCodec)
-  {
-    if (m_pCodec->Ready())
-    {
+	//make sure we were able to initialise our Codec
+	if (m_pCodec)
+	{
+		if (m_pCodec->Ready())
+		{
       if (m_uiIFramePeriod)
       {
         ++m_uiCurrentFrame;
@@ -458,12 +559,12 @@ HRESULT H264EncoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
         }
       }
 
-      int nFrameBitLimit = 0;
-      if (m_nFrameBitLimit == 0)
-        // An encoded frame can never be bigger than an RGB format frame
-        nFrameBitLimit = m_nInWidth * m_nInHeight * 3 /* RGB */ * 8 /*8 bits*/ ;
-      else
-        nFrameBitLimit = m_nFrameBitLimit;
+			int nFrameBitLimit = 0;
+			if (m_nFrameBitLimit == 0)
+				// An encoded frame can never be bigger than an RGB format frame
+				nFrameBitLimit = m_nInWidth * m_nInHeight * 3 /* RGB */ * 8 /*8 bits*/ ;
+			else
+				nFrameBitLimit = m_nFrameBitLimit;
 
       BYTE* pOutBufferPos = pBufferOut;
 
@@ -493,7 +594,7 @@ HRESULT H264EncoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
         {
           std::vector<int> vStartCodePositions;
           vStartCodePositions.push_back(0);
-          const BYTE startCode[4] = {0, 0, 0, 1};
+          const BYTE startCode[4] = { 0, 0, 0, 1 };
           for (int i = 4; i < m_pCodec->GetCompressedByteLength(); ++i)
           {
             if (memcmp(pOutBufferPos + i, startCode, 4) == 0)
@@ -504,7 +605,7 @@ HRESULT H264EncoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
           int remaining = m_pCodec->GetCompressedByteLength();
           for (size_t i = 0; i < vStartCodePositions.size() - 1; ++i)
           {
-            int len = vStartCodePositions[i+1] - vStartCodePositions[i] - 4;
+            int len = vStartCodePositions[i + 1] - vStartCodePositions[i] - 4;
             // update length in buffer
             int pos = vStartCodePositions[i];
             pOutBufferPos[pos] = (len >> 24);
@@ -521,28 +622,83 @@ HRESULT H264EncoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
           pOutBufferPos[pos + 2] = (len >> 8);
           pOutBufferPos[pos + 3] = (len & 0xFF);
         }
-        DbgLog((LOG_TRACE, 0, TEXT("H264 Codec Success: Bit Length: %d Byte Length: %d"), m_pCodec->GetCompressedBitLength(), m_pCodec->GetCompressedByteLength()));
-      }
-      else
-      {
-        //An error has occurred
-        DbgLog((LOG_TRACE, 0, TEXT("H264 Codec Error: %s"), m_pCodec->GetErrorStr()));
-        std::string sError = m_pCodec->GetErrorStr();
-        sError += ". Requested frame bit limit=" + toString(nFrameBitLimit) + ".";
+
+#ifdef USE_FILE_SOURCE
+				DbgLog((LOG_TRACE, 0, TEXT("H264 Codec Success: Bit Length: %d Byte Length: %d"), m_pCodec->GetCompressedBitLength(), m_pCodec->GetCompressedByteLength()));
+
+                // HACK: replace with data from file
+        readNalUnit();
+
+        memcpy( pBufferOut, m_pBuffer, m_uiCurrentNalUnitSize );
+        lOutActualDataLength = m_uiCurrentNalUnitSize;
+#endif
+			}
+			else
+			{
+				//An error has occurred
+				DbgLog((LOG_TRACE, 0, TEXT("H264 Codec Error: %s"), m_pCodec->GetErrorStr()));
+				std::string sError = m_pCodec->GetErrorStr();
+				sError += ". Requested frame bit limit=" + std::to_string(nFrameBitLimit) + ".";
+      
+#if 1
+        m_pCodec->Restart();
         SetLastError(sError.c_str(), true);
+        lOutActualDataLength = 0;
+#else
+        // This alternative is more sophisticated in that it tries to encode the same picture again
+        // The other solution above is simpler and cleaner though. Errors are handled in the base class
+        // by returning S_FALSE from the Transform method which causes the current frame not to be deliverd
+        // downstream
+
+        // Notify outer layer
+        SetNotificationMessage(sError.c_str());
+        // restart the codec here and try again
+        m_pCodec->Restart();
+        
+        int nResult = m_pCodec->Code(pBufferIn, pOutBufferPos, nFrameBitLimit);
+        if (nResult)
+        {
+          //Encoding was successful
+          lOutActualDataLength += m_pCodec->GetCompressedByteLength();
+
+          // check if an i-frame was encoded
+          int nLen = 0;
+          char szBuffer[20];
+          m_pCodec->GetParameter("last pic coding type",&nLen, szBuffer );
+          if (strcmp(szBuffer, "0") == 0 /*H264V2_INTRA*/)
+          {
+            if (m_bNotifyOnIFrame)
+            {
+              SetNotificationMessage("I-Frame");
+            }
+          }
+
+          DbgLog((LOG_TRACE, 0, TEXT("H264 Codec Success on second attempt: Bit Length: %d Byte Length: %d"), m_pCodec->GetCompressedBitLength(), m_pCodec->GetCompressedByteLength()));
+        }
+        else
+        {
+          //An error has occurred
+          DbgLog((LOG_TRACE, 0, TEXT("H264 Codec Error: %s"), m_pCodec->GetErrorStr()));
+          std::string sError = m_pCodec->GetErrorStr();
+          sError += ". Requested frame bit limit=" + toString(nFrameBitLimit) + ".";
+          SetLastError(sError.c_str(), true);
+          m_pCodec->Restart();
+          lOutActualDataLength = 0;
+        }
+#endif
       }
-    }
-  }
+		}
+	}
   return S_OK;
 }
 
 HRESULT H264EncoderFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *mtOut )
 {
-  // Check the major type.
-  if (mtOut->majortype != MEDIATYPE_Video)
-  {
-    return VFW_E_TYPE_NOT_ACCEPTED;
-  }
+	// Check the major type.
+	if (mtOut->majortype != MEDIATYPE_Video)
+	{
+		return VFW_E_TYPE_NOT_ACCEPTED;
+	}
 
   if (m_nH264Type == H264_H264)
   {
@@ -570,7 +726,7 @@ HRESULT H264EncoderFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
   }
   else if (m_nH264Type == H264_VPP)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_VPP_H264) 
+    if (mtOut->subtype != MEDIASUBTYPE_VPP_H264)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -582,44 +738,44 @@ HRESULT H264EncoderFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
   }
 
   // Everything is good.
-  return S_OK;
+	return S_OK;
 }
 
 STDMETHODIMP H264EncoderFilter::GetParameter( const char* szParamName, int nBufferSize, char* szValue, int* pLength )
 {
-  if (SUCCEEDED(CCustomBaseFilter::GetParameter(szParamName, nBufferSize, szValue, pLength)))
-  {
-    return S_OK;
-  }
-  else
-  {
-    // Check if its a codec parameter
-    if (m_pCodec && m_pCodec->GetParameter(szParamName, pLength, szValue))
-    {
-      return S_OK;
-    }
-    return E_FAIL;
-  }
+	if (SUCCEEDED(CCustomBaseFilter::GetParameter(szParamName, nBufferSize, szValue, pLength)))
+	{
+		return S_OK;
+	}
+	else
+	{
+    CAutoLock lck(&m_csCodec);
+		// Check if its a codec parameter
+		if (m_pCodec && m_pCodec->GetParameter(szParamName, pLength, szValue))
+		{
+			return S_OK;
+		}
+		return E_FAIL;
+	}
 }
 
 STDMETHODIMP H264EncoderFilter::SetParameter( const char* type, const char* value )
 {
-  if (SUCCEEDED(CCustomBaseFilter::SetParameter(type, value)))
-  {
-    return S_OK;
-  }
-  else
-  {
-    // lock filter so that it can not be reconfigured during a code operation
+	if (SUCCEEDED(CCustomBaseFilter::SetParameter(type, value)))
+	{
+		return S_OK;
+	}
+	else
+	{
     CAutoLock lck(&m_csCodec);
-    // Check if it's a codec parameter
-    if (m_pCodec && m_pCodec->SetParameter(type, value))
-    {
+		// Check if it's a codec parameter
+		if (m_pCodec && m_pCodec->SetParameter(type, value))
+		{
       // re-open codec if certain parameters have changed
       if ( 
-        (_strnicmp(type, MODE_OF_OPERATION_H264, strlen(type)) == 0 ) ||
-        (_strnicmp(type, QUALITY, strlen(type)) == 0 )
-        )
+        (_strnicmp(type, CODEC_PARAM_MODE_OF_OPERATION, strlen(type)) == 0) ||
+        (_strnicmp(type, CODEC_PARAM_QUALITY, strlen(type)) == 0)
+         )
       {
         if (!m_pCodec->Open())
         {
@@ -630,62 +786,61 @@ STDMETHODIMP H264EncoderFilter::SetParameter( const char* type, const char* valu
           return E_FAIL;
         }
       }
-      return S_OK;
-    }
-    return E_FAIL;
-  }
+			return S_OK;
+		}
+		return E_FAIL;
+	}
 }
 
 STDMETHODIMP H264EncoderFilter::GetParameterSettings( char* szResult, int nSize )
 {
-  if (SUCCEEDED(CCustomBaseFilter::GetParameterSettings(szResult, nSize)))
-  {
-    // Now add the codec parameters to the output:
-    int nLen = strlen(szResult);
-    char szValue[10];
-    int nParamLength = 0;
-    // lock filter so that it can not be reconfigured during a code operation
+	if (SUCCEEDED(CCustomBaseFilter::GetParameterSettings(szResult, nSize)))
+	{
+		// Now add the codec parameters to the output:
+		int nLen = strlen(szResult);
+		char szValue[10];
+		int nParamLength = 0;
     CAutoLock lck(&m_csCodec);
-    std::string sCodecParams("Codec Parameters:\r\n");
-    if( m_pCodec->GetParameter("parameters", &nParamLength, szValue))
-    {
-      int nParamCount = atoi(szValue);
-      char szParamValue[256];
-      memset(szParamValue, 0, 256);
+		std::string sCodecParams("Codec Parameters:\r\n");
+		if( m_pCodec->GetParameter("parameters", &nParamLength, szValue))
+		{
+			int nParamCount = atoi(szValue);
+			char szParamValue[256];
+			memset(szParamValue, 0, 256);
 
-      int nLenName = 0, nLenValue = 0;
-      for (int i = 0; i < nParamCount; i++)
-      {
-        // Get parameter name
-        const char* szParamName;
-        m_pCodec->GetParameterName(i, &szParamName, &nLenName);
-        // Now get the value
-        m_pCodec->GetParameter(szParamName, &nLenValue, szParamValue);
-        sCodecParams += "Parameter: " + std::string(szParamName) + " : Value:" + std::string(szParamValue) + "\r\n";
-      }
-      // now check if the buffer is big enough:
-      int nTotalSize = sCodecParams.length() + nLen;
-      if (nTotalSize < nSize)
-      {
-        memcpy(szResult + nLen, sCodecParams.c_str(), sCodecParams.length());
-        // Set null terminator
-        szResult[nTotalSize] = 0;
-        return S_OK;
-      }
-      else
-      {
-        return E_FAIL;
-      }
-    }
-    else
-    {
-      return E_FAIL;
-    }
-  }
-  else
-  {
-    return E_FAIL;
-  }
+			int nLenName = 0, nLenValue = 0;
+			for (int i = 0; i < nParamCount; i++)
+			{
+				// Get parameter name
+				const char* szParamName;
+				m_pCodec->GetParameterName(i, &szParamName, &nLenName);
+				// Now get the value
+				m_pCodec->GetParameter(szParamName, &nLenValue, szParamValue);
+				sCodecParams += "Parameter: " + std::string(szParamName) + " : Value:" + std::string(szParamValue) + "\r\n";
+			}
+			// now check if the buffer is big enough:
+			int nTotalSize = sCodecParams.length() + nLen;
+			if (nTotalSize < nSize)
+			{
+				memcpy(szResult + nLen, sCodecParams.c_str(), sCodecParams.length());
+				// Set null terminator
+				szResult[nTotalSize] = 0;
+				return S_OK;
+			}
+			else
+			{
+				return E_FAIL;
+			}
+		}
+		else
+		{
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		return E_FAIL;
+	}
 }
 
 STDMETHODIMP H264EncoderFilter::GetFramebitLimit(int& iFrameBitLimit)
@@ -724,6 +879,7 @@ STDMETHODIMP H264EncoderFilter::GenerateIdr()
   m_pCodec->Restart();
   return S_OK;
 }
+
 
 void H264EncoderFilter::doGetVersion(std::string& sVersion)
 {

@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <DirectShow/FilterPropertiesBase.h>
-#include <Shared/Conversion.h>
+#include "GeneralUtils/Conversion.h"
 
 #include "resource.h"
 

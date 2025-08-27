@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: CustomMediaTypes
+MODULE				: DirectShow
 
 FILE NAME			: CustomMediaTypes.h
 
@@ -8,7 +8,7 @@ DESCRIPTION			: Header file for custom media type GUIDS
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
+Copyright (c) 2008 - 2017, CSIR
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,9 +33,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
+#if 0
 /// Custom CSIR YUV420 Planer media format
 // {C528B79F-F025-4eb7-92B0-46CE8167E9F8}
-static const GUID MEDIASUBTYPE_YUV420P = 
+static const GUID MEDIASUBTYPE_YUV420P_S = 
 { 0xc528b79f, 0xf025, 0x4eb7, { 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8 } };
 
 //// {14E89EEF-55C0-4342-A652-9E6D68E298E7}
@@ -51,6 +52,7 @@ static const GUID MEDIASUBTYPE_VPP_H264 =
 // {D89B678F-9AC9-4E2A-9BF8-AA2D6149DDEF}
 static const GUID MEDIASUBTYPE_MMF =
 { 0xd89b678f, 0x9ac9, 0x4e2a, { 0x9b, 0xf8, 0xaa, 0x2d, 0x61, 0x49, 0xdd, 0xef } };
+#endif
 
 #if 0
 // {B940AE21-195E-4CE6-B324-E703AE733AEC}

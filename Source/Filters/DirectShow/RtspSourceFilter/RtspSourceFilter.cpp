@@ -40,6 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
+#include "../VersionInfo.h"
+
 const unsigned TIMEOUT_MILLISECONDS = 3000;
 
 RtspSourceFilter::RtspSourceFilter( IUnknown* pUnk, HRESULT* phr )
@@ -170,7 +172,7 @@ STDMETHODIMP RtspSourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
     }
     else
     {
-      SetLastError(m_rtspSessionManager.getLastError(), true);
+      SetLastError(m_rtspSessionManager.getLastError().c_str(), true);
       return E_FAIL;
     }
   }
@@ -394,6 +396,7 @@ void RtspSourceFilter::setInitialOffset( double dOffset )
   }
 }
 
+
 void RtspSourceFilter::setSynchronisedOffset( double dOffset )
 {
   CAutoLock cAutoLock(&m_stateLock);
@@ -407,4 +410,10 @@ void RtspSourceFilter::setSynchronisedOffset( double dOffset )
     // Convert to double
     m_dSynchronisedStreamTimeOffset = tStreamTimeOffset / 10000000.0;
   }
+}
+
+
+void RtspSourceFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

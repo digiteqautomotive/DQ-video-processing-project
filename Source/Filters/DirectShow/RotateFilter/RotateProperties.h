@@ -36,9 +36,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 
 #include <DirectShow/FilterPropertiesBase.h>
-#include <Shared/Conversion.h>
+#include "GeneralUtils/Conversion.h"
 
 #include "resource.h"
+#include "../VersionInfo.h"
 
 #define BUFFER_SIZE 256
 
@@ -70,7 +71,7 @@ public:
 	{
 		int nLength = 0;
 		char szBuffer[BUFFER_SIZE];
-		HRESULT hr = m_pSettingsInterface->GetParameter(ROTATION_MODE, sizeof(szBuffer), szBuffer, &nLength);
+		HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ROTATION_MODE, sizeof(szBuffer), szBuffer, &nLength);
 		if (SUCCEEDED(hr))
 		{
 			int nRotationMode = atoi(szBuffer);
@@ -98,7 +99,7 @@ public:
 			if (iCheck != 0)
 			{
 				std::string sID = toString(i);
-				HRESULT hr = m_pSettingsInterface->SetParameter(ROTATION_MODE, sID.c_str());
+				HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_ROTATION_MODE, sID.c_str());
 				break;
 			}
 		}

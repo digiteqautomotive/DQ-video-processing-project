@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include <DirectShow/CustomBaseFilter.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include "../FilterParameterStringConstants.h"
 
 // {66888CFF-359B-414b-BC20-CFD6D811209B}
 static const GUID CLSID_VPP_RotateFilter = 
@@ -97,10 +97,12 @@ public:
 	*/
 	HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
+        virtual void doGetVersion(std::string& sVersion);
+
 	/// Overridden from CSettingsInterface
 	virtual void initParameters()
 	{
-		addParameter(ROTATION_MODE, &m_nRotation, 0);
+		addParameter(FILTER_PARAM_ROTATION_MODE, &m_nRotation, 0);
 	}
 
 	STDMETHODIMP SetParameter( const char* type, const char* value);

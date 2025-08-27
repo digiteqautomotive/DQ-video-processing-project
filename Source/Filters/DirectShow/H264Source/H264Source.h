@@ -93,6 +93,8 @@ public:
   /// From CSource
   STDMETHODIMP Stop();
 
+  virtual void doGetVersion(std::string& sVersion);
+
   /// From CSettingsInterface
   virtual void initParameters()
   {
@@ -228,7 +230,6 @@ private:
   unsigned m_uiCurrentStartCodeSize;
 
   int m_iFileSize;
-  int m_iRead;
   std::ifstream m_in1;
 
   // store byte indexes of various frames for IMediaSeeking implementation

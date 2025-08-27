@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Codecs/H264v2/H264v2.h>
 #include <Codecs/CodecUtils/ICodecv2.h>
 #include "GeneralUtils/Conversion.h"
+#include "../VersionInfo.h"
 
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
@@ -62,6 +63,9 @@ const unsigned char g_startCode_3[] = { 0, 0, 1};
 #pragma comment(lib, "H264v2.lib")
 #endif
 #endif
+
+//using namespace artist;
+
 
 CUnknown * WINAPI H264SourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 {
@@ -93,7 +97,6 @@ H264SourceFilter::H264SourceFilter(IUnknown *pUnk, HRESULT *phr)
   m_uiPicParamSetLen(0),
   m_uiCurrentStartCodeSize(0),
   m_iFileSize(0),
-  m_iRead(0),
   m_bAnalyseOnLoad(true)
 {
   // Init CSettingsInterface
@@ -228,7 +231,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
     if (!parseParameterSets() && m_bUseRtvcH264)
     {
       // don't fail if m_bUseRtvcH264 == false
-      SetLastError("Failed to parse parameter required for RTVC codec sets in: " + m_sFile, true);
+      SetLastError(("Failed to parse parameter required for RTVC codec sets in: " + m_sFile).c_str(), true);
       return E_FAIL;
     }
 
@@ -238,7 +241,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
   }
   else
   {
-    SetLastError("Failed to open file: " + m_sFile, true);
+    SetLastError(("Failed to open file: " + m_sFile).c_str(), true);
     return E_FAIL;
   }
 }
@@ -640,4 +643,10 @@ HRESULT H264SourceFilter::SetRate( double dRate )
 HRESULT H264SourceFilter::SetTimeFormat( const GUID *pFormat )
 {
   return E_NOTIMPL;
+}
+
+
+void H264SourceFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

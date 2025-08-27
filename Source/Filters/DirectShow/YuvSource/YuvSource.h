@@ -31,12 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
-#include <strsafe.h>
 
 #include <fstream>
 #include <DirectShow/CStatusInterface.h>
 #include <DirectShow/CSettingsInterface.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include "../FilterParameterStringConstants.h"
 
 
 // {DAC3AA2A-5AB3-4705-963B-FFAF9C0D08D8}
@@ -49,6 +48,12 @@ DEFINE_GUID(CLSID_YUVProperties,
 
 // Filter name strings
 #define g_wszYuvSource     L"CSIR VPP YUV Source"
+#define SOURCE_DIMENSIONS "sourcedimensions"
+#define SOURCE_FPS        "fps"
+
+#define YUV_FORMAT        "yuv_format"
+#define YUV420P           0
+#define YUV444I           1
 
 /**
  * @brief YUV source filter that currently supports reading YUV420P and YUV444 interlaced packet.
@@ -72,6 +77,8 @@ public:
 
   /// From CSource
   STDMETHODIMP Stop();
+
+  virtual void doGetVersion(std::string& sVersion);
 
   /// From CSettingsInterface
   virtual void initParameters()
@@ -135,7 +142,7 @@ private:
   std::string m_sFile;
 
   unsigned char* m_pYuvBuffer;
-  int m_iFileSize;
+  long long m_iFileSize;
   int m_iRead;
   std::ifstream m_in1;
 };

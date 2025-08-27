@@ -35,7 +35,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
+#include "DirectShow/DirectShowMediaFormats.h"
 #include <Image/RealYUV420toRGB24Converter.h>
+
+#include"../VersionInfo.h"
+
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
   0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
@@ -75,7 +79,7 @@ CUnknown * WINAPI YUV420toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 void YUV420toRGBFilter::InitialiseInputTypes()
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
 }
@@ -326,4 +330,10 @@ STDMETHODIMP YUV420toRGBFilter::SetParameter( const char* type, const char* valu
   {
     return E_FAIL;
   }
+}
+
+
+void YUV420toRGBFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

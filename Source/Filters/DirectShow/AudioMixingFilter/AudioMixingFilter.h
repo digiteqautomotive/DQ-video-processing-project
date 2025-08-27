@@ -51,7 +51,7 @@ static const GUID CLSID_AudioMixingProperties =
  * Audio Mixing Filter for PCM Mono Media
  */
 class AudioMixingFilter	:	public CMultiIOBaseFilter,
-							            public CSettingsInterface,
+							            //public CSettingsInterface,
 							            public ISpecifyPropertyPages
 {
   typedef std::deque<IMediaSample*> MediaSampleQueue_t; 
@@ -85,6 +85,8 @@ public:
   STDMETHODIMP Stop();
   STDMETHODIMP Pause();
 
+  virtual void doGetVersion(std::string& sVersion);
+  
   virtual void InitialiseInputTypes()
   {
     AddInputType(&MEDIATYPE_Audio, &MEDIASUBTYPE_PCM, &FORMAT_WaveFormatEx);

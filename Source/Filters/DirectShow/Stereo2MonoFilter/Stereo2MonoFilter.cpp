@@ -35,6 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Stereo2MonoFilter.h"
 #include "GeneralUtils/StringUtil.h"
+#include "../VersionInfo.h"
+
 
 Stereo2MonoFilter::Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr)
   : CCustomBaseFilter(NAME("CSIR RTVC Stereo2Mono Filter"), pUnk, CLSID_VPP_Stereo2MonoFilter),
@@ -291,4 +293,10 @@ HRESULT Stereo2MonoFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
 
   // Everything is good.
   return S_OK;
+}
+
+
+void Stereo2MonoFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

@@ -35,9 +35,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Codecs/CodecUtils/ICodecv2.h>
 #include <DirectShow/CommonDefs.h>
 #include <Shared/CommonDefs.h>
-#include <Shared/Conversion.h>
+#include "GeneralUtils/Conversion.h"
 
-#include "Filters/DirectShow/FilterParameters.h"		// JFO Fix
+#include "Filters/DirectShow/FilterParameterStringConstants.h"		// JFO Fix
 
 
 // HACK for backwards compatibility with pre-CMake projects
@@ -156,8 +156,8 @@ HRESULT H264DecoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
   if (direction == PINDIR_INPUT)
   {
     // Configure codec
-    m_pCodec->SetParameter(IMAGE_WIDTH, toString(m_nInWidth).c_str());
-    m_pCodec->SetParameter(IMAGE_HEIGHT, toString(m_nInHeight).c_str());
+    m_pCodec->SetParameter(FILTER_PARAM_WIDTH, toString(m_nInWidth).c_str());
+    m_pCodec->SetParameter(FILTER_PARAM_HEIGHT, toString(m_nInHeight).c_str());
     // always flip the image on windows to get it into the desired YUV format
     m_pCodec->SetParameter("flip",            "1");
     // NB: New codec settings for auto-iframe detection: These settings need to correlate to the settings of the DECODER

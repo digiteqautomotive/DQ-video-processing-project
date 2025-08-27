@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DirectShow/VideoMixingBase.h>
 #include <DirectShow/CSettingsInterface.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include "../FilterParameterStringConstants.h"
 
 // {31AD3B24-52E5-4227-B1D7-687AB061C2DE}
 static const GUID CLSID_VPP_PicInPicFilter = 
@@ -87,6 +87,8 @@ public:
   virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
+
+        virtual void doGetVersion(std::string& sVersion);
 
 	virtual void initParameters();
 

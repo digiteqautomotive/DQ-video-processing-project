@@ -38,6 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include "Tee.h"
+#include "../VersionInfo.h"
+
 
 RtvcTee::RtvcTee() 
 	:CMultiIOBaseFilter(NAME("CSIR VPP Tee Filter"), 0, CLSID_VPP_Tee)
@@ -258,4 +260,10 @@ HRESULT RtvcTee::CheckOutputType( const CMediaType* pMediaType )
 	{
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
+}
+
+
+void RtvcTee::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

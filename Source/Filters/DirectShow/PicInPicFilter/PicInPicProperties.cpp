@@ -22,7 +22,7 @@ HRESULT PicInPicProperties::ReadSettings()
 
   int nLength = 0;
   char szBuffer[BUFFER_SIZE];
-  HRESULT hr = m_pSettingsInterface->GetParameter(TARGET_HEIGHT, sizeof(szBuffer), szBuffer, &nLength);
+  HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_TARGET_HEIGHT, sizeof(szBuffer), szBuffer, &nLength);
   if (SUCCEEDED(hr))
   {
     SetDlgItemText(m_Dlg, IDC_EDIT_TARGET_HEIGHT, szBuffer);
@@ -32,7 +32,7 @@ HRESULT PicInPicProperties::ReadSettings()
   {
     return E_FAIL;
   }
-  hr = m_pSettingsInterface->GetParameter(TARGET_WIDTH, sizeof(szBuffer), szBuffer, &nLength);
+  hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_TARGET_WIDTH, sizeof(szBuffer), szBuffer, &nLength);
   if (SUCCEEDED(hr))
   {
     SetDlgItemText(m_Dlg, IDC_EDIT_TARGET_WIDTH, szBuffer);
@@ -43,7 +43,7 @@ HRESULT PicInPicProperties::ReadSettings()
     return E_FAIL;
   }
 
-  hr = m_pSettingsInterface->GetParameter(SUB_PIC_WIDTH, sizeof(szBuffer), szBuffer, &nLength);
+  hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_SUB_PIC_WIDTH, sizeof(szBuffer), szBuffer, &nLength);
   if (SUCCEEDED(hr))
   {
     SetDlgItemText(m_Dlg, IDC_EDIT_SUBPICTURE_WIDTH, szBuffer);
@@ -53,7 +53,7 @@ HRESULT PicInPicProperties::ReadSettings()
   {
     return E_FAIL;
   }
-  hr = m_pSettingsInterface->GetParameter(SUB_PIC_HEIGHT, sizeof(szBuffer), szBuffer, &nLength);
+  hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_SUB_PIC_HEIGHT, sizeof(szBuffer), szBuffer, &nLength);
   if (SUCCEEDED(hr))
   {
     SetDlgItemText(m_Dlg, IDC_EDIT_SUBPICTURE_HEIGHT, szBuffer);
@@ -64,7 +64,7 @@ HRESULT PicInPicProperties::ReadSettings()
     return E_FAIL;
   }
 
-  hr = m_pSettingsInterface->GetParameter(OFFSET_X, sizeof(szBuffer), szBuffer, &nLength);
+  hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_OFFSET_X, sizeof(szBuffer), szBuffer, &nLength);
   if (SUCCEEDED(hr))
   {
     SetDlgItemText(m_Dlg, IDC_EDIT_SUBPICTURE_OFFSET_X, szBuffer);
@@ -74,7 +74,7 @@ HRESULT PicInPicProperties::ReadSettings()
   {
     return E_FAIL;
   }
-  hr = m_pSettingsInterface->GetParameter(OFFSET_Y, sizeof(szBuffer), szBuffer, &nLength);
+  hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_OFFSET_Y, sizeof(szBuffer), szBuffer, &nLength);
   if (SUCCEEDED(hr))
   {
     SetDlgItemText(m_Dlg, IDC_EDIT_SUBPICTURE_OFFSET_Y, szBuffer);
@@ -85,7 +85,7 @@ HRESULT PicInPicProperties::ReadSettings()
     return E_FAIL;
   }
 
-  hr = setEditTextFromIntFilterParameter(BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
+  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
   return hr;
 }
 
@@ -102,7 +102,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   if (m_targetWidth != nValue)
   {
     // value has changed
-    hr = m_pSettingsInterface->SetParameter(TARGET_WIDTH, szBuffer);
+    hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_TARGET_WIDTH, szBuffer);
     if (FAILED(hr))
     {
       return hr;
@@ -114,7 +114,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   if (m_targetHeight != nValue)
   {
     // value has changed
-    hr = m_pSettingsInterface->SetParameter(TARGET_HEIGHT, szBuffer);
+    hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_TARGET_HEIGHT, szBuffer);
     if (FAILED(hr))
     {
       return hr;
@@ -128,7 +128,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   if (m_uiSubpicWidth != nValue)
   {
     // value has changed
-    hr = m_pSettingsInterface->SetParameter(SUB_PIC_WIDTH, szBuffer);
+    hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_SUB_PIC_WIDTH, szBuffer);
     if (FAILED(hr))
     {
       return hr;
@@ -140,7 +140,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   if (m_uiSubpicHeight != nValue)
   {
     // value has changed
-    hr = m_pSettingsInterface->SetParameter(SUB_PIC_HEIGHT, szBuffer);
+    hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_SUB_PIC_HEIGHT, szBuffer);
     if (FAILED(hr))
     {
       return hr;
@@ -153,7 +153,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   nValue = atoi(szBuffer);
   if (m_uiOffsetX != nValue)
   {
-    hr = m_pSettingsInterface->SetParameter(OFFSET_X, szBuffer);
+    hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_OFFSET_X, szBuffer);
     if (FAILED(hr))
     {
       return hr;
@@ -164,7 +164,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   nValue = atoi(szBuffer);
   if (m_uiOffsetY != nValue)
   {
-    hr = m_pSettingsInterface->SetParameter(OFFSET_Y, szBuffer);
+    hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_OFFSET_Y, szBuffer);
     if (FAILED(hr))
     {
       return hr;
@@ -172,7 +172,7 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
     m_uiOffsetY = nValue;
   }
 
-  hr = setIntFilterParameterFromEditText(BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
+  hr = setIntFilterParameterFromEditText(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
 
   return hr;
 }

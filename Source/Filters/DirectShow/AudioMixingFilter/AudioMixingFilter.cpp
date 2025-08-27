@@ -40,6 +40,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AudioMixingFilter.h"
 
 #include <DirectShow/CommonDefs.h>
+#include "../VersionInfo.h"
+
 
 AudioMixingFilter::AudioMixingFilter()
   :CMultiIOBaseFilter("CSIR VPP Audio Mixer", 0, CLSID_VPP_AudioMixingFilter),
@@ -686,3 +688,10 @@ STDMETHODIMP AudioMixingFilter::EndFlush( int nIndex )
   }
   return S_OK;
 }
+
+
+void AudioMixingFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
+}
+

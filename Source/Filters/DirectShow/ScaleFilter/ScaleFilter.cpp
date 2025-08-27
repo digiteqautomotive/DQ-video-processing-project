@@ -35,9 +35,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include "ScaleFilter.h"
-#include "VersionInfo.h"
+#include "../VersionInfo.h"
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
+#include "DirectShow/DirectShowMediaFormats.h"
 #include <Image/PicScalerRGB24Impl.h>
 #include <Image/PicScalerRGB32Impl.h>
 #include <Image/PicScalerARGB32Impl.h>
@@ -100,7 +101,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
@@ -166,7 +167,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         m_pScaler = new PicScalerARGB32Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_YUV420P || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12)
+      else if(pmt->subtype==MEDIASUBTYPE_YUV420P_S || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12)
       {
         m_pScaler = new PicScalerYUV420PImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
@@ -221,7 +222,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 	// Set size
     if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
-    else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
+    else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
     else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
             pMediaType->subtype==MEDIASUBTYPE_UYVY)
@@ -334,9 +335,9 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     }
     return S_OK;
   } 
-  if(mtIn->subtype==MEDIASUBTYPE_YUV420P || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
+  if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
   {
-    if(mtOut->subtype!=MEDIASUBTYPE_YUV420P && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
+    if(mtOut->subtype!=MEDIASUBTYPE_YUV420P_S && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -373,8 +374,8 @@ STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
 
 void ScaleFilter::initParameters()
 {
-  addParameter(TARGET_WIDTH, &m_nOutWidth, 0);
-  addParameter(TARGET_HEIGHT, &m_nOutHeight, 0);
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
 //  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
 //  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
 //  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1);

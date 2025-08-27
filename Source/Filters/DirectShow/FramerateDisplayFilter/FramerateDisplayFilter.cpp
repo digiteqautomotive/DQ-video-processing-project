@@ -34,7 +34,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 
 #include "FramerateDisplayFilter.h"
-#include <Shared/StringUtil.h>
+
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
 
 #include <Gdiplus.h>
 

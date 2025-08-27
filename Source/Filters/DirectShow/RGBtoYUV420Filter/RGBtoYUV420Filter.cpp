@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomMediaTypes.h>
 #include <Image/RealRGB24toYUV420Converter.h>
 #include <Image/RealRGB32toYUV420Converter.h>
+#include "DirectShow/DirectShowMediaFormats.h"
+#include "../VersionInfo.h"
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
@@ -231,7 +233,7 @@ HRESULT RGBtoYUV420Filter::CheckTransform( const CMediaType *mtIn, const CMediaT
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
 	// Adding advert media type to this method
-	if(mtOut->subtype!=MEDIASUBTYPE_YUV420P && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
+	if(mtOut->subtype!=MEDIASUBTYPE_YUV420P_S && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
 	{
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
@@ -292,3 +294,10 @@ STDMETHODIMP RGBtoYUV420Filter::SetParameter( const char* type, const char* valu
     return E_FAIL;
   }
 }
+
+
+void RGBtoYUV420Filter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
+}
+

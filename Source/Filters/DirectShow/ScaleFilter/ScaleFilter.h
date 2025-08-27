@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 #include <DirectShow/CustomBaseFilter.h>
-#include <Filters/DirectShow/FilterParameters.h>
+#include "../FilterParameterStringConstants.h"
 
 // {60E0821D-9E6C-48f4-8E1C-1B25E67488F8}
 static const GUID CLSID_VPP_ScaleFilter =

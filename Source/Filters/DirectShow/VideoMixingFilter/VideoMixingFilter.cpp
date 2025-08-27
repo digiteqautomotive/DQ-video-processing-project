@@ -37,6 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Image/PicConcatRGB24Impl.h>
 #include <Image/PicConcatRGB32Impl.h>
 
+#include "../VersionInfo.h"
+
 VideoMixingFilter::VideoMixingFilter()
 	:VideoMixingBase(NAME("CSIR VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
 	m_pPicConcat(NULL)
@@ -77,7 +79,7 @@ CUnknown * WINAPI VideoMixingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 void VideoMixingFilter::initParameters()
 {
-	addParameter(ORIENTATION, &m_nOrientation, 0);
+	addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
 }
 
 HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
@@ -474,5 +476,11 @@ HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
 		}
 	}
 	return S_FALSE;
+}
+
+
+void VideoMixingFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }
 

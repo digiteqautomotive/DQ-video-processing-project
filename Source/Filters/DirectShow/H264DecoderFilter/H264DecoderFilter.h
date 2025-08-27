@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <DirectShow/CustomBaseFilter.h>
 //#include <DirectShowExt/DirectShowMediaFormats.h>
 #include <DirectShow/NotifyCodes.h>
-#include "VersionInfo.h"
+#include "../VersionInfo.h"
 
 
 // {4F722923-7E4D-4263-926D-2A1F405B2619}

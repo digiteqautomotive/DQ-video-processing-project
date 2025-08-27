@@ -39,8 +39,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "YuvSource.h"
 #include "YuvOutputPin.h"
 
-#include <Shared/Conversion.h>
-#include <Shared/StringUtil.h>
+#include "GeneralUtils/Conversion.h"
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
+#include "../VersionInfo.h"
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 {
@@ -55,6 +57,7 @@ const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 *  YuvSourceFilter Class
 *
 **********************************************/
+
 
 CUnknown * WINAPI YuvSourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 {
@@ -124,7 +127,7 @@ STDMETHODIMP YuvSourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE
   }
   else
   {
-    SetLastError("Failed to open file: " + m_sFile, true);
+    SetLastError(("Failed to open file: " + m_sFile).c_str(), true);
     return E_FAIL;
   }
 }
@@ -201,9 +204,12 @@ void YuvSourceFilter::createYuvFrameBuffer()
     }
 
     // try and convert to int
-    int iWidth = convert<int>(sWidth);
-    int iHeight = convert<int>(sHeight);
+    bool Ok;
+    int iWidth = convert<int>(sWidth,Ok);
+    int iHeight = convert<int>(sHeight,Ok);			// TODO: check OK
     updatePictureBuffer(iWidth, iHeight, m_dBytesPerPixel);
+    // update for property page
+    m_sDimensions = sWidth + "x" + sHeight;
     break;
   }
 
@@ -331,4 +337,10 @@ bool YuvSourceFilter::updatePictureBuffer(int iWidth, int iHeight, double dBytes
   {
     return false;
   }
+}
+
+
+void YuvSourceFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

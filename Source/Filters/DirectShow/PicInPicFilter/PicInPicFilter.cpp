@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Image/PicInPicRGB24Impl.h>
 #include <Image/PicInPicRGB32Impl.h>
 #include <Image/PicScalerRGB24Impl.h>
+#include "../VersionInfo.h"
 
 PicInPicFilter::PicInPicFilter()
 	:VideoMixingBase(NAME("CSIR VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
@@ -107,17 +108,17 @@ void PicInPicFilter::initParameters()
   // the picture i.e. top left or top right corner.
 	// addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
   // width output picture is scaled to
-	addParameter(TARGET_WIDTH, &m_nTargetWidth, 0);
+	addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);
   // height output picture is scaled to
-  addParameter(TARGET_HEIGHT, &m_nTargetHeight, 0);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);
   // width inner picture is scaled to
-  addParameter(SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);
+  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);
   // height inner picture is scaled to
-  addParameter(SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);
+  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);
   // x offset from bottom left corner
-  addParameter(OFFSET_X, &m_nCustomOffsetX, 0);
+  addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);
   // y offset from bottom left corner
-  addParameter(OFFSET_Y, &m_nCustomOffsetY, 0);
+  addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);
 }
 
 HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
@@ -367,8 +368,8 @@ STDMETHODIMP PicInPicFilter::SetParameter( const char* type, const char* value )
 
 bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 {
-	if ( ( strcmp(szParam, TARGET_WIDTH) == 0) ||
-		 ( strcmp(szParam, TARGET_HEIGHT) == 0)
+	if ( ( strcmp(szParam, FILTER_PARAM_TARGET_WIDTH) == 0) ||
+		 ( strcmp(szParam, FILTER_PARAM_TARGET_HEIGHT) == 0)
 		)
 	{
 		return true;
@@ -470,4 +471,10 @@ void PicInPicFilter::reconfigure()
     m_pPicInPic->SetSubDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
     m_pPicInPic->SetPos(m_nCustomOffsetX, m_nCustomOffsetY);
   }
+}
+
+
+void PicInPicFilter::doGetVersion(std::string& sVersion)
+{
+  sVersion = VersionInfo::toString();
 }

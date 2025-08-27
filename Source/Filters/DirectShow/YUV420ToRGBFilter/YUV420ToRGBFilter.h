@@ -69,7 +69,7 @@ public:
   ~YUV420toRGBFilter();
 
   /// Static object-creation method (for the class factory)
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
+  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr);
 
   /**
   * Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter
@@ -105,6 +105,8 @@ public:
 
   /// Overridden from CSettingsInterface
   STDMETHODIMP SetParameter( const char* type, const char* value);
+
+  virtual void doGetVersion(std::string& sVersion);
 
   /// Overridden from CSettingsInterface
   virtual void initParameters()
