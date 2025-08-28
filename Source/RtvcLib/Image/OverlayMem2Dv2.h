@@ -12,7 +12,7 @@ DESCRIPTION		: A class to overlay a two-dimensional mem structure onto
 								short (16-bit variables). Static proxies are used	to reduce 
 								the memory footprint of the class.
 
-COPYRIGHT			: (c)CSIR 2007-2010 all rights resevered
+COPYRIGHT			: (c)CSIR 2007-2016 all rights resevered
 
 LICENSE				: Software License Agreement (BSD License)
 
@@ -46,6 +46,11 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _OVERLAYMEM2DV2_H
 #define _OVERLAYMEM2DV2_H
 
+/*
+---------------------------------------------------------------------------
+Class definition.
+---------------------------------------------------------------------------
+*/
 class OverlayMem2Dv2
 {
 	/// Construction and destruction.
@@ -245,6 +250,12 @@ public:
 	int Tsd16x16PartialLessThan(OverlayMem2Dv2& b, int min)
 		{ return( Tsd16x16PartialLessThan(*this, b, min) ); }
 	static int Tsd16x16PartialLessThan(OverlayMem2Dv2& me, OverlayMem2Dv2& b, int min);	///< Fast for 16x16 blocks.
+  int Tsd16x16PartialPathLessThan(OverlayMem2Dv2& b, void* path, int len, int min)
+    { return(Tsd16x16PartialPathLessThan(*this, b, path, len, min)); }
+  static int Tsd16x16PartialPathLessThan(OverlayMem2Dv2& me, OverlayMem2Dv2& b, void* path, int len, int min);	///< Fast for 16x16 blocks.
+  int Tsd16x16PartialPath(OverlayMem2Dv2& b, void* path, int len)
+    { return(Tsd16x16PartialPath(*this, b, path, len)); }
+  static int Tsd16x16PartialPath(OverlayMem2Dv2& me, OverlayMem2Dv2& b, void* path, int len);	///< Fast for 16x16 blocks.
 
 	/// Calc total absolute difference with the input block.
 	int Tad(OverlayMem2Dv2& b)
@@ -284,6 +295,8 @@ public:
 	/// Sub sample the src by half into another 2D mem block with possible offset.
 	static void Half(void**	srcPtr, int srcWidth,			int srcHeight,
 									 void** dstPtr, int widthOff = 0, int heightOff = 0);
+  /// Dump the current block into a file.
+  static void Dump(OverlayMem2Dv2* pBlk, char* filename, const char* title);
 
 protected:
 	/// Class constants

@@ -12,7 +12,7 @@ DESCRIPTION		: A class to overlay a two-dimensional mem structure onto
 								short (16-bit variables). Static proxies are used	to reduce 
 								the memory footprint of the class.
 
-COPYRIGHT			: (c)CSIR 2007-2010 all rights resevered
+COPYRIGHT			: (c)CSIR 2007-2016 all rights resevered
 
 LICENSE				: Software License Agreement (BSD License)
 
@@ -56,6 +56,18 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #include <stdlib.h>
 
 #include "OverlayMem2Dv2.h"
+#include "MeasurementTable.h" 
+
+/*
+---------------------------------------------------------------------------
+Struct definition.
+---------------------------------------------------------------------------
+*/
+typedef struct _OM2DV2_COORD
+{
+  short int x;
+  short int y;
+} OM2DV2_COORD;
 
 /*
 ---------------------------------------------------------------------------
@@ -2134,7 +2146,52 @@ int OverlayMem2Dv2::Tsd16x16PartialLessThan(OverlayMem2Dv2& me, OverlayMem2Dv2& 
 	return(Dp);
 }//end Tsd16x16PartialLessThan.
 
-/** Calc the total absolute difference with the input block.
+ /** The total square difference with 16x16 blocks to improve on input value with a partial path.
+ Exit early if the partial accumulated square error becomes larger than the specified
+ normalised input value along a path of coordinates. The block dimensions must be 16x16 
+ and no checking is done. Use with caution for speed.
+ @param b		  : 16x16 input block.
+ @param path  : Two-Dim path of array type OM2DV2_COORD.
+ @param len   : Length of path to check <= 16x16=256.
+ @param min	  :	The min value to improve on.
+ @return		  : Total square error to the point of early exit.
+ */
+int OverlayMem2Dv2::Tsd16x16PartialPathLessThan(OverlayMem2Dv2& me, OverlayMem2Dv2& b, void* path, int len, int min)
+{
+  short**	bPtr = b.Get2DSrcPtr();
+  OM2DV2_COORD* pPath = (OM2DV2_COORD *)path;
+
+  int Dp = 0;	///< Accumulated partial square error.
+
+  for (int p = 0; (p < len)&&(Dp < min); p++) ///< Early exit if Dp exceeded min.
+  {
+    int pX = (int)pPath[p].x;
+    int pY = (int)pPath[p].y;
+    int diff = (int)me._pBlock[me._yPos + pY][me._xPos + pX] - (int)bPtr[b._yPos + pY][b._xPos + pX];
+    Dp += (diff * diff);	///< pth partial sqr err.
+  }//end for p...
+
+  return(Dp);
+}//end Tsd16x16PartialPathLessThan.
+int OverlayMem2Dv2::Tsd16x16PartialPath(OverlayMem2Dv2& me, OverlayMem2Dv2& b, void* path, int len)
+{
+  short**	bPtr = b.Get2DSrcPtr();
+  OM2DV2_COORD* pPath = (OM2DV2_COORD *)path;
+
+  int Dp = 0;	///< Accumulated partial square error.
+
+  for (int p = 0; p < len; p++)
+  {
+    int pX = (int)pPath[p].x;
+    int pY = (int)pPath[p].y;
+    int diff = (int)me._pBlock[me._yPos + pY][me._xPos + pX] - (int)bPtr[b._yPos + pY][b._xPos + pX];
+    Dp += (diff * diff);	///< pth partial sqr err.
+  }//end for p...
+
+  return(Dp);
+}//end Tsd16x16PartialPath.
+
+ /** Calc the total absolute difference with the input block.
 The block dimensions must match else return INF.
 @param b	: Input block.
 @return		: Total absolute diff.	
@@ -2647,6 +2704,38 @@ void OverlayMem2Dv2::Half(void** srcPtr, int srcWidth, int srcHeight,
 
 }//end Half.
 
+/** Dump the current block into a file.
+Treat all elements as type integer.
+@param pBlk     : Blk to dump.
+@param filename : File name to use.
+@param title    : Title to use in the text file.
+@return         : None.
+*/
+void OverlayMem2Dv2::Dump(OverlayMem2Dv2* pBlk, char* filename, const char* title)
+{
+  int i,j; 
+
+  MeasurementTable* pT = new MeasurementTable();
+	pT->SetTitle(title);
+
+  int cols = pBlk->GetWidth();
+  int rows = pBlk->GetHeight();
+
+	pT->Create(cols, rows);
+  for(j = 0; j < cols; j++)
+  {
+    pT->SetHeading(j, "");
+    pT->SetDataType(j, MeasurementTable::INT);
+  }//end for j...
+
+	for(i = 0; i < rows; i++)
+		for(j = 0; j < cols; j++)
+			pT->WriteItem(j, i, pBlk->Read(j, i));
+
+  pT->Save(filename, ",", 0);
+
+  delete pT;
+}//end Dump.
 
 /*
 ---------------------------------------------------------------------------

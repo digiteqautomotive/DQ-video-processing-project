@@ -15,6 +15,7 @@
 
 #include "Image/PicRotateRGB32Impl.h"
 #include "Image/PicRotateRGB24Impl.h"
+#include "RotateTesters.h"
 
 
 extern "C"
@@ -28,6 +29,81 @@ unsigned char FeaturesCPU = 0x80;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+void BenchRotator(const char *RotName, PicRotateRGBBase *pRotator, void *BlobIn, void *BlobOut)
+{
+unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
+int i;
+
+  if(pRotator==NULL) return;
+  pRotator->SetInDimensions(1920,1080);
+  pRotator->SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);		
+  DurationMin = ~0;
+  for(i=0; i<10; i++)
+  {
+    TimeStampB = GetTickCount_us();
+    pRotator->Rotate(BlobIn,BlobOut);
+    TimeStampE = GetTickCount_us();
+    Duration = TimeStampE - TimeStampB;
+    if(DurationMin > Duration) DurationMin=Duration;
+  }
+  printf("\n%s 1920,1080 time +90deg %.3f", RotName, DurationMin/1000.0);
+  pRotator->SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+  DurationMin = ~0;
+  for(i=0; i<10; i++)
+  {
+    TimeStampB = GetTickCount_us();
+    pRotator->Rotate(BlobIn,BlobOut);
+    TimeStampE = GetTickCount_us();
+    Duration = TimeStampE - TimeStampB;
+    if(DurationMin > Duration) DurationMin=Duration;
+  }
+  printf(" +180deg %.3f", DurationMin/1000.0);
+  pRotator->SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+  DurationMin = ~0;
+  for(i=0; i<10; i++)
+  {
+    TimeStampB = GetTickCount_us();
+    pRotator->Rotate(BlobIn,BlobOut);
+    TimeStampE = GetTickCount_us();
+    Duration = TimeStampE - TimeStampB;
+    if(DurationMin > Duration) DurationMin=Duration;
+  }
+  printf(" +270deg %.3f", DurationMin/1000.0);
+  pRotator->SetRotateMode(ROTATE_FLIP_VERTICAL);
+  DurationMin = ~0;
+  for(i=0; i<10; i++)
+  {
+    TimeStampB = GetTickCount_us();
+    pRotator->Rotate(BlobIn,BlobOut);
+    TimeStampE = GetTickCount_us();
+    Duration = TimeStampE - TimeStampB;
+    if(DurationMin > Duration) DurationMin=Duration;
+  }
+  printf(" FLIP_V %.3f", DurationMin/1000.0);
+  pRotator->SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+  DurationMin = ~0;
+  for(i=0; i<10; i++)
+  {
+    TimeStampB = GetTickCount_us();
+    pRotator->Rotate(BlobIn,BlobOut);
+    TimeStampE = GetTickCount_us();
+    Duration = TimeStampE - TimeStampB;
+    if(DurationMin > Duration) DurationMin=Duration;
+  }
+  printf(" FLIP_H %.3f", DurationMin/1000.0);
+  pRotator->SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+  DurationMin = ~0;
+  for(i=0; i<10; i++)
+  {
+    TimeStampB = GetTickCount_us();
+    pRotator->Rotate(BlobIn,BlobOut);
+    TimeStampE = GetTickCount_us();
+    Duration = TimeStampE - TimeStampB;
+    if(DurationMin > Duration) DurationMin=Duration;
+  }
+  printf(" FLIP_D %.3f[ms]", DurationMin/1000.0);
+}
 
 
 int main(void)
@@ -387,145 +463,22 @@ int i;
     }
 
     {
-      PicRotateRGB32Impl PicRotateRGB32;
-      PicRotateRGB32.SetInDimensions(1920,1080);
-      PicRotateRGB32.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);		
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB32.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf("\nRotate RGB32 1920,1080 time +90deg %.3f", DurationMin/1000.0);
-      PicRotateRGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB32.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" +180deg %.3f", DurationMin/1000.0);
-      PicRotateRGB32.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB32.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" +270deg %.3f", DurationMin/1000.0);
-      PicRotateRGB32.SetRotateMode(ROTATE_FLIP_VERTICAL);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB32.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" FLIP_V %.3f", DurationMin/1000.0);
-      PicRotateRGB32.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB32.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" FLIP_H %.3f", DurationMin/1000.0);
-      PicRotateRGB32.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB32.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" FLIP_D %.3f[ms]", DurationMin/1000.0);
+      PicRotateRGB24Impl PicRotateRGB24;
+      BenchRotator("Rotate RGB24", &PicRotateRGB24, BlobIn, BlobOut);
+    }
+    {
+      OrigRotateRGB24Impl OrigRotateRGB24;
+      BenchRotator("OrigRot RGB24", &OrigRotateRGB24, BlobIn, BlobOut);
     }
 
     {
-      PicRotateRGB24Impl PicRotateRGB24;
-      PicRotateRGB24.SetInDimensions(1920,1080);
-      PicRotateRGB24.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);		
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB24.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf("\nRotate RGB24 1920,1080 time +90deg %.3f", DurationMin/1000.0);
-      PicRotateRGB24.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB24.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" +180deg %.3f", DurationMin/1000.0);
-      PicRotateRGB24.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB24.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" +270deg %.3f", DurationMin/1000.0);
-      PicRotateRGB24.SetRotateMode(ROTATE_FLIP_VERTICAL);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB24.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" FLIP_V %.3f", DurationMin/1000.0);
-      PicRotateRGB24.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB24.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" FLIP_H %.3f", DurationMin/1000.0);
-      PicRotateRGB24.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicRotateRGB24.Rotate(BlobIn,BlobOut);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf(" FLIP_D %.3f[ms]", DurationMin/1000.0);
+      PicRotateRGB32Impl PicRotateRGB32;
+      BenchRotator("Rotate RGB32", &PicRotateRGB32, BlobIn, BlobOut);
+    }
+
+    {
+      OrigRotateRGB32Impl OrigRotateRGB32;
+      BenchRotator("OrigRot RGB32", &OrigRotateRGB32, BlobIn, BlobOut);
     }
   }
 
