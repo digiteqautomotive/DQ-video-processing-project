@@ -205,7 +205,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     // Get the bitmap info header and adapt the cropped 
     //make sure that it's a video info header
-    if(pMediaType->formattype != FORMAT_VideoInfo)
+    if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
         return VFW_E_TYPE_NOT_ACCEPTED;
     VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
     //Now we need to calculate the size of the output image
@@ -289,7 +289,7 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
   	// Video format
-  if (mtOut->formattype != FORMAT_VideoInfo)
+  if (mtOut->formattype!=FORMAT_VideoInfo && mtOut->formattype!=FORMAT_VideoInfo2)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }

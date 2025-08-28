@@ -78,6 +78,7 @@ void RotateFilter::InitialiseInputTypes()
 {
 	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
 	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+        AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
 }
 
 HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
@@ -99,7 +100,7 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
 				m_pRotate = new PicRotateRGB24Impl();
 				m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
 			}
-			else if (pmt->subtype == MEDIASUBTYPE_RGB32)
+			else if (pmt->subtype == MEDIASUBTYPE_RGB32 || pmt->subtype == MEDIASUBTYPE_ARGB32)
 			{
 				m_pRotate = new PicRotateRGB32Impl();
 				m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
@@ -127,7 +128,7 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 		
 		// Get the bitmap info header and adapt the cropped 
 		//make sure that it's a video info header
-		if(pMediaType->formattype != FORMAT_VideoInfo)
+		if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
 		    return VFW_E_TYPE_NOT_ACCEPTED;
 		VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
 		//Now we need to calculate the size of the output image
@@ -226,7 +227,7 @@ HRESULT RotateFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *
 			return VFW_E_TYPE_NOT_ACCEPTED;
 		else
 		{
-      if (mtOut->formattype == FORMAT_VideoInfo)
+      if (mtOut->formattype==FORMAT_VideoInfo || mtOut->formattype==FORMAT_VideoInfo2)
       {
         VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
         //Now we need to calculate the size of the output image
@@ -249,7 +250,7 @@ HRESULT RotateFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *
       }
 		}
 
-	if (mtOut->subtype == MEDIASUBTYPE_RGB32)
+	if (mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32)
 	{
 		VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
 		//Now we need to calculate the size of the output image
@@ -275,7 +276,7 @@ HRESULT RotateFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *
 // 		if (mtOut->subtype != MEDIASUBTYPE_RGB32)
 // 			return VFW_E_TYPE_NOT_ACCEPTED;
 
-	if (mtOut->formattype != FORMAT_VideoInfo)
+	if (mtOut->formattype!=FORMAT_VideoInfo && mtOut->formattype!=FORMAT_VideoInfo2)
 	{
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}

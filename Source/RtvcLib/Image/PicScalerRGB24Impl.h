@@ -41,6 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicScalerBase.h"
 
+
 /**
  * \ingroup ImageLib
  * An RGB24 implementation derived from the general

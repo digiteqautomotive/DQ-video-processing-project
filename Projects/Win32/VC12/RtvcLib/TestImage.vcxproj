@@ -20,7 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(BASECLASSES)\GetTickCount_ms.c" />
+    <ClCompile Include="..\..\..\..\Source\RtvcLib\TestImage\ScaleTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\RtvcLib\TestImage\TestImage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\Source\RtvcLib\TestImage\ScaleTesters.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{995889B0-9835-4BDC-AF4A-CABD93CDC9F0}</ProjectGuid>
