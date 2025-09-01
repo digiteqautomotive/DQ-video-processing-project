@@ -46,3 +46,136 @@ int PicRotateRGB24Impl::BytesPerPixel()
 {
 	return BITS_PER_PIXEL_RGB24/8;
 }
+
+
+bool PicRotateRGB24Impl::Rotate(void* pInImg, void* pOutImg)
+{
+	if (!pInImg || !pOutImg) return false;
+	
+	switch (m_eMode)
+	{
+	case ROTATE_NONE:
+		{
+			memcpy(pOutImg, pInImg, m_nWidth * m_nHeight * 3);
+			return true;
+		}
+	case ROTATE_90_DEGREES_CLOCKWISE:
+		{
+			BYTE* pSrc = (BYTE*)pInImg;
+			BYTE* pDest = NULL;
+			BYTE* pSrcCol = NULL;
+			for (int i = 0; i < m_nWidth; ++i, pSrc += 3)
+			{
+				int nNewRow = (m_nWidth - i);//Index Base 1
+				int nNewIndex = ((nNewRow - 1) * m_nHeight);// Base 1
+				pSrcCol = pSrc;
+				pDest = (BYTE*)pOutImg + (nNewIndex*3);
+				for (int j = 0; j < m_nHeight; ++j, pSrcCol += (3*m_nWidth), pDest += 3)
+				{
+					pDest[0] = pSrcCol[0];
+					pDest[1] = pSrcCol[1];
+					pDest[2] = pSrcCol[2];
+				}
+				// Copy pixels in same column to their destinations
+			}
+			return true;
+		}
+	case ROTATE_180_DEGREES_CLOCKWISE:
+		{
+			BYTE* pSrc = (BYTE*)pInImg;
+			int nTotalPixels = m_nWidth * m_nHeight; 
+			int nLastIndex = (nTotalPixels - 1) * 3;
+			BYTE* pDest = (BYTE*)pOutImg + nLastIndex;
+			for (int i = 0; i < nTotalPixels; ++i, pSrc += 3, pDest -= 3)
+			{
+				pDest[0] = pSrc[0];
+				pDest[1] = pSrc[1];
+				pDest[2] = pSrc[2];
+			}
+			return true;
+		}
+
+	case ROTATE_270_DEGREES_CLOCKWISE:
+		{
+			int iTargetRowLength = m_nHeight * 3;
+			BYTE* pSrc = (BYTE*)pInImg;
+			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - 3;
+
+			for ( int y = 0; y < m_nHeight; y++ )
+			{
+				BYTE* pDestPixel = pDest;
+				for (int x = 0; x < m_nWidth; ++x, pSrc += 3, pDestPixel += iTargetRowLength)
+				{
+					pDestPixel[0] = pSrc[0];
+					pDestPixel[1] = pSrc[1];
+					pDestPixel[2] = pSrc[2];
+				}
+				pDest -= 3;
+			}
+			return true;
+		}
+	case ROTATE_FLIP_VERTICAL:
+		{
+			// Code to flip image
+			int nRowLength = m_nWidth * 3;
+			BYTE* pSrc = (BYTE*)pInImg;
+			//BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight * nRowLength ) - nRowLength);
+			BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight - 1) * nRowLength);
+			for (int i = 0; i < m_nHeight; ++i, pSrc += nRowLength, pDest -= nRowLength)
+			{
+				memcpy(pDest, pSrc, nRowLength);
+			}
+			return true;
+		}
+	case ROTATE_FLIP_HORIZONTAL:
+		{
+			int iRowLength = m_nWidth * 3;
+			BYTE* pSrc = (BYTE*)pInImg;
+			BYTE* pDest = (BYTE*)pOutImg + iRowLength - 3;
+
+            for ( int y = 0; y < m_nHeight; y++ )
+            {
+				BYTE* pDestPixel = pDest;
+                for ( int x = 0; x < m_nWidth; x++, pSrc += 3, pDestPixel-=3 )
+                {
+			pDestPixel[0] = pSrc[0];
+			pDestPixel[1] = pSrc[1];
+			pDestPixel[2] = pSrc[2];			
+                }
+				pDest += iRowLength;
+            }
+			return true;
+		}
+	case ROTATE_FLIP_DIAGONALLY:
+		{
+			BYTE* pSrc = (BYTE*)pInImg;
+			BYTE* pDest = NULL;
+			BYTE* pSrcCol = NULL;
+			for (int i = 0; i < m_nWidth; ++i, pSrc += 3)
+			{
+				int nNewRow = (m_nWidth - i);//Index Base 1
+				// Select target row to be one higher and subtract sizeof RGB block to be at last index of row
+				++nNewRow;
+				int nNewIndex = ((nNewRow - 1) * m_nHeight);// Base 1
+				// Adjust index to previous row
+				--nNewIndex;
+				pSrcCol = pSrc;
+				pDest = (BYTE*)pOutImg + (nNewIndex*3);
+				for (int j = 0; j < m_nHeight; ++j, pSrcCol += (3*m_nWidth), pDest -= 3)
+				{
+					pDest[0] = pSrcCol[0];
+					pDest[1] = pSrcCol[1];
+					pDest[2] = pSrcCol[2];
+				}
+				// Copy pixels in same column to their destinations
+			}
+			return true;
+		}
+	default:
+		{
+			// Unimplemented
+			return false;
+		}
+	}
+}
+

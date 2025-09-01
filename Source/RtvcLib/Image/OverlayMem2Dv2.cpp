@@ -56,7 +56,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #include <stdlib.h>
 
 #include "OverlayMem2Dv2.h"
-#include "MeasurementTable.h" 
+#include "GeneralUtils/MeasurementTable.h" 
 
 /*
 ---------------------------------------------------------------------------

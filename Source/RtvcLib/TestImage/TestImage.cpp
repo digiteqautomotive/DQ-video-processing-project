@@ -317,7 +317,7 @@ int i;
 
      }
 
-//--------------------------------------------------------------------------------------
+//-----------------------------------YUYV-----------------------------------------------
 
   for(int WithIn=0; WithIn<6; WithIn+=2)
    for(int HeightIn=0; HeightIn<5; HeightIn++)
@@ -341,7 +341,7 @@ int i;
          picScalerYUYV.Scale(BlobOut+16,BlobIn+16);
          origScalerYUYV.Scale(BlobTest+16,BlobIn+16);
 
-         int pos = memcmp(BlobTest, BlobOut, OutSize+32);
+         const int pos = memcmp(BlobTest, BlobOut, OutSize+32);
          if(pos)
          {
            printf("\nYUYV Compare error %ux%u -> %ux%u; pos=%d.", WithIn, HeightIn, WithOut, HeightOut, pos);
@@ -350,6 +350,224 @@ int i;
 
        }
      }
+
+
+//-----------------------------Rotate-RGB32---------------------------------------------
+
+  for(int WithIn=0; WithIn<6; WithIn++)
+   for(int HeightIn=0; HeightIn<6; HeightIn++)
+   {
+     const int WithOut = HeightIn;
+     const int HeightOut = WithIn;
+     
+     int InSize = 4 * WithIn * HeightIn;
+     int OutSize = 4 * WithOut * HeightOut;
+     if(InSize==0) OutSize=0;
+     PicRotateRGB32Impl picRotateARGB32;
+     picRotateARGB32.SetInDimensions(WithIn,HeightIn);
+     OrigRotateRGB32Impl origRotateARGB32;
+     origRotateARGB32.SetInDimensions(WithIn,HeightIn);
+
+     memcpy(BlobOut,BlobIn,16);
+     memcpy(BlobTest,BlobIn,16);
+     memset(BlobOut+16,0xFE,OutSize);
+     memset(BlobTest+16,0xFC,OutSize);
+     memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+     memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
+
+     picRotateARGB32.SetRotateMode(ROTATE_NONE);
+     origRotateARGB32.SetRotateMode(ROTATE_NONE);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     int pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_NONE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateARGB32.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     origRotateARGB32.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_90_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateARGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     origRotateARGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_180_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateARGB32.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     origRotateARGB32.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_270_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateARGB32.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     origRotateARGB32.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_FLIP_VERTICAL; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateARGB32.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     origRotateARGB32.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_FLIP_HORIZONTAL; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateARGB32.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     origRotateARGB32.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_FLIP_DIAGONALLY; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+   }
+
+
+//-----------------------------Rotate-RGB24---------------------------------------------
+
+  for(int WithIn=0; WithIn<6; WithIn++)
+   for(int HeightIn=0; HeightIn<6; HeightIn++)
+   {
+     const int WithOut = HeightIn;
+     const int HeightOut = WithIn;
+     
+     int InSize = 3 * WithIn * HeightIn;
+     int OutSize = 3 * WithOut * HeightOut;
+     if(InSize==0) OutSize=0;
+     PicRotateRGB32Impl picRotateRGB24;
+     picRotateRGB24.SetInDimensions(WithIn,HeightIn);
+     OrigRotateRGB32Impl origRotateRGB24;
+     origRotateRGB24.SetInDimensions(WithIn,HeightIn);
+
+     memcpy(BlobOut,BlobIn,16);
+     memcpy(BlobTest,BlobIn,16);
+     memset(BlobOut+16,0xFE,OutSize);
+     memset(BlobTest+16,0xFC,OutSize);
+     memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+     memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
+
+     picRotateRGB24.SetRotateMode(ROTATE_NONE);
+     origRotateRGB24.SetRotateMode(ROTATE_NONE);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     int pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_NONE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     origRotateRGB24.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_90_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     origRotateRGB24.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_180_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     origRotateRGB24.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_270_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     origRotateRGB24.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_FLIP_VERTICAL; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     origRotateRGB24.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_FLIP_HORIZONTAL; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     origRotateRGB24.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_FLIP_DIAGONALLY; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+   }
 
 
   printf("\nAll tests passed OK.");

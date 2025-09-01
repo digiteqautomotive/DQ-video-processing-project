@@ -45,5 +45,6 @@ public:
 	PicRotateRGB24Impl();
 	~PicRotateRGB24Impl();
 
-	virtual int BytesPerPixel();
+	virtual int BytesPerPixel(void);
+        virtual bool Rotate(void* pInImg, void* pOutImg);
 };
