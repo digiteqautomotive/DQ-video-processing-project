@@ -265,5 +265,11 @@
     <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerSSE_Win32.asm">
       <Filter>Source Files</Filter>
     </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\raster_MSVC.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\raster_MSVC64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

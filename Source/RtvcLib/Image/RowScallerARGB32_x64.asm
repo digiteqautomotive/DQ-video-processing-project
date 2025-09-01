@@ -1,5 +1,6 @@
 ;***************************************************************************************
 ;*                       (c)2025 Digiteq Automotive - Jaroslav Fojtik
+;* This code could be redistributed under LGPL licency.
 ;****************************************************************************************/
 
 .CODE _text             ;Indicates the start of a code segment.

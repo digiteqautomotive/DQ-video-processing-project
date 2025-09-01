@@ -32,8 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "PicRotateRGB32Impl.h"
+#include <stdio.h>
+#include <string.h>
 
-#include <DirectShow/CommonDefs.h>
 
 PicRotateRGB32Impl::PicRotateRGB32Impl()
 {;}
@@ -43,7 +44,7 @@ PicRotateRGB32Impl::~PicRotateRGB32Impl()
 
 int PicRotateRGB32Impl::BytesPerPixel()
 {
-	return BITS_PER_PIXEL_RGB32/8;
+	return 4;
 }
 
 
@@ -125,15 +126,15 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 			BYTE* pSrc = (BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iRowLength - 4;
 
-            for ( int y = 0; y < m_nHeight; y++ )
-            {
-				BYTE* pDestPixel = pDest;
-                for ( int x = 0; x < m_nWidth; x++, pSrc += 4, pDestPixel-=4 )
-                {
-			*(__int32*)(pDestPixel) = *(__int32*)(pSrc);
-                }
-				pDest += iRowLength;
-            }
+		        for ( int y = 0; y < m_nHeight; y++ )
+		        {
+			  BYTE* pDestPixel = pDest;
+			  for ( int x = 0; x < m_nWidth; x++, pSrc += 4, pDestPixel-=4 )
+			  {
+			    *(__int32*)(pDestPixel) = *(__int32*)(pSrc);
+			  }
+			  pDest += iRowLength;
+			}
 			return true;
 		}
 	case ROTATE_FLIP_DIAGONALLY:

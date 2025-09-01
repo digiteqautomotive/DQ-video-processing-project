@@ -1,5 +1,6 @@
 ;***************************************************************************
 ; Copyright: (c) 2021-2025 Jaroslav Fojtik                                 *
+;* This code could be redistributed under LGPL licency.
 ;***************************************************************************
 
 .586              ;Target processor.  Use instructions for Pentium class machines

@@ -32,7 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "PicRotateRGB24Impl.h"
-#include <DirectShow/CommonDefs.h>
+#include <stdio.h>
+#include <string.h>
+
 
 PicRotateRGB24Impl::PicRotateRGB24Impl()
 {
@@ -44,7 +46,7 @@ PicRotateRGB24Impl::~PicRotateRGB24Impl()
 
 int PicRotateRGB24Impl::BytesPerPixel()
 {
-	return BITS_PER_PIXEL_RGB24/8;
+	return 3;
 }
 
 
@@ -178,4 +180,3 @@ bool PicRotateRGB24Impl::Rotate(void* pInImg, void* pOutImg)
 		}
 	}
 }
-
