@@ -472,9 +472,9 @@ int i;
      int InSize = 3 * WithIn * HeightIn;
      int OutSize = 3 * WithOut * HeightOut;
      if(InSize==0) OutSize=0;
-     PicRotateRGB32Impl picRotateRGB24;
+     PicRotateRGB24Impl picRotateRGB24;
      picRotateRGB24.SetInDimensions(WithIn,HeightIn);
-     OrigRotateRGB32Impl origRotateRGB24;
+     OrigRotateRGB24Impl origRotateRGB24;
      origRotateRGB24.SetInDimensions(WithIn,HeightIn);
 
      memcpy(BlobOut,BlobIn,16);

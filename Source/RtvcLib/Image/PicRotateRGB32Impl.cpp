@@ -48,6 +48,12 @@ int PicRotateRGB32Impl::BytesPerPixel()
 }
 
 
+#ifdef USE_ASM
+extern "C" void Flip32_2(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
+#endif
+
+
+
 bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 {
   if (!pInImg || !pOutImg) return false;
@@ -122,7 +128,10 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 		}
 	case ROTATE_FLIP_HORIZONTAL:
 		{
-			int iRowLength = m_nWidth * 4;
+#ifdef USE_ASM
+			Flip32_2(m_nWidth, m_nHeight, pInImg, pOutImg);
+#else
+			const int iRowLength = m_nWidth * 4;
 			BYTE* pSrc = (BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iRowLength - 4;
 
@@ -135,6 +144,7 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 			  }
 			  pDest += iRowLength;
 			}
+#endif
 			return true;
 		}
 	case ROTATE_FLIP_DIAGONALLY:
@@ -154,7 +164,7 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 				pDest = (BYTE*)pOutImg + (nNewIndex*4);
 				for (int j = 0; j < m_nHeight; ++j, pSrcCol += (4*m_nWidth), pDest -= 4)
 				{
-					*(__int32*)(pDest) = *(__int32*)(pSrcCol);
+				   *(__int32*)(pDest) = *(__int32*)(pSrcCol);
 				}
 				// Copy pixels in same column to their destinations
 			}

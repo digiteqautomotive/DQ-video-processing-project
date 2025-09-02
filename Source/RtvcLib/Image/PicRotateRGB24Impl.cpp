@@ -50,6 +50,11 @@ int PicRotateRGB24Impl::BytesPerPixel()
 }
 
 
+#ifdef USE_ASM
+extern "C" void Flip24_2(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
+#endif
+
+
 bool PicRotateRGB24Impl::Rotate(void* pInImg, void* pOutImg)
 {
 	if (!pInImg || !pOutImg) return false;
@@ -119,7 +124,7 @@ bool PicRotateRGB24Impl::Rotate(void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_VERTICAL:
 		{
 			// Code to flip image
-			int nRowLength = m_nWidth * 3;
+			const int nRowLength = m_nWidth * 3;
 			BYTE* pSrc = (BYTE*)pInImg;
 			//BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight * nRowLength ) - nRowLength);
 			BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight - 1) * nRowLength);
@@ -130,22 +135,25 @@ bool PicRotateRGB24Impl::Rotate(void* pInImg, void* pOutImg)
 			return true;
 		}
 	case ROTATE_FLIP_HORIZONTAL:
-		{
-			int iRowLength = m_nWidth * 3;
+		{			
+#ifdef USE_ASM
+			Flip24_2(m_nWidth, m_nHeight, pInImg, pOutImg);
+#else
+			const int iRowLength = m_nWidth * 3;
 			BYTE* pSrc = (BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iRowLength - 3;
-
-            for ( int y = 0; y < m_nHeight; y++ )
-            {
-				BYTE* pDestPixel = pDest;
-                for ( int x = 0; x < m_nWidth; x++, pSrc += 3, pDestPixel-=3 )
-                {
-			pDestPixel[0] = pSrc[0];
-			pDestPixel[1] = pSrc[1];
-			pDestPixel[2] = pSrc[2];			
-                }
-				pDest += iRowLength;
-            }
+                        for ( int y = 0; y < m_nHeight; y++ )
+                        {
+			   BYTE* pDestPixel = pDest;
+                           for ( int x = 0; x < m_nWidth; x++, pSrc += 3, pDestPixel-=3 )
+                           {
+			     pDestPixel[0] = pSrc[0];
+			     pDestPixel[1] = pSrc[1];
+			     pDestPixel[2] = pSrc[2];			
+                           }
+			   pDest += iRowLength;
+                        }
+#endif
 			return true;
 		}
 	case ROTATE_FLIP_DIAGONALLY:
