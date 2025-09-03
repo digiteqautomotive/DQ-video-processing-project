@@ -85,7 +85,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>strmiids.lib;strmbasd.lib;libRtvcDirectShowD.lib;libRtvcImageD.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -104,7 +104,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>strmiids.lib;strmbasd.lib;libRtvcDirectShowD.lib;libRtvcImageD.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,7 +123,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>strmiids.lib;strmbase.lib;libRtvcDirectShow.lib;libRtvcImage.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -145,7 +145,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>strmiids.lib;strmbase.lib;libRtvcDirectShow.lib;libRtvcImage.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>

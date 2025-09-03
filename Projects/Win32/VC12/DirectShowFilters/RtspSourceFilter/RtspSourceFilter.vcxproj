@@ -97,7 +97,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -126,7 +126,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -152,7 +152,7 @@
       <Command>@rem regsvr32  /s "$(ReleaseBuildDir)\$(ProjectName).dll"</Command>
     </CustomBuildStep>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -181,7 +181,7 @@
       <Command>@rem regsvr32  /s "$(ReleaseBuildDir)\$(ProjectName).dll"</Command>
     </CustomBuildStep>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\\3rdParty\LiveMedia\live\liveMedia\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>

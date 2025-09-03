@@ -39,18 +39,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
-#include <Image/PicScalerRGB24Impl.h>
-#include <Image/PicScalerRGB32Impl.h>
-#include <Image/PicScalerARGB32Impl.h>
-#include <Image/PicScalerYUV420PImpl.h>
-#include <Image/PicScalerYUYVImpl.h>
-#include <Image/PicScalerUYVYImpl.h>
+#include <PicScalerRGB24Impl.h>
+#include <PicScalerRGB32Impl.h>
+#include <PicScalerARGB32Impl.h>
+#include <PicScalerYUV420PImpl.h>
+#include <PicScalerYUYVImpl.h>
+#include <PicScalerUYVYImpl.h>
 
 #ifdef USE_MMX
-#include <Image/PicScalerARGB32MMX.h>
+#include <PicScalerARGB32MMX.h>
 #endif
 #ifdef USE_SSE
- #include <Image/PicScalerARGB32SSE.h>
+ #include <PicScalerARGB32SSE.h>
 #endif
 
 

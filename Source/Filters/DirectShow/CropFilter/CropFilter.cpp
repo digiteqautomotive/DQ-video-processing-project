@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "CropFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <Image/PicCropperRGB24Impl.h>
-#include <Image/PicCropperRGB32Impl.h>
+#include <PicCropperRGB24Impl.h>
+#include <PicCropperRGB32Impl.h>
 #include "../VersionInfo.h"
 
 CropFilter::CropFilter()

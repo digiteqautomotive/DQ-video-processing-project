@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
-#include <Image/RealYUV420toRGB24Converter.h>
+#include <RealYUV420toRGB24Converter.h>
 
 #include"../VersionInfo.h"
 

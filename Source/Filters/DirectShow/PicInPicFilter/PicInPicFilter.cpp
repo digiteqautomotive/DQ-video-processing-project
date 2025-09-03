@@ -34,9 +34,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "PicInPicFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <Image/PicInPicRGB24Impl.h>
-#include <Image/PicInPicRGB32Impl.h>
-#include <Image/PicScalerRGB24Impl.h>
+#include <PicInPicRGB24Impl.h>
+#include <PicInPicRGB32Impl.h>
+#include <PicScalerRGB24Impl.h>
 #include "../VersionInfo.h"
 
 PicInPicFilter::PicInPicFilter()

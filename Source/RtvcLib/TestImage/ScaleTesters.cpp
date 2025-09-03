@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Image/PicScalerBase.h"
+#include "PicScalerBase.h"
 #include "ScaleTesters.h"
 
 

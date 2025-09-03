@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Image/PicRotateRGBBase.h"
+#include "PicRotateRGBBase.h"
 #include "DirectShow/CommonDefs.h"
 #include "RotateTesters.h"
 

@@ -34,8 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RotateFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <Image/PicRotateRGB24Impl.h>
-#include <Image/PicRotateRGB32Impl.h>
+#include <PicRotateRGB24Impl.h>
+#include <PicRotateRGB32Impl.h>
 #include "../VersionInfo.h"
 
 

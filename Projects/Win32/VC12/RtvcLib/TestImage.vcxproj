@@ -102,7 +102,7 @@
       <ProgramDataBaseFileName>$(temp)/MF624/debug32/vc70.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\RtvcLib;..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\libs\VppLib\include;..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libRtvcImageD.lib;Setupapi.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -132,7 +132,7 @@
       <ProgramDataBaseFileName>$(temp)/MF624/debug64/vc70.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\RtvcLib;..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\libs\VppLib\include;..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libRtvcImageD.lib;Setupapi.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -161,7 +161,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\RtvcLib;..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\libs\VppLib\include;..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libRtvcImage.lib;Winmm.lib;Setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -187,7 +187,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\RtvcLib;..\..\..\..\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\Source\libs\VppLib\include;..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libRtvcImage.lib;Winmm.lib;Setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>

@@ -78,7 +78,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Src\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Src\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT_NO;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -108,7 +108,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Src\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Src\libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT_NO;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\CodecUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>
@@ -162,7 +162,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\CodecUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\CodecUtils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;H264DecoderFilter_EXPORTS;_BUILD_FOR_SHORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>

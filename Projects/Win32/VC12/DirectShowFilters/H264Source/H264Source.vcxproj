@@ -90,7 +90,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\libs\VppLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -121,7 +121,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\libs\VppLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -150,7 +150,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\libs\VppLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -181,7 +181,7 @@
     </CustomBuildStep>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\libs\VppLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>

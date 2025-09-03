@@ -34,8 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "VideoMixingFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <Image/PicConcatRGB24Impl.h>
-#include <Image/PicConcatRGB32Impl.h>
+#include <PicConcatRGB24Impl.h>
+#include <PicConcatRGB32Impl.h>
 
 #include "../VersionInfo.h"
 

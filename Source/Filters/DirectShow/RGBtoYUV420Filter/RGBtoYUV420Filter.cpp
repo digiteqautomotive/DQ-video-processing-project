@@ -34,8 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RGBtoYUV420Filter.h"
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
-#include <Image/RealRGB24toYUV420Converter.h>
-#include <Image/RealRGB32toYUV420Converter.h>
+#include <RealRGB24toYUV420Converter.h>
+#include <RealRGB32toYUV420Converter.h>
 #include "DirectShow/DirectShowMediaFormats.h"
 #include "../VersionInfo.h"
 

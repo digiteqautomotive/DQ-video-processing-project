@@ -35,8 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
 #include "H264Source.h"
 #include "H264OutputPin.h"
-#include <Codecs/H264v2/H264v2.h>
-#include <Codecs/CodecUtils/ICodecv2.h>
+#include "H264v2/H264v2.h"
+#include "CodecUtils/ICodecv2.h"
 #include "GeneralUtils/Conversion.h"
 #include "../VersionInfo.h"
 

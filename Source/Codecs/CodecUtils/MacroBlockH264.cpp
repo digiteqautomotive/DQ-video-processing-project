@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string.h>
 #include "MacroBlockH264.h"
-#include "MeasurementTable.h"
+#include "GeneralUtils/MeasurementTable.h"
 
 /// It is simpler to derive neighbourhoods of macroblocks if they are left in 
 /// rater scanning order right up until their encodings are written onto the

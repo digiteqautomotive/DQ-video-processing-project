@@ -102,7 +102,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
-      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Lib>
@@ -120,7 +120,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>Cdecl</CallingConvention>
-      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Lib>
@@ -135,7 +135,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <OmitFramePointers>true</OmitFramePointers>
@@ -155,7 +155,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\RtvcLib</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
@@ -167,63 +167,63 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\FastFixedPointRGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\FastGpuRGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\FastLookupTableRGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\FastSimdRGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\ImageHandlerV2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\MtRGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\OverlayExtMem2Dv2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\OverlayMem2Dv2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatRGB32Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicCropperRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicCropperRGB32Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicInPicRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicInPicRGB32Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB32Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGBBase.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32Impl.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\FastGpuRGB24toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\FastLookupTableRGB24toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\FastSimdRGB24toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\MtRGB24toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB32Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB32Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB32Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB32Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGBBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerARGB32Impl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32ImplA.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerARGB32ImplA.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32SSE.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerARGB32SSE.cpp">
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24Impl.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB24Impl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24ImplA.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB24ImplA.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32Impl.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB32Impl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB32ImplA.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB32ImplA.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerARGB32MMX.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerARGB32MMX.cpp">
       <IntrinsicFunctions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IntrinsicFunctions>
       <IntrinsicFunctions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IntrinsicFunctions>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NoExtensions</EnableEnhancedInstructionSet>
@@ -231,68 +231,68 @@
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NoExtensions</EnableEnhancedInstructionSet>
       <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NoExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerUYVYImpl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUV420PImpl.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerUYVYImpl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYUV420PImpl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUYVImpl.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYUYVImpl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUYVImplA.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420CCIR601ConverterVer16.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420ConverterImpl2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420ConverterImpl2Ver16.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB32toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24CCIR601ConverterVer16.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24ConverterImpl2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24ConverterImpl2Ver16.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYUYVImplA.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420CCIR601ConverterVer16.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2Ver16.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB32toYUV420Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24CCIR601ConverterVer16.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24ConverterImpl2.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24ConverterImpl2Ver16.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\FastFixedPointRGB24toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\FastGpuRGB24toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\FastLookupTableRGB24toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\FastSimdRGB24toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\ImageHandlerV2.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\MtRGB24toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\OverlayExtMem2Dv2.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\OverlayMem2Dv2.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatBase.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatRGB24Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicConcatRGB32Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicCropperBase.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicCropperRGB24Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicCropperRGB32Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicInPicBase.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicInPicRGB24Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicInPicRGB32Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateBase.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB24Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGB32Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicRotateRGBBase.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerBase.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerRGB24Impl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\PicScalerYUV420PImpl.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420CCIR601ConverterVer16.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420ConverterImpl2.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB24toYUV420ConverterImpl2Ver16.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealRGB32toYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24CCIR601ConverterVer16.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24ConverterImpl2.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RealYUV420toRGB24ConverterImpl2Ver16.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RGBtoRGBConverter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\RGBtoYUV420Converter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\RtvcLib\Image\YUV420toRGBConverter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastGpuRGB24toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastLookupTableRGB24toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastSimdRGB24toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\MtRGB24toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatBase.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB24Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB32Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperBase.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB24Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB32Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicBase.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB24Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB32Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBase.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB32Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGBBase.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerBase.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB24Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYUV420PImpl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420CCIR601ConverterVer16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2Ver16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB32toYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24CCIR601ConverterVer16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24ConverterImpl2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24ConverterImpl2Ver16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RGBtoRGBConverter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\RGBtoYUV420Converter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGBConverter.h" />
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\raster_MSVC.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\raster_MSVC.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
@@ -300,7 +300,7 @@
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</UseSafeExceptionHandlers>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\raster_MSVC64.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\raster_MSVC64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
@@ -308,7 +308,7 @@
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</UseSafeExceptionHandlers>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerARGB32_Win32.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerARGB32_Win32.asm">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -317,14 +317,14 @@
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerARGB32_x64.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerARGB32_x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>MASM</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerMMX_Win32.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerMMX_Win32.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseSafeExceptionHandlers>
@@ -332,7 +332,7 @@
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerMMX_x64.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerMMX_x64.asm">
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -340,24 +340,24 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerSSE_Win32.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerSSE_Win32.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\RowScallerSSE_x64.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerSSE_x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\ToolsCPU_Win32.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\ToolsCPU_Win32.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
     </MASM>
-    <MASM Include="..\..\..\..\..\Source\RtvcLib\Image\ToolsCPU_x64.asm">
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\ToolsCPU_x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </MASM>

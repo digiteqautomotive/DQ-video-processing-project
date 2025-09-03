@@ -111,7 +111,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -144,7 +144,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
@@ -172,7 +172,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -205,7 +205,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib\Image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\Codecs\H264v2Codec;..\..\..\..\..\Source\Codecs\CodecUtils;..\..\..\..\..\Source\RtvcLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>

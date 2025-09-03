@@ -5,16 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Image/PicScalerRGB24Impl.h"
-#include "Image/PicScalerARGB32Impl.h"
-#include "Image/PicScalerRGB32Impl.h"
-#include "Image/PicScalerARGB32MMX.h"
-#include "Image/PicScalerARGB32SSE.h"
-#include "Image/PicScalerYUYVImpl.h"
+#include "PicScalerRGB24Impl.h"
+#include "PicScalerARGB32Impl.h"
+#include "PicScalerRGB32Impl.h"
+#include "PicScalerARGB32MMX.h"
+#include "PicScalerARGB32SSE.h"
+#include "PicScalerYUYVImpl.h"
 #include "ScaleTesters.h"
 
-#include "Image/PicRotateRGB32Impl.h"
-#include "Image/PicRotateRGB24Impl.h"
+#include "PicRotateRGB32Impl.h"
+#include "PicRotateRGB24Impl.h"
 #include "RotateTesters.h"
 
 

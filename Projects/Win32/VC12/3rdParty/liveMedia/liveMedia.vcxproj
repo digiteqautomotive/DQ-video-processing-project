@@ -83,7 +83,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NO_STRSTREAM;OPENSTREAM_EXPORTS;_USE_32BIT_TIME_T;_CRT_SECURE_NO_DEPRECATE;_WINNT;DEBUG_RRNO;DEBUGNO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -100,7 +100,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NO_STRSTREAM;OPENSTREAM_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_WINNT;DEBUG_RRNO;DEBUGNO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -116,7 +116,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NO_STRSTREAM;OPENSTREAM_EXPORTS;_USE_32BIT_TIME_T;_CRT_SECURE_NO_DEPRECATE;_WINNT;DEBUG_RRNO;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\RtvcLib;..\..\..\..\..\Source;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BASECLASSES);..\..\..\..\..\Source\libs\VppLib\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\liveMedia\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\groupsock\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\BasicUsageEnvironment\include;..\..\..\..\..\Source\3rdParty\LiveMedia\live\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NO_STRSTREAM;OPENSTREAM_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_WINNT;DEBUG_RRNO;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
