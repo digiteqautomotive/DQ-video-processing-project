@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicInPicRGB24Impl.h>
 #include <PicInPicRGB32Impl.h>
 #include <PicScalerRGB24Impl.h>
+#include <PicScalerRGB32Impl.h>
 #include "../VersionInfo.h"
 
 PicInPicFilter::PicInPicFilter()
@@ -87,7 +88,7 @@ PicInPicFilter::~PicInPicFilter()
     m_pBufferForScaledSecondaryImage = NULL;
   }
 
-  for (int i = 0; i < 2; i++)
+  for(int i = 0; i < 2; i++)
   {
     if (m_pSampleBuffers[i])
     {
@@ -110,17 +111,17 @@ void PicInPicFilter::initParameters()
   // currently unused: supposed to be one of the standard positions to insert 
   // the picture i.e. top left or top right corner.
 	// addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
-  // width output picture is scaled to
-	addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);
-  // height output picture is scaled to
+	// width output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);
+	// height output picture is scaled to
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);
-  // width inner picture is scaled to
+	// width inner picture is scaled to
   addParameter(FILTER_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);
-  // height inner picture is scaled to
+	// height inner picture is scaled to
   addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);
-  // x offset from bottom left corner
+	// x offset from bottom left corner
   addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);
-  // y offset from bottom left corner
+	// y offset from bottom left corner
   addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);
 }
 
@@ -128,43 +129,42 @@ void PicInPicFilter::initParameters()
 HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
 	// Prepare output sample
-	AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
-	DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
-	if (pProps->dwStreamId != AM_STREAM_MEDIA) {
-		return m_vInputPins[nIndex]->Receive(pSample);
-	}
+  AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
+  DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
+  if(pProps->dwStreamId != AM_STREAM_MEDIA) 
+  {
+    return m_vInputPins[nIndex]->Receive(pSample);
+  }
 
-	IMediaSample * pOutSample;
+  IMediaSample * pOutSample;
 	// Set up the output sample
-	HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
+  HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
 
-	if (FAILED(hr)) {
-		return hr;
-	}
+  if(FAILED(hr)) return hr;
 
-	BYTE *pBufferOut = NULL;
-	hr = pOutSample->GetPointer(&pBufferOut);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+  BYTE *pBufferOut = NULL;
+  hr = pOutSample->GetPointer(&pBufferOut);
+  if (FAILED(hr))
+  {
+    return hr;
+  }
 
 	// do pic in pic transform
- 	if (m_pSampleBuffers[0] && m_pSampleBuffers[1])
-	{
+  if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
+  {
 		// the target scaler is only created if the input dimensions of the primary picture don't match the target dimensions
-		if ( m_pTargetPicScaler )
-		{
+    if ( m_pTargetPicScaler )
+    {
       // scale the primary image into the out buffer
       m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)m_pSampleBuffers[0]);
-		}
-		else
-		{
+    }
+    else
+    {
       // copy the primary image
       memcpy(pBufferOut, m_pSampleBuffers[0], (m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBitsPerPixel)/8);
-		}
+    }
     
-    if (m_pSubPicScaler)
+    if(m_pSubPicScaler)
     {
       m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
       m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut);
@@ -174,20 +174,20 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
       // copy direct from buffer
       m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut);
     }
-	}
- 	else if (m_pSampleBuffers[0])
- 	{
-		if ( m_pTargetPicScaler )
-		{
+  }
+  else if (m_pSampleBuffers[0])
+  {
+    if ( m_pTargetPicScaler )
+    {
       m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)m_pSampleBuffers[0]);
-		}
-		else
-		{
+    }
+    else
+    {
       memcpy(pBufferOut, m_pSampleBuffers[0], (m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBitsPerPixel)/8);
-		}
- 	}
- 	else
- 	{
+    }
+  }
+  else
+  {
     int nWidth = m_nOutputWidth;
     int nHeight = m_nOutputHeight;
 		// TODO: is zeros the right filler
@@ -203,46 +203,46 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
       // copy direct from buffer
       m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut);
     }
- 	}
+  }
 
-	pOutSample->SetActualDataLength(m_nOutputSize);
-	pOutSample->SetSyncPoint(TRUE);
+  pOutSample->SetActualDataLength(m_nOutputSize);
+  pOutSample->SetSyncPoint(TRUE);
 
 	// Stop the clock and log it (if PERF is defined)
-	MSR_STOP(m_idTransform);
+  MSR_STOP(m_idTransform);
 
-	if (FAILED(hr)) {
+  if (FAILED(hr)) {
 		DbgLog((LOG_TRACE,1,TEXT("Error from transform")));
-	} 
-	else 
-	{
-		// the Transform() function can return S_FALSE to indicate that the
-		// sample should not be delivered; we only deliver the sample if it's
-		// really S_OK (same as NOERROR, of course.)
-		if (hr == NOERROR) 
-		{
-			hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
-		} 
-		else 
-		{
-			// S_FALSE returned from Transform is a PRIVATE agreement
-			// We should return NOERROR from Receive() in this cause because returning S_FALSE
-			// from Receive() means that this is the end of the stream and no more data should
-			// be sent.
-			if (S_FALSE == hr) 
-			{
-				//  Release the sample before calling notify to avoid
-				//  deadlocks if the sample holds a lock on the system
-				//  such as DirectDraw buffers do
-				pOutSample->Release();
-				return NOERROR;
-			}
-		}
-	}
+  } 
+  else 
+  {
+	// the Transform() function can return S_FALSE to indicate that the
+	// sample should not be delivered; we only deliver the sample if it's
+	// really S_OK (same as NOERROR, of course.)
+    if (hr == NOERROR) 
+    {
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
+    } 
+    else 
+    {
+	// S_FALSE returned from Transform is a PRIVATE agreement
+	// We should return NOERROR from Receive() in this cause because returning S_FALSE
+	// from Receive() means that this is the end of the stream and no more data should
+	// be sent.
+      if (S_FALSE == hr) 
+      {
+	//  Release the sample before calling notify to avoid
+	//  deadlocks if the sample holds a lock on the system
+	//  such as DirectDraw buffers do
+        pOutSample->Release();
+        return NOERROR;
+      }
+    }
+  }
 	// release the output buffer. If the connected pin still needs it,
 	// it will have addrefed it itself.
-	pOutSample->Release();
-	return hr;
+  pOutSample->Release();
+  return hr;
 }
 
 HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
@@ -294,60 +294,89 @@ HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 HRESULT PicInPicFilter::CreateVideoMixer( const CMediaType *pMediaType, int nIndex )
 {
 	// Create temporary sample buffers
-	VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
-	BITMAPINFOHEADER bmih = pVih->bmiHeader;
+  VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
+  BITMAPINFOHEADER bmih = pVih->bmiHeader;
 
-	m_nSampleSizes[nIndex] = DIBSIZE(bmih);
-	if (m_pSampleBuffers[nIndex])
-	{
+  m_nSampleSizes[nIndex] = DIBSIZE(bmih);
+  if (m_pSampleBuffers[nIndex])
+  {
 		// Recreate in case dimensions have changed
-		delete[] m_pSampleBuffers[nIndex];
-	}
-	m_pSampleBuffers[nIndex] = new BYTE[m_nSampleSizes[nIndex]];
+    delete[] m_pSampleBuffers[nIndex];
+  }
+  m_pSampleBuffers[nIndex] = new BYTE[m_nSampleSizes[nIndex]];
 
 	// Create appropriate picture concatenator
-	if (!m_pPicInPic)
-	{
-          if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
-	  {
-            m_pPicInPic = new PicInPicRGB24Impl();
-            m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-	    return S_OK;
-	  } 
-	  else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32)
-	  {
-            m_pPicInPic = new PicInPicRGB32Impl();
-            m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
-	    return S_OK;
-	  }
-	  else return VFW_E_TYPE_NOT_ACCEPTED;
-	}
+  if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+  {
+    if(m_pPicInPic!=NULL)
+    {
+      if(m_pPicInPic->GetVideoFormat()!=24) 
+      {
+        delete m_pPicInPic; m_pPicInPic=NULL;
+        if(m_pTargetPicScaler)
+        {
+          delete m_pTargetPicScaler;
+          m_pTargetPicScaler = NULL;
+        }
+      }
+    }
+    if(m_pPicInPic==NULL)
+    {
+      m_pPicInPic = new PicInPicRGB24Impl();
+      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+    }
+    return S_OK;
+  }
+  else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32)
+  {
+    if(m_pPicInPic!=NULL)
+    {
+      if(m_pPicInPic->GetVideoFormat()!=24)
+      {
+        delete m_pPicInPic; m_pPicInPic=NULL;
+        if(m_pTargetPicScaler)
+        {
+          delete m_pTargetPicScaler;
+          m_pTargetPicScaler = NULL;
+        }
+      }
+    }
+    if(m_pPicInPic==NULL)
+    {
+      m_pPicInPic = new PicInPicRGB32Impl();
+      m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
+    }
+    return S_OK;
+  }
 
-	return S_OK;
+  return VFW_E_TYPE_NOT_ACCEPTED;
 }
+
 
 HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
-  // target picture scaler
+	// target picture scaler
   if (m_nTargetWidth > 0 && m_nTargetHeight > 0)
   {
-    // if target width and height have been set use those dimensions
+	// if target width and height have been set use those dimensions
     nOutputWidth = m_nTargetWidth;
     nOutputHeight = m_nTargetHeight;
     nOutputSize = (m_nOutputWidth * m_nOutputHeight * m_nBitsPerPixel) / 8;
   }
   else
   {
-    ASSERT(pBmih1);
-    // Use size of first input
+    if(pBmih1==NULL)
+        return E_POINTER;
+	// Use size of first input
     nOutputSize = m_nSampleSizes[0];
     nOutputWidth = pBmih1->biWidth;
     nOutputHeight = pBmih1->biHeight;
-  }
+  }  
 
   reconfigure();
-	return S_OK;
+  return S_OK;
 }
+
 
 HRESULT PicInPicFilter::CheckOutputType( const CMediaType* pMediaType )
 {
@@ -368,44 +397,44 @@ HRESULT PicInPicFilter::CheckOutputType( const CMediaType* pMediaType )
   return S_FALSE;
 }
 
+
 // Override to control state dependent behaviour
 STDMETHODIMP PicInPicFilter::SetParameter( const char* type, const char* value )
 {
 	// For now, one cannot set any parameters once the output has been connected -> this will affect the buffersize
-  if (m_vOutputPins[0] && m_vOutputPins[0]->IsConnected())
-	{
-  	if ( parameterChangeAffectsOutput( type ) )
+  if(m_vOutputPins[0] && m_vOutputPins[0]->IsConnected())
+  {
+    if(parameterChangeAffectsOutput(type))
   		return E_FAIL;
-	}
+  }
 
-	if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
-	{
-		reconfigure();
-		return S_OK;
-	}
-	else
-	{
-		return E_FAIL;
-	}
+  if(SUCCEEDED(CSettingsInterface::SetParameter(type,value)))
+  {
+    reconfigure();
+    return S_OK;
+  }
+  else
+  {
+    return E_FAIL;
+  }
 }
 
 bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 {
-	if ( ( strcmp(szParam, FILTER_PARAM_TARGET_WIDTH) == 0) ||
-		 ( strcmp(szParam, FILTER_PARAM_TARGET_HEIGHT) == 0)
-		)
-	{
-		return true;
-	}
-	return false;
+  if((strcmp(szParam, FILTER_PARAM_TARGET_WIDTH) == 0) ||
+		 ( strcmp(szParam, FILTER_PARAM_TARGET_HEIGHT) == 0))
+  {
+    return true;
+  }
+  return false;
 }
 
 
 void PicInPicFilter::reconfigure()
 {
-  BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
-  BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;
-  // target picture scaler
+  const BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
+  const BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;
+	// target picture scaler
   if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
   {
     if(!m_pTargetPicScaler)
@@ -431,12 +460,12 @@ void PicInPicFilter::reconfigure()
     }
   }
 
-  // Check sub picture dimensions.
+	// Check sub picture dimensions.
   int iSecondaryWidth = pBmih2->biWidth;
   int iSecondaryHeight = pBmih2->biHeight;
-  // check if pin of subpicture has been connected
-  // we can only configure the pip once both pins have been connected
-  if (iSecondaryWidth > 0)
+	// check if pin of subpicture has been connected
+	// we can only configure the pip once both pins have been connected
+  if(iSecondaryWidth > 0)
   {
     ASSERT(iSecondaryHeight > 0);
     int iSubWidth = 0;
@@ -456,11 +485,17 @@ void PicInPicFilter::reconfigure()
     }
 
     if (iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
-    {
+    {      
       ASSERT(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24);
       if (!m_pSubPicScaler)
       {
-        m_pSubPicScaler = new PicScalerRGB24Impl();
+        switch(m_nBitsPerPixel)
+        {
+          case BITS_PER_PIXEL_RGB24: m_pSubPicScaler = new PicScalerRGB24Impl();
+				     break;
+          case BITS_PER_PIXEL_RGB32: m_pSubPicScaler = new PicScalerRGB32Impl();
+				     break;
+        }
       }
       m_pSubPicScaler->SetInDimensions(iSecondaryWidth, iSecondaryHeight);
       m_pSubPicScaler->SetOutDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
@@ -501,6 +536,10 @@ void PicInPicFilter::reconfigure()
     m_pPicInPic->SetDimensions(getOutputWidth(), getOutputHeight());
     m_pPicInPic->SetSubDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
     m_pPicInPic->SetPos(m_nCustomOffsetX, m_nCustomOffsetY);
+  }
+  else
+  {
+    m_pPicInPic->SetDimensions(pBmih1->biWidth, pBmih1->biHeight);
   }
 }
 

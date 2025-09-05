@@ -60,10 +60,12 @@ public:
 	PicInPicRGB24Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) { }
 	virtual ~PicInPicRGB24Impl(void) {}
 
+        virtual int GetVideoFormat(void) const {return 24;}
+
 protected:
 	// Interface.
 	void DoInsert(void* pSubImg, void* pImg);
-    void DoInsertWithBorder(void* pSubImg, void* pImg);
+        void DoInsertWithBorder(void* pSubImg, void* pImg);
 };//end _PICINPICRGB24IMPL_H.
 
 

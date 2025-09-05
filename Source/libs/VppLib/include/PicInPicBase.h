@@ -62,58 +62,61 @@ class PicInPicBase
 {
 public:
 	// Construction and destruction.
-  PicInPicBase(void) { _width = 0; _height = 0; _subWidth = 0; _subHeight = 0; _xPos = 0; _yPos = 0; _writeWidth = 0; _writeHeight = 0; _borderWidth = 0; }
+        PicInPicBase(void) { _width = 0; _height = 0; _subWidth = 0; _subHeight = 0; _xPos = 0; _yPos = 0; _writeWidth = 0; _writeHeight = 0; _borderWidth = 0; }
 	PicInPicBase(int width, int height, int subWidth, int subHeight, int xPos, int yPos) 
-	{	_width = width; _height = height; _subWidth = subWidth; _subHeight = subHeight; _xPos = xPos; _yPos = yPos; _borderWidth = 0; SetActualSubDimensions();}
+	  {_width = width; _height = height; _subWidth = subWidth; _subHeight = subHeight; _xPos = xPos; _yPos = yPos; _borderWidth = 0; SetActualSubDimensions();}
 	virtual ~PicInPicBase(void) {}
 
 	// Interface.
 	void Insert(void* pSubImg, void* pImg)
-    {
-        if (_borderWidth == 0)
+        {
+          if (_borderWidth == 0)
             DoInsert(pSubImg, pImg);
-        else
+          else
             DoInsertWithBorder(pSubImg, pImg);
-    }
+        }
 
 	// Member interface.
-	int	GetWidth(void)						{ return(_width); }
-	int	GetHeight(void)						{ return(_height); }
-	int	GetSubWidth(void)					{ return(_subWidth); }
-	int	GetSubHeight(void)				{ return(_subHeight); }
-	int	GetActualSubWidth(void)		{ return(_writeWidth); }
-	int	GetActualSubHeight(void)	{ return(_writeHeight); }
-	int GetXPos(void)							{ return(_xPos); }
-	int GetYPos(void)							{ return(_yPos); }
-  int GetBorderWidth() const    { return _borderWidth; }
+	int GetWidth(void) const		{ return(_width); }
+	int GetHeight(void) const		{ return(_height); }
+	int GetSubWidth(void) const		{ return(_subWidth); }
+	int GetSubHeight(void)	const		{ return(_subHeight); }
+	int GetActualSubWidth(void) const	{ return(_writeWidth); }
+	int GetActualSubHeight(void) const	{ return(_writeHeight); }
+	int GetXPos(void) const			{ return(_xPos); }
+        int GetYPos(void) const			{ return(_yPos); }
+        int GetBorderWidth() const		{ return _borderWidth; }
   
-	void SetDimensions(int width, int height)						{_width = width; _height = height; SetActualSubDimensions(); }
+	void SetDimensions(int width, int height) {_width = width; _height = height; SetActualSubDimensions(); }
 	void SetSubDimensions(int subWidth, int subHeight)	{_subWidth = subWidth; _subHeight = subHeight; SetActualSubDimensions(); }
-	void SetPos(int x, int y)														{ _xPos = x; _yPos = y; SetActualSubDimensions(); }    
-  void SetBorderWidth(int val)                        { _borderWidth = val; }
+        void SetPos(int x, int y)		{ _xPos = x; _yPos = y; SetActualSubDimensions(); }    
+        void SetBorderWidth(int val)		{ _borderWidth = val; }
+
+        virtual int GetVideoFormat(void) const = 0;
 
 	// Private methods.
 protected:
 	void SetActualSubDimensions(void)
 	{ 
-    if((_xPos + _subWidth) > _width) _writeWidth = (_width - _xPos); else _writeWidth = _subWidth;
+          if((_xPos + _subWidth) > _width) _writeWidth = (_width - _xPos); else _writeWidth = _subWidth;
 		if((_yPos + _subHeight) > _height) _writeHeight = (_height - _yPos); else _writeHeight = _subHeight; 
-  }
+        }
 
-  virtual void DoInsert(void* pSubImg, void* pImg) = 0;
-  virtual void DoInsertWithBorder(void* pSubImg, void* pImg) = 0;
+        virtual void DoInsert(void* pSubImg, void* pImg) = 0;
+        virtual void DoInsertWithBorder(void* pSubImg, void* pImg) = 0;
 
 protected:
 	// Members.
-	int	_width;				// Of (larger) image that receives the insertion.
-	int	_height;
+	int _width;		// Of (larger) image that receives the insertion.
+	int _height;
 	int _subWidth;		// Of inserted image.
 	int _subHeight;
-	int _xPos;				// Top-left position to insert.
+	int _xPos;		// Top-left position to insert.
 	int _yPos;
 	int _writeWidth;	// Actual dim to write that prevents outside edge insertion.
 	int _writeHeight;
-  int _borderWidth;
+        int _borderWidth;
 };//end PicInPicBase.
+
 
 #endif	// _PICINPICBASE_H

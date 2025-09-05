@@ -162,6 +162,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>StdCall</CallingConvention>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>strmiids.lib;strmbase.lib;winmm.lib;msvcrt.lib;comctl32.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -194,6 +195,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>StdCall</CallingConvention>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalDependencies>strmiids.lib;strmbase.lib;winmm.lib;msvcrt.lib;comctl32.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
