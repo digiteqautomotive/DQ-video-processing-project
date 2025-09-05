@@ -8,6 +8,7 @@ public:
 	OrigScalerRGB24Impl(void) { }
 	OrigScalerRGB24Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerRGB24Impl(void) {}
+	virtual int GetVideoFormat(void) const {return 24;}
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
@@ -22,6 +23,7 @@ public:
 	OrigScalerARGB32Impl(void) { }
 	OrigScalerARGB32Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerARGB32Impl(void) {}
+	virtual int GetVideoFormat(void) const {return 32;}
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
@@ -36,6 +38,7 @@ public:
 	OrigScalerRGB32Impl(void) { }
 	OrigScalerRGB32Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerRGB32Impl(void) {}
+	virtual int GetVideoFormat(void) const {return 32;}
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
@@ -50,6 +53,7 @@ public:
 	OrigScalerUYVYImpl(void) { }
 	OrigScalerUYVYImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerUYVYImpl(void) {}
+	virtual int GetVideoFormat(void) const {return 16;}
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
@@ -64,6 +68,7 @@ public:
 	OrigScalerYUYVImpl(void) { }
 	OrigScalerYUYVImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerYUYVImpl(void) {}
+	virtual int GetVideoFormat(void) const {return 16;}
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);

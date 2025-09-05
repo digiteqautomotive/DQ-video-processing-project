@@ -49,11 +49,11 @@ public:
   /**
    * @brief Getter for output width
    */
-  int getOutputWidth() const { return m_nOutputWidth; }
+        int getOutputWidth() const { return m_nOutputWidth; }
   /**
    * @brief Getter for output height
    */
-  int getOutputHeight() const { return m_nOutputHeight; }
+        int getOutputHeight() const { return m_nOutputHeight; }
 
 	/// Subclass must override these methods: it is up to the implementer whether the samples should be copied
 	/// to a temporary buffer etc.
@@ -90,16 +90,8 @@ public:
 	STDMETHODIMP Stop();
 	STDMETHODIMP Pause();
 
-	virtual void InitialiseInputTypes()
-	{
-		AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-		AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-	}
-	virtual void InitialiseOutputTypes()
-	{
-		AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-		AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-	}
+	virtual void InitialiseInputTypes();
+	virtual void InitialiseOutputTypes();
 
 	virtual int InitialNumberOfInputPins()	{ return 2; }
 	virtual int InitialNumberOfOutputPins() { return 1; }
@@ -114,6 +106,28 @@ public:
 	virtual STDMETHODIMP EndOfStream(int nIndex);
 	virtual STDMETHODIMP BeginFlush(int nIndex);
 	virtual STDMETHODIMP EndFlush(int nIndex);
+
+/*
+	virtual void OnConnect(int nIndex, RTVC_DIRECTION eDirection)
+	{
+	  CMultiIOBaseFilter::OnConnect(nIndex,eDirection);
+	  if(PINDIR_INPUT==eDirection && nIndex<=1)
+	  {
+            //ConnectionFormat[nIndex] = m_VideoInHeader[nIndex].pbF`ormat
+	  }
+	}
+*/
+	virtual void OnDisconnect(int nIndex)
+	{
+	  CMultiIOBaseFilter::OnDisconnect(nIndex);
+	  if(nIndex<=1)
+	  {
+            memset(&m_VideoInHeader[nIndex],0,sizeof(VIDEOINFOHEADER));
+	    memset(&ConnectionFormat[nIndex],0,sizeof(GUID));
+	  }
+	}
+
+
 	//virtual STDMETHODIMP NewSegment( REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate, int nIndex);
 protected:
 	/// Constructor
@@ -121,6 +135,7 @@ protected:
 
 	/// Stores video info headers
 	VIDEOINFOHEADER m_VideoInHeader[2];
+	GUID ConnectionFormat[2];
 	
 	int m_nOutputWidth;
 	int m_nOutputHeight;

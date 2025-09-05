@@ -84,7 +84,7 @@ public:
 	/// Overridden from VideoMixingBase 
 	virtual HRESULT CreateVideoMixer(const CMediaType *pMediaType, int nIndex);
 	/// Overridden from VideoMixingBase 
-  virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
+        virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 

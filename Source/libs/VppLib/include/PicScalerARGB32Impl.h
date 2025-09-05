@@ -55,6 +55,8 @@ public:
 	PicScalerARGB32Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~PicScalerARGB32Impl(void) {}
 
+	virtual int GetVideoFormat(void) const {return 32;}
+
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
 

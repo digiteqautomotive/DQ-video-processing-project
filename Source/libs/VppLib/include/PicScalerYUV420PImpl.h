@@ -62,6 +62,7 @@ public:
 	PicScalerYUV420PImpl(void) { }
 	PicScalerYUV420PImpl(int widthOut, int heightOut, int widthIn, int heightIn): PicScalerBase(widthOut,heightOut,widthIn,heightIn) { }
 	virtual ~PicScalerYUV420PImpl(void) {}
+	virtual int GetVideoFormat(void) const {return 12;}
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);

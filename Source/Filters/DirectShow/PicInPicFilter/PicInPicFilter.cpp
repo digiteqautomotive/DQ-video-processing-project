@@ -41,6 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicScalerRGB32Impl.h>
 #include "../VersionInfo.h"
 
+
 PicInPicFilter::PicInPicFilter()
 	:VideoMixingBase(NAME("CSIR VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
   m_nTargetWidth(0),
@@ -294,11 +295,11 @@ HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex)
 {
 	// Create temporary sample buffers
-  VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
-  BITMAPINFOHEADER bmih = pVih->bmiHeader;
+  const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
+  const BITMAPINFOHEADER *bmih = &pVih->bmiHeader;
 
   if(nIndex>=2) return E_FAIL;
-  m_nSampleSizes[nIndex] = DIBSIZE(bmih);
+  m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
   if (m_pSampleBuffers[nIndex])
   {
 		// Recreate in case dimensions have changed
@@ -438,6 +439,14 @@ void PicInPicFilter::reconfigure()
 	// target picture scaler
   if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
   {
+    if(m_pTargetPicScaler)
+    {
+      if(m_nBitsPerPixel!=m_pTargetPicScaler->GetVideoFormat())
+      {
+	delete m_pTargetPicScaler;
+	m_pTargetPicScaler = NULL;
+      }
+    }
     if(!m_pTargetPicScaler)
     {
       switch(m_nBitsPerPixel)
@@ -485,8 +494,16 @@ void PicInPicFilter::reconfigure()
         m_nSubPictureHeight = m_nSubPictureHeight * 0.4;
     }
 
-    if (iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
+    if(iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
     {
+      if(m_pSubPicScaler)
+      {
+        if(m_nBitsPerPixel != m_pSubPicScaler->GetVideoFormat())
+        {
+	  delete m_pSubPicScaler;
+	  m_pSubPicScaler = NULL;
+        }
+      }
       if(!m_pSubPicScaler)
       {
         switch(m_nBitsPerPixel)

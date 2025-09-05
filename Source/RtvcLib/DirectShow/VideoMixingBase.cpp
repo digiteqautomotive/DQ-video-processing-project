@@ -50,8 +50,9 @@ VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsi
     m_uiEndFlushCount(0)
 {
   memset(&m_VideoInHeader, 0, sizeof(VIDEOINFOHEADER) * 2);
+  memset(&ConnectionFormat,0,sizeof(ConnectionFormat));
 	//Hack virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
-	Initialise();
+  Initialise();
 }
 
 VideoMixingBase::~VideoMixingBase()
@@ -74,6 +75,22 @@ HRESULT VideoMixingBase::Receive( IMediaSample *pSample, int nIndex )
 		return ReceiveSecondSample(pSample);
 	}
 }
+
+
+void VideoMixingBase::InitialiseInputTypes()
+{
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+}
+
+void VideoMixingBase::InitialiseOutputTypes()
+{
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+}
+
 
 HRESULT VideoMixingBase::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex )
 {
@@ -206,7 +223,13 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 	{
 		// Copy the video info header
 		const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pmt->pbFormat;
-		const BITMAPINFOHEADER *bmih = &pVih->bmiHeader;		
+		const BITMAPINFOHEADER *bmih = &pVih->bmiHeader;
+
+		// Reject different formats on input
+		if(nIndex==0)
+		  if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1]) return VFW_E_INVALID_MEDIA_TYPE;
+		if(nIndex==1)
+		  if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0]) return VFW_E_INVALID_MEDIA_TYPE;
 		
 		// Reject connection if output is already connected
 		if(m_vOutputPins[0]->IsConnected() && nIndex==0)
@@ -216,9 +239,10 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 		}
 
 		CopyMemory(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
+		ConnectionFormat[nIndex] = pmt->subtype;
 
 		hr = CreateVideoMixer(pmt, nIndex);
-		if (FAILED(hr))
+		if(FAILED(hr))
 		{
 			return hr;
 		}

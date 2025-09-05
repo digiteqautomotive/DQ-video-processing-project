@@ -56,6 +56,8 @@ public:
 	PicScalerRGB24Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~PicScalerRGB24Impl(void) {}
 
+        virtual int GetVideoFormat(void) const {return 24;}
+
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
 

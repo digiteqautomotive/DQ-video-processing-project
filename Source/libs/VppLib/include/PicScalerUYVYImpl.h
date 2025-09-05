@@ -54,6 +54,8 @@ public:
 	PicScalerUYVYImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~PicScalerUYVYImpl(void) {}
 
+	virtual int GetVideoFormat(void) const {return 16;}
+
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg);
 
