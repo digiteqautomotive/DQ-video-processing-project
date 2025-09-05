@@ -9,6 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
+              2025 Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,60 +48,62 @@ PicInPicFilter::PicInPicFilter()
   m_nSubPictureHeight(0),
   m_nCustomOffsetX(0),
   m_nCustomOffsetY(0),
-	m_pPicInPic(NULL),
-	m_pTargetPicScaler(NULL),
-	m_pSubPicScaler(NULL),
+  m_pPicInPic(NULL),
+  m_pTargetPicScaler(NULL),
+  m_pSubPicScaler(NULL),
   m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL)
 {
-	m_pSampleBuffers[0] = NULL;
-	m_pSampleBuffers[1] = NULL;
+  m_pSampleBuffers[0] = NULL;
+  m_pSampleBuffers[1] = NULL;
 
-	m_nSampleSizes[0] = 0;
-	m_nSampleSizes[1] = 0;
+  m_nSampleSizes[0] = 0;
+  m_nSampleSizes[1] = 0;
 
 	// Init parameters
-	initParameters();
+  initParameters();
 }
 
 PicInPicFilter::~PicInPicFilter()
 {
-	if (m_pPicInPic)
-	{
-		delete m_pPicInPic;
-		m_pPicInPic = NULL;
-	}
-	if (m_pTargetPicScaler)
-	{
-		delete m_pTargetPicScaler;
+  if (m_pPicInPic)
+  {
+    delete m_pPicInPic;
+    m_pPicInPic = NULL;
+  }
+  if (m_pTargetPicScaler)
+  {
+    delete m_pTargetPicScaler;
     m_pTargetPicScaler = NULL;
-	}
-	if (m_pSubPicScaler)
-	{
-		delete m_pSubPicScaler;
+  }
+  if (m_pSubPicScaler)
+  {
+    delete m_pSubPicScaler;
     m_pSubPicScaler = NULL;
-	}
+  }
   if (m_pBufferForScaledSecondaryImage)
   {
     delete[]m_pBufferForScaledSecondaryImage;
     m_pBufferForScaledSecondaryImage = NULL;
   }
 
-	for (int i = 0; i < 2; i++)
-	{
-		if (m_pSampleBuffers[i])
-		{
-			delete[] m_pSampleBuffers[i];
-			m_pSampleBuffers[i] = NULL;
-		}
-	}
+  for (int i = 0; i < 2; i++)
+  {
+    if (m_pSampleBuffers[i])
+    {
+      delete[] m_pSampleBuffers[i];
+      m_pSampleBuffers[i] = NULL;
+    }
+  }
 }
+
 
 CUnknown * WINAPI PicInPicFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
-	PicInPicFilter* pFilter = new PicInPicFilter();
-	return pFilter;
+  PicInPicFilter* pFilter = new PicInPicFilter();
+  return pFilter;
 }
+
 
 void PicInPicFilter::initParameters()
 {
@@ -120,6 +123,7 @@ void PicInPicFilter::initParameters()
   // y offset from bottom left corner
   addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);
 }
+
 
 HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
@@ -263,6 +267,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
 	}
 }
 
+
 HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 {
 	// Copy the secondary sample into our buffer
@@ -285,6 +290,7 @@ HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 	}
 }
 
+
 HRESULT PicInPicFilter::CreateVideoMixer( const CMediaType *pMediaType, int nIndex )
 {
 	// Create temporary sample buffers
@@ -302,9 +308,19 @@ HRESULT PicInPicFilter::CreateVideoMixer( const CMediaType *pMediaType, int nInd
 	// Create appropriate picture concatenator
 	if (!m_pPicInPic)
 	{
-    ASSERT(pMediaType->subtype == MEDIASUBTYPE_RGB24);
-    m_pPicInPic = new PicInPicRGB24Impl();
-    m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+          if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+	  {
+            m_pPicInPic = new PicInPicRGB24Impl();
+            m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+	    return S_OK;
+	  } 
+	  else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32)
+	  {
+            m_pPicInPic = new PicInPicRGB32Impl();
+            m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
+	    return S_OK;
+	  }
+	  else return VFW_E_TYPE_NOT_ACCEPTED;
 	}
 
 	return S_OK;
@@ -335,14 +351,21 @@ HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFO
 
 HRESULT PicInPicFilter::CheckOutputType( const CMediaType* pMediaType )
 {
-	if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
-	{
-		if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
-		{
-			return S_OK;
-		}
-	}
-	return S_FALSE;
+  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
+  {
+    if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
+    {
+      return S_OK;
+    }
+  }
+  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
+  {
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+    {
+      return S_OK;
+    }
+  }
+  return S_FALSE;
 }
 
 // Override to control state dependent behaviour
@@ -377,16 +400,24 @@ bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 	return false;
 }
 
+
 void PicInPicFilter::reconfigure()
 {
   BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
   BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;
   // target picture scaler
-  if (m_nTargetWidth > 0 && m_nTargetHeight > 0)
+  if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
   {
-    if (!m_pTargetPicScaler)
+    if(!m_pTargetPicScaler)
     {
-      m_pTargetPicScaler = new PicScalerRGB24Impl();
+      switch(m_nBitsPerPixel)
+      {
+        case BITS_PER_PIXEL_RGB24: m_pTargetPicScaler = new PicScalerRGB24Impl();
+				   break;
+        case BITS_PER_PIXEL_RGB32: m_pTargetPicScaler = new PicScalerRGB24Impl();
+				   break;
+        default: return;
+      }
     }
     m_pTargetPicScaler->SetInDimensions(pBmih1->biWidth, pBmih1->biHeight);
     m_pTargetPicScaler->SetOutDimensions(m_nTargetWidth, m_nTargetHeight);
