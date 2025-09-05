@@ -37,18 +37,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DirectShow/CommonDefs.h>
 
-VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid)
-:CMultiIOBaseFilter(pObjectName, lpUnk, clsid),
-m_nOutputWidth(0),
-m_nOutputHeight(0),
-m_nOutputSize(0),
-m_tStartTime1(0),
-m_tStartTime2(0),
-m_tStopTime1(0),
-m_tStopTime2(0),
-m_uiEndOfStreamCount(0),
-m_uiBeginFlushCount(0),
-m_uiEndFlushCount(0)
+VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid): CMultiIOBaseFilter(pObjectName, lpUnk, clsid),
+    m_nOutputWidth(0),
+    m_nOutputHeight(0),
+    m_nOutputSize(0),
+    m_tStartTime1(0),
+    m_tStartTime2(0),
+    m_tStopTime1(0),
+    m_tStopTime2(0),
+    m_uiEndOfStreamCount(0),
+    m_uiBeginFlushCount(0),
+    m_uiEndFlushCount(0)
 {
   memset(&m_VideoInHeader, 0, sizeof(VIDEOINFOHEADER) * 2);
 	//Hack virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
@@ -170,12 +169,11 @@ HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, in
 			bmh1->biSizeImage = m_nOutputSize;
 			//Set sample size
 			pMediaType->SetSampleSize(m_nOutputSize);
-      if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
+      if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
         pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
-#ifdef RTVC_SUPPORT_RGB32
-      else if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB32)
+      else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
         pMediaType->SetSubtype(&MEDIASUBTYPE_RGB32);
-#endif
+
       bmh1->biCompression = BI_RGB;
 
 			// Set source rect
@@ -207,15 +205,17 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 	if (direction == PINDIR_INPUT)
 	{
 		// Copy the video info header
-		VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pmt->pbFormat;
-		BITMAPINFOHEADER bmih = pVih->bmiHeader;
-		CopyMemory(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
+		const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pmt->pbFormat;
+		const BITMAPINFOHEADER *bmih = &pVih->bmiHeader;		
 		
 		// Reject connection if output is already connected
-		if (m_vOutputPins[0]->IsConnected())
+		if(m_vOutputPins[0]->IsConnected() && nIndex==0)
 		{
+		  if(bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth || bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight)
 			return E_FAIL;
 		}
+
+		CopyMemory(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
 
 		hr = CreateVideoMixer(pmt, nIndex);
 		if (FAILED(hr))

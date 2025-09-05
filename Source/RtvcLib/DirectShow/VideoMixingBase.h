@@ -72,7 +72,7 @@ public:
 	/// The values set in this method will be used in GetMediaType and hence in DecideBufferSize
 	/// The Subclass should also reject invalid media types in this method: e.g. a simple concatenation
 	/// filter should return E_FAIL from this method if the image dimensions do not match
-  virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize) = 0;
+        virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize) = 0;
 
 	/// Delegates call to virtual ReceiveFirstSample and ReceiveSecondSample methods.
 	virtual HRESULT Receive(IMediaSample *pSample, int nIndex );
@@ -93,16 +93,12 @@ public:
 	virtual void InitialiseInputTypes()
 	{
 		AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-#ifdef RTVC_SUPPORT_RGB32
 		AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-#endif
 	}
 	virtual void InitialiseOutputTypes()
 	{
 		AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-#ifdef RTVC_SUPPORT_RGB32
 		AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-#endif
 	}
 
 	virtual int InitialNumberOfInputPins()	{ return 2; }
@@ -110,15 +106,15 @@ public:
 	virtual bool OnFullCreateMoreInputs()	{ return false; }
 	virtual bool OnFullCreateMoreOutputs()	{ return false; }
 
-  // you can also override these if you want to know about streaming
-  virtual HRESULT StartStreaming();
-  virtual HRESULT StopStreaming();
+	// you can also override these if you want to know about streaming
+	virtual HRESULT StartStreaming();
+	virtual HRESULT StopStreaming();
 
-  // Streaming calls delegated from input pins
-  virtual STDMETHODIMP EndOfStream(int nIndex);
-  virtual STDMETHODIMP BeginFlush(int nIndex);
-  virtual STDMETHODIMP EndFlush(int nIndex);
-  //virtual STDMETHODIMP NewSegment( REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate, int nIndex);
+	// Streaming calls delegated from input pins
+	virtual STDMETHODIMP EndOfStream(int nIndex);
+	virtual STDMETHODIMP BeginFlush(int nIndex);
+	virtual STDMETHODIMP EndFlush(int nIndex);
+	//virtual STDMETHODIMP NewSegment( REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate, int nIndex);
 protected:
 	/// Constructor
 	VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid);

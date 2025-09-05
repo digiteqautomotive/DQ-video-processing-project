@@ -291,12 +291,13 @@ HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 }
 
 
-HRESULT PicInPicFilter::CreateVideoMixer( const CMediaType *pMediaType, int nIndex )
+HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex)
 {
 	// Create temporary sample buffers
   VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
   BITMAPINFOHEADER bmih = pVih->bmiHeader;
 
+  if(nIndex>=2) return E_FAIL;
   m_nSampleSizes[nIndex] = DIBSIZE(bmih);
   if (m_pSampleBuffers[nIndex])
   {
@@ -331,7 +332,7 @@ HRESULT PicInPicFilter::CreateVideoMixer( const CMediaType *pMediaType, int nInd
   {
     if(m_pPicInPic!=NULL)
     {
-      if(m_pPicInPic->GetVideoFormat()!=24)
+      if(m_pPicInPic->GetVideoFormat()!=32)
       {
         delete m_pPicInPic; m_pPicInPic=NULL;
         if(m_pTargetPicScaler)
@@ -485,9 +486,8 @@ void PicInPicFilter::reconfigure()
     }
 
     if (iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
-    {      
-      ASSERT(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24);
-      if (!m_pSubPicScaler)
+    {
+      if(!m_pSubPicScaler)
       {
         switch(m_nBitsPerPixel)
         {
@@ -495,6 +495,7 @@ void PicInPicFilter::reconfigure()
 				     break;
           case BITS_PER_PIXEL_RGB32: m_pSubPicScaler = new PicScalerRGB32Impl();
 				     break;
+          default:		     return;
         }
       }
       m_pSubPicScaler->SetInDimensions(iSecondaryWidth, iSecondaryHeight);
