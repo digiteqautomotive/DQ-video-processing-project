@@ -70,13 +70,13 @@ CUnknown * WINAPI CVCam::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr)
 }
 
 CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr)
-  :CSource(NAME("CSIR Virtual Cam"), lpunk, CLSID_VPP_VirtualCam)
+  :CSource(NAME("CSIR VPP Virtual Cam"), lpunk, CLSID_VPP_VirtualCam)
 {
   ASSERT(phr);
   CAutoLock cAutoLock(&m_cStateLock);
   // Create the one and only output pin
   m_paStreams = (CSourceStream **) new CVCamStream*[1];
-  m_paStreams[0] = new CVCamStream(phr, this, L"Virtual Cam");
+  m_paStreams[0] = new CVCamStream(phr, this, L"CSIR VPP Virtual Cam");
 }
 
 HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
@@ -93,7 +93,7 @@ HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 // all the stuff.
 //////////////////////////////////////////////////////////////////////////
 CVCamStream::CVCamStream(HRESULT *phr, CVCam *pParent, LPCWSTR pPinName) :
-CSourceStream(NAME("Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent)
+CSourceStream(NAME("CSIR VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent)
 {
   // Set the default media type as 320x240x24@15
   GetMediaType(4, &m_mt);

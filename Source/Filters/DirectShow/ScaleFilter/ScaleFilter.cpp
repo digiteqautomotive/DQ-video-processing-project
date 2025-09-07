@@ -54,12 +54,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 
-extern "C" unsigned GetFeaturesCPU(void);
-
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 
-unsigned char FeaturesCPU = 0x80;
+#if defined(USE_MMX) || defined(USE_SSE)
+extern "C" unsigned GetFeaturesCPU(void);
+const unsigned FeaturesCPU = GetFeaturesCPU();
+#endif
+
+PicScalerBase *GetPicScallerRGB32(void)
+{
+  //if(FeaturesCPU == 0x80) FeaturesCPU=GetFeaturesCPU();
+#ifdef USE_SSE
+  if(FeaturesCPU & 2)
+    return new PicScalerARGB32SSE();
+#endif
+#ifdef USE_MMX
+  if(FeaturesCPU & 1)
+      return new PicScalerARGB32MMX();
+#endif
+  return new PicScalerRGB32Impl();
+}
 
 
 ScaleFilter::ScaleFilter()
@@ -124,8 +139,6 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
     //Determine whether we are connected to a RGB24 or 32 source
     if (pmt->majortype == MEDIATYPE_Video)
     {
-      if(FeaturesCPU == 0x80) FeaturesCPU=GetFeaturesCPU();
-
       //The scaler might already exist if the filter has been connected previously
       if(m_pScaler)
       {
@@ -139,32 +152,12 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32)
       {
-#ifdef USE_SSE
-	if(FeaturesCPU & 2)
-	    m_pScaler = new PicScalerARGB32SSE();
-	else
-#endif
-#ifdef USE_MMX
-	if(FeaturesCPU & 1)
-	    m_pScaler = new PicScalerARGB32MMX();
-	else
-#endif
-      	    m_pScaler = new PicScalerRGB32Impl();
+        m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_ARGB32)
       {
-#ifdef USE_SSE
-	if(FeaturesCPU & 2)
-	    m_pScaler = new PicScalerARGB32SSE();
-	else
-#endif
-#ifdef USE_MMX
-	if(FeaturesCPU & 1)
-	    m_pScaler = new PicScalerARGB32MMX();
-	else
-#endif
-        m_pScaler = new PicScalerARGB32Impl();
+        m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_YUV420P_S || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12)

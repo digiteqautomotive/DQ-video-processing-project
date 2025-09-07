@@ -97,27 +97,27 @@ HRESULT TimestampLoggerFilter::CheckInputType(const CMediaType* mtIn)
 STDMETHODIMP TimestampLoggerFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
 {
 	// Store the filename
-	m_sFileName = StringUtil::wideToStl(lpwszFileName);
-	return S_OK;
+  m_sFileName = StringUtil::wideStringToString(lpwszFileName);
+  return S_OK;
 }
 
 STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYPE *pmt )
 {
-	if (m_sFileName != "")
-	{
-		WCHAR* pFileName = StringUtil::stlToWide(m_sFileName);	
-		DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
+  ppszFileName = NULL;
+  if (m_sFileName != "")
+  {
+    std::wstring wsFileName = StringUtil::stringToWideString(m_sFileName);
+    DWORD n = sizeof(WCHAR)*(1 + lstrlenW(wsFileName.c_str()));
 		*ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
 		if (*ppszFileName!=NULL) {
-			CopyMemory(*ppszFileName, pFileName, n);
-		}
-		delete[] pFileName;
-		return S_OK;
-	}
-	else
-	{
-		return E_FAIL;
-	}
+      CopyMemory(*ppszFileName, wsFileName.c_str(), n);
+    }
+    return S_OK;
+  }
+  else
+  {
+    return E_FAIL;
+  }
 }
 
 HRESULT TimestampLoggerFilter::Run( REFERENCE_TIME tStart )

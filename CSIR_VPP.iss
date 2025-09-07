@@ -3,12 +3,11 @@
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.4.6"
+#define MyAppVersion "1.4.7"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
 #define MyAppURL "http://videoprocessing.sourceforge.net/"
 
-;..\DShowVideoSrcBall\Release\ball.dll
 
 
 [Setup]

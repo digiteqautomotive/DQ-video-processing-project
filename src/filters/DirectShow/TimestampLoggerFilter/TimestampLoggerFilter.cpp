@@ -99,20 +99,21 @@ STDMETHODIMP TimestampLoggerFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDI
 
 STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYPE *pmt )
 {
-	if (m_sFileName != "")
-	{
+  ppszFileName = NULL;
+  if (m_sFileName != "")
+  {
     std::wstring wsFileName = StringUtil::stringToWideString(m_sFileName);
     DWORD n = sizeof(WCHAR)*(1 + lstrlenW(wsFileName.c_str()));
 		*ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
 		if (*ppszFileName!=NULL) {
       CopyMemory(*ppszFileName, wsFileName.c_str(), n);
-		}
-		return S_OK;
-	}
-	else
-	{
-		return E_FAIL;
-	}
+    }
+    return S_OK;
+  }
+  else
+  {
+    return E_FAIL;
+  }
 }
 
 HRESULT TimestampLoggerFilter::Run( REFERENCE_TIME tStart )

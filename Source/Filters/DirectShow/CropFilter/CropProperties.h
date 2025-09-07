@@ -37,7 +37,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "resource.h"
 
-#define BUFFER_SIZE 256
 
 /**
  * \ingroup DirectShowFilters

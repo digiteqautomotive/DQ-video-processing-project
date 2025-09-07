@@ -251,7 +251,7 @@ HRESULT YUV420toRGBFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
   long lSize = mtOut->GetSampleSize();
 
   // Check the major type.
-  if (mtOut->majortype != MEDIATYPE_Video)
+  if(mtOut->majortype!=MEDIATYPE_Video)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }

@@ -71,16 +71,19 @@ VideoMixingFilter::~VideoMixingFilter()
 	}
 }
 
-CUnknown * WINAPI VideoMixingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+
+CUnknown * WINAPI VideoMixingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
 	VideoMixingFilter* pFilter = new VideoMixingFilter();
 	return pFilter;
 }
 
+
 void VideoMixingFilter::initParameters()
 {
 	addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
 }
+
 
 HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
@@ -173,6 +176,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 	pOutSample->Release();
 	return hr;
 }
+
 
 HRESULT VideoMixingFilter::ReceiveFirstSample( IMediaSample *pSample )
 {
@@ -405,7 +409,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer( const CMediaType *pMediaType, int n
 			m_pPicConcat = new PicConcatRGB24Impl();
 			m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
 		}
-		else if (pMediaType->subtype == MEDIASUBTYPE_RGB32)
+		else if (pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
 		{
 			m_pPicConcat = new PicConcatRGB32Impl();
 			m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
@@ -459,23 +463,24 @@ HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPI
 	return S_OK;
 }
 
+
 HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
 {
-	if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
-	{
-		if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
-		{
-			return S_OK;
-		}
-	}
-	else if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
-	{
-		if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB32)
-		{
-			return S_OK;
-		}
-	}
-	return S_FALSE;
+  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
+  {
+    if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
+    {
+      return S_OK;
+    }
+  }
+  else if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
+  {
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+    {
+      return S_OK;
+    }
+  }
+  return S_FALSE;
 }
 
 

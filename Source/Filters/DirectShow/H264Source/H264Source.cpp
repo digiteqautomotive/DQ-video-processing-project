@@ -310,15 +310,13 @@ STDMETHODIMP H264SourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYP
 
   if (m_sFile.length() != 0) 
   {
-    WCHAR* pFileName = (StringUtil::stlToWide(m_sFile));	
-
-    DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
-
-    *ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
-    if (*ppszFileName!=NULL) {
-      CopyMemory(*ppszFileName, pFileName, n);
+    std::wstring wsFileName = StringUtil::stringToWideString(m_sFile);
+    DWORD n = sizeof(WCHAR)*(1 + lstrlenW(wsFileName.c_str()));
+    *ppszFileName = (LPOLESTR)CoTaskMemAlloc(n);
+    if (*ppszFileName != NULL) {
+      CopyMemory(*ppszFileName, wsFileName.c_str(), n);
     }
-    delete[] pFileName;
+    return S_OK;
   }
   return NOERROR;
 }

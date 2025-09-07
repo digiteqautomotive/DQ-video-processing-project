@@ -130,85 +130,92 @@ HRESULT VideoMixingBase::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROP
 		return E_FAIL;
 	}
 	return S_OK;
-
 }
 
-HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, int nOutputPinIndex )
+
+HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, int nOutputPinIndex)
 {
-	if (iPosition < 0)
-	{
-		return E_INVALIDARG;
-	}
-	else if (iPosition == 0)
-	{
+  if(iPosition<0 || nOutputPinIndex!=0)
+  {
+    return E_INVALIDARG;
+  }
+  else if (iPosition == 0)
+  {
+    CMultiIOInputPin* pConnectedPin = NULL;
+    CMultiIOInputPin* pOtherPin = NULL;
 
-		CMultiIOInputPin* pConnectedPin = NULL;
-		CMultiIOInputPin* pOtherPin = NULL;
+    if (m_vInputPins[0]->IsConnected())
+    {
+      pConnectedPin = m_vInputPins[0];
+      if (m_vInputPins[1]->IsConnected())
+      {
+        pOtherPin = m_vInputPins[1];
+      }
+    }
+    else
+    {
+      if(m_vInputPins[1]->IsConnected())
+      {
+        pConnectedPin = m_vInputPins[1];
+      }
+      else
+      {			// Error: no connected input pins
+        return E_FAIL;
+     }
+    }
 
-		if (m_vInputPins[0]->IsConnected())
-		{
-			pConnectedPin = m_vInputPins[0];
-			if (m_vInputPins[1]->IsConnected())
-			{
-				pOtherPin = m_vInputPins[1];
-			}
-		}
-		else
-		{
-			if (m_vInputPins[1]->IsConnected())
-			{
-				pConnectedPin = m_vInputPins[1];
-			}
-			else
-			{
-				// Error: no connected input pins
-				return E_FAIL;
-			}
-		}
+    HRESULT hr = pConnectedPin->ConnectionMediaType(pMediaType);
+    if(FAILED(hr))
+    {
+      return hr;
+    }
 
-		HRESULT hr = pConnectedPin->ConnectionMediaType(pMediaType);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
-
-		if (pOtherPin)
-		{
-			// We need to recalculate the new width and height
-			hr = SetOutputDimensions(&(m_VideoInHeader[0].bmiHeader), &(m_VideoInHeader[1].bmiHeader), m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
-			VIDEOINFOHEADER* pVih1 = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-			BITMAPINFOHEADER* bmh1 = &(pVih1->bmiHeader);
+    if(pOtherPin)
+    {		// We need to recalculate the new width and height
+      hr = SetOutputDimensions(&(m_VideoInHeader[0].bmiHeader), &(m_VideoInHeader[1].bmiHeader), m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
+      VIDEOINFOHEADER* pVih1 = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+      BITMAPINFOHEADER* bmh1 = &(pVih1->bmiHeader);
 
 			// Adjust media parameters
-			bmh1->biWidth = m_nOutputWidth;
-			bmh1->biHeight = m_nOutputHeight;
+      bmh1->biWidth = m_nOutputWidth;
+      bmh1->biHeight = m_nOutputHeight;
 
-			bmh1->biSizeImage = m_nOutputSize;
+      bmh1->biSizeImage = m_nOutputSize;
 			//Set sample size
-			pMediaType->SetSampleSize(m_nOutputSize);
+      pMediaType->SetSampleSize(m_nOutputSize);
+ 
+      bmh1->biCompression = BI_RGB;
+
+			// Set source rect
+      pVih1->rcSource.left = 0;
+      pVih1->rcSource.top = 0;
+      pVih1->rcSource.right = m_nOutputWidth;
+      pVih1->rcSource.bottom = m_nOutputHeight;
+
+			// Set target rect
+      pVih1->rcTarget.left = 0;
+      pVih1->rcTarget.top = 0;
+      pVih1->rcTarget.right = m_nOutputWidth;
+      pVih1->rcTarget.bottom = m_nOutputHeight;
+    }
+		// Use exact format sniffed from pins.
+    if(ConnectionFormat[0]!=GUID_NULL)
+        pMediaType->SetSubtype(&ConnectionFormat[0]);
+    else if(ConnectionFormat[1]!=GUID_NULL)
+        pMediaType->SetSubtype(&ConnectionFormat[1]);
+    else
+    {		// When pin's subtype is not available, guess it from cached m_nBitsPerPixel.
       if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
         pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
       else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
         pMediaType->SetSubtype(&MEDIASUBTYPE_RGB32);
+    }
 
-      bmh1->biCompression = BI_RGB;
-
-			// Set source rect
-			pVih1->rcSource.left = 0;
-			pVih1->rcSource.top = 0;
-			pVih1->rcSource.right = m_nOutputWidth;
-			pVih1->rcSource.bottom = m_nOutputHeight;
-
-			// Set target rect
-			pVih1->rcTarget.left = 0;
-			pVih1->rcTarget.top = 0;
-			pVih1->rcTarget.right = m_nOutputWidth;
-			pVih1->rcTarget.bottom = m_nOutputHeight;
-		}
-		return S_OK;
-	}
-	return VFW_S_NO_MORE_ITEMS;
+    return S_OK;
+  }
+  return VFW_S_NO_MORE_ITEMS;
 }
+
 
 HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt, int nIndex )
 {
@@ -234,7 +241,8 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 		// Reject connection if output is already connected
 		if(m_vOutputPins[0]->IsConnected() && nIndex==0)
 		{
-		  if(bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth || bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight)
+		  if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
+                     (bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight && m_VideoInHeader[0].bmiHeader.biHeight!=0))
 			return E_FAIL;
 		}
 

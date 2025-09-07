@@ -41,6 +41,32 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicScalerRGB32Impl.h>
 #include "../VersionInfo.h"
 
+#ifdef USE_MMX
+#include <PicScalerARGB32MMX.h>
+#endif
+#ifdef USE_SSE
+ #include <PicScalerARGB32SSE.h>
+#endif
+
+
+#if defined(USE_MMX) || defined(USE_SSE)
+extern "C" unsigned GetFeaturesCPU(void);
+const unsigned FeaturesCPU = GetFeaturesCPU();
+#endif
+
+PicScalerBase *GetPicScallerRGB32(void)
+{
+#ifdef USE_SSE
+  if(FeaturesCPU & 2)
+    return new PicScalerARGB32SSE();
+#endif
+#ifdef USE_MMX
+  if(FeaturesCPU & 1)
+      return new PicScalerARGB32MMX();
+#endif
+  return new PicScalerRGB32Impl();
+}
+
 
 PicInPicFilter::PicInPicFilter()
 	:VideoMixingBase(NAME("CSIR VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
@@ -453,7 +479,7 @@ void PicInPicFilter::reconfigure()
       {
         case BITS_PER_PIXEL_RGB24: m_pTargetPicScaler = new PicScalerRGB24Impl();
 				   break;
-        case BITS_PER_PIXEL_RGB32: m_pTargetPicScaler = new PicScalerRGB24Impl();
+        case BITS_PER_PIXEL_RGB32: m_pTargetPicScaler = GetPicScallerRGB32();
 				   break;
         default: return;
       }
@@ -510,7 +536,7 @@ void PicInPicFilter::reconfigure()
         {
           case BITS_PER_PIXEL_RGB24: m_pSubPicScaler = new PicScalerRGB24Impl();
 				     break;
-          case BITS_PER_PIXEL_RGB32: m_pSubPicScaler = new PicScalerRGB32Impl();
+          case BITS_PER_PIXEL_RGB32: m_pSubPicScaler = GetPicScallerRGB32();
 				     break;
           default:		     return;
         }

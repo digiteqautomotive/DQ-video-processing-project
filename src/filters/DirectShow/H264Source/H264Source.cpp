@@ -419,7 +419,7 @@ bool H264SourceFilter::readNalUnit()
 
     if (uiStartCodeLen > 0)
     {
-      uint64_t uiStartingPos = uiStartCodeLen;
+      uint64_t uiStartingPos = uiStartCodeLen;		// JFO: This is total nonsense, uiStartCodeLen is unsigned
       while (true)
       {
         // need to find next start code or EOF
