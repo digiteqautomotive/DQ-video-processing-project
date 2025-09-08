@@ -109,7 +109,7 @@
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;comctl32.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>VirtualCam.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -140,7 +140,7 @@
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Msvcrtd.lib;Winmm.lib;strmbasd.lib;comctl32.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>VirtualCam.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -167,7 +167,7 @@
     <Link>
       <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;comctl32.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>VirtualCam.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -197,7 +197,7 @@
     <Link>
       <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;comctl32.lib;Winmm.lib;odbc32.lib;odbccp32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>VirtualCam.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -225,16 +225,13 @@
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="VirtualCam.def" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\resource.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\stdafx.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VideoMixingProperties.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.rc" />
+    <None Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

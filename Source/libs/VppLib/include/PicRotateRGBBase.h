@@ -54,6 +54,6 @@ public:
 	// Subclasses must override this
 	virtual int BytesPerPixel() = 0;
 
-	virtual bool Rotate(void* pInImg, void* pOutImg);
+	virtual bool Rotate(const void* pInImg, void* pOutImg);
 
 };

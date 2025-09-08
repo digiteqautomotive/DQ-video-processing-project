@@ -42,7 +42,7 @@ PicRotateRGBBase::PicRotateRGBBase()
 PicRotateRGBBase::~PicRotateRGBBase()
 {;}
 
-bool PicRotateRGBBase::Rotate( void* pInImg, void* pOutImg )
+bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 {
 	if (!pInImg || !pOutImg) return false;
 

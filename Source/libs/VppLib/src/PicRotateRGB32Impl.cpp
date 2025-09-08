@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "PicRotateRGB32Impl.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -50,46 +51,50 @@ int PicRotateRGB32Impl::BytesPerPixel()
 
 #ifdef USE_ASM
 extern "C" {
-void Flip32_2(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
-void Rotate32_180(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
+void Flip32_2(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
+void Rotate32_180(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
 }
 #endif
 
 
-bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
+bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 {
   if (!pInImg || !pOutImg) return false;
   switch (m_eMode)
   {
     case ROTATE_NONE:
 		{
-			memcpy(pOutImg, pInImg, m_nWidth * m_nHeight * 4);
+			memcpy(pOutImg, pInImg, labs(m_nWidth*m_nHeight)*4);
 			return true;
 		}
     case ROTATE_90_DEGREES_CLOCKWISE:
-		{
-			BYTE* pSrc = (BYTE*)pInImg;			
-			for (int i = 0; i < m_nWidth; ++i, pSrc += 4)
+		{			
+			const unsigned AbsHeight = labs(m_nHeight);
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			BYTE *pDest = (BYTE*)pOutImg + 4*(m_nWidth-1)*AbsHeight;
+			
+			for(int i = 0; i < m_nWidth; ++i, pSrc+=4)
 			{
-				int nNewRow = (m_nWidth - i);//Index Base 1
-				int nNewIndex = ((nNewRow - 1) * m_nHeight);// Base 1
-				BYTE* pSrcCol = pSrc;
-				BYTE *pDest = (BYTE*)pOutImg + (nNewIndex*4);
-				for (int j = 0; j < m_nHeight; ++j, pSrcCol += (4*m_nWidth), pDest += 4)
+				const BYTE* pSrcCol = pSrc;
+				unsigned j = AbsHeight;
+				while(j-- > 0)				
 				{
 					*(__int32*)(pDest) = *(__int32*)(pSrcCol);
+					pSrcCol += (4*m_nWidth);
+					pDest += 4;
 				}
-				// Copy pixels in same column to their destinations
+				// Copy pixels in same column to their destinations				
+				pDest -= 8 * AbsHeight;
 			}
 			return true;
 		}
 	case ROTATE_180_DEGREES_CLOCKWISE:
 		{
 #ifdef USE_ASM
-		        Rotate32_180(m_nWidth,m_nHeight,pInImg,pOutImg);
+		        Rotate32_180(m_nWidth,labs(m_nHeight),pInImg,pOutImg);
 #else
-			BYTE* pSrc = (BYTE*)pInImg;
-			const int nTotalPixels = m_nWidth * m_nHeight; 
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			const int nTotalPixels = labs(m_nWidth * m_nHeight);
 			const int nLastIndex = (nTotalPixels - 1) * 4;
 			BYTE* pDest = (BYTE*)pOutImg + nLastIndex;
 			for (int i = 0; i < nTotalPixels; ++i, pSrc += 4, pDest -= 4)
@@ -102,11 +107,11 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 
 	case ROTATE_270_DEGREES_CLOCKWISE:
 		{
-			const int iTargetRowLength = m_nHeight * 4;
-			BYTE* pSrc = (BYTE*)pInImg;
+			const unsigned iTargetRowLength = labs(m_nHeight) * 4;
+			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - 4;
-
-			for ( int y = 0; y < m_nHeight; y++ )
+			unsigned y = labs(m_nHeight);
+			while(y-- > 0)
 			{
 				BYTE* pDestPixel = pDest;
 				for (int x = 0; x < m_nWidth; ++x, pSrc += 4, pDestPixel += iTargetRowLength)
@@ -120,26 +125,29 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 	case ROTATE_FLIP_VERTICAL:
 		{
 			// Code to flip image
-			const int nRowLength = m_nWidth * 4;
-			BYTE* pSrc = (BYTE*)pInImg;
-			//BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight * nRowLength ) - nRowLength);
-			BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight - 1) * nRowLength);
-			for (int i = 0; i < m_nHeight; ++i, pSrc += nRowLength, pDest -= nRowLength)
+			const unsigned nRowLength = labs(m_nWidth) * 4;
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			BYTE* pDest = (BYTE*)pOutImg + ((labs(m_nHeight) - 1) * nRowLength);
+			unsigned i = labs(m_nHeight);
+			while(i-- > 0)
 			{
-				memcpy(pDest, pSrc, nRowLength);
+			  memcpy(pDest, pSrc, nRowLength);
+			  pSrc += nRowLength;
+			  pDest -= nRowLength;
 			}
 			return true;
 		}
 	case ROTATE_FLIP_HORIZONTAL:
 		{
 #ifdef USE_ASM
-			Flip32_2(m_nWidth, m_nHeight, pInImg, pOutImg);
+			Flip32_2(m_nWidth, labs(m_nHeight), pInImg, pOutImg);
 #else
-			const int iRowLength = m_nWidth * 4;
-			BYTE* pSrc = (BYTE*)pInImg;
+			const unsigned iRowLength = labs(m_nWidth) * 4;
+			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iRowLength - 4;
 
-		        for ( int y = 0; y < m_nHeight; y++ )
+			unsigned y = labs(m_nHeight);
+		        while(y-- > 0)
 		        {
 			  BYTE* pDestPixel = pDest;
 			  for ( int x = 0; x < m_nWidth; x++, pSrc += 4, pDestPixel-=4 )
@@ -153,9 +161,8 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 		}
 	case ROTATE_FLIP_DIAGONALLY:
 		{
-			BYTE* pSrc = (BYTE*)pInImg;
-			BYTE* pDest = NULL;
-			BYTE* pSrcCol = NULL;
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			const unsigned AbsHeight = labs(m_nHeight);
 			for (int i = 0; i < m_nWidth; ++i, pSrc += 4)
 			{
 				int nNewRow = (m_nWidth - i);//Index Base 1
@@ -164,9 +171,9 @@ bool PicRotateRGB32Impl::Rotate( void* pInImg, void* pOutImg )
 				int nNewIndex = ((nNewRow - 1) * m_nHeight);// Base 1
 				// Adjust index to previous row
 				--nNewIndex;
-				pSrcCol = pSrc;
-				pDest = (BYTE*)pOutImg + (nNewIndex*4);
-				for (int j = 0; j < m_nHeight; ++j, pSrcCol += (4*m_nWidth), pDest -= 4)
+				const BYTE* pSrcCol = pSrc;
+				BYTE* pDest = (BYTE*)pOutImg + (nNewIndex*4);
+				for (unsigned j=0; j<AbsHeight; ++j, pSrcCol+=(4*m_nWidth), pDest-=4)
 				{
 				   *(__int32*)(pDest) = *(__int32*)(pSrcCol);
 				}

@@ -77,7 +77,7 @@ public:
 	}
 
 	/// Implementation must be overidden by sub class
-	virtual bool Rotate(void* pInImg, void* pOutImg) = 0;
+	virtual bool Rotate(const void* pInImg, void* pOutImg) = 0;
 
 protected:
 	/// Width of input image

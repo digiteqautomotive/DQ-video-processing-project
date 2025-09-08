@@ -27,7 +27,8 @@
 *.plg
 *.rpo
 *.rwd
-*.scc 
+*.scc
+*.sdf
 *.suo
 *.swp
 *.tds
@@ -46,3 +47,5 @@
 BuildLog.htm
 core
 TestImage.exe
+CSIR_VPP_DshowFiltersInstaller*.exe
+out.txt
