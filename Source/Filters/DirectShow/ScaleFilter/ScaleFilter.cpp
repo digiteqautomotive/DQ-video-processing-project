@@ -9,6 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2015, CSIR
+Copyright (c) 2025, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -369,8 +370,6 @@ void ScaleFilter::initParameters()
 {
   addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
-//  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
-//  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
 //  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1);
 }
 
@@ -392,7 +391,7 @@ HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lA
 HRESULT ScaleFilter::RecalculateFilterParameters()
 {
   // Update the number of out pixels
-  m_nOutPixels = m_nOutWidth * m_nOutHeight;
+  m_nOutPixels = labs(m_nOutWidth * m_nOutHeight);
   return S_OK;
 }
 

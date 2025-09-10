@@ -36,15 +36,14 @@ Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.
 @param pOutImg	: Packed RGBA 8888 format main base image.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
-@return					: 0 = failed, 1 = success.
-*/
+@return			: 0 = failed, 1 = success. */
 int PicScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 {
   if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
 		return(0);
 
    const unsigned char *pSrcRows[3];
-   unsigned char *pDst		= (unsigned char*)pOutImg;	
+   unsigned char *pDst = (unsigned char*)pOutImg;	
    int y, posy;
    int accuY;
 

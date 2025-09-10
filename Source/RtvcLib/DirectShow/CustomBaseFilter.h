@@ -110,10 +110,8 @@ protected:
   int m_nOutHeight;
   /// Width in output image
   int m_nOutWidth;
-  /// Number of pixels in output image
-  int m_nOutPixels;
-  /// Bit count of image
-  int m_nBitCount;
+  unsigned m_nOutPixels;		///< Number of pixels in output image
+  int m_nBitCount;			///< Bit count of image
 
 private:
   // Used for storing and checking connection types

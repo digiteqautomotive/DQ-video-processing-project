@@ -8,7 +8,7 @@ for dirname, dirnames, filenames in os.walk('.'):
       #print os.path.join(dirname, subdirname);
     for filename in filenames:
         for ext in ext_list:
-            expr = "^[a-zA-Z0-9\s\-]+." + ext + "$" 
+            expr = "^[a-zA-Z0-9\s\-_]+." + ext + "$" 
             matcher = re.compile(expr)
             if matcher.match(filename):
                 statinfo = os.stat(os.path.join(dirname, filename))
