@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <fstream>
-#include <DirectShow/CStatusInterface.h>
-#include <DirectShow/CSettingsInterface.h>
+#include "DirectShow/CStatusInterface.h"
+#include "DirectShow/CSettingsInterface.h"
 #include "../FilterParameterStringConstants.h"
 
 

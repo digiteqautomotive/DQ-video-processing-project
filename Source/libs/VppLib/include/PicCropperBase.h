@@ -59,36 +59,37 @@ public:
 	// Construction and destruction.
 	PicCropperBase(void) {_widthOut = 0; _heightOut = 0; _widthIn = 0; _heightIn = 0; _byX1 = 0; _byX2 = 0; _byY1 = 0; _byY2 = 0; }
 	PicCropperBase(int widthOut, int heightOut, int widthIn, int heightIn, int left, int right, int top, int bottom) 
-	{	_widthOut = widthOut; _heightOut = heightOut; _widthIn = widthIn; _heightIn = heightIn; _byX1 = left; _byX2 = right; _byY2 = top; _byY1 = bottom; }
+	{	_widthOut = labs(widthOut); _heightOut = labs(heightOut); _widthIn = labs(widthIn); _heightIn = labs(heightIn);
+                _byX1 = left; _byX2 = right; _byY2 = top; _byY1 = bottom; }
 	virtual ~PicCropperBase(void) {}
 
 	// Interface.
 	virtual int Crop(void* pInImg, void* pImg) = 0;
 
 	// Member interface.
-	int	GetOutWidth(void)		{ return(_widthOut); }
+	int	GetOutWidth(void)	{ return(_widthOut); }
 	int	GetOutHeight(void)	{ return(_heightOut); }
-	int	GetInWidth(void)		{ return(_widthIn); }
-	int	GetInHeight(void)		{ return(_heightIn); }
-	int	GetCropLeft(void)		{ return(_byX1); }
+	int	GetInWidth(void)	{ return(_widthIn); }
+	int	GetInHeight(void)	{ return(_heightIn); }
+	int	GetCropLeft(void)	{ return(_byX1); }
 	int	GetCropRight(void)	{ return(_byX2); }
 	int	GetCropBottom(void)	{ return(_byY1); }
-	int	GetCropTop(void)		{ return(_byY2); }
+	int	GetCropTop(void)	{ return(_byY2); }
   
-	void SetOutDimensions(int widthOut, int heightOut)			{_widthOut = widthOut; _heightOut = heightOut; }
-	void SetInDimensions(int widthIn, int heightIn)					{_widthIn = widthIn; _heightIn = heightIn; }
-	void SetCrop(int left, int right, int top, int bottom)	{_byX1 = left; _byX2 = right; _byY2 = top; _byY1 = bottom; }
+	void SetOutDimensions(int widthOut, int heightOut)	{_widthOut = labs(widthOut); _heightOut = labs(heightOut);}
+	void SetInDimensions(int widthIn, int heightIn)		{_widthIn = labs(widthIn); _heightIn = labs(heightIn);}
+	void SetCrop(int left, int right, int top, int bottom)	{_byX1 = left; _byX2 = right; _byY2 = top; _byY1 = bottom;}
 
 protected:
 	// Members.
-	int	_widthOut;		/// Of cropped output image.
-	int	_heightOut;
+	int _widthOut;			/// Of cropped output image.
+	int _heightOut;
 	int _widthIn;			/// Of input image to crop.
 	int _heightIn;
-	int _byX1;				/// Crop pels from the left.
-	int _byX2;				/// Crop pels from the right.
-	int _byY1;				/// Crop from the bottom.
-	int _byY2;				/// Crop from the top.
+	int _byX1;			/// Crop pels from the left.
+	int _byX2;			/// Crop pels from the right.
+	int _byY1;			/// Crop from the bottom.
+	int _byY2;			/// Crop from the top.
 
 };//end PicCropperBase.
 

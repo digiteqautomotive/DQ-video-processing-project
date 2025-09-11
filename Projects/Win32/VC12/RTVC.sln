@@ -94,6 +94,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestImage", "RtvcLib\TestIm
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualCam", "DirectShowFilters\VirtualCam\VirtualCam.vcxproj", "{8DF2AF56-DE75-44F3-9AF6-B1CD9010B8B9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UtilityFilter", "DirectShowFilters\UtilityFilter\UtilityFilter.vcxproj", "{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -317,6 +319,14 @@ Global
 		{8DF2AF56-DE75-44F3-9AF6-B1CD9010B8B9}.Release|Win32.Build.0 = Release|Win32
 		{8DF2AF56-DE75-44F3-9AF6-B1CD9010B8B9}.Release|x64.ActiveCfg = Release|x64
 		{8DF2AF56-DE75-44F3-9AF6-B1CD9010B8B9}.Release|x64.Build.0 = Release|x64
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Debug|Win32.Build.0 = Debug|Win32
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Debug|x64.ActiveCfg = Debug|x64
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Debug|x64.Build.0 = Debug|x64
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Release|Win32.ActiveCfg = Release|Win32
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Release|Win32.Build.0 = Release|Win32
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Release|x64.ActiveCfg = Release|x64
+		{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

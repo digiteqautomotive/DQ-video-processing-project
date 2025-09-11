@@ -43,7 +43,7 @@ AMOVIESETUP_FILTER FilterInfo =
 {
   &CLSID_VPP_ScaleFilter, // CLSID
   g_wszName,              // Name
-  MERIT_DO_NOT_USE,       // Merit
+  MERIT_NORMAL,		  // Merit
   0,                      // Number of AMOVIESETUP_PIN structs
   NULL                    // Pin registration information.
 };

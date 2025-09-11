@@ -97,3 +97,48 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 #ifdef _MANAGED
 #pragma managed(pop)
 #endif
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+HRESULT CropProperties::ReadSettings()
+{
+    setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
+    setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
+    setSpinBoxRange(IDC_SPIN3, 0, SHRT_MAX);
+    setSpinBoxRange(IDC_SPIN4, 0, SHRT_MAX);
+
+    // top
+    HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TOP_CROP, IDC_EDIT_TOP);
+    if (FAILED(hr)) return hr;
+    // bottom
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BOTTOM_CROP, IDC_EDIT_BOTTOM);
+    if (FAILED(hr)) return hr;
+    // left
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_LEFT_CROP, IDC_EDIT_LEFT);
+    if (FAILED(hr)) return hr;
+    // right
+    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_RIGHT_CROP, IDC_EDIT_RIGHT);
+    if (FAILED(hr)) return hr;
+
+  return hr;
+}
+
+HRESULT CropProperties::OnApplyChanges(void)
+{
+    // top
+    HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TOP_CROP, IDC_EDIT_TOP);
+    if (FAILED(hr)) return hr;
+    // bottom
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_BOTTOM_CROP, IDC_EDIT_BOTTOM);
+    if (FAILED(hr)) return hr;
+    // left
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_LEFT_CROP, IDC_EDIT_LEFT);
+    if (FAILED(hr)) return hr;
+    // right
+    hr = setIntFilterParameterFromEditText(FILTER_PARAM_RIGHT_CROP, IDC_EDIT_RIGHT);
+    if (FAILED(hr)) return hr;
+return S_OK;
+} 
+

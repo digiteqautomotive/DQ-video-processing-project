@@ -183,11 +183,10 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
 
 HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
-  if (iPosition < 0)
-  {
-    return E_INVALIDARG;
-  }
-  else if (iPosition == 0)
+  if(iPosition < 0) return E_INVALIDARG;
+  if(pMediaType == NULL) return E_POINTER;
+ 
+  if (iPosition == 0)
   {
     // Get the input pin's media type and return this as the output media type - we want to retain
     // all the information about the image
@@ -206,7 +205,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
 
 	// Set height
-    pBi->biHeight = m_nOutHeight;
+    pBi->biHeight = (pBi->biHeight<0) ? -m_nOutHeight : m_nOutHeight;	// Propagate negative height to output.
     if(pBi->biHeight == 0) return E_INVALIDARG;
 
 	// Set width

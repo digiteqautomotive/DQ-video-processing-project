@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \ingroup DirectShowFilters
  * Crop property dialog class
  */
-class CropProperties : public FilterPropertiesBase
+class CropProperties: public FilterPropertiesBase
 {
 public:
 
@@ -60,45 +60,8 @@ public:
 		FilterPropertiesBase(NAME("Crop Properties"), pUnk, IDD_CROP_DIALOG, IDS_CROP_CAPTION)
 	{;}
 
-	HRESULT ReadSettings()
-	{
-    setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
-    setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
-    setSpinBoxRange(IDC_SPIN3, 0, SHRT_MAX);
-    setSpinBoxRange(IDC_SPIN4, 0, SHRT_MAX);
-
-    // top
-    HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TOP_CROP, IDC_EDIT_TOP);
-    if (FAILED(hr)) return hr;
-    // bottom
-    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BOTTOM_CROP, IDC_EDIT_BOTTOM);
-    if (FAILED(hr)) return hr;
-    // left
-    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_LEFT_CROP, IDC_EDIT_LEFT);
-    if (FAILED(hr)) return hr;
-    // right
-    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_RIGHT_CROP, IDC_EDIT_RIGHT);
-    if (FAILED(hr)) return hr;
-
-    return hr;
-	}
-
-	HRESULT OnApplyChanges(void)
-	{
-    // top
-    HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TOP_CROP, IDC_EDIT_TOP);
-    assert(SUCCEEDED(hr));
-    // bottom
-    hr = setIntFilterParameterFromEditText(FILTER_PARAM_BOTTOM_CROP, IDC_EDIT_BOTTOM);
-    assert(SUCCEEDED(hr));
-    // left
-    hr = setIntFilterParameterFromEditText(FILTER_PARAM_LEFT_CROP, IDC_EDIT_LEFT);
-    assert(SUCCEEDED(hr));
-    // right
-    hr = setIntFilterParameterFromEditText(FILTER_PARAM_RIGHT_CROP, IDC_EDIT_RIGHT);
-    assert(SUCCEEDED(hr));
-		return S_OK;
-	} 
+	HRESULT ReadSettings(void);
+	HRESULT OnApplyChanges(void);
 
 private:
 

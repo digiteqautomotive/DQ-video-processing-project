@@ -80,6 +80,7 @@ void CropFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
 }
 
 HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
@@ -88,11 +89,11 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
   if (direction == PINDIR_INPUT)
   {
     //Set defaults and make sure that the target dimensions are valid
-    if ((m_nOutWidth == 0) || (m_nOutWidth > m_nInWidth))
+    if ((m_nOutWidth == 0) || (labs(m_nOutWidth) > labs(m_nInWidth)))
     {
       m_nOutWidth = m_nInWidth;
     }
-    if ((m_nOutHeight == 0) || (m_nOutHeight > m_nInHeight))
+    if ((m_nOutHeight == 0) || (labs(m_nOutHeight) > labs(m_nInHeight)))
     {
       m_nOutHeight = m_nInHeight;
     }
@@ -110,20 +111,20 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
         delete m_pCropBuffer;
         m_pCropBuffer = NULL;
       }
-      if (pmt->subtype == MEDIASUBTYPE_RGB24)
+      if(pmt->subtype == MEDIASUBTYPE_RGB24)
       {
         m_pCropper = new PicCropperRGB24Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
         // Create temp buffer for crop
-        m_pCropBuffer = new BYTE[(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel)/8];
+        m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8];
 
       }
-      else if (pmt->subtype == MEDIASUBTYPE_RGB32)
+      else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32)
       {
         m_pCropper = new PicCropperRGB32Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
         // Create temp buffer for crop
-        m_pCropBuffer = new BYTE[(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel)/8];
+        m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8];
       }
     }
     RecalculateFilterParameters();
@@ -133,11 +134,10 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 
 HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
-  if (iPosition < 0)
-  {
-    return E_INVALIDARG;
-  }
-  else if (iPosition == 0)
+  if(iPosition < 0) return E_INVALIDARG;
+  if(pMediaType == NULL) return E_POINTER;
+
+  if (iPosition == 0)
   {
     // Get the input pin's media type and return this as the output media type - we want to retain
     // all the information about the image
@@ -149,17 +149,19 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     // Get the bitmap info header and adapt the cropped 
     //make sure that it's a video info header
-    ASSERT(pMediaType->formattype == FORMAT_VideoInfo);
+    if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
+        return VFW_E_TYPE_NOT_ACCEPTED;
     VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
     //Now we need to calculate the size of the output image
     BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
 
     pBi->biHeight = m_nOutHeight;
-    ASSERT(pBi->biHeight > 0);
+    if(pBi->biHeight == 0) return E_INVALIDARG;
 
     pBi->biWidth = m_nOutWidth;
-    ASSERT(pBi->biWidth > 0);
-    pBi->biSizeImage = (pBi->biWidth * pBi->biHeight * m_nBitsPerPixel)/8;
+    if(pBi->biWidth <= 0) return E_INVALIDARG;
+
+    pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * m_nBitsPerPixel)/8;
 
     pVih->rcSource.top = 0;
     pVih->rcSource.left = 0;
@@ -304,9 +306,9 @@ HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lAc
 void CropFilter::RecalculateFilterParameters()
 {
   //Set defaults and make sure that the target dimensions are valid
-  m_nOutWidth = m_nInWidth - m_nLeftCrop - m_nRightCrop;
-  m_nOutHeight = m_nInHeight - m_nTopCrop - m_nBottomCrop;
-  m_nOutPixels = m_nOutWidth * m_nOutHeight;
+  m_nOutWidth = labs(m_nInWidth) - m_nLeftCrop - m_nRightCrop;
+  m_nOutHeight = labs(m_nInHeight) - m_nTopCrop - m_nBottomCrop;
+  m_nOutPixels = labs(m_nOutWidth * m_nOutHeight);
 #if 0
   if (m_nBytesPerPixel == BYTES_PER_PIXEL_RGB24)
   {
@@ -323,6 +325,7 @@ void CropFilter::RecalculateFilterParameters()
   m_nPadding = m_nStride - (m_nBitsPerPixel * m_nOutWidth)/8;
 #endif
 }
+
 
 HRESULT CropFilter::SetCropIfValid(int nTotalDimensionImage, int nNewCrop, int& nOldCrop, int nOppositeCrop)
 {
@@ -359,6 +362,7 @@ HRESULT CropFilter::GetPages(CAUUID *pPages)
   pPages->pElems[0] = CLSID_CropProperties;
   return S_OK;
 }
+
 
 HRESULT CropFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
