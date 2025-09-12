@@ -202,7 +202,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/nodefaultlib:libcmt %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcImage.lib;libRtvcDirectShow.lib;comctl32.lib;strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcImage.lib;libRtvcDirectShow.lib;comctl32.lib;strmiids.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>ScaleFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

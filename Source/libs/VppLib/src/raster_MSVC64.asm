@@ -146,6 +146,65 @@ ToEnd:
         ret                     ; _cdecl return                
 Rotate24_180	endp
 
+;*************************************************************************************
+
+
+	public  Rotate32_90
+Rotate32_90	proc \
+	uses rdi rsi
+;	_Width:DWORD,		; RCX
+;	Height:DWORD,		; RDX
+;	ptr_in:ptr byte,	; R8
+;       ptr_out:ptr byte	; R9
+
+	or	R8,R8
+	jz	ToEnd
+	or	R9,R9
+	jz	ToEnd
+
+	or	rdx,rdx	
+	jz	ToEnd		; ignore 0 Height	
+	mov	R10,rcx
+	mov	R11,rcx
+	mov	rax,rcx		; Width
+	jrcxz	ToEnd		; ignore 0 Width
+
+	mov	rcx,rdx
+
+	dec	rax		; Width-1
+	mul	rdx		; (Width-1)*Height
+	or	rdx,rdx
+	jnz	ToEnd		; Overflow
+	shl	rax,1
+	jc	ToEnd
+	shl	rax,1		; 4*(Width-1)*Height
+	jc	ToEnd
+	add	rax,R9
+	mov	rdi,rax		; pOutImg + 4*(Width-1)*Height;
+
+	mov	rdx,rcx
+	mov	R9,R10
+	shl	R9,2		; 4*Width
+
+LoopX:	mov	rsi,R8		; pSrc
+	mov	rcx,rdx		; Height
+LoopY:	mov	eax,[rsi]
+	add	rsi,R9		; 4*Width
+	mov	[rdi],eax
+	add	rdi,4	
+	dec	rcx
+	jnz	LoopY
+	mov	rax,rdx
+	shl	rax,3		; 8*Height
+	sub	rdi,rax
+	add	R8,4
+	dec	R11
+	jnz	LoopX	
+
+ToEnd:
+        ret                     ; _cdecl return                
+Rotate32_90	endp
+
 
 ;*************************************************************************************
 

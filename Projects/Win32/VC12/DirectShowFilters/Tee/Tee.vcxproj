@@ -191,7 +191,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>strmiids.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>strmiids.lib;Winmm.lib;odbc32.lib;odbccp32.lib;strmbase.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>Tee.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

@@ -9,6 +9,7 @@ DESCRIPTION           :
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2025 Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,6 +54,7 @@ int PicRotateRGB32Impl::BytesPerPixel()
 extern "C" {
 void Flip32_2(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
 void Rotate32_180(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
+void Rotate32_90(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
 }
 #endif
 
@@ -68,7 +70,10 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 			return true;
 		}
     case ROTATE_90_DEGREES_CLOCKWISE:
-		{			
+		{
+#ifdef USE_ASM
+		        Rotate32_90(labs(m_nWidth),labs(m_nHeight),pInImg,pOutImg);
+#else			
 			const unsigned AbsHeight = labs(m_nHeight);
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg + 4*(m_nWidth-1)*AbsHeight;
@@ -86,12 +91,13 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 				// Copy pixels in same column to their destinations				
 				pDest -= 8 * AbsHeight;
 			}
+#endif
 			return true;
 		}
 	case ROTATE_180_DEGREES_CLOCKWISE:
 		{
 #ifdef USE_ASM
-		        Rotate32_180(m_nWidth,labs(m_nHeight),pInImg,pOutImg);
+		        Rotate32_180(labs(m_nWidth),labs(m_nHeight),pInImg,pOutImg);
 #else
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			const int nTotalPixels = labs(m_nWidth * m_nHeight);
@@ -107,16 +113,19 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 
 	case ROTATE_270_DEGREES_CLOCKWISE:
 		{
-			const unsigned iTargetRowLength = labs(m_nHeight) * 4;
-			const BYTE* pSrc = (const BYTE*)pInImg;
-			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - 4;
 			unsigned y = labs(m_nHeight);
+			const unsigned iTargetRowLength = y * 4;
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - 4;			
 			while(y-- > 0)
 			{
 				BYTE* pDestPixel = pDest;
-				for (int x = 0; x < m_nWidth; ++x, pSrc += 4, pDestPixel += iTargetRowLength)
+				int x = m_nWidth;
+				while(x-- > 0)
 				{				
 				  *(__int32*)(pDestPixel) = *(__int32*)(pSrc);
+				  pSrc += 4;
+				  pDestPixel += iTargetRowLength;
 				}
 				pDest -= 4;
 			}
