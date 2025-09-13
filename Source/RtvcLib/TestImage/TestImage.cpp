@@ -30,74 +30,93 @@ unsigned char FeaturesCPU = 0x80;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-void BenchRotator(const char *RotName, PicRotateRGBBase *pRotator, void *BlobIn, void *BlobOut)
+unsigned long BenchScaller(PicScalerBase &pScaller, const void *BlobIn, void *BlobOut)
+{
+ unsigned long long TimeStampB, TimeStampE;
+ unsigned long DurationMin = ~0;
+ unsigned long Duration = ~0;
+ for(int i=0; i<10; i++)
+ {
+   TimeStampB = GetTickCount_us();
+   pScaller.Scale(BlobOut,BlobIn);
+   TimeStampE = GetTickCount_us();
+   Duration = TimeStampE - TimeStampB;
+   if(DurationMin > Duration) DurationMin=Duration;
+ }
+ return DurationMin;
+}
+
+
+void BenchRotator(const char *RotName, PicRotateRGBBase &pRotator, const void *BlobIn, void *BlobOut)
 {
 unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
 int i;
 
-  if(pRotator==NULL) return;
-  pRotator->SetInDimensions(1920,1080);
-  pRotator->SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);		
+  pRotator.SetInDimensions(1920,1080);
+  pRotator.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);		
   DurationMin = ~0;
   for(i=0; i<10; i++)
   {
     TimeStampB = GetTickCount_us();
-    pRotator->Rotate(BlobIn,BlobOut);
+    pRotator.Rotate(BlobIn,BlobOut);
     TimeStampE = GetTickCount_us();
     Duration = TimeStampE - TimeStampB;
     if(DurationMin > Duration) DurationMin=Duration;
   }
   printf("\n%s 1920,1080 time +90deg %.3f", RotName, DurationMin/1000.0);
-  pRotator->SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+
+  pRotator.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
   DurationMin = ~0;
   for(i=0; i<10; i++)
   {
     TimeStampB = GetTickCount_us();
-    pRotator->Rotate(BlobIn,BlobOut);
+    pRotator.Rotate(BlobIn,BlobOut);
     TimeStampE = GetTickCount_us();
     Duration = TimeStampE - TimeStampB;
     if(DurationMin > Duration) DurationMin=Duration;
   }
   printf(" +180deg %.3f", DurationMin/1000.0);
-  pRotator->SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+
+  pRotator.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
   DurationMin = ~0;
   for(i=0; i<10; i++)
   {
     TimeStampB = GetTickCount_us();
-    pRotator->Rotate(BlobIn,BlobOut);
+    pRotator.Rotate(BlobIn,BlobOut);
     TimeStampE = GetTickCount_us();
     Duration = TimeStampE - TimeStampB;
     if(DurationMin > Duration) DurationMin=Duration;
   }
   printf(" +270deg %.3f", DurationMin/1000.0);
-  pRotator->SetRotateMode(ROTATE_FLIP_VERTICAL);
+
+  pRotator.SetRotateMode(ROTATE_FLIP_VERTICAL);
   DurationMin = ~0;
   for(i=0; i<10; i++)
   {
     TimeStampB = GetTickCount_us();
-    pRotator->Rotate(BlobIn,BlobOut);
+    pRotator.Rotate(BlobIn,BlobOut);
     TimeStampE = GetTickCount_us();
     Duration = TimeStampE - TimeStampB;
     if(DurationMin > Duration) DurationMin=Duration;
   }
   printf(" FLIP_V %.3f", DurationMin/1000.0);
-  pRotator->SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+  pRotator.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
   DurationMin = ~0;
   for(i=0; i<10; i++)
   {
     TimeStampB = GetTickCount_us();
-    pRotator->Rotate(BlobIn,BlobOut);
+    pRotator.Rotate(BlobIn,BlobOut);
     TimeStampE = GetTickCount_us();
     Duration = TimeStampE - TimeStampB;
     if(DurationMin > Duration) DurationMin=Duration;
   }
   printf(" FLIP_H %.3f", DurationMin/1000.0);
-  pRotator->SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+  pRotator.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
   DurationMin = ~0;
   for(i=0; i<10; i++)
   {
     TimeStampB = GetTickCount_us();
-    pRotator->Rotate(BlobIn,BlobOut);
+    pRotator.Rotate(BlobIn,BlobOut);
     TimeStampE = GetTickCount_us();
     Duration = TimeStampE - TimeStampB;
     if(DurationMin > Duration) DurationMin=Duration;
@@ -579,58 +598,38 @@ int i;
   BlobOut = (unsigned char *)malloc(1920*1080*4);
   BlobTest = NULL;
 
+  for(int i=0; i<1920*1080*4; i++)
+  {
+    BlobIn[i] = rand() % 255;
+  }
+
   printf("\n\nBenchmarks:");
   unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
+
   {
-    PicScalerRGB24Impl picScalerRGB24(1920,1080,800,600);
-    DurationMin = ~0;
-    for(i=0; i<10; i++)
     {
-      TimeStampB = GetTickCount_us();
-      picScalerRGB24.Scale(BlobOut,BlobIn);
-      TimeStampE = GetTickCount_us();
-      Duration = TimeStampE - TimeStampB;
-      if(DurationMin > Duration) DurationMin=Duration;
+      PicScalerRGB24Impl picScalerRGB24(1920,1080,800,600);
+      DurationMin = BenchScaller(picScalerRGB24, BlobIn, BlobOut);
     }
     printf("\nScale RGB24 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
 
-    PicScalerRGB32Impl picScalerRGB32(1920,1080,800,600);
-    DurationMin = ~0;
-    for(i=0; i<10; i++)
     {
-      TimeStampB = GetTickCount_us();
-      picScalerRGB32.Scale(BlobOut,BlobIn);
-      TimeStampE = GetTickCount_us();
-      Duration = TimeStampE - TimeStampB;
-      if(DurationMin > Duration) DurationMin=Duration;
+      PicScalerRGB32Impl picScalerRGB32(1920,1080,800,600);
+      DurationMin = BenchScaller(picScalerRGB32, BlobIn, BlobOut);
     }
     printf("\nScale RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
 
-    PicScalerARGB32Impl picScalerARGB32(1920,1080,800,600);
-    DurationMin = ~0;
-    for(i=0; i<10; i++)
     {
-      TimeStampB = GetTickCount_us();
-      picScalerARGB32.Scale(BlobOut,BlobIn);
-      TimeStampE = GetTickCount_us();
-      Duration = TimeStampE - TimeStampB;
-      if(DurationMin > Duration) DurationMin=Duration;
+      PicScalerARGB32Impl picScalerARGB32(1920,1080,800,600);     
+      DurationMin = BenchScaller(picScalerARGB32, BlobIn, BlobOut);
     }
     printf("\nScale ARGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
 
 #ifdef USE_MMX
     if(FeaturesCPU & 1)
     {
-      PicScalerARGB32MMX picScalerARGB32mmx(1920,1080,800,600);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        picScalerARGB32mmx.Scale(BlobOut,BlobIn);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
+      PicScalerARGB32MMX picScalerARGB32mmx(1920,1080,800,600);     
+      DurationMin = BenchScaller(picScalerARGB32mmx, BlobIn, BlobOut);
       EmitEMMS();
       printf("\nScale ARGB32_MMX from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
     }
@@ -640,63 +639,41 @@ int i;
     if(FeaturesCPU & 2)
     {
       PicScalerARGB32SSE picScalerARGB32sse(1920,1080,800,600);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        picScalerARGB32sse.Scale(BlobOut,BlobIn);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
+      DurationMin = BenchScaller(picScalerARGB32sse, BlobIn, BlobOut);
       EmitEMMS();
       printf("\nScale ARGB32_SSE from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
     }
 #endif
 
-    OrigScalerRGB32Impl origScalerRGB32(1920,1080,800,600);
-    DurationMin = ~0;
-    for(i=0; i<10; i++)
     {
-      TimeStampB = GetTickCount_us();
-      origScalerRGB32.Scale(BlobOut,BlobIn);
-      TimeStampE = GetTickCount_us();
-      Duration = TimeStampE - TimeStampB;
-      if(DurationMin > Duration) DurationMin=Duration;
+      OrigScalerRGB32Impl origScalerRGB32(1920,1080,800,600);
+      DurationMin = BenchScaller(origScalerRGB32, BlobIn, BlobOut);
     }
     printf("\nScale Orig RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
 
     {
       PicScalerYUYVImpl PicScalerYUYV(1920,1080,800,600);
-      DurationMin = ~0;
-      for(i=0; i<10; i++)
-      {
-        TimeStampB = GetTickCount_us();
-        PicScalerYUYV.Scale(BlobOut,BlobIn);
-        TimeStampE = GetTickCount_us();
-        Duration = TimeStampE - TimeStampB;
-        if(DurationMin > Duration) DurationMin=Duration;
-      }
-      printf("\nScale YUYV from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+      DurationMin = BenchScaller(PicScalerYUYV, BlobIn, BlobOut);
     }
+      printf("\nScale YUYV from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
 
     {
       PicRotateRGB24Impl PicRotateRGB24;
-      BenchRotator("Rotate RGB24", &PicRotateRGB24, BlobIn, BlobOut);
+      BenchRotator("Rotate RGB24", PicRotateRGB24, BlobIn, BlobOut);
     }
     {
       OrigRotateRGB24Impl OrigRotateRGB24;
-      BenchRotator("OrigRot RGB24", &OrigRotateRGB24, BlobIn, BlobOut);
+      BenchRotator("OrigRot RGB24", OrigRotateRGB24, BlobIn, BlobOut);
     }
 
     {
       PicRotateRGB32Impl PicRotateRGB32;
-      BenchRotator("Rotate RGB32", &PicRotateRGB32, BlobIn, BlobOut);
+      BenchRotator("Rotate RGB32", PicRotateRGB32, BlobIn, BlobOut);
     }
 
     {
       OrigRotateRGB32Impl OrigRotateRGB32;
-      BenchRotator("OrigRot RGB32", &OrigRotateRGB32, BlobIn, BlobOut);
+      BenchRotator("OrigRot RGB32", OrigRotateRGB32, BlobIn, BlobOut);
     }
   }
 

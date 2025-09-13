@@ -280,6 +280,64 @@ ToEnd:
                 
 Rotate32_180 endp
 
+;*************************************************************************************
+
+
+;void Rotate32_270(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
+	public  Rotate32_270
+Rotate32_270	proc \
+	uses ebx edi esi \
+	_Width:DWORD, \
+	Height:DWORD, \
+	ptr_in:ptr byte, \
+        ptr_out:ptr byte
+
+        mov     esi,[ptr_in]     ; esi=source ptr
+	or	esi,esi
+	jz	ToEnd	
+	mov     edi,[ptr_out]     ; edi=destination ptr
+	or	edi,edi
+	jz	ToEnd
+
+	mov	ecx,Height
+	or	ecx,ecx
+	jz	ToEnd
+	mov	ebx,_Width
+	or	ebx,ebx
+	jz	ToEnd
+
+	mov	eax,ecx
+	dec	eax		; Height-1
+	mul	ebx		; Width*(Height-1)
+	or	edx,edx
+	jnz	ToEnd
+	shl	eax,1
+	jc	ToEnd
+	shl	eax,1		; 4*Width*(Height-1)
+	jc	ToEnd
+	add	esi,eax
+
+	mov	edx,ebx		; Width
+	shl	ebx,2		; 4*Width
+
+LoopY:	mov	[ptr_in],esi
+	mov	ecx,Height
+LoopX:	mov	eax,[esi]
+	sub	esi,ebx		; - 4*Width
+	mov	[edi],eax
+	add	edi,4
+	dec	ecx
+	jnz	LoopX
+	mov	esi,[ptr_in]
+	add	esi,4	
+	dec	edx
+	jnz	LoopY
+
+ToEnd:
+        ret                     ; _cdecl return
+                
+Rotate32_270 endp
+
 
 ;*************************************************************************************
 

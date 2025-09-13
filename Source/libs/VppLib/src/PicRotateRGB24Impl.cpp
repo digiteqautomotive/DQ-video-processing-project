@@ -9,6 +9,7 @@ DESCRIPTION           :
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2025 Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,22 +112,26 @@ bool PicRotateRGB24Impl::Rotate(const void* pInImg, void* pOutImg)
 			return true;
 		}
 
-	case ROTATE_270_DEGREES_CLOCKWISE:
+	case ROTATE_270_DEGREES_CLOCKWISE:	// Continual writing and scaterred reading is faster than continual reading and scaterred writing.
 		{
-			const unsigned iTargetRowLength = labs(m_nHeight) * 3;
-			const BYTE* pSrc = (const BYTE*)pInImg;
-			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - 3;
-			unsigned y = labs(m_nHeight);
-			while(y-- > 0)			
+			const unsigned y_src = labs(m_nHeight);
+			unsigned y_dst = labs(m_nWidth);
+			const unsigned x_src3 = 3*y_dst;
+			const BYTE* pSrc = (const BYTE*)pInImg + 3*(y_src-1)*m_nWidth;
+			BYTE* pDest = (BYTE*)pOutImg;
+			while(y_dst-- > 0)
 			{
-				BYTE* pDestPixel = pDest;
-				for (int x = 0; x < m_nWidth; ++x, pSrc += 3, pDestPixel += iTargetRowLength)
+				const BYTE* pSrcPos = pSrc;
+				int x_dst = y_src;
+				while(x_dst-- > 0)
 				{
-					pDestPixel[0] = pSrc[0];
-					pDestPixel[1] = pSrc[1];
-					pDestPixel[2] = pSrc[2];
+				  pDest[0] = pSrcPos[0];
+			          pDest[1] = pSrcPos[1];
+			          pDest[2] = pSrcPos[2];
+				  pDest += 3;
+				  pSrcPos -= x_src3;
 				}
-				pDest -= 3;
+				pSrc += 3;
 			}
 			return true;
 		}

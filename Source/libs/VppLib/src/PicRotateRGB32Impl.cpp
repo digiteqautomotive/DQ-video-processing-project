@@ -55,6 +55,7 @@ extern "C" {
 void Flip32_2(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
 void Rotate32_180(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
 void Rotate32_90(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
+void Rotate32_270(unsigned Width, unsigned Height, const void *ptr_in, void *ptr_out);
 }
 #endif
 
@@ -111,24 +112,29 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 			return true;
 		}
 
-	case ROTATE_270_DEGREES_CLOCKWISE:
+	case ROTATE_270_DEGREES_CLOCKWISE:	// Continual writing and scaterred reading is faster than continual reading and scaterred writing.
 		{
-			unsigned y = labs(m_nHeight);
-			const unsigned iTargetRowLength = y * 4;
-			const BYTE* pSrc = (const BYTE*)pInImg;
-			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - 4;			
-			while(y-- > 0)
+//#ifdef USE_ASM
+//		        Rotate32_270(labs(m_nWidth),labs(m_nHeight),pInImg,pOutImg);
+//#else			
+			const unsigned y_src = labs(m_nHeight);
+			unsigned y_dst = labs(m_nWidth);
+			const unsigned x_src4 = 4*y_dst;
+			const BYTE* pSrc = (const BYTE*)pInImg + 4*(y_src-1)*m_nWidth;
+			BYTE* pDest = (BYTE*)pOutImg;
+			while(y_dst-- > 0)
 			{
-				BYTE* pDestPixel = pDest;
-				int x = m_nWidth;
-				while(x-- > 0)
+				const BYTE* pSrcPos = pSrc;
+				int x_dst = y_src;
+				while(x_dst-- > 0)
 				{				
-				  *(__int32*)(pDestPixel) = *(__int32*)(pSrc);
-				  pSrc += 4;
-				  pDestPixel += iTargetRowLength;
+				  *(__int32*)(pDest) = *(__int32*)(pSrcPos);
+				  pDest += 4;
+				  pSrcPos -= x_src4;
 				}
-				pDest -= 4;
+				pSrc += 4;
 			}
+//#endif
 			return true;
 		}
 	case ROTATE_FLIP_VERTICAL:
@@ -149,7 +155,7 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_HORIZONTAL:
 		{
 #ifdef USE_ASM
-			Flip32_2(m_nWidth, labs(m_nHeight), pInImg, pOutImg);
+			Flip32_2(labs(m_nWidth), labs(m_nHeight), pInImg, pOutImg);
 #else
 			const unsigned iRowLength = labs(m_nWidth) * 4;
 			const BYTE* pSrc = (const BYTE*)pInImg;
