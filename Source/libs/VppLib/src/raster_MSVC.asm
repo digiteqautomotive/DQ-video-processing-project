@@ -323,10 +323,11 @@ Rotate32_270	proc \
 LoopY:	mov	[ptr_in],esi
 	mov	ecx,Height
 LoopX:	mov	eax,[esi]
-	sub	esi,ebx		; - 4*Width
+	dec	ecx
 	mov	[edi],eax
 	add	edi,4
-	dec	ecx
+	sub	esi,ebx		; - 4*Width
+	test	ecx,ecx
 	jnz	LoopX
 	mov	esi,[ptr_in]
 	add	esi,4	

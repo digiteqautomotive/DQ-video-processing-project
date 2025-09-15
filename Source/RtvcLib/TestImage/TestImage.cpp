@@ -131,7 +131,7 @@ PicScalerRGB32Impl picScalerRGB32;
 unsigned char *BlobIn, *BlobOut, *BlobTest;
 int i;
 
-  printf("<TEST> Testing scale computing %u[bits]", 8*sizeof(void*));
+  printf("<TEST> Testing scale computing %u[bits] %s %s", 8*sizeof(void*), __DATE__, __TIME__);
 
   FeaturesCPU = GetFeaturesCPU();
   BlobIn = (unsigned char *)malloc(16384);

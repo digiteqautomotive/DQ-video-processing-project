@@ -249,4 +249,62 @@ Rotate32_180	endp
 ;*************************************************************************************
 
 
+	public  Rotate32_270
+Rotate32_270	proc \
+	uses rdi rsi
+;	_Width:DWORD,		; RCX
+;	Height:DWORD,		; RDX
+;	ptr_in:ptr byte,	; R8
+;       ptr_out:ptr byte	; R9
+
+        mov     rsi,R8		; esi=source ptr
+	or	rsi,rsi
+	jz	ToEnd	
+	mov     rdi,R9		; edi=destination ptr
+	or	rdi,rdi
+	jz	ToEnd
+
+	mov	R10,rcx		; _Width
+	or	R10,R10
+	jz	ToEnd	
+	mov	rcx,rdx		; Height
+	mov	R9,rdx
+	or	rdx,rdx
+	jz	ToEnd
+
+	mov	rax,rcx
+	dec	rax		; Height-1
+	mul	R10		; Width*(Height-1)
+	or	rdx,rdx
+	jnz	ToEnd		; Overflow
+	shl	rax,1
+	jc	ToEnd		; Overflow
+	shl	rax,1		; 4*Width*(Height-1)
+	jc	ToEnd		; Overflow
+	add	rsi,rax
+
+	mov	rdx,R10		; Width
+	shl	R10,2		; 4*Width
+
+LoopY:	mov	R8,rsi
+	mov	rcx,R9		; Height
+LoopX:	mov	eax,[rsi]
+	sub	rsi,R10		; - 4*Width
+	mov	[rdi],eax
+	add	rdi,4
+	dec	rcx
+	jnz	LoopX
+	mov	rsi,R8
+	add	rsi,4	
+	dec	rdx
+	jnz	LoopY
+
+ToEnd:
+        ret                     ; _cdecl return                
+Rotate32_270	endp
+
+
+;*************************************************************************************
+
+
         end

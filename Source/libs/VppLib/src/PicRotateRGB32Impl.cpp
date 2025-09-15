@@ -114,9 +114,9 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 
 	case ROTATE_270_DEGREES_CLOCKWISE:	// Continual writing and scaterred reading is faster than continual reading and scaterred writing.
 		{
-//#ifdef USE_ASM
-//		        Rotate32_270(labs(m_nWidth),labs(m_nHeight),pInImg,pOutImg);
-//#else			
+#ifdef USE_ASM
+		        Rotate32_270(labs(m_nWidth),labs(m_nHeight),pInImg,pOutImg);
+#else			
 			const unsigned y_src = labs(m_nHeight);
 			unsigned y_dst = labs(m_nWidth);
 			const unsigned x_src4 = 4*y_dst;
@@ -134,7 +134,7 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 				}
 				pSrc += 4;
 			}
-//#endif
+#endif
 			return true;
 		}
 	case ROTATE_FLIP_VERTICAL:
