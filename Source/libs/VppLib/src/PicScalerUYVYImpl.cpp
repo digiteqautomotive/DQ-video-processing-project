@@ -49,7 +49,7 @@ memory size checking is done and is delegated to the calling process.
 @param pOutImg	: Packed UYVY format main base image.
 @param pInImg		: Packed UYVY format smaller sub image.
 @return			: 0 = failed, 1 = success. */
-int PicScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg)
+int PicScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
       return(0);

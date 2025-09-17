@@ -43,7 +43,8 @@ CCustomBaseFilter::CCustomBaseFilter(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID 
   m_nOutHeight(0),
   m_nOutWidth(0),
   m_nOutPixels(0),
-  m_nBitCount(0)
+  m_nBitCount(0),
+  m_Vflip(false)
 {
 }
 

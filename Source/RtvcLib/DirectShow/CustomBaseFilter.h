@@ -112,6 +112,7 @@ protected:
   int m_nOutWidth;
   unsigned m_nOutPixels;		///< Number of pixels in output image
   int m_nBitCount;			///< Bit count of image
+  bool m_Vflip;
 
 private:
   // Used for storing and checking connection types

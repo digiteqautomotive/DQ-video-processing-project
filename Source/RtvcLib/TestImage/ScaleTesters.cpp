@@ -5,7 +5,7 @@
 #include "ScaleTesters.h"
 
 
-int OrigScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
+int OrigScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg==NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
       return(0);
@@ -72,7 +72,7 @@ int OrigScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
 ///////////////////////////////////////////////////////////////////////////
 
 
-int OrigScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
+int OrigScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
 	if(pOutImg==NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
 		return(0);
@@ -136,7 +136,7 @@ int OrigScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg)
 } //end Scale.
 
 
-int OrigScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
+int OrigScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
 	if(pOutImg==NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
 		return(0);
@@ -201,7 +201,7 @@ int OrigScalerRGB32Impl::Scale(void* pOutImg, const void* pInImg)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-int OrigScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg)
+int OrigScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
       return(0);
@@ -304,7 +304,7 @@ int OrigScalerUYVYImpl::Scale(void* pOutImg, const void* pInImg)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int OrigScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg)
+int OrigScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg == NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
       return(0);

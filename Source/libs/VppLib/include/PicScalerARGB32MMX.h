@@ -58,7 +58,7 @@ public:
 	virtual int GetVideoFormat(void) const {return 32;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerARGB32MMX.
 

@@ -200,9 +200,9 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     //make sure that it's a video info header
     if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
         return VFW_E_TYPE_NOT_ACCEPTED;
-    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+    VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
     //Now we need to calculate the size of the output image
-    BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
+    BITMAPINFOHEADER* const pBi = &(pVih->bmiHeader);
 
 	// Set height
     pBi->biHeight = (pBi->biHeight<0) ? -m_nOutHeight : m_nOutHeight;	// Propagate negative height to output.
@@ -274,6 +274,7 @@ HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIE
   return S_OK;
 }
 
+
 HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
 	//Make sure the input and output types are related
@@ -285,6 +286,21 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
   if (mtOut->formattype!=FORMAT_VideoInfo && mtOut->formattype!=FORMAT_VideoInfo2)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+  
+  m_Vflip = false;
+  {
+    const VIDEOINFOHEADER * const pVihOut = (VIDEOINFOHEADER*)mtOut->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+        m_Vflip = true;
+      else
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
+    }
+    if(pBiOut->biWidth != m_nOutWidth)
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
   }
 
 	//Subtypes
@@ -380,7 +396,7 @@ HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lA
   //Call scaling conversion code
   m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
   m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
-  int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn);
+  int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn, m_Vflip);
   ASSERT(res == 1);
   lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
   return S_OK;

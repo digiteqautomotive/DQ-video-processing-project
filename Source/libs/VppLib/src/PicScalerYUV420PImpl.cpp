@@ -61,7 +61,7 @@ No memory size checking is done and is delegated to the calling process.
 @param pInImg		: Planar YUV420P format input image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg)
+int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
 	if( (pOutImg == NULL) || (pInImg == NULL) )
 		return(0);

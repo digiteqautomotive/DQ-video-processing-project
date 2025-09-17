@@ -65,7 +65,7 @@ public:
 	virtual ~PicScalerBase(void) {}
 
 	// Interface.
-	virtual int Scale(void* pOutImg, const void* pInImg) = 0;
+	virtual int Scale(void* pOutImg, const void* pInImg, bool VFlip=false) = 0;        
 
 	// Member interface.
 	int	GetOutWidth(void)		{ return(_widthOut); }

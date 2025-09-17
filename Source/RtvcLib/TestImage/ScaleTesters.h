@@ -11,7 +11,7 @@ public:
 	virtual int GetVideoFormat(void) const {return 24;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB24Impl.
 
@@ -26,7 +26,7 @@ public:
 	virtual int GetVideoFormat(void) const {return 32;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end PicScalerRGB32Impl.
 
@@ -41,7 +41,7 @@ public:
 	virtual int GetVideoFormat(void) const {return 32;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB32Impl.
 
@@ -56,7 +56,7 @@ public:
 	virtual int GetVideoFormat(void) const {return 16;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end OrigScalerUYVYImpl.
 
@@ -71,6 +71,6 @@ public:
 	virtual int GetVideoFormat(void) const {return 16;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end OrigScalerUYVYImpl.

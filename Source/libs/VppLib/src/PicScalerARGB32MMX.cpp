@@ -46,37 +46,59 @@ memory size checking is done and is delegated to the calling process.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerARGB32MMX::Scale(void* pOutImg, const void* pInImg)
+int PicScalerARGB32MMX::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
 		return(0);
 
    const unsigned char *pSrcRows[3];
-   unsigned char *pDst		= (unsigned char*)pOutImg;	
+   unsigned char *pDst = (unsigned char*)pOutImg;
    int y, posy;
    int accuY;
 
    accuY = -1;
    posy = 0;
    y = _heightOut;
-   while(y-- > 0)
+
+   if(VFlip)
    {
-      accuY += _heightIn;				// DDA integer only algorithm
-      posy += accuY / _heightOut;
-      accuY = accuY % _heightOut;
+     pDst += 4*_widthOut*(_heightOut-1);
+     while(y-- > 0)
+     {
+       accuY += _heightIn;				// DDA integer only algorithm
+       posy += accuY / _heightOut;
+       accuY = accuY % _heightOut;
 
-      pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
-      pSrcRows[1] = (const unsigned char*)pInImg + 4*_widthIn*posy;
-      pSrcRows[2] = (const unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
+       pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
+       pSrcRows[1] = (const unsigned char*)pInImg + 4*_widthIn*posy;
+       pSrcRows[2] = (const unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
 
-      ScaleRowAsmARGB32MMX(pDst, _widthOut, (void*const*)pSrcRows, _widthIn);
+       ScaleRowAsmARGB32MMX(pDst, _widthOut, (void*const*)pSrcRows, _widthIn);
 		
-      pDst += 4 * _widthOut;
-   } //end for y...
-   
-   EmitEMMS();
+       pDst -= 4 * _widthOut;
+    } //end for y...
+   }
+   else
+   {
+     while(y-- > 0)
+     {
+       accuY += _heightIn;				// DDA integer only algorithm
+       posy += accuY / _heightOut;
+       accuY = accuY % _heightOut;
+
+       pSrcRows[0] = (const unsigned char*)pInImg + ((posy==0) ? 0 : (4*_widthIn*(posy-1)));
+       pSrcRows[1] = (const unsigned char*)pInImg + 4*_widthIn*posy;
+       pSrcRows[2] = (const unsigned char*)pInImg + 4*_widthIn*((posy+1>=_heightIn) ? (_heightIn-1) : (posy+1));
+
+       ScaleRowAsmARGB32MMX(pDst, _widthOut, (void*const*)pSrcRows, _widthIn);
+		
+       pDst += 4 * _widthOut;
+    } //end for y...
+  }
+
+  EmitEMMS();
    //_m_empty();
-   return(1);
+  return(1);
 }//end Scale.
 
 

@@ -59,7 +59,7 @@ public:
         virtual int GetVideoFormat(void) const {return 24;}
 
 	// Interface.
-	int Scale(void* pOutImg, const void* pInImg);
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB24Impl.
 
