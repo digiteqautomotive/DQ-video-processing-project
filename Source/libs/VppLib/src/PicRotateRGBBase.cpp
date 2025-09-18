@@ -107,7 +107,7 @@ bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 		{
 			// Code to flip image
 			int nRowLength = m_nWidth * nBytesPerPixel;
-			BYTE* pSrc = (BYTE*)pInImg;
+			const BYTE* pSrc = (const BYTE*)pInImg;
 			//BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight * nRowLength ) - nRowLength);
 			BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight - 1) * nRowLength);
 			for (int i = 0; i < m_nHeight; ++i, pSrc += nRowLength, pDest -= nRowLength)

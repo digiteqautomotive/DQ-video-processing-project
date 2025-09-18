@@ -62,16 +62,16 @@ class PicInPicBase
 {
 public:
 	// Construction and destruction.
-        PicInPicBase(void) { _width = 0; _height = 0; _subWidth = 0; _subHeight = 0; _xPos = 0; _yPos = 0; _writeWidth = 0; _writeHeight = 0; _borderWidth = 0; }
+        PicInPicBase(void) {_width=0; _height=0; _subWidth=0; _subHeight=0; _xPos=0; _yPos=0; _writeWidth=0; _writeHeight=0; _borderWidth=0;}
 	PicInPicBase(int width, int height, int subWidth, int subHeight, int xPos, int yPos) 
-	  {_width = width; _height = height; _subWidth = subWidth; _subHeight = subHeight; _xPos = xPos; _yPos = yPos; _borderWidth = 0; SetActualSubDimensions();}
+	  {_width=width; _height=height; _subWidth=subWidth; _subHeight=subHeight; _xPos=xPos; _yPos=yPos; _borderWidth=0; SetActualSubDimensions();}
 	virtual ~PicInPicBase(void) {}
 
 	// Interface.
-	void Insert(void* pSubImg, void* pImg)
+	void Insert(void* pSubImg, void* pImg, bool VFlip=false)
         {
           if (_borderWidth == 0)
-            DoInsert(pSubImg, pImg);
+            DoInsert(pSubImg, pImg, VFlip);
           else
             DoInsertWithBorder(pSubImg, pImg);
         }
@@ -85,7 +85,7 @@ public:
 	int GetActualSubHeight(void) const	{ return(_writeHeight); }
 	int GetXPos(void) const			{ return(_xPos); }
         int GetYPos(void) const			{ return(_yPos); }
-        int GetBorderWidth() const		{ return _borderWidth; }
+        int GetBorderWidth(void) const		{ return _borderWidth; }
   
 	void SetDimensions(int width, int height) {_width = width; _height = height; SetActualSubDimensions(); }
 	void SetSubDimensions(int subWidth, int subHeight)	{_subWidth = subWidth; _subHeight = subHeight; SetActualSubDimensions(); }
@@ -102,7 +102,7 @@ protected:
 		if((_yPos + _subHeight) > _height) _writeHeight = (_height - _yPos); else _writeHeight = _subHeight; 
         }
 
-        virtual void DoInsert(void* pSubImg, void* pImg) = 0;
+        virtual void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) = 0;
         virtual void DoInsertWithBorder(void* pSubImg, void* pImg) = 0;
 
 protected:

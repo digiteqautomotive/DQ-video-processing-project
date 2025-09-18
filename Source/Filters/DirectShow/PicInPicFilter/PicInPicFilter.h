@@ -60,8 +60,7 @@ class PicScalerBase;
  * @brief PicInPicFilter that accepts two RGB24 inputs.
  * The filter should only be confgured after the inputs have been connected.
  */
-class PicInPicFilter	:	public VideoMixingBase,
-							          public ISpecifyPropertyPages
+class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -167,7 +166,7 @@ private:
   /// custom Y offset from bottom left corner used when position = SUB_PIC_POSITION_CUSTOM
   int m_nCustomOffsetY;
 	/// picture in pic class
-	PicInPicBase* m_pPicInPic;
+  PicInPicBase* m_pPicInPic;
 	/// target picture scaler used if primary picture output dimensions != input picture dimensions
   PicScalerBase* m_pTargetPicScaler;
   /// target picture scaler used if secondary picture output dimensions != input picture dimensions
@@ -176,4 +175,5 @@ private:
   unsigned m_nBitsPerPixel;
   /// buffer to scale secondary image into if required
   BYTE* m_pBufferForScaledSecondaryImage;
+  bool m_Vflip;
 };

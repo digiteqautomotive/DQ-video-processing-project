@@ -65,20 +65,32 @@ sub image. These dimensions have been set to stay within the edges
 of the main image.
 @param pSubImg	: Packed RGB 888 format smaller sub image.
 @param pImg			: Packed RGB 888 format main base image.
-@return					: none.
-*/
-
-void PicInPicRGB24Impl::DoInsert( void* pSubImg, void* pImg )
+@return				: none. */
+void PicInPicRGB24Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
 {
-    unsigned char*	pSrc		= (unsigned char*)pSubImg;
-    unsigned char*	pDst		= (unsigned char*)pImg + 3*((_yPos*_width) + _xPos);
+    const unsigned char *pSrc	= (const unsigned char*)pSubImg;
+    unsigned char *pDst		= (unsigned char*)pImg;
 
-    for(int y = 0; y < _writeHeight; y++)
+    if(VFlip)
     {
+      pDst += 3*(((_height-_yPos)*_width) + _xPos);
+      for(int y = 0; y < _writeHeight; y++)
+      {
+        memcpy((void *)pDst, (const void *)pSrc, 3*_writeWidth);	// Whole row at a time.
+        pDst -= (3*_width);	// Next row.
+        pSrc += (3*_subWidth);
+      }  //end for y...
+    }
+    else
+    {
+      pDst += 3*((_yPos*_width) + _xPos);
+      for(int y = 0; y < _writeHeight; y++)
+      {
         memcpy((void *)pDst, (const void *)pSrc, 3*_writeWidth);	// Whole row at a time.
         pDst += (3*_width);	// Next row.
         pSrc += (3*_subWidth);
-    }//end for y...
+      }  //end for y...
+   }
 }//end DoInsert.
 
 /** Insert the sub image into the main image with a border.

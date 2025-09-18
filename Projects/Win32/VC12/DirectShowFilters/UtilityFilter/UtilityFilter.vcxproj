@@ -136,7 +136,7 @@
     </ClCompile>
     <Link>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Strmbasd.lib;Msvcrtd.lib;Winmm.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Strmbasd.lib;Msvcrtd.lib;Winmm.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;Gdiplus.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
       <ModuleDefinitionFile>..\..\..\..\..\Source\Filters\DirectShow\UtilityFilter\UtilityFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

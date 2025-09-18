@@ -8,7 +8,7 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
+Copyright (c) 2008 - 2017, CSIR
               2025 Jaroslav Fojtik
 All rights reserved.
 
@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicScalerRGB24Impl.h>
 #include <PicScalerRGB32Impl.h>
 #include "../VersionInfo.h"
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #ifdef USE_MMX
 #include <PicScalerARGB32MMX.h>
@@ -80,7 +81,8 @@ PicInPicFilter::PicInPicFilter()
   m_pTargetPicScaler(NULL),
   m_pSubPicScaler(NULL),
   m_nBitsPerPixel(0),
-  m_pBufferForScaledSecondaryImage(NULL)
+  m_pBufferForScaledSecondaryImage(NULL),
+  m_Vflip(false)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
@@ -154,6 +156,9 @@ void PicInPicFilter::initParameters()
 }
 
 
+//void PicInPicFilter::CopyPrimaryImage(
+
+
 HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
 	// Prepare output sample
@@ -177,59 +182,59 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     return hr;
   }
 
-	// do pic in pic transform
-  if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
+	// Prepare canvas
+  if(m_pSampleBuffers[0])
   {
-		// the target scaler is only created if the input dimensions of the primary picture don't match the target dimensions
-    if ( m_pTargetPicScaler )
+    if(m_pTargetPicScaler)	// the target scaler is only created if the input dimensions of the primary picture don't match the target dimensions
     {
-      // scale the primary image into the out buffer
-      m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)m_pSampleBuffers[0]);
+      m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)m_pSampleBuffers[0], m_Vflip);
     }
     else
     {
-      // copy the primary image
-      memcpy(pBufferOut, m_pSampleBuffers[0], (m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBitsPerPixel)/8);
-    }
-    
-    if(m_pSubPicScaler)
-    {
-      m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
-      m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut);
-    }
-    else
-    {
-      // copy direct from buffer
-      m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut);
-    }
-  }
-  else if (m_pSampleBuffers[0])
-  {
-    if ( m_pTargetPicScaler )
-    {
-      m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)m_pSampleBuffers[0]);
-    }
-    else
-    {
-      memcpy(pBufferOut, m_pSampleBuffers[0], (m_pPicInPic->GetWidth() * m_pPicInPic->GetHeight() * (size_t)m_nBitsPerPixel)/8);
+      if(m_Vflip)	// Code to flip image vertically
+      {
+        int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
+	const BYTE* pSrc = (const BYTE*)m_pSampleBuffers[0];
+	BYTE* pDest = (BYTE*)pBufferOut + ((labs(m_pPicInPic->GetHeight()) - 1) * nRowLength);
+	for(int i=0; i<m_pPicInPic->GetHeight(); ++i, pSrc+=nRowLength, pDest-=nRowLength)
+	{
+	  memcpy(pDest, pSrc, nRowLength);
+	}
+      }
+      else
+        memcpy(pBufferOut, m_pSampleBuffers[0], (labs(m_pPicInPic->GetWidth()*m_pPicInPic->GetHeight()) * (size_t)m_nBitsPerPixel)/8);
     }
   }
   else
-  {
-    int nWidth = m_nOutputWidth;
-    int nHeight = m_nOutputHeight;
-		// TODO: is zeros the right filler
-		memset(pBufferOut, 0, (nWidth * nHeight* m_nBitsPerPixel)/8);
+  {		// TODO: is zeros the right filler
+    memset(pBufferOut, 0, labs(m_nOutputWidth * m_nOutputHeight* m_nBitsPerPixel)/8);
+  }
 
-    if (m_pSubPicScaler)
+	// do pic in pic transform
+  if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
+  {    
+    if(m_pSubPicScaler)
     {
       m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
-      m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut);
+      m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut, m_Vflip);
     }
     else
     {
       // copy direct from buffer
-      m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut);
+      m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut,m_Vflip);
+    }
+  }
+  else if(m_pSampleBuffers[1])
+  {
+    if(m_pSubPicScaler)
+    {
+      m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
+      m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut,m_Vflip);
+    }
+    else
+    {
+      // copy direct from buffer
+      m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut,m_Vflip);
     }
   }
 
@@ -272,6 +277,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
   pOutSample->Release();
   return hr;
 }
+
 
 HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
 {
@@ -321,13 +327,23 @@ HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 
 HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex)
 {
+  const BITMAPINFOHEADER *bmih = NULL;
 	// Create temporary sample buffers
-  const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
-  const BITMAPINFOHEADER *bmih = &pVih->bmiHeader;
+  if(pMediaType->formattype==FORMAT_VideoInfo)
+  {
+    const VIDEOINFOHEADER* const pVih = (const VIDEOINFOHEADER*) pMediaType->pbFormat;
+    if(pVih) bmih = &pVih->bmiHeader;
+  }
+  else if(pMediaType->formattype==FORMAT_VideoInfo2)
+  {
+    const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*) pMediaType->pbFormat;
+    if(pVih2) bmih = &pVih2->bmiHeader;
+  }
+  if(bmih==NULL) return E_FAIL;
 
   if(nIndex>=2) return E_FAIL;
   m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
-  if (m_pSampleBuffers[nIndex])
+  if(m_pSampleBuffers[nIndex])
   {
 		// Recreate in case dimensions have changed
     delete[] m_pSampleBuffers[nIndex];
@@ -385,7 +401,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
 HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
 	// target picture scaler
-  if (m_nTargetWidth > 0 && m_nTargetHeight > 0)
+  if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
   {
 	// if target width and height have been set use those dimensions
     nOutputWidth = m_nTargetWidth;
@@ -407,18 +423,58 @@ HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFO
 }
 
 
-HRESULT PicInPicFilter::CheckOutputType( const CMediaType* pMediaType )
+HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
 {
+	//Make sure the input and output types are related
+  if(pMediaType->majortype != MEDIATYPE_Video)
+  {
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+  	// Video format
+  m_Vflip = false;
+  if(pMediaType->formattype==FORMAT_VideoInfo)
+  {
+    const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)pMediaType->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutputHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutputHeight))
+        m_Vflip = true;
+      else
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
+    }
+    if(pBiOut->biWidth != m_nOutputWidth)
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+  }
+  else if(pMediaType->formattype==FORMAT_VideoInfo2)
+  {
+    const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)pMediaType->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nTargetHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutputHeight))
+        m_Vflip = true;
+      else
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
+    }
+    if(pBiOut->biWidth != m_nOutputWidth)
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+  }
+  else
+      return VFW_E_TYPE_NOT_ACCEPTED;
+
+
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
   {
-    if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
+    if (pMediaType->subtype == MEDIASUBTYPE_RGB24)
     {
       return S_OK;
     }
   }
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
   {
-    if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
     {
       return S_OK;
     }
