@@ -96,7 +96,7 @@ bool PicRotateRGB24Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_180_DEGREES_CLOCKWISE:
 		{
 #ifdef USE_ASM
-		        Rotate24_180(m_nWidth,m_nHeight,pInImg,pOutImg);
+		        Rotate24_180(labs(m_nWidth),labs(m_nHeight),pInImg,pOutImg);
 #else
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			const unsigned nTotalPixels = labs(m_nWidth * m_nHeight);
@@ -153,7 +153,7 @@ bool PicRotateRGB24Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_HORIZONTAL:
 		{			
 #ifdef USE_ASM
-			Flip24_2(m_nWidth, labs(m_nHeight), pInImg, pOutImg);
+			Flip24_2(labs(m_nWidth), labs(m_nHeight), pInImg, pOutImg);
 #else
 			const unsigned iRowLength = labs(m_nWidth) * 3;
 			const BYTE* pSrc = (const BYTE*)pInImg;
@@ -193,6 +193,29 @@ bool PicRotateRGB24Impl::Rotate(const void* pInImg, void* pOutImg)
 					pDest[2] = pSrcCol[2];
 				}
 				// Copy pixels in same column to their destinations
+			}
+			return true;
+		}
+
+	case ROTATE_90_DEGS_CCK_VFLIP:
+		{
+			const unsigned AbsHeight = labs(m_nHeight);
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			BYTE *pDest = (BYTE*)pOutImg;		// + 3*(m_nWidth-1)*AbsHeight;
+
+			for (int i = 0; i < m_nWidth; ++i, pSrc += 3)
+			{
+				const BYTE* pSrcCol = pSrc;
+				for (int j = 0; j < m_nHeight; ++j)
+				{
+					pDest[0] = pSrcCol[0];
+					pDest[1] = pSrcCol[1];
+					pDest[2] = pSrcCol[2];
+					pSrcCol += 3*m_nWidth;
+					pDest += 3;
+				}
+				// Copy pixels in same column to their destinations
+			        //pDest -= 6 * AbsHeight;
 			}
 			return true;
 		}

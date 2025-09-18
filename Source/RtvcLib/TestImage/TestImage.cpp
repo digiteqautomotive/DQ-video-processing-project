@@ -125,13 +125,22 @@ int i;
 }
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
 PicScalerRGB32Impl picScalerRGB32;
 unsigned char *BlobIn, *BlobOut, *BlobTest;
 int i;
+bool Pause = false;
 
   printf("<TEST> Testing scale computing %u[bits] %s %s", 8*sizeof(void*), __DATE__, __TIME__);
+
+  if(argc>1)
+  {
+    for(i=1; i<argc; i++)
+    {
+      if(!strcmp(argv[i],"-pause")) Pause=true;
+    }
+  }
 
   FeaturesCPU = GetFeaturesCPU();
   BlobIn = (unsigned char *)malloc(16384);
@@ -418,6 +427,19 @@ int i;
        goto ReturnErr;
      }
 
+     picRotateARGB32.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     origRotateARGB32.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nARGB32 Rotate error %ux%u: Op:ROTATE_90_DEGS_CCK_VFLIP; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+
      picRotateARGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
      origRotateARGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
      picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
@@ -524,6 +546,18 @@ int i;
      if(pos)
      {
        printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_90_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateRGB24.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     origRotateRGB24.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     picRotateRGB24.Rotate(BlobIn+16, BlobOut+16);
+     origRotateRGB24.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nRGB24 Rotate error %ux%u: Op:ROTATE_90_DEGS_CCK_VFLIP; pos=%d.", WithIn, HeightIn, pos);
        goto ReturnErr;
      }
 
@@ -680,11 +714,21 @@ int i;
   free(BlobIn);
   free(BlobOut);
   free(BlobTest);
+  if(Pause)
+  {
+    printf("\nPress any key to exit.");
+    getchar();
+  }
   return 0;
 
 ReturnErr:
   free(BlobIn);
   free(BlobOut);
   free(BlobTest);
+  if(Pause)
+  {
+    printf("\nPress any key to exit.");
+    getchar();
+  }
   return -1;
 }

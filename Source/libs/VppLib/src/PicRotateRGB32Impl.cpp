@@ -196,6 +196,27 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 			}
 			return true;
 		}
+
+	case ROTATE_90_DEGS_CCK_VFLIP:
+		{
+			const unsigned AbsHeight = labs(m_nHeight);
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			BYTE *pDest = (BYTE*)pOutImg;		// + 4*(m_nWidth-1)*AbsHeight;
+			
+			for(int i = 0; i < m_nWidth; ++i, pSrc+=4)
+			{
+				const BYTE* pSrcCol = pSrc;
+				unsigned j = AbsHeight;
+				while(j-- > 0)				
+				{
+					*(__int32*)(pDest) = *(__int32*)(pSrcCol);
+					pSrcCol += (4*m_nWidth);
+					pDest += 4;
+				}
+				// Copy pixels in same column to their destinations				
+				//pDest -= 8 * AbsHeight;
+			}
+		}
 	default:
 		{
 			// Unimplemented

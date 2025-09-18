@@ -92,6 +92,7 @@ PicInPicFilter::PicInPicFilter()
   initParameters();
 }
 
+
 PicInPicFilter::~PicInPicFilter()
 {
   if (m_pPicInPic)

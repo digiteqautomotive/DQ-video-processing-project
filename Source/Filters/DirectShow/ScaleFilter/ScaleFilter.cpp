@@ -54,6 +54,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #include <PicScalerARGB32SSE.h>
 #endif
 
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
+
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
@@ -283,14 +285,10 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
   	// Video format
-  if (mtOut->formattype!=FORMAT_VideoInfo && mtOut->formattype!=FORMAT_VideoInfo2)
-  {
-    return VFW_E_TYPE_NOT_ACCEPTED;
-  }
-  
   m_Vflip = false;
+  if(mtOut->formattype==FORMAT_VideoInfo)
   {
-    const VIDEOINFOHEADER * const pVihOut = (VIDEOINFOHEADER*)mtOut->pbFormat;
+    const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)mtOut->pbFormat;
     const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
     if(pBiOut->biHeight != m_nOutHeight)
     {
@@ -302,6 +300,23 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     if(pBiOut->biWidth != m_nOutWidth)
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
   }
+  else if(mtOut->formattype==FORMAT_VideoInfo2)
+  {
+    const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)mtOut->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+        m_Vflip = true;
+      else
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
+    }
+    if(pBiOut->biWidth != m_nOutWidth)
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+  }
+  else
+      return VFW_E_TYPE_NOT_ACCEPTED;
+
 
 	//Subtypes
   if (mtIn->subtype == MEDIASUBTYPE_RGB24)
@@ -385,20 +400,29 @@ void ScaleFilter::initParameters()
 {
   addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
-//  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1);
+//  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
 }
 
 
 HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
-  //make sure we were able to initialize our converter
-  ASSERT(m_pScaler);
-  //Call scaling conversion code
+	//make sure we were able to initialize our converter
+  if(m_pScaler==NULL)
+  {
+    DbgLog((LOG_TRACE, 0, TEXT("Scaller is not initialised - unable to scale")));
+    return E_FAIL;
+  }
+  if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
+
+  lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
+  if(lOutActualDataLength > lOutBufferSize) return E_FAIL;			// Output buffer is too small
+  if(labs(m_nInWidth* m_nInHeight*m_nBitsPerPixel)/8 > lInBufferSize) return E_FAIL; // Input buffer is too small
+
+	//Call scaling conversion code
   m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
   m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
-  int res = m_pScaler->Scale((void*)pBufferOut, (void*)pBufferIn, m_Vflip);
+  int res = m_pScaler->Scale(pBufferOut, pBufferIn, m_Vflip);
   ASSERT(res == 1);
-  lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
   return S_OK;
 }
 

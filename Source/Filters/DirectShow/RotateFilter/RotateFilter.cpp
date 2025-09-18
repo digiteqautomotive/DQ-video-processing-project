@@ -8,7 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
+Copyright (c) 2008 - 2017, CSIR
+Copyright (c) 2025, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicRotateRGB24Impl.h>
 #include <PicRotateRGB32Impl.h>
 #include "../VersionInfo.h"
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
 RotateFilter::RotateFilter()
@@ -110,6 +112,7 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
 	return hr;
 }
 
+
 HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 {
 	if (iPosition < 0)
@@ -128,12 +131,22 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 		
 		// Get the bitmap info header and adapt the cropped 
 		//make sure that it's a video info header
-		if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
-		    return VFW_E_TYPE_NOT_ACCEPTED;
-		VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-		//Now we need to calculate the size of the output image
-		BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
-		
+	        BITMAPINFOHEADER* pBi = NULL;
+		RECT *prcSource = NULL;
+		RECT *prcTarget = NULL;
+		if(pMediaType->formattype==FORMAT_VideoInfo)
+                {
+                  VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+		  if(pVih) {pBi=&(pVih->bmiHeader); prcSource=&pVih->rcSource; prcTarget=&pVih->rcTarget;}
+                }
+                else if(pMediaType->formattype==FORMAT_VideoInfo2)
+                {
+	          VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
+		  if(pVih2) {pBi=&(pVih2->bmiHeader); prcSource=&pVih2->rcSource; prcTarget=&pVih2->rcTarget;}
+		}
+                if(pBi==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+				  //Now we need to calculate the size of the output image		
 		switch (m_nRotation)
 		{
 		case ROTATE_NONE:
@@ -147,6 +160,7 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 			}
 		case ROTATE_90_DEGREES_CLOCKWISE:
 		case ROTATE_270_DEGREES_CLOCKWISE:
+		case ROTATE_90_DEGS_CCK_VFLIP:
 		case ROTATE_FLIP_DIAGONALLY:
 			{
 				m_nOutWidth = m_nInHeight;
@@ -161,15 +175,15 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 		if(pBi->biWidth <= 0) return E_INVALIDARG;
 		pBi->biSizeImage = (pBi->biWidth * pBi->biHeight * m_nBitsPerPixel) / 8;
 
-		pVih->rcSource.top = 0;
-		pVih->rcSource.left = 0;
-		pVih->rcSource.right = pBi->biWidth;
-		pVih->rcSource.bottom = pBi->biHeight;
+		prcSource->top = 0;
+		prcSource->left = 0;
+		prcSource->right = pBi->biWidth;
+		prcSource->bottom = pBi->biHeight;
 
-		pVih->rcTarget.top = 0;
-		pVih->rcTarget.left = 0;
-		pVih->rcTarget.right = pBi->biWidth;
-		pVih->rcTarget.bottom = pBi->biHeight;
+		prcTarget->top = 0;
+		prcTarget->left = 0;
+		prcTarget->right = pBi->biWidth;
+		prcTarget->bottom = pBi->biHeight;
 
 		pMediaType->lSampleSize = pBi->biSizeImage;
 
@@ -208,80 +222,96 @@ HRESULT RotateFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPERT
 	return S_OK;
 }
 
-HRESULT RotateFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *mtOut )
+
+HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
 	//Make sure the input and output types are related
-	if (mtOut->majortype != MEDIATYPE_Video)
-	{
-		return VFW_E_TYPE_NOT_ACCEPTED;
-	}
-	// RG: 27/08/2008 Bug FIX: Resulted in incorrect image in VMR9
-	/*if (!
-		((mtIn->subtype == MEDIASUBTYPE_RGB24)&&(mtOut->subtype == MEDIASUBTYPE_RGB24))
-		||
-		((mtIn->subtype == MEDIASUBTYPE_RGB32)&&(mtOut->subtype == MEDIASUBTYPE_RGB32))
-		)*/
-
-	if (mtIn->subtype == MEDIASUBTYPE_RGB24)
-		if (mtOut->subtype != MEDIASUBTYPE_RGB24)
-			return VFW_E_TYPE_NOT_ACCEPTED;
-		else
-		{
-      if (mtOut->formattype==FORMAT_VideoInfo || mtOut->formattype==FORMAT_VideoInfo2)
+  if (mtOut->majortype != MEDIATYPE_Video)
+  {
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+  	// Video format
+  m_Vflip = false;
+  if(mtOut->formattype==FORMAT_VideoInfo)
+  {
+    const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)mtOut->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+        m_Vflip = true;
+      else
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
+    }
+    if(pBiOut->biWidth != m_nOutWidth)
+        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+  }
+  else if(mtOut->formattype==FORMAT_VideoInfo2)
+  {
+    const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)mtOut->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+        m_Vflip = true;
+      else
       {
-        VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
-        //Now we need to calculate the size of the output image
-        BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
-        int iNewStride = pBi->biWidth;
-        // TEMP HACK TO TEST IF IMAGE RENDERS CORRECTLY
-        if (iNewStride != m_nOutWidth)
-        {
-          //m_nStrideRenderer = iNewStride;
-          // FOR NOW JUST REJECT THE TYPE AND LET THE COLOR CONVERTER HANDLE IT
-          return VFW_E_TYPE_NOT_ACCEPTED;
-        }
-        int iNewWidth = pVih->rcSource.right - pVih->rcSource.left;
-        int iNewHeight = pBi->biHeight;
-        if (iNewHeight < 0)
-        {
-          // REJECT INVERTED PICTURES
-          return VFW_E_TYPE_NOT_ACCEPTED;
-        }
+        DbgLog((LOG_TRACE, 0, TEXT("Rotator - Unaccepted height at last negoitation stage")));
+        return VFW_E_TYPE_NOT_ACCEPTED;
       }
-		}
+    }
+    if(pBiOut->biWidth != m_nOutWidth)
+    {
+      DbgLog((LOG_TRACE, 0, TEXT("Rotator - Unaccepted width at last negoitation stage")));
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+  }
+  else
+      return VFW_E_TYPE_NOT_ACCEPTED;
 
-	if (mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32)
-	{
-		VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
-		//Now we need to calculate the size of the output image
-		BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
-		int iNewStride = pBi->biWidth;
-		// TEMP HACK TO TEST IF IMAGE RENDERS CORRECTLY
-		if (iNewStride != m_nOutWidth)
-		{
-			//m_nStrideRenderer = iNewStride;
-			// FOR NOW JUST REJECT THE TYPE AND LET THE COLOR CONVERTER HANDLE IT
-			return VFW_E_TYPE_NOT_ACCEPTED;
-		}
-		int iNewWidth = pVih->rcSource.right - pVih->rcSource.left;
-		int iNewHeight = pBi->biHeight;
-		if (iNewHeight < 0)
-		{
-			// REJECT INVERTED PICTURES
-			return VFW_E_TYPE_NOT_ACCEPTED;
-		}
-	}
+	// Setup rotator parameters.
+  if(m_pRotate)
+  {
+    m_pRotate->SetInDimensions(m_nInWidth, m_nInHeight);
+    if(m_Vflip)		// Substitute operation when next DShow object enforces VFlip.
+    {
+      switch(m_nRotation)
+      {
+        case ROTATE_NONE: m_pRotate->SetRotateMode(ROTATE_FLIP_VERTICAL); break;
+        case ROTATE_FLIP_VERTICAL: m_pRotate->SetRotateMode(ROTATE_NONE); break;
 
-// 	if (mtIn->subtype == MEDIASUBTYPE_RGB32)
-// 		if (mtOut->subtype != MEDIASUBTYPE_RGB32)
-// 			return VFW_E_TYPE_NOT_ACCEPTED;
+        case ROTATE_180_DEGREES_CLOCKWISE: m_pRotate->SetRotateMode(ROTATE_FLIP_HORIZONTAL); break;
+        case ROTATE_FLIP_HORIZONTAL: m_pRotate->SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE); break;
 
-	if (mtOut->formattype!=FORMAT_VideoInfo && mtOut->formattype!=FORMAT_VideoInfo2)
-	{
-		return VFW_E_TYPE_NOT_ACCEPTED;
-	}
-	return S_OK;
+        case ROTATE_90_DEGREES_CLOCKWISE: m_pRotate->SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP); break;
+        case ROTATE_90_DEGS_CCK_VFLIP: m_pRotate->SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE); break;
+
+        case ROTATE_270_DEGREES_CLOCKWISE: m_pRotate->SetRotateMode(ROTATE_FLIP_DIAGONALLY); break;
+        case ROTATE_FLIP_DIAGONALLY: m_pRotate->SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE); break;
+     
+        default: m_pRotate->SetRotateMode((ROTATE_MODE)m_nRotation);  // TODO: dopsat ROTATE_FLIP_DIAGONALLY!!!!
+     }
+    }
+    else
+        m_pRotate->SetRotateMode((ROTATE_MODE)m_nRotation);
+  }
+
+	// Check videotype compatibility
+  if(mtIn->subtype == MEDIASUBTYPE_RGB24)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_RGB24) return S_OK;
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+  if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
+  {
+    if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32) return S_OK;
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+  return VFW_E_TYPE_NOT_ACCEPTED;
 }
+
 
 STDMETHODIMP RotateFilter::SetParameter( const char* type, const char* value )
 {
@@ -304,60 +334,24 @@ STDMETHODIMP RotateFilter::SetParameter( const char* type, const char* value )
 	}
 }
 
+
 HRESULT RotateFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
-	int nTotalSize = 0;
-	//make sure we were able to initialise our converter
-	if (m_pRotate)
-	{
-		// Create temp buffer for crop
-		// TODO: Add stride parameter for rotate class to avoid this extra mem alloc
-		BYTE* pBuffer = new BYTE[(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel)/8];
+  if(m_pRotate==NULL)
+  {
+    DbgLog((LOG_TRACE, 0, TEXT("Rotator is not initialised - unable to rotate")));
+    return E_FAIL;
+  }
+  if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
 
-		m_pRotate->SetInDimensions(m_nInWidth, m_nInHeight);
-		m_pRotate->SetRotateMode((ROTATE_MODE)m_nRotation);
-		m_pRotate->Rotate((void*)pBufferIn, (void*)pBuffer);
+  lOutActualDataLength = (labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8;
+  if(lOutActualDataLength > lOutBufferSize) return E_INVALIDARG;	// Output buffer is too small
+  if(lOutActualDataLength > lActualDataLength) return E_INVALIDARG;	// Input buffer is too small
 
-		// Copy the cropped image with stride padding
-		BYTE* pFrom = pBuffer;
-		BYTE* pTo = pBufferOut;
-
-		int nBytesPerLine = (m_nOutWidth * m_nBitsPerPixel) / 8;
-		for (size_t i = 0; i < (size_t)m_nOutHeight; i++)
-		{
-			memcpy(pTo, pFrom, nBytesPerLine);
-			pFrom += nBytesPerLine;
-			pTo += nBytesPerLine;
-
-			if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
-			{
-				for (size_t j = 0; j < (size_t)m_nPadding; j++)
-				{
-					//*pTo = 0;
-					//pTo++;
-				}
-			}
-			else if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
-			{
-				// TESTING SO FAR HAS SHOWN THAT NO PADDING IS NECCESSARY FOR RGB32???
-				//int nPadding = 0;//(m_nStrideRenderer - m_nOutWidth)*4;
- 			//	for (size_t j = 0; j < nPadding; j++)
- 			//	{
- 			//		*pTo = 0;
- 			//		pTo++;
- 			//	}
-			}
-		}
-		nTotalSize = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
-		delete[] pBuffer;
-	}
-	else
-	{
-		DbgLog((LOG_TRACE, 0, TEXT("Rotator is not initialised - unable to rotate")));
-	}
-	lOutActualDataLength = nTotalSize;
-  return S_OK;
+  if(m_pRotate->Rotate((void*)pBufferIn, (void*)pBufferOut))  return S_OK;
+  return E_FAIL;
 }
+
 
 void RotateFilter::RecalculateFilterParameters()
 {

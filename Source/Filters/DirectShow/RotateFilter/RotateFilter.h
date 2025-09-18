@@ -142,7 +142,7 @@ private:
 	* @param pSource The source buffer
 	* @param pDest The destination buffer
 	*/
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+        virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
 	void RecalculateFilterParameters();
 

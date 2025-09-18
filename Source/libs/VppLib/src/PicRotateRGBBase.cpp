@@ -156,6 +156,26 @@ bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 			}
 			return true;
 		}
+	case ROTATE_90_DEGS_CCK_VFLIP:
+		{
+			const unsigned AbsHeight = labs(m_nHeight);
+			const BYTE* pSrc = (const BYTE*)pInImg;
+			BYTE *pDest = (BYTE*)pOutImg;		// + nBytesPerPixel*(m_nWidth-1)*AbsHeight;
+
+			for(int i=0; i<m_nWidth; ++i, pSrc+=nBytesPerPixel)
+			{
+				const BYTE* pSrcCol = pSrc;
+				for(int j=0; j<m_nHeight; ++j)
+				{
+					memcpy(pDest, pSrcCol, nBytesPerPixel);
+					pSrcCol += nBytesPerPixel*m_nWidth;
+					pDest += nBytesPerPixel;
+				}
+				// Copy pixels in same column to their destinations
+			        //pDest -= 6 * AbsHeight;
+			}
+			return true;
+		}
 	default:
 		{
 			// Unimplemented
