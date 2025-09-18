@@ -8,7 +8,8 @@ DESCRIPTION			:
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2015, CSIR
+Copyright (c) 2008 - 2017, CSIR
+Copyright (c) 2025, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,16 +30,16 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+==========================================================================*/
 #include "CropFilter.h"
 #include <DirectShow/CommonDefs.h>
 #include <PicCropperRGB24Impl.h>
 #include <PicCropperRGB32Impl.h>
 #include "../VersionInfo.h"
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-CropFilter::CropFilter()
-  : CCustomBaseFilter(NAME("CSIR VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
+
+CropFilter::CropFilter(): CCustomBaseFilter(NAME("CSIR VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
   m_pCropper(NULL),
   m_pCropBuffer(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
@@ -82,6 +83,7 @@ void CropFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
 }
+
 
 HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 {
@@ -132,6 +134,7 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
   return hr;
 }
 
+
 HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
   if(iPosition < 0) return E_INVALIDARG;
@@ -180,6 +183,7 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
   return VFW_S_NO_MORE_ITEMS;
 }
 
+
 HRESULT CropFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
   // Adding padding to take stride into account
@@ -209,6 +213,7 @@ HRESULT CropFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES
   return S_OK;
 }
 
+
 HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
   //Make sure the input and output types are related
@@ -216,29 +221,73 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  // RG: 27/08/2008 Bug FIX: Resulted in incorrect image in VMR9
-  /*if (!
-    ((mtIn->subtype == MEDIASUBTYPE_RGB24)&&(mtOut->subtype == MEDIASUBTYPE_RGB24))
-    ||
-    ((mtIn->subtype == MEDIASUBTYPE_RGB32)&&(mtOut->subtype == MEDIASUBTYPE_RGB32))
-    )
-    {
-    return VFW_E_TYPE_NOT_ACCEPTED;
-    }*/
-  if (mtIn->subtype == MEDIASUBTYPE_RGB24)
-    if (mtOut->subtype != MEDIASUBTYPE_RGB24)
-      return VFW_E_TYPE_NOT_ACCEPTED;
 
-  if (mtIn->subtype == MEDIASUBTYPE_RGB32)
-    if (mtOut->subtype != MEDIASUBTYPE_RGB32)
-      return VFW_E_TYPE_NOT_ACCEPTED;
-
-  if (mtOut->formattype != FORMAT_VideoInfo)
+  	// Video format
+  m_Vflip = false;
+  if(mtOut->formattype==FORMAT_VideoInfo)
   {
-    return VFW_E_TYPE_NOT_ACCEPTED;
+    const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)mtOut->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+        m_Vflip = true;
+      else
+      {
+        DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted height at last negoitation stage")));
+        return VFW_E_TYPE_NOT_ACCEPTED;
+      }        
+    }
+    if(pBiOut->biWidth != m_nOutWidth)
+    {
+      DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted width at last negoitation stage")));
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
   }
-  return S_OK;
+  else if(mtOut->formattype==FORMAT_VideoInfo2)
+  {
+    const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)mtOut->pbFormat;
+    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    if(pBiOut->biHeight != m_nOutHeight)
+    {
+      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+        m_Vflip = true;
+      else
+      {
+        DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted height at last negoitation stage")));
+        return VFW_E_TYPE_NOT_ACCEPTED;
+      } 
+    }
+    if(pBiOut->biWidth != m_nOutWidth)
+    {
+      DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted width at last negoitation stage")));
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+  }
+  else
+      return VFW_E_TYPE_NOT_ACCEPTED;
+
+	//Subtypes
+  if (mtIn->subtype == MEDIASUBTYPE_RGB24)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  } 
+  if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
+  {
+    if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  } 
+
+  return VFW_E_TYPE_NOT_ACCEPTED;
 }
+
 
 void CropFilter::initParameters()
 {
@@ -250,6 +299,8 @@ void CropFilter::initParameters()
   addParameter(FILTER_PARAM_BOTTOM_CROP, &m_nBottomCrop, 0);
   RecalculateFilterParameters();
 }
+
+
 STDMETHODIMP CropFilter::SetParameter(const char* type, const char* value)
 {
   // For now, one cannot set any parameters once the output has been connected -> this will affect the buffer size
@@ -281,7 +332,7 @@ HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lAc
   m_pCropper->SetInDimensions(m_nInWidth, m_nInHeight);
   m_pCropper->SetOutDimensions(m_nOutWidth, m_nOutHeight);
   m_pCropper->SetCrop(m_nLeftCrop, m_nRightCrop, m_nTopCrop, m_nBottomCrop);
-  int res = m_pCropper->Crop((void*)pBufferIn, (void*)m_pCropBuffer);
+  int res = m_pCropper->Crop(pBufferIn, m_pCropBuffer, m_Vflip);
   ASSERT(res == 1);
   // Copy the cropped image with stride padding
   BYTE* pFrom = m_pCropBuffer;
@@ -302,6 +353,7 @@ HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lAc
   lOutActualDataLength = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
   return S_OK;
 }
+
 
 void CropFilter::RecalculateFilterParameters()
 {

@@ -64,7 +64,7 @@ public:
 	virtual ~PicCropperBase(void) {}
 
 	// Interface.
-	virtual int Crop(void* pInImg, void* pImg) = 0;
+	virtual int Crop(const void* pInImg, void* pImg, bool VFlip=false) = 0;
 
 	// Member interface.
 	int	GetOutWidth(void)	{ return(_widthOut); }

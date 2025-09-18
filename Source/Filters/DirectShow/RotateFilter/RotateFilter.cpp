@@ -41,8 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
-RotateFilter::RotateFilter()
-: CCustomBaseFilter(NAME("CSIR VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
+RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("CSIR VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
 	m_pRotate(NULL),
 	m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
 	m_nOutWidth(0),

@@ -56,7 +56,7 @@ public:
 	virtual ~PicCropperRGB32Impl(void) {}
 
 	// Interface.
-	int Crop(void* pInImg, void* pImg);
+	int Crop(const void* pInImg, void* pImg, bool VFlip=false);
 
 };//end PicCropperRGB32Impl.
 

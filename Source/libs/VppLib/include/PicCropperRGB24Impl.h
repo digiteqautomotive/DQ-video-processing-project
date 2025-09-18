@@ -44,8 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \ingroup ImageLib
  * An RGB24 implementation derived from the general
  * PicCropperBase() class. Crop a packed RGB24 image
- * into another packed RGB24 image.
- */
+ * into another packed RGB24 image. */
 class PicCropperRGB24Impl: public PicCropperBase
 {
 public:
@@ -55,8 +54,8 @@ public:
 	virtual ~PicCropperRGB24Impl(void) {}
 
 	// Interface.
-	int Crop(void* pInImg, void* pImg);
+	int Crop(const void* pInImg, void* pImg, bool VFlip=false);
 
-};//end PicCropperRGB24Impl.
+}; //end PicCropperRGB24Impl.
 
 #endif	// _PICCROPPERRGB24IMPL_H

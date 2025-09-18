@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define BUFFER_SIZE 256
 
-const int RADIO_BUTTON_IDS[] = {IDC_RADIO1, IDC_RADIO2, IDC_RADIO3, IDC_RADIO4, IDC_RADIO5, IDC_RADIO6, IDC_RADIO7};
+const int RADIO_BUTTON_IDS[] = {IDC_RADIO1, IDC_RADIO2, IDC_RADIO3, IDC_RADIO4, IDC_RADIO5, IDC_RADIO6, IDC_RADIO7, IDC_RADIO8};
 
 /**
  * \ingroup DirectShowFilters
@@ -76,12 +76,11 @@ public:
 		{
 			int nRotationMode = atoi(szBuffer);
 			int nRadioID = RADIO_BUTTON_IDS[nRotationMode];
-			long lResult = SendMessage(				// returns LRESULT in lResult
+			long lResult = SendMessage(			// returns LRESULT in lResult
 				GetDlgItem(m_Dlg, nRadioID),		// handle to destination control
-				(UINT) BM_SETCHECK,					// message ID
-				(WPARAM) 1,							// = 0; not used, must be zero
-				(LPARAM) 0							// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-				);
+				(UINT) BM_SETCHECK,			// message ID
+				(WPARAM) 1,				// = 0; not used, must be zero
+				(LPARAM) 0);				// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
 			return S_OK;
 		}
 		else
@@ -92,7 +91,7 @@ public:
 
 	HRESULT OnApplyChanges(void)
 	{
-		for (int i = 0; i < 7; ++i)
+		for(int i=0; i <sizeof(RADIO_BUTTON_IDS)/sizeof(int); ++i)
 		{
 			int nRadioID = RADIO_BUTTON_IDS[i];
 			int iCheck = SendMessage( GetDlgItem(m_Dlg, nRadioID),	(UINT) BM_GETCHECK,	0, 0);

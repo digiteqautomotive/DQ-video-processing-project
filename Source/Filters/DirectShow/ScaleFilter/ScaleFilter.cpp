@@ -80,8 +80,7 @@ PicScalerBase *GetPicScallerRGB32(void)
 }
 
 
-ScaleFilter::ScaleFilter()
-  : CCustomBaseFilter(NAME("CSIR VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
+ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("CSIR VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24)
 {

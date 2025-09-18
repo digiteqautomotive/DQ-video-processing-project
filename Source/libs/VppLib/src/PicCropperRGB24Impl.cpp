@@ -59,30 +59,44 @@ prevent memory overwriting.
 @param pInImg	: Packed RGB 888 format input image.
 @return				: 0 = failed, 1 = success.
 */
-int PicCropperRGB24Impl::Crop(void* pInImg, void* pImg)
+int PicCropperRGB24Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
 {
-	if( (pImg == NULL) || (pInImg == NULL) )
+  if( (pImg == NULL) || (pInImg == NULL) )
 		return(0);
 
 	/// Check the cropping to ensure it will fit and not overlap.
-	int writeWidth = _widthIn - _byX1 - _byX2;
-	int writeHeight = _heightIn - _byY1 - _byY2;
-	if( (writeWidth < 0) || (writeHeight < 0) )
+  int writeWidth = _widthIn - _byX1 - _byX2;
+  int writeHeight = _heightIn - _byY1 - _byY2;
+  if( (writeWidth < 0) || (writeHeight < 0) )
 		return(0);
-	if(writeWidth > _widthOut) writeWidth = _widthOut;
-	if(writeHeight > _heightOut) writeHeight = _heightOut;
+  if(writeWidth > _widthOut) writeWidth = _widthOut;
+  if(writeHeight > _heightOut) writeHeight = _heightOut;
 
 	/// Align src and dst pointers. Src pointer is offset into the input image.
-	unsigned char*	pSrc	= (unsigned char*)pInImg + 3*((_byY1*_widthIn) + _byX1);
-	unsigned char*	pDst	= (unsigned char*)pImg;
+  const unsigned char *pSrc= (const unsigned char*)pInImg + 3*((_byY1*_widthIn) + _byX1);
+  unsigned char*	pDst	= (unsigned char*)pImg;
 
-	for(int y = 0; y < writeHeight; y++)
-	{
-		memcpy((void *)pDst, (const void *)pSrc, 3*writeWidth);	/// Whole row at a time.
-		pDst += (3*_widthOut);	/// Next row.
-		pSrc += (3*_widthIn);
-	}//end for y...
+  int y = writeHeight;
+  if(VFlip)
+  {
+    pSrc += (writeHeight-1) * (3*_widthIn);
+    while(y-- > 0)
+    {
+      memcpy(pDst, pSrc, 3*writeWidth);	/// Whole row at a time.
+      pDst += (3*_widthOut);	/// Next row.
+      pSrc -= (3*_widthIn);
+    }//end for y...
+  }
+  else
+  {
+    while(y-- > 0)
+    {
+      memcpy(pDst, pSrc, 3*writeWidth);	/// Whole row at a time.
+      pDst += (3*_widthOut);	/// Next row.
+      pSrc += (3*_widthIn);
+    }//end for y...
+  }
 
-	return(1);
+  return(1);
 }//end Crop.
 
