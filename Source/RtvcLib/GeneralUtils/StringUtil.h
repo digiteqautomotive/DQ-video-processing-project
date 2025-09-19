@@ -158,6 +158,7 @@ public:
     }
     return x;
   }
+
 #ifdef _WIN32	
   static std::string GetTimeString(std::string sFormat = "")
   {
@@ -195,7 +196,6 @@ public:
     padded << iCount << "_" << sString;
     return padded.str();
   }
-
 
 };
 

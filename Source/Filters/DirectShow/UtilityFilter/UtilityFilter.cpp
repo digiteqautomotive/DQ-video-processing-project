@@ -1,10 +1,10 @@
 /** @file
 
-MODULE                : UtilityFilter
+MODULE			: UtilityFilter
 
-FILE NAME			  : UtilityFilter.cpp
+FILE NAME		: UtilityFilter.cpp
 
-DESCRIPTION           :
+DESCRIPTION		:
 
 LICENSE: Software License Agreement (BSD License)
 
@@ -116,7 +116,7 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
   {
     return hr;
   }
-  ASSERT(mt.formattype == FORMAT_VideoInfo);
+  if(mt.formattype != FORMAT_VideoInfo) return VFW_E_TYPE_NOT_ACCEPTED;
   BITMAPINFOHEADER *pbmi = HEADER(mt.pbFormat);
 
   // Get image buffer

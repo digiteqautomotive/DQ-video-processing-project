@@ -7,12 +7,13 @@ TAG								: PIPRGB24I
 FILE NAME					: PicInPicRGB24Impl.cpp
 
 DESCRIPTION				: An RGB24 implementation derived from the general
-										PicInPicBase() class. Insert a packed RGB24 image
-										into another packed RGB24 image.
+						PicInPicBase() class. Insert a packed RGB24 image
+						into another packed RGB24 image.
 
-COPYRIGHT					: (c)CSIR 2007-2010 all rights resevered
+COPYRIGHT			: (c)CSIR 2007-2010 all rights resevered
+				(c)2025 Jaroslav Fojtik
 
-LICENSE						: Software License Agreement (BSD License)
+LICENSE				: Software License Agreement (BSD License)
 
 RESTRICTIONS			: Redistribution and use in source and binary forms, with or without 
 										modification, are permitted provided that the following conditions 

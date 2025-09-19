@@ -41,29 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Gdiplus.h>
 
 #include <numeric>
-//
-//static wchar_t* stlToWide(std::string sString)
-//{
-//  return(asciiToWide(sString.c_str()));
-//}
-//
-///// The caller must free the memory for the result
-//static wchar_t* asciiToWide(const char* szString)
-//{
-//  size_t uiLen = strlen(szString);
-//  wchar_t* wszBuffer = new wchar_t[uiLen + 1];
-//  size_t uiRes = mbstowcs(wszBuffer, szString, uiLen);
-//  if (uiRes != -1)
-//  {
-//    wszBuffer[uiRes] = L'\0';
-//    return wszBuffer;
-//  }
-//  else
-//  {
-//    delete[] wszBuffer;
-//    return NULL;
-//  }
-//}
+
 
 const unsigned MAX_FRAMERATE_INTERVAL_SIZE = 50;
 
