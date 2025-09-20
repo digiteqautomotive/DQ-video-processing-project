@@ -57,11 +57,13 @@ class PicConcatRGB24Impl: public PicConcatBase
 public:
 	// Construction and destruction.
 	PicConcatRGB24Impl(void);
-	PicConcatRGB24Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, int orient);
+	PicConcatRGB24Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
 	virtual ~PicConcatRGB24Impl(void);
 
 	// Interface.
-	virtual int Concat(void* pImg1st, void* pImg2nd, void* pImg);
+	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
+
+        virtual int GetVideoFormat(void) const {return 24;}
 
 protected:
 	// Support methods.

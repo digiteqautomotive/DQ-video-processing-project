@@ -11,6 +11,7 @@ DESCRIPTION				: An RGB32 implementation derived from the general
 										into another packed RGB32 image.
 
 COPYRIGHT					: (c)CSIR 2007-2010 all rights resevered
+						  Copyright (c) 2025 Jaroslav Fojtik
 
 LICENSE						: Software License Agreement (BSD License)
 
@@ -102,7 +103,7 @@ of the main image.
 @param pImg			: Packed RGB 8888 format main base image.
 @return					: none.
 */
-void PicInPicRGB32Impl::DoInsertWithBorder( void* pSubImg, void* pImg )
+void PicInPicRGB32Impl::DoInsertWithBorder(const void* pSubImg, void* pImg)
 {
     // TODO: Just calling standard insert for now
     DoInsert(pSubImg, pImg);

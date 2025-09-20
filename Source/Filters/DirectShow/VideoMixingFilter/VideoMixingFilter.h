@@ -137,4 +137,5 @@ private:
 
 	/// Stores bytes per needed to store pixel according to media type
 	unsigned m_nBitsPerPixel;
+	bool m_Vflip;
 };

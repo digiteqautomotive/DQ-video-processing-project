@@ -3,7 +3,7 @@
 
 #define MyAppName "CSIR VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.5.2"
+#define MyAppVersion "1.5.3"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "CSIR VPP video processing filters"
 #define MyAppURL "http://videoprocessing.sourceforge.net/"
@@ -33,7 +33,7 @@ SolidCompression=yes
 Uninstallable=yes
 AppendDefaultDirName=yes
 ;SetupLogging=yes
-;AppMutex=PAT_Controller_Mutex
+;AppMutex=Controller_Mutex
 LicenseFile=license.txt
 ;AppCopyright=Copyright (C) 2025
 
@@ -41,27 +41,29 @@ LicenseFile=license.txt
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Types]
+Name: "normal"; Description: "Normal installation"
 Name: "full"; Description: "Full installation"
 Name: "custom"; Description: "Custom installation"; Flags: iscustom
+
 
 [Components]
 ;Name: "filters"; Description: "{#MyAppName} Direct Show filters"; Types: full custom
 Name: "AudioMixingFilter"; Description: "AudioMixingFilter Direct Show filter"; Types: full custom
-Name: "CropFilter"; Description: "CropFilter Direct Show filter"; Types: full custom
+Name: "CropFilter"; Description: "CropFilter Direct Show filter"; Types: full normal custom
 Name: "FramerateDisplayFilter"; Description: "FramerateDisplayFilter Direct Show filter"; Types: full custom
 Name: "FrameSkippingFilter"; Description: "FrameSkippingFilter Direct Show filter"; Types: full custom
 Name: "H264filters"; Description: "H264 related Direct Show filters"; Types: full custom
-Name: "PicInPicFilter"; Description: "PicInPicFilter Direct Show filter"; Types: full custom
+Name: "PicInPicFilter"; Description: "PicInPicFilter Direct Show filter"; Types: full normal custom
 Name: "RGBtoYUV420Filter"; Description: "RGBtoYUV420Filter Direct Show filter"; Types: full custom
-Name: "RotateFilter"; Description: "RotateFilter Direct Show filter"; Types: full custom
+Name: "RotateFilter"; Description: "RotateFilter Direct Show filter"; Types: full normal custom
 Name: "RtspSourceFilter"; Description: "RtspSourceFilter Direct Show filter"; Types: full custom
-Name: "ScaleFilter"; Description: "ScaleFilter Direct Show filter"; Types: full custom
+Name: "ScaleFilter"; Description: "ScaleFilter Direct Show filter"; Types: full normal custom
 Name: "SkewingFilter"; Description: "SkewingFilter Direct Show filter"; Types: full custom
 Name: "Stereo2MonoFilter"; Description: "Stereo2MonoFilter Direct Show filter"; Types: full custom
-Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types:
+Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types: full
 Name: "TimestampLoggerFilter"; Description: "TimestampLoggerFilter Direct Show filter"; Types: full custom
-Name: "UtilityFilter"; Description: "Utility Direct Show filter"; Types: full custom
-Name: "VideoMixingFilter"; Description: "VideoMixingFilter Direct Show filter"; Types: full custom
+Name: "UtilityFilter"; Description: "Utility Direct Show filter"; Types: full normal custom
+Name: "VideoMixingFilter"; Description: "VideoMixingFilter Direct Show filter"; Types: full normal custom
 Name: "YUV420ToRGBFilter"; Description: "YUV420ToRGBFilter Direct Show filter"; Types: full custom
 Name: "YuvSource"; Description: "YuvSource Direct Show filter"; Types: full custom
 ;lName: "examples"; Description: "Example files"; Types: full

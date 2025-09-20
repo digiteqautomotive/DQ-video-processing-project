@@ -101,9 +101,8 @@ sub image. These dimensions have been set to stay within the edges
 of the main image.
 @param pSubImg	: Packed RGB 888 format smaller sub image.
 @param pImg			: Packed RGB 888 format main base image.
-@return					: none.
-*/
-void PicInPicRGB24Impl::DoInsertWithBorder( void* pSubImg, void* pImg )
+@return					: none. */
+void PicInPicRGB24Impl::DoInsertWithBorder(const void* pSubImg, void* pImg)
 {
     unsigned char*	pSrc		= (unsigned char*)pSubImg;
     unsigned char*	pDst		= (unsigned char*)pImg + 3*((_yPos*_width) + _xPos);

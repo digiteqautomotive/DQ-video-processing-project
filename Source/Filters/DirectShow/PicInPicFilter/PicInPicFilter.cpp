@@ -282,46 +282,46 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
 {
 	// Copy the secondary sample into our buffer
-	if (pSample)
-	{
-		BYTE *pBuffer = NULL;
-		HRESULT hr = pSample->GetPointer(&pBuffer);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
+  if(pSample)
+  {
+    BYTE *pBuffer = NULL;
+    HRESULT hr = pSample->GetPointer(&pBuffer);
+    if(FAILED(hr))
+    {
+	return hr;
+    }
 
 		// Copy the buffer
-		memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
-		return GenerateOutputSample(pSample, 0);
-	}
-	else
-	{
-		return E_POINTER;
-	}
+    memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
+    return GenerateOutputSample(pSample, 0);	/// @TODO Output sample is generated on 2x expected framerate - fix needed.
+  }
+  else
+  {
+    return E_POINTER;
+  }
 }
 
 
 HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 {
 	// Copy the secondary sample into our buffer
-	if (pSample)
-	{
-		BYTE *pBuffer = NULL;
-		HRESULT hr = pSample->GetPointer(&pBuffer);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
+  if(pSample)
+  {
+    BYTE *pBuffer = NULL;
+    HRESULT hr = pSample->GetPointer(&pBuffer);
+    if(FAILED(hr))
+    {
+      return hr;
+    }
 
 		// Copy the buffer
-		memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
-		return GenerateOutputSample(pSample, 1);
-	}
-	else
-	{
-		return E_POINTER;
-	}
+    memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
+    return GenerateOutputSample(pSample, 1);	/// @TODO Output sample is generated on 2x expected framerate - fix needed.
+  }
+  else
+  {
+    return E_POINTER;
+  }
 }
 
 
@@ -341,7 +341,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
   }
   if(bmih==NULL) return E_FAIL;
 
-  if(nIndex>=2) return E_FAIL;
+  if(nIndex>=2) return E_INVALIDARG;
   m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
   if(m_pSampleBuffers[nIndex])
   {

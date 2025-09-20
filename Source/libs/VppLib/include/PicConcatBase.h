@@ -62,50 +62,63 @@ RESTRICTIONS			: Redistribution and use in source and binary forms, with or with
 class PicConcatBase
 {
 public:
+	// Orientation of the concatenation.
+	typedef enum
+        {
+	  TOP	= 0,
+	  BOTTOM = 1,
+	  LEFT	= 2,
+	  RIGHT	= 3
+        } E_ORIENT;
+
 	// Construction and destruction.
-	PicConcatBase(void) {_width = 0; _height = 0; _width1st = 0; _height1st = 0; _width2nd = 0; _height2nd = 0; _orient = PicConcatBase::TOP; }
-	PicConcatBase(int width, int height, int width1st, int height1st, int width2nd, int height2nd, int orient) 
+	PicConcatBase(void) {_width = 0; _height = 0; _width1st = 0; _height1st = 0; _width2nd = 0; _height2nd = 0; _orient=PicConcatBase::TOP; }
+	PicConcatBase(int width, int height, int width1st, int height1st, int width2nd, int height2nd, PicConcatBase::E_ORIENT orient) 
 	{	_width = width; _height = height; _width1st = width1st; _height1st = height1st; _width2nd = width2nd; _height2nd = height2nd; _orient = orient;}
 	virtual ~PicConcatBase(void) {}
 
 	// Interface.
-	virtual int Concat(void* pImg1st, void* pImg2nd, void* pImg) = 0;
+	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false) = 0;
+        virtual int GetVideoFormat(void) const = 0;
 
 	// Member interface.
-	int	GetOutWidth(void)			{ return(_width); }
-	int	GetOutHeight(void)		{ return(_height); }
-	int	Get1stWidth(void)			{ return(_width1st); }
-	int	Get1stHeight(void)		{ return(_height1st); }
-	int	Get2ndWidth(void)			{ return(_width2nd); }
-	int	Get2ndHeight(void)		{ return(_height2nd); }
-	int GetOrientation(void)	{ return(_orient); }
+	int GetOutWidth(void) const	{ return(_width); }
+	int GetOutHeight(void) const 	{ return(_height); }
+	int Get1stWidth(void) const	{ return(_width1st); }
+	int Get1stHeight(void) const 	{ return(_height1st); }
+	int Get2ndWidth(void) const	{ return(_width2nd); }
+	int Get2ndHeight(void) const	{ return(_height2nd); }
+	E_ORIENT GetOrientation(void) const { return(_orient); }
   
-	void SetOutDimensions(int width, int height)				{_width = width; _height = height; }
+	void SetOutDimensions(int width, int height)		{_width = width; _height = height; }
 	void Set1stDimensions(int width1st, int height1st)	{_width1st = width1st; _height1st = height1st; }
 	void Set2ndDimensions(int width2nd, int height2nd)	{_width2nd = width2nd; _height2nd = height2nd; }
-	void SetOrientation(int orient)											{ _orient = orient; }
+	void SetOrientation(E_ORIENT orient)			{_orient = orient; }
+
+        E_ORIENT GetOrientation(bool VFlip) const 
+        {
+          if(VFlip)
+          {
+            if(_orient==E_ORIENT::TOP) return E_ORIENT::BOTTOM;
+            if(_orient==E_ORIENT::BOTTOM) return E_ORIENT::TOP;
+          }
+          return(_orient);
+        }
+	
 
 	// Private methods.
 protected:
 
 // Constants.
 protected:
-	// Orientation of the concatenation.
-	static const int TOP		= 0;
-	static const int BOTTOM = 1;
-	static const int LEFT		= 2;
-	static const int RIGHT	= 3;
-
-protected:
-	// Members.
-	int	_width;				/// Of total output image that contains both input images.
-	int	_height;
+		// Members.
+	int _width;		/// Of total output image that contains both input images.
+	int _height;
 	int _width1st;		/// Of 1st base image.
 	int _height1st;
 	int _width2nd;		/// Of 2nd image to concat to 1st image.
 	int _height2nd;
-	int _orient;			/// Position to put the 2nd image = {TOP, BOTTOM, LEFT, RIGHT}.
-
+	E_ORIENT _orient;	/// Position to put the 2nd image = {TOP, BOTTOM, LEFT, RIGHT}.
 };//end PicConcatBase.
 
 #endif	// _PICCONCATBASE_H

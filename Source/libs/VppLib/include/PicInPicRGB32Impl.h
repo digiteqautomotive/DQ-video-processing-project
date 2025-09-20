@@ -64,7 +64,7 @@ public:
 protected:
     // Interface.
     void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false);
-    void DoInsertWithBorder(void* pSubImg, void* pImg);
+    void DoInsertWithBorder(const void* pSubImg, void* pImg);
 }; //end _PICINPICRGB32IMPL_H.
 
 
