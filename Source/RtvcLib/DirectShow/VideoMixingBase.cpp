@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VideoMixingBase.h"
 
 #include <DirectShow/CommonDefs.h>
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
+
 
 VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid): CMultiIOBaseFilter(pObjectName, lpUnk, clsid),
     m_nOutputWidth(0),
@@ -263,10 +265,18 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 			hr = m_vInputPins[0]->ConnectionMediaType(&mediaType1);
 			if (FAILED(hr))
 			{
-				return hr;
+			  return hr;
 			}
-			VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType1.pbFormat;
-			pBmih1 = &pVih->bmiHeader;
+			if(mediaType1.formattype==FORMAT_VideoInfo)
+			{
+			  VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType1.pbFormat;
+			  pBmih1 = &pVih->bmiHeader;
+                        }
+		        if(mediaType1.formattype==FORMAT_VideoInfo2)
+			{
+			  VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*) mediaType1.pbFormat;
+			  pBmih1 = &pVih2->bmiHeader;
+                        }
 		}
 
 		// Get second input dimensions
@@ -278,9 +288,17 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 			if (FAILED(hr))
 			{
 				return hr;
-			}
-			VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType2.pbFormat;
-			pBmih2 = &pVih->bmiHeader;
+			}			
+			if(mediaType2.formattype==FORMAT_VideoInfo)
+			{
+			  VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*) mediaType2.pbFormat;
+			  pBmih2 = &pVih->bmiHeader;
+                        }
+		        if(mediaType2.formattype==FORMAT_VideoInfo2)
+			{
+			  VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*) mediaType2.pbFormat;
+			  pBmih2 = &pVih2->bmiHeader;
+                        }
 		}
 
 		// Leave the output dimensions up to the sub class
@@ -314,8 +332,10 @@ STDMETHODIMP VideoMixingBase::Stop()
 	ASSERT(m_vOutputPins[0]);
 
 	// decommit the input pin before locking or we can deadlock
-	m_vInputPins[0]->Inactive();
-	m_vInputPins[1]->Inactive();
+        if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
+	    m_vInputPins[0]->Inactive();
+        if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
+	    m_vInputPins[1]->Inactive();
 
 	// synchronize with Receive calls
 	CAutoLock lck2(&m_csReceive);

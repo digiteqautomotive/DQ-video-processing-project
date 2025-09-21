@@ -1,2 +1,4 @@
 1, Tee filter does not work
 It looks to be some deathlock. It receives 2 frames and then hangs.
+
+2, Mixing filter multiplies framerate twice. Need to keep framerate.

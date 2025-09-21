@@ -63,7 +63,9 @@ PicConcatRGB32Impl::PicConcatRGB32Impl(void)
 	Create();
 }//end default constuctor.
 
-PicConcatRGB32Impl::PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): PicConcatBase(width,height,width1st,height1st,width2nd,height2nd,orient)
+
+PicConcatRGB32Impl::PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): 
+	PicConcatBase(width,height,width1st,height1st,width2nd,height2nd,orient)
 {
 	Create();
 }//end constructor.

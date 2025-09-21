@@ -40,6 +40,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
+#ifndef MAX
+ #define MAX(a,b) ((a>b)?(a):(b))
+#endif
+
+
 VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
 	m_pPicConcat(NULL),
         m_Vflip(false)
@@ -80,7 +85,7 @@ CUnknown * WINAPI VideoMixingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr
 }
 
 
-void VideoMixingFilter::initParameters()
+void VideoMixingFilter::initParameters(void)
 {
 	addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
 }
@@ -127,13 +132,13 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 		m_pPicConcat->Concat(m_pSampleBuffers[0], m_pSampleBuffers[1], pBufferOut, m_Vflip);
 	else if (m_pSampleBuffers[0])
 	{
-		const int nWidth = m_pPicConcat->Get1stWidth();
-		const int nHeight = m_pPicConcat->Get1stHeight();
+		const int nWidth = labs(m_pPicConcat->Get1stWidth());
+		const int nHeight = labs(m_pPicConcat->Get1stHeight());
 		if(m_Vflip)
 		{
 		  const int RowLen = (nWidth*m_nBitsPerPixel)/8;
 		  BYTE *pDst = pBufferOut;
-	          const BYTE *pSrc = m_pSampleBuffers[0] + (labs(nWidth * nHeight) * m_nBitsPerPixel) / 8;
+	          const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
 		  int y = nHeight;
 		  while(y-->0)
 		  {
@@ -143,17 +148,17 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 		  }
 		}
 		else
-		  memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth * nHeight* m_nBitsPerPixel)/8);
+		  memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth*nHeight * m_nBitsPerPixel)/8);
 	}
 	else
 	{
-		const int nWidth = m_pPicConcat->Get2ndWidth();
-		const int nHeight = m_pPicConcat->Get2ndHeight();
+		const int nWidth = labs(m_pPicConcat->Get2ndWidth());
+		const int nHeight = labs(m_pPicConcat->Get2ndHeight());
 		if(m_Vflip)
 		{
 		  const int RowLen = (nWidth*m_nBitsPerPixel)/8;
 		  BYTE *pDst = pBufferOut;
-	          const BYTE *pSrc = m_pSampleBuffers[1] + (labs(nWidth * nHeight) * m_nBitsPerPixel) / 8;
+	          const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
 		  int y = nHeight;
 		  while(y-->0)
 		  {
@@ -163,7 +168,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 		  }
 		}
 		else
-		  memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth * nHeight* m_nBitsPerPixel)/8);		
+		  memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth*nHeight * m_nBitsPerPixel)/8);		
 	}
 
 	pOutSample->SetActualDataLength(m_nOutputSize);
@@ -317,49 +322,133 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
  return VFW_E_TYPE_NOT_ACCEPTED;
 }
 
+
+/// Pin disconnection must reshedule output geometry.
+void VideoMixingFilter::OnDisconnect(int nIndex)
+{
+  VideoMixingBase::OnDisconnect(nIndex);
+
+		// Get first input dimensions
+  AM_MEDIA_TYPE mediaType1;
+  BITMAPINFOHEADER* pBmih1 = NULL;
+  if(m_vInputPins[0]->IsConnected() && nIndex!=0)
+  {
+    if(SUCCEEDED(m_vInputPins[0]->ConnectionMediaType(&mediaType1)))
+    {
+      if(mediaType1.formattype==FORMAT_VideoInfo)
+      {
+	VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType1.pbFormat;
+	pBmih1 = &pVih->bmiHeader;
+      }
+      if(mediaType1.formattype==FORMAT_VideoInfo2)
+      {
+	VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*) mediaType1.pbFormat;
+	pBmih1 = &pVih2->bmiHeader;
+      }
+    }
+  }
+
+		// Get second input dimensions
+  BITMAPINFOHEADER* pBmih2 = NULL;
+  AM_MEDIA_TYPE mediaType2;
+  if(m_vInputPins[1]->IsConnected() && nIndex!=1)
+  {
+    if(SUCCEEDED(m_vInputPins[1]->ConnectionMediaType(&mediaType2)))
+    {
+      if(mediaType2.formattype==FORMAT_VideoInfo)
+      {
+	VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*) mediaType2.pbFormat;
+	pBmih2 = &pVih->bmiHeader;
+      }
+      if(mediaType2.formattype==FORMAT_VideoInfo2)
+      {
+	VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*) mediaType2.pbFormat;
+	pBmih2 = &pVih2->bmiHeader;
+      }
+    }
+  }
+		// Leave the output dimensions up to the sub class
+  int m_nOutputWidth, m_nOutputHeight, m_nOutputSize;
+  SetOutputDimensions(pBmih1, pBmih2, m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
+
+		// Free format blocks
+  if(pBmih1)
+      FreeMediaType(mediaType1);
+  if(pBmih2)
+      FreeMediaType(mediaType2);
+}
+
+
 HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
-	if (pBmih1 && pBmih2)
-	{
+  if(pBmih1 && pBmih2)
+  {
 		// Verify that the dimensions match and set output width and height
-		switch (m_nOrientation)
+    switch (m_nOrientation)
+    {
+	case 0: 
 		{
-		case 0: 
-			{
-				// Height must be the same
-				if (pBmih1->biHeight != pBmih2->biHeight) return E_FAIL;
-				nOutputWidth = pBmih1->biWidth + pBmih2->biWidth;
-				nOutputHeight = pBmih1->biHeight;
-				break;
-			}
-		case 1: 
-			{
-				// Width must be the same
-				if (pBmih1->biWidth!= pBmih2->biWidth) return E_FAIL; 
-				nOutputWidth = pBmih1->biWidth;
-				nOutputHeight = pBmih1->biHeight + pBmih2->biHeight;
-				break;
-			}
+		//if (pBmih1->biHeight != pBmih2->biHeight) return E_FAIL; 			// Height must be the same
+		nOutputWidth = labs(pBmih1->biWidth) + labs(pBmih2->biWidth);
+		nOutputHeight = MAX(labs(pBmih1->biHeight),labs(pBmih2->biHeight));
+		break;
 		}
-		nOutputSize =  m_nSampleSizes[0] + m_nSampleSizes[1];
+	case 1: 
+		{
+		//if (pBmih1->biWidth!= pBmih2->biWidth) return E_FAIL; 			// Width must be the same
+		nOutputWidth = MAX(labs(pBmih1->biWidth), labs(pBmih2->biWidth));
+		nOutputHeight = labs(pBmih1->biHeight) + labs(pBmih2->biHeight);
+		break;
+		}
+    }
+    nOutputSize =  m_nSampleSizes[0] + m_nSampleSizes[1];
 
 		// Setup the picture concatenator
-		if (m_pPicConcat)
-		{
-			m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-			m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
-			m_pPicConcat->SetOutDimensions(nOutputWidth, nOutputHeight);
-		}
-	}
-	else
-	{
-		if (pBmih1)
-			m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-		else if (pBmih2)
-			m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
-	}
+    if(m_pPicConcat)
+    {
+	m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
+	m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+    }
+  }
+  else
+  {
+    if(pBmih1)
+    {
+	m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
+	nOutputWidth = pBmih1->biWidth;
+	nOutputHeight = pBmih1->biHeight;
+        nOutputSize =  m_nSampleSizes[0];
+        if(m_pPicConcat)
+        {
+	  m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
+	  m_pPicConcat->Set2ndDimensions(0, 0);
+        }
+    }
+    else if(pBmih2)
+    {
+      m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+      nOutputWidth = pBmih2->biWidth;
+      nOutputHeight = pBmih2->biHeight;
+      nOutputSize =  m_nSampleSizes[1];
+      if(m_pPicConcat)
+      {
+	m_pPicConcat->Set1stDimensions(0, 0);
+	m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+      }
+    }
+    else
+    {
+      m_pPicConcat->Set1stDimensions(0, 0);
+      m_pPicConcat->Set2ndDimensions(0, 0);
+      nOutputWidth = 0;
+      nOutputHeight = 0;
+      nOutputSize =  0;
+    }
+  }
+  if(m_pPicConcat)
+    m_pPicConcat->SetOutDimensions(nOutputWidth, nOutputHeight);
 
-	return S_OK;
+return S_OK;
 }
 
 

@@ -199,11 +199,22 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     // Get the bitmap info header and adapt the cropped 
     //make sure that it's a video info header
-    if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
-        return VFW_E_TYPE_NOT_ACCEPTED;
-    VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+    BITMAPINFOHEADER *pBi = NULL;
+    RECT *rcSource;
+    RECT *rcTarget;
+    if(pMediaType->formattype==FORMAT_VideoInfo)
+    {
+      VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+      if(pVih) {pBi=&(pVih->bmiHeader); rcSource=&(pVih->rcSource); rcTarget=&(pVih->rcTarget);}
+    }
+    else if(pMediaType->formattype==FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
+      if(pVih2) {pBi=&(pVih2->bmiHeader); rcSource=&(pVih2->rcSource); rcTarget=&(pVih2->rcTarget);}
+    }
+    if(pBi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
     //Now we need to calculate the size of the output image
-    BITMAPINFOHEADER* const pBi = &(pVih->bmiHeader);
 
 	// Set height
     pBi->biHeight = (pBi->biHeight<0) ? -m_nOutHeight : m_nOutHeight;	// Propagate negative height to output.
@@ -226,15 +237,15 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     pMediaType->lSampleSize = pBi->biSizeImage;
 
     // Adjust recs
-    pVih->rcSource.top = 0;
-    pVih->rcSource.left = 0;
-    pVih->rcSource.right = pBi->biWidth;
-    pVih->rcSource.bottom = pBi->biHeight;
+    rcSource->top = 0;
+    rcSource->left = 0;
+    rcSource->right = pBi->biWidth;
+    rcSource->bottom = pBi->biHeight;
 
-    pVih->rcTarget.top = 0;
-    pVih->rcTarget.left = 0;
-    pVih->rcTarget.right = pBi->biWidth;
-    pVih->rcTarget.bottom = pBi->biHeight;
+    rcTarget->top = 0;
+    rcTarget->left = 0;
+    rcTarget->right = pBi->biWidth;
+    rcTarget->bottom = pBi->biHeight;
 
     return S_OK;
   }

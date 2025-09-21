@@ -151,7 +151,7 @@ protected:
 	/// Stores bytes per needed to store pixel according to media type
 	unsigned m_nBitsPerPixel;
 
-  unsigned m_uiEndOfStreamCount;
-  unsigned m_uiBeginFlushCount;
-  unsigned m_uiEndFlushCount;
+        unsigned m_uiEndOfStreamCount;
+        unsigned m_uiBeginFlushCount;
+        unsigned m_uiEndFlushCount;
 };

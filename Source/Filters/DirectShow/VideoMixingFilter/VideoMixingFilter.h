@@ -58,8 +58,7 @@ class PicConcatBase;
  * \ingroup DirectShowFilters
  * Video Mixing Filter for RGB24 and RGB32 Media
  */
-class VideoMixingFilter	:	public VideoMixingBase,
-				public ISpecifyPropertyPages
+class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -87,6 +86,8 @@ public:
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
 	virtual void initParameters();
+
+        virtual void OnDisconnect(int nIndex);
 
 	virtual void doGetVersion(std::string& sVersion);
 

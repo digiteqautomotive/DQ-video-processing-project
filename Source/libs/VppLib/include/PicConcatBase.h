@@ -1,55 +1,54 @@
 /** @file
 
-MODULE						: PicConcatBase
+MODULE:					PicConcatBase
 
-TAG								: PCB
+TAG:					PCB
 
-FILE NAME					: PicConcatBase.h
+FILE NAME:				PicConcatBase.h
 
-DESCRIPTION				: This class is the base class defining the minimum interface	
-										and properties for all derived implementations to concatenate
-										a 2nd image on any boundary of the 1st image. The instantiation 
-										process must set the parameters and limits to the images such 
-										that the Concat()implementation only requires source image 
-										data pointers. All memory new/delete must be handled outside 
-										of these objects. The concat method is pure virtual and must be 
-										implemented by derived classes.
+DESCRIPTION:				This class is the base class defining the minimum interface	
+					and properties for all derived implementations to concatenate
+					a 2nd image on any boundary of the 1st image. The instantiation 
+					process must set the parameters and limits to the images such 
+					that the Concat()implementation only requires source image 
+					data pointers. All memory new/delete must be handled outside 
+					of these objects. The concat method is pure virtual and must be 
+					implemented by derived classes.
 
-COPYRIGHT					: (c)CSIR 2007-2010 all rights resevered
+COPYRIGHT				: (c)CSIR 2007-2010 all rights resevered
 
-LICENSE						: Software License Agreement (BSD License)
+LICENSE					: Software License Agreement (BSD License)
 
-RESTRICTIONS			: Redistribution and use in source and binary forms, with or without 
-										modification, are permitted provided that the following conditions 
-										are met:
+RESTRICTIONS:				Redistribution and use in source and binary forms, with or without 
+					modification, are permitted provided that the following conditions 
+					are met:
 
-										* Redistributions of source code must retain the above copyright notice, 
-										this list of conditions and the following disclaimer.
-										* Redistributions in binary form must reproduce the above copyright notice, 
-										this list of conditions and the following disclaimer in the documentation 
-										and/or other materials provided with the distribution.
-										* Neither the name of the CSIR nor the names of its contributors may be used 
-										to endorse or promote products derived from this software without specific 
-										prior written permission.
+					* Redistributions of source code must retain the above copyright notice, 
+					this list of conditions and the following disclaimer.
+					* Redistributions in binary form must reproduce the above copyright notice, 
+					this list of conditions and the following disclaimer in the documentation 
+					and/or other materials provided with the distribution.
+					* Neither the name of the CSIR nor the names of its contributors may be used 
+					to endorse or promote products derived from this software without specific 
+					prior written permission.
 
-										THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-										"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-										LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-										A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-										CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-										EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-										PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-										PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-										LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-										NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-										SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+					THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+					"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+					LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+					A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+					CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+					EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+					PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+					PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+					LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+					NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+					SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #ifndef _PICCONCATBASE_H
 #define _PICCONCATBASE_H
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * This class is the base class defining the minimum interface	
  * and properties for all derived implementations to concatenate
  * a 2nd image on any boundary of the 1st image. The instantiation 
@@ -57,12 +56,11 @@ RESTRICTIONS			: Redistribution and use in source and binary forms, with or with
  * that the Concat()implementation only requires source image 
  * data pointers. All memory new/delete must be handled outside 
  * of these objects. The concat method is pure virtual and must be 
- * implemented by derived classes.
- */
+ * implemented by derived classes. */
 class PicConcatBase
 {
 public:
-	// Orientation of the concatenation.
+		// Orientation of the concatenation.
 	typedef enum
         {
 	  TOP	= 0,
@@ -71,17 +69,17 @@ public:
 	  RIGHT	= 3
         } E_ORIENT;
 
-	// Construction and destruction.
+		// Construction and destruction.
 	PicConcatBase(void) {_width = 0; _height = 0; _width1st = 0; _height1st = 0; _width2nd = 0; _height2nd = 0; _orient=PicConcatBase::TOP; }
 	PicConcatBase(int width, int height, int width1st, int height1st, int width2nd, int height2nd, PicConcatBase::E_ORIENT orient) 
 	{	_width = width; _height = height; _width1st = width1st; _height1st = height1st; _width2nd = width2nd; _height2nd = height2nd; _orient = orient;}
 	virtual ~PicConcatBase(void) {}
 
-	// Interface.
+		// Interface.
 	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false) = 0;
         virtual int GetVideoFormat(void) const = 0;
 
-	// Member interface.
+		// Member interface.
 	int GetOutWidth(void) const	{ return(_width); }
 	int GetOutHeight(void) const 	{ return(_height); }
 	int Get1stWidth(void) const	{ return(_width1st); }
@@ -105,11 +103,9 @@ public:
           return(_orient);
         }
 	
-
-	// Private methods.
+		// Private methods.
 protected:
 
-// Constants.
 protected:
 		// Members.
 	int _width;		/// Of total output image that contains both input images.
