@@ -1,15 +1,15 @@
 /** @file
 
-MODULE                : SkewingFilter
+MODULE:			SkewingFilter
 
-FILE NAME			        : SkewingFilter.cpp
+FILE NAME:		SkewingFilter.cpp
 
-DESCRIPTION           : This filter skips a specified number of frames depending on the parameter denoted by "skipFrame"
+DESCRIPTION:		This filter skips a specified number of frames depending on the parameter denoted by "skipFrame"
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2011, CSIR
-All rights reserved.
+Copyright (c) 2011, CSIR All rights reserved.
+Copyright (c) 2025, Jaroslav Fojtik
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,27 +29,30 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+==========================================================================*/
 #include "stdafx.h"
 
 #include "SkewingFilter.h"
 #include "GeneralUtils/StringUtil.h"
+#include "DirectShow/StatusInterface.h"
 
-SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr)
-: CTransInPlaceFilter(NAME("CSIR RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
-  seenFirstFrame(false),
-  previousTimestamp(0),
-  add_time(0)
+
+SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr): 
+    CTransInPlaceFilter(NAME("CSIR RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
+    seenFirstFrame(false),
+    previousTimestamp(0),
+    add_time(0)
 {
   // Init parameters
 	initParameters();
 }
 
+
 SkewingFilter::~SkewingFilter()
 {;}
 
-CUnknown * WINAPI SkewingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+
+CUnknown * WINAPI SkewingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   SkewingFilter *pFilter = new SkewingFilter(pUnk, pHr);
   if (pFilter== NULL) 
@@ -59,29 +62,36 @@ CUnknown * WINAPI SkewingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
   return pFilter;
 }
 
-STDMETHODIMP SkewingFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
+
+STDMETHODIMP SkewingFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
   if(riid == (IID_ISettingsInterface))
   {
     return GetInterface((ISettingsInterface*) this, ppv);
   }
-  if (riid == (IID_ISpecifyPropertyPages))
-	{
-		return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-	}
+  else if(riid == (IID_IStatusInterface))
+  {
+    return GetInterface((IStatusInterface*) this, ppv);
+  }
+  if(riid == (IID_ISpecifyPropertyPages))
+  {
+    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  }
   else
   {
     return CTransInPlaceFilter::NonDelegatingQueryInterface(riid, ppv);
   }
 }
 
+
 HRESULT SkewingFilter::Transform(IMediaSample *pSample)
 {
-   
+  if(pSample)
+  { 
     REFERENCE_TIME tStart;
-	  REFERENCE_TIME tStop;
+    REFERENCE_TIME tStop;
     REFERENCE_TIME newStart;
-	  REFERENCE_TIME newStop;
+    REFERENCE_TIME newStop;
 
     //int add_time = 100; // parameter to define how many frames to skip
 
@@ -94,42 +104,51 @@ HRESULT SkewingFilter::Transform(IMediaSample *pSample)
         //newStart = tStart + (add_time*1000000); //add time to start time in multiples of 1000 000
         //newStop  = tStop  + (add_time*1000000); //add time to stop time in multiples of 1000 000
 
-        newStart = tStart + (add_time); 
-        newStop  = tStop  + (add_time);
+      newStart = tStart + (add_time); 
+      newStop  = tStop  + (add_time);
        
-        hr = pSample->SetTime(&newStart, &newStop); //get the current time now
-        previousTimestamp = tStart;
+      hr = pSample->SetTime(&newStart, &newStop); //get the current time now
+      previousTimestamp = tStart;
     }
-	  return S_OK;
-}
-
-HRESULT SkewingFilter::CheckInputType(const CMediaType* mtIn)
-{
-  // Check the major type.
-	if (mtIn->majortype != MEDIATYPE_Video)
-	{
-		return VFW_E_TYPE_NOT_ACCEPTED;
-	}
-
-	// Adding advert media type to this method
-	if ((mtIn->subtype != MEDIASUBTYPE_RGB24) && (mtIn->subtype != MEDIASUBTYPE_RGB32) )
-	{
-		return VFW_E_TYPE_NOT_ACCEPTED;
-	}
-
-	if (mtIn->formattype != FORMAT_VideoInfo)
-	{
-		return VFW_E_TYPE_NOT_ACCEPTED;
-	}
+  }
   return S_OK;
 }
 
-HRESULT SkewingFilter::Run( REFERENCE_TIME tStart )
+
+HRESULT SkewingFilter::CheckInputType(const CMediaType *mtIn)
+{
+  if(mtIn==NULL) return E_INVALIDARG;
+
+	// Check the major type.
+  if(mtIn->majortype != MEDIATYPE_Video)
+  {
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+  if(mtIn->formattype!=FORMAT_VideoInfo && mtIn->formattype!=FORMAT_VideoInfo2)
+  {
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+	// Adding advert media type to this method
+/*
+  if(mtIn->subtype != MEDIASUBTYPE_RGB24 && mtIn->subtype != MEDIASUBTYPE_RGB32 && mtIn->subtype != MEDIASUBTYPE_ARGB32)
+  {
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+*/
+
+  return S_OK;
+}
+
+
+HRESULT SkewingFilter::Run(REFERENCE_TIME tStart)
 {
   return CTransInPlaceFilter::Run(tStart);
 }
 
-HRESULT SkewingFilter::Stop( void )
+
+HRESULT SkewingFilter::Stop(void)
 {
   add_time = 0;
   seenFirstFrame = false;
@@ -137,4 +156,3 @@ HRESULT SkewingFilter::Stop( void )
 
   return CTransInPlaceFilter::Stop();
 }
-

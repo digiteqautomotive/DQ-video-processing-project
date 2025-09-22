@@ -7,12 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "Windows.h"
-
-#ifdef IDC_STATIC
-#undef IDC_STATIC
-#endif
-#define IDC_STATIC              (-1)     // all static controls
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -21,10 +16,8 @@
 // English (South Africa) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENS)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SOUTH_AFRICA
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -57,13 +50,14 @@ END
 // Dialog
 //
 
-IDD_SKEWING_DIALOG DIALOGEX 0, 0, 170, 102
+IDD_SKEWING_DIALOG DIALOGEX 0, 0, 204, 102
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Skew Timestamp:",IDC_STATIC,22,19,46,8
-    EDITTEXT        IDC_EDIT_SKEW_TIMESTAMP,78,18,40,14,ES_AUTOHSCROLL
+    LTEXT           "Skew Timestamp:",IDC_STATIC,15,18,59,16
+    EDITTEXT        IDC_EDIT_SKEW_TIMESTAMP,76,16,40,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,17,10,14
+    LTEXT           "1/100000 s",IDC_STATIC,135,19,50,14
 END
 
 
@@ -73,12 +67,12 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_SKEWING_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 163
+        RIGHTMARGIN, 197
         TOPMARGIN, 7
         BOTTOMMARGIN, 95
     END
@@ -91,9 +85,9 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    IDS_SKEWING_CAPTION       "CSIR Skewing Filter Properties"
+    IDS_SKEWING_CAPTION     "CSIR Skewing Filter Properties"
 END
 
 #endif    // English (South Africa) resources

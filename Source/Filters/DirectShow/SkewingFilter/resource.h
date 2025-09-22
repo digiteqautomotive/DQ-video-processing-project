@@ -1,13 +1,12 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by ScaleFilter.rc
+// Used by SkewingFilter.rc
 //
 #define IDD_SKEWING_DIALOG              101
 #define IDS_STRING102                   102
 #define IDS_SKEWING_CAPTION             102
-#define IDC_EDIT_SKEW_TIMESTAMP        1001
+#define IDC_EDIT_SKEW_TIMESTAMP         1001
 #define IDC_SPIN1                       1002
-
 
 // Next default values for new objects
 // 

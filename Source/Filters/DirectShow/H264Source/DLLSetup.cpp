@@ -71,7 +71,7 @@ const AMOVIESETUP_FILTER sudPushSourceBitmap =
 {
   &CLSID_VPP_H264Source,  // Filter CLSID
   g_wszH264Source,        // String name
-  MERIT_NORMAL,           // Filter merit
+  MERIT_DO_NOT_USE,           // Filter merit
   1,                      // Number pins
   &sudOutputPinBitmap     // Pin details
 };

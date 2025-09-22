@@ -73,7 +73,7 @@ const AMOVIESETUP_FILTER sudPushSourceBitmap =
 {
   &CLSID_VPP_YUVSource, // Filter CLSID
   g_wszYuvSource,       // String name
-  MERIT_NORMAL,         // Filter merit
+  MERIT_DO_NOT_USE,     // Filter merit
   1,                    // Number pins
   &sudOutputPinBitmap   // Pin details
 };
@@ -124,14 +124,13 @@ STDAPI DllUnregisterServer()
   return AMovieDllRegisterServer2(FALSE);
 }
 
+
 //
 // DllEntryPoint
 //
 extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE, ULONG, LPVOID);
 
-BOOL APIENTRY DllMain(HANDLE hModule,
-  DWORD  dwReason,
-  LPVOID lpReserved)
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 {
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
