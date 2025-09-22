@@ -57,25 +57,28 @@ VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsi
   Initialise();
 }
 
+
 VideoMixingBase::~VideoMixingBase()
 {}
 
-HRESULT VideoMixingBase::Receive( IMediaSample *pSample, int nIndex )
-{
-	CAutoLock lck(&m_csReceive);
-	ASSERT(nIndex >= 0);
-	ASSERT (nIndex < (int)m_vInputPins.size());
-	ASSERT(pSample);
-	ASSERT (m_vOutputPins[0] != NULL);
+
+HRESULT VideoMixingBase::Receive(IMediaSample *pSample, int nIndex)
+{  
+  if(nIndex >= (int)m_vInputPins.size()) return E_INVALIDARG;
+  if(pSample == NULL) return E_POINTER;
+  if(m_vOutputPins[0] == NULL) return E_POINTER;
+  if(nIndex < 0) return E_INVALIDARG;
+
+  CAutoLock lck(&m_csReceive);
 	
-	if (nIndex == 0)
-	{
-		return ReceiveFirstSample(pSample);
-	}
-	else
-	{
-		return ReceiveSecondSample(pSample);
-	}
+  if(nIndex == 0)
+  {
+    return ReceiveFirstSample(pSample);
+  }
+  else
+  {
+    return ReceiveSecondSample(pSample);
+  }
 }
 
 
@@ -86,6 +89,7 @@ void VideoMixingBase::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
 }
 
+
 void VideoMixingBase::InitialiseOutputTypes()
 {
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
@@ -94,7 +98,7 @@ void VideoMixingBase::InitialiseOutputTypes()
 }
 
 
-HRESULT VideoMixingBase::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex )
+HRESULT VideoMixingBase::DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex)
 {
 	// Get media type of the output pin
 	AM_MEDIA_TYPE mt;
@@ -135,28 +139,26 @@ HRESULT VideoMixingBase::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROP
 }
 
 
-HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, int nOutputPinIndex)
+HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int nOutputPinIndex)
 {
-  if(iPosition<0 || nOutputPinIndex!=0)
-  {
-    return E_INVALIDARG;
-  }
-  else if (iPosition == 0)
+  if(iPosition<0 || nOutputPinIndex!=0) return E_INVALIDARG;  
+
+  if(iPosition == 0)
   {
     CMultiIOInputPin* pConnectedPin = NULL;
     CMultiIOInputPin* pOtherPin = NULL;
 
-    if (m_vInputPins[0]->IsConnected())
+    if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
     {
       pConnectedPin = m_vInputPins[0];
-      if (m_vInputPins[1]->IsConnected())
+      if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
       {
         pOtherPin = m_vInputPins[1];
       }
     }
     else
     {
-      if(m_vInputPins[1]->IsConnected())
+      if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
       {
         pConnectedPin = m_vInputPins[1];
       }
@@ -175,8 +177,30 @@ HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, in
     if(pOtherPin)
     {		// We need to recalculate the new width and height
       hr = SetOutputDimensions(&(m_VideoInHeader[0].bmiHeader), &(m_VideoInHeader[1].bmiHeader), m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
-      VIDEOINFOHEADER* pVih1 = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-      BITMAPINFOHEADER* bmh1 = &(pVih1->bmiHeader);
+      BITMAPINFOHEADER *bmh1 = NULL;
+      RECT *rcSource = NULL;
+      RECT *rcTarget = NULL;
+      if(pMediaType->formattype==FORMAT_VideoInfo)
+      {
+        VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
+        if(pVih)
+        {
+	  bmh1 = &pVih->bmiHeader;
+          rcSource = &pVih->rcSource;
+          rcTarget = &pVih->rcTarget;
+        }
+      }
+      else if(pMediaType->formattype==FORMAT_VideoInfo2)
+      {
+	VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
+        if(pVih2)
+        {
+	  bmh1 = &pVih2->bmiHeader;
+          rcSource = &pVih2->rcSource;
+          rcTarget = &pVih2->rcTarget;
+        }
+      }
+      if(bmh1 == NULL) return VFW_S_NO_MORE_ITEMS;
 
 			// Adjust media parameters
       bmh1->biWidth = m_nOutputWidth;
@@ -189,16 +213,16 @@ HRESULT VideoMixingBase::GetMediaType( int iPosition, CMediaType* pMediaType, in
       bmh1->biCompression = BI_RGB;
 
 			// Set source rect
-      pVih1->rcSource.left = 0;
-      pVih1->rcSource.top = 0;
-      pVih1->rcSource.right = m_nOutputWidth;
-      pVih1->rcSource.bottom = m_nOutputHeight;
+      rcSource->left = 0;
+      rcSource->top = 0;
+      rcSource->right = m_nOutputWidth;
+      rcSource->bottom = m_nOutputHeight;
 
 			// Set target rect
-      pVih1->rcTarget.left = 0;
-      pVih1->rcTarget.top = 0;
-      pVih1->rcTarget.right = m_nOutputWidth;
-      pVih1->rcTarget.bottom = m_nOutputHeight;
+      rcTarget->left = 0;
+      rcTarget->top = 0;
+      rcTarget->right = m_nOutputWidth;
+      rcTarget->bottom = m_nOutputHeight;
     }
 		// Use exact format sniffed from pins.
     if(ConnectionFormat[0]!=GUID_NULL)
@@ -260,7 +284,7 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 		// Get first input dimensions
 		AM_MEDIA_TYPE mediaType1;
 		BITMAPINFOHEADER* pBmih1 = NULL;
-		if (m_vInputPins[0]->IsConnected())
+		if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
 		{
 			hr = m_vInputPins[0]->ConnectionMediaType(&mediaType1);
 			if (FAILED(hr))
@@ -282,7 +306,7 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 		// Get second input dimensions
 		BITMAPINFOHEADER* pBmih2 = NULL;
 		AM_MEDIA_TYPE mediaType2;
-		if (m_vInputPins[1]->IsConnected())
+		if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
 		{
 			hr = m_vInputPins[1]->ConnectionMediaType(&mediaType2);
 			if (FAILED(hr))
@@ -356,54 +380,55 @@ STDMETHODIMP VideoMixingBase::Stop()
 
 STDMETHODIMP VideoMixingBase::Pause()
 {
-	CAutoLock lck(&m_csFilter);
-	HRESULT hr = NOERROR;
+  CAutoLock lck(&m_csFilter);
+  HRESULT hr = NOERROR;
 
-	if (m_State == State_Paused) {
-		// (This space left deliberately blank)
-	}
+  if(m_State == State_Paused) return hr;		// No job to do, already paused.
 
 	// If we have no input pin or it isn't yet connected then when we are
 	// asked to pause we deliver an end of stream to the downstream filter.
 	// This makes sure that it doesn't sit there forever waiting for
 	// samples which we cannot ever deliver without an input connection.
 
-	else if (m_vInputPins[0] == NULL || m_vInputPins[0]->IsConnected() == FALSE) 
-	{
-		if (m_vInputPins[1] == NULL || m_vInputPins[1]->IsConnected() == FALSE)
-		{
-			if (m_vOutputPins[0]) 
-			{
-				m_vOutputPins[0]->DeliverEndOfStream();
-				//m_bEOSDelivered = TRUE;
-			}
-			m_State = State_Paused;
-		}
-	}
-
+  if((m_vInputPins[0]==NULL || m_vInputPins[0]->IsConnected()==FALSE) &&
+     (m_vInputPins[1]==NULL || m_vInputPins[1]->IsConnected()==FALSE))
+  {
+    if(m_vOutputPins[0]) 
+    {
+      m_vOutputPins[0]->DeliverEndOfStream();
+      //m_bEOSDelivered = TRUE;
+    }
+    m_State = State_Paused;
+  }
 	// We may have an input connection but no output connection
 	// However, if we have an input pin we do have an output pin
-	else if (m_vOutputPins[0]->IsConnected() == FALSE) {
+  else
+  {
+    if(m_vOutputPins[0]==NULL || m_vOutputPins[0]->IsConnected()==FALSE)
+    {
 		// TOREVISE: This step is taken from the CBaseFilter but doesn't prevent the graph from running
 		// m_State = State_Paused;
 		// However this line prevents the graph from running if the output pin of the multiplexer is not connected
 		return E_FAIL;
 
-	}
-	else 
-	{
-		if (m_State == State_Stopped) {
+    }
+    else 
+    {
+      if(m_State == State_Stopped) {
 			// allow a class derived from CTransformFilter
 			// to know about starting and stopping streaming
 			CAutoLock lck2(&m_csReceive);
 			hr = StartStreaming();
-		}
-		if (SUCCEEDED(hr)) {
-			hr = CBaseFilter::Pause();
-		}
-	}
-	return hr;
+      }
+      if(SUCCEEDED(hr)) 
+      {
+	hr = CBaseFilter::Pause();
+      }
+    }
+  }
+  return hr;
 }
+
 
 STDMETHODIMP VideoMixingBase::EndOfStream( int nIndex )
 {
@@ -417,6 +442,7 @@ STDMETHODIMP VideoMixingBase::EndOfStream( int nIndex )
   return S_OK;
 }
 
+
 STDMETHODIMP VideoMixingBase::BeginFlush( int nIndex )
 {
   ++m_uiBeginFlushCount;
@@ -426,6 +452,7 @@ STDMETHODIMP VideoMixingBase::BeginFlush( int nIndex )
   }
   return S_OK;
 }
+
 
 STDMETHODIMP VideoMixingBase::EndFlush( int nIndex )
 {
@@ -437,6 +464,7 @@ STDMETHODIMP VideoMixingBase::EndFlush( int nIndex )
   return S_OK;
 }
 
+
 HRESULT VideoMixingBase::StartStreaming()
 {
   // reset counters
@@ -445,6 +473,7 @@ HRESULT VideoMixingBase::StartStreaming()
   m_uiEndFlushCount = 0;
   return NO_ERROR;
 }
+
 
 HRESULT VideoMixingBase::StopStreaming()
 {

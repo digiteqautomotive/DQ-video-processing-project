@@ -75,7 +75,7 @@ public:
         virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize) = 0;
 
 	/// Delegates call to virtual ReceiveFirstSample and ReceiveSecondSample methods.
-	virtual HRESULT Receive(IMediaSample *pSample, int nIndex );
+	virtual HRESULT Receive(IMediaSample *pSample, int nIndex);
 
 	/// From CBaseOutputPin
 	virtual HRESULT DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex);

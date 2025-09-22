@@ -59,6 +59,7 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mix
 	initParameters();
 }
 
+
 VideoMixingFilter::~VideoMixingFilter()
 {
 	if (m_pPicConcat)
@@ -91,10 +92,12 @@ void VideoMixingFilter::initParameters(void)
 }
 
 
+/// This method renders output frame.
+/// @TODO: It looks like it is called twice time than necessary, must be limited framerate.
 HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
 	// Prepare output sample
-	AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
+	const AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
 	DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
 	if (pProps->dwStreamId != AM_STREAM_MEDIA) {
 		return m_vInputPins[nIndex]->Receive(pSample);
@@ -438,11 +441,14 @@ HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPI
     }
     else
     {
-      m_pPicConcat->Set1stDimensions(0, 0);
-      m_pPicConcat->Set2ndDimensions(0, 0);
       nOutputWidth = 0;
       nOutputHeight = 0;
       nOutputSize =  0;
+      if(m_pPicConcat)
+      {
+        m_pPicConcat->Set1stDimensions(0, 0);
+        m_pPicConcat->Set2ndDimensions(0, 0);
+      }      
     }
   }
   if(m_pPicConcat)
@@ -452,6 +458,7 @@ return S_OK;
 }
 
 
+/// Final agreement on output geometry.
 HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
 {
 	//Make sure the input and output types are related
@@ -503,7 +510,7 @@ HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
       return S_OK;
     }
   }
-  else if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
+  else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
   {
     if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
     {

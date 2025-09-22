@@ -8,7 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+	Copyright (c) 2008 - 2012, CSIR 
+	Copyright (c) 2025, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,17 +72,18 @@ HRESULT CMultiIOOutputPin::CheckMediaType( const CMediaType* pMediaType )
 
 HRESULT CMultiIOOutputPin::GetMediaType( int iPosition, CMediaType* pMediaType )
 {
-	ASSERT(m_pFilter->m_vInputPins.size() > 0);
+  if(m_pFilter->m_vInputPins.size() <= 0) return VFW_S_NO_MORE_ITEMS;
 
 	//  We don't have any media types if our input is not connected
 
-	if (m_pFilter->m_vInputPins[0]->IsConnected()) 
-	{
-		return m_pFilter->GetMediaType(iPosition, pMediaType, m_nIndex);
-	} else 
-	{
-		return VFW_S_NO_MORE_ITEMS;
-	}
+  if(m_pFilter->m_vInputPins[0]->IsConnected() ||
+     (m_pFilter->m_vInputPins.size()>=2 && m_pFilter->m_vInputPins[1]->IsConnected()))
+  {
+    return m_pFilter->GetMediaType(iPosition, pMediaType, m_nIndex);
+  } else 
+  {
+    return VFW_S_NO_MORE_ITEMS;
+  }
 }
 
 STDMETHODIMP CMultiIOOutputPin::Notify( IBaseFilter * pSender, Quality q )
