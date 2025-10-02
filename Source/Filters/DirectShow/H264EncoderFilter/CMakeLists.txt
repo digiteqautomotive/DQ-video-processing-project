@@ -40,7 +40,7 @@ H264EncoderFilter.h
 H264EncoderProperties.h
 resource.h
 stdafx.h
-VersionInfo.h
+../VersionInfo.h
 )
 
 SET(FLT_SRCS 
