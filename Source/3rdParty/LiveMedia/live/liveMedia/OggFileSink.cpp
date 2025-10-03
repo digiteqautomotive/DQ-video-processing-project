@@ -225,7 +225,7 @@ void OggFileSink::afterGettingFrame(unsigned frameSize, unsigned numTruncatedByt
 	// Hack for Theora video: Parse the "identification" hdr to get the "KFGSHIFT" parameter:
 	fIsTheora = True;
 	u_int8_t const KFGSHIFT = ((identificationHdr[40]&3)<<3) | (identificationHdr[41]>>5);
-	fGranuleIncrementPerFrame = (u_int64_t)(1 << KFGSHIFT);
+	fGranuleIncrementPerFrame = ((u_int64_t)1 << KFGSHIFT);
       }
       OggFileSink::addData(identificationHdr, identificationHdrSize, presentationTime);
       OggFileSink::addData(commentHdr, commentHdrSize, presentationTime);

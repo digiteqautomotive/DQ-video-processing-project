@@ -106,6 +106,8 @@ public:
   /// Overridden from CSettingsInterface
   STDMETHODIMP SetParameter( const char* type, const char* value);
 
+  virtual void doGetVersion(std::string& sVersion);
+
   /// Overridden from CSettingsInterface
   virtual void initParameters()
   {

@@ -4,6 +4,7 @@ INCLUDE_DIRECTORIES(
 ${vppIncludes}
 ${vppCodecIncludes}
 ${vppUtilIncludes}
+${vpp_SOURCE_DIR}/Codecs
 )
  
 # Lib directories

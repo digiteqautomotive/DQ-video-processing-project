@@ -1,6 +1,8 @@
 # CMakeLists.txt in H264v2 dir
 
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BUILD_FOR_SHORT")
+# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BUILD_FOR_SHORT -DH264V2_EXPORTS")
+
+add_compile_definitions(H264V2_EXPORTS)
 
 message("CodecIncludes: ${vppCodecIncludes}")
 
