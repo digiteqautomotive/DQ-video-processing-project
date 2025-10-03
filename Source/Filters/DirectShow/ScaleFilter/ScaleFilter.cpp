@@ -122,6 +122,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
 }
 
 HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
@@ -157,7 +158,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_ARGB32)
+      else if(pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
       {
         m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
@@ -181,6 +182,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
   }
   return hr;
 }
+
 
 HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
@@ -225,7 +227,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pBi->biWidth <= 0) return E_INVALIDARG;
 
 	// Set size
-    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
@@ -337,7 +339,7 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     }
     return S_OK;
   } 
-  if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
+  if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
     {
@@ -353,9 +355,17 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     }
     return S_OK;
   } 
-  if (mtIn->subtype == MEDIASUBTYPE_YVYU)
+  if(mtIn->subtype == MEDIASUBTYPE_YVYU)
   {
     if (mtOut->subtype != MEDIASUBTYPE_YVYU)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_AYUV)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_AYUV)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

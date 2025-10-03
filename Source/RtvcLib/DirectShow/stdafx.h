@@ -80,10 +80,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Windows Header Files:
 #include <windows.h>
 
+#include <olebind.h>
+
 #pragma warning(push)     // disable for this header only
 #pragma warning(disable:4312)
 // DirectShow
-#include <streams.h>
 #pragma warning(pop)      // restore original warning level
 
 //STL

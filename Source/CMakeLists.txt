@@ -158,7 +158,7 @@ SET(vppLink
 ${vpp_SOURCE_DIR}/../lib
 $ENV{BOOST_LIB_DIR}
 ${vpp_CONTRIB_DIR_LIBS}
-$ENV{MSSDK}/Lib
+#$ENV{MSSDK}/Lib
 )
 ENDIF(WIN32)
 

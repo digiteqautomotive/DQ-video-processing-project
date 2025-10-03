@@ -24,7 +24,9 @@
 // To get around compile error on windows: ERROR macro is defined
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 #endif
+
 #include <glog/logging.h>
+
 #ifdef _WIN32
 #pragma warning(pop)     // restore original warning level
 #endif

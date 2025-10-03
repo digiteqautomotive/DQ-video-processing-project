@@ -36,6 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralUtils/StringUtil.h"
 #include "GeneralUtils/Conversion.h"
 
+#include "wxdebug.h"
+
+
 #ifdef ARTIST
 using namespace artist;
 #endif
