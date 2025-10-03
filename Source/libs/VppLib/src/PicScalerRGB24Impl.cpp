@@ -51,7 +51,7 @@ memory size checking is done and is delegated to the calling process.
 @param pInImg		: Packed RGB 888 format smaller sub image.
 @return					: 0 = failed, 1 = success.
 */
-int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg)
+int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
 	if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
 		return(0);

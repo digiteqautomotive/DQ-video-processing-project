@@ -38,6 +38,7 @@ ${DSHOW_BASECLASSES}/winutil.cpp
 ${DSHOW_BASECLASSES}/wxdebug.cpp
 ${DSHOW_BASECLASSES}/wxlist.cpp
 ${DSHOW_BASECLASSES}/wxutil.cpp
+${DSHOW_BASECLASSES}/GetTickCount_ms.c
 )
 SET(DS_HEADERS
 ${DSHOW_BASECLASSES}/amextra.h

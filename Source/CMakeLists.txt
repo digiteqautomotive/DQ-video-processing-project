@@ -14,7 +14,7 @@ FIND_PATH(DSHOW_BASECLASSES amextra.cpp HINTS $ENV{BASECLASSES} $ENV{DSHOWBASECL
 
 message("vpp_CONTRIB_DIR directories:" $ENV{vpp_CONTRIB_DIR})
 message("BOOST_INCLUDE_DIR:" $ENV{BOOST_INCLUDE_DIR})
-message("MS SDK: " $ENV{MSSDK})
+# message("MS SDK: " $ENV{MSSDK})
 message("Adding DShow baselasses ${DSHOW_BASECLASSES}")
 
 IF(WIN32)
@@ -35,14 +35,14 @@ ENDIF(WIN32)
 add_definitions(-DVPP_CMAKE_BUILD)
 
 # registering of DS filters
-SET(REGISTER_DS_FILTERS false)
+SET(REGISTER_DS_FILTERS false CACHE BOOL "Call regsvr32.exe, use it only if you have admin rights.")
 
 # NOTE: this has many additional dependencies such as boost, glog, LiveMediaExt, cpp-util
 # RtspSinkFilter relies on LiveMediaExt
 SET(BUILD_RTSP_SINK_FILTER true)
 
 # Opus
-SET(OPUS_SUPPORT true)
+SET(OPUS_SUPPORT true CACHE BOOL "Enable/Disable Opus")
 
 IF (BUILD_RTSP_SINK_FILTER)
 message("LiveMediaExt: $ENV{LIVE_MEDIA_EXT_ROOT}")
@@ -126,13 +126,14 @@ IF(WIN32)
 SET(vppIncludes
 ${vpp_SOURCE_DIR}
 ${vpp_SOURCE_DIR}/RtvcLib
+${vpp_SOURCE_DIR}/libs/VppLib/include
 $ENV{BOOST_INCLUDE_DIR}
 $ENV{vpp_CONTRIB_DIR}
 ${live555Includes}
 ${DSHOW_BASECLASSES}
-$ENV{MSSDK}/Include
-$ENV{MSSDK}/Include/um
-$ENV{MSSDK}/Include/shared
+#$ENV{MSSDK}/Include
+#$ENV{MSSDK}/Include/um
+#$ENV{MSSDK}/Include/shared
 )
 ENDIF(WIN32)
 
@@ -164,6 +165,7 @@ ENDIF(WIN32)
 IF(WIN32)
 SET(vppLibs
 ws2_32
+Kernel32
 baseclasses
 comctl32
 winmm
