@@ -21,7 +21,11 @@
 extern "C"
 {
  unsigned long long GetTickCount_us(void);
+#if defined(USE_SSE) || defined(USE_MMX)
  unsigned GetFeaturesCPU(void);
+#else
+ unsigned GetFeaturesCPU(void) {return 0;}
+#endif
  void EmitEMMS(void);
 }
 

@@ -35,6 +35,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicRotateRGBBase.cpp
 ../libs/VppLib/src/PicScalerRGB24Impl.cpp
 ../libs/VppLib/src/PicScalerRGB32Impl.cpp
+../libs/VppLib/src/PicScalerARGB32Impl.cpp
 ../libs/VppLib/src/PicScalerUYVYImpl.cpp
 ../libs/VppLib/src/PicScalerYUYVImpl.cpp
 ../libs/VppLib/src/PicScalerYUV420PImpl.cpp
@@ -159,3 +160,6 @@ ADD_LIBRARY( vpp STATIC ${VPP_SRCS} ${VPP_HEADERS})
 #   set_target_properties(Core PROPERTIES COMPILE_FLAGS "/YuCorePch.h")
 #   set_source_files_properties(CorePch.cpp PROPERTIES COMPILE_FLAGS "/YcCorePch.h")
 #endif(MSVC)
+
+
+ADD_SUBDIRECTORY( TestImage )
