@@ -7,3 +7,7 @@ handle the RTP/RTCP and RTSP communication.The live555 library has now been adde
 in order to ensure version compatibility. The filter has been tested with an RTSP server (also available from 
 www.live555.com) streaming 8/16 bit PCM, AMR and MP3, AAC, LATM audio, and H.264 video. This project demonstrates
  how DirectShow and RTP/RTCP and RTSP can be combined.
+
+
+MASM must be explicitly allowed:
+https://programminghaven.home.blog/2020/02/16/setup-an-assembly-project-on-visual-studio-2019/

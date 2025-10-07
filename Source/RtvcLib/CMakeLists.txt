@@ -11,9 +11,11 @@ DirectShow/MultiIOOutputPin.cpp
 DirectShow/stdafx.cpp
 DirectShow/VideoMixingBase.cpp
 )
+
 SET(GU_SRCS
 GeneralUtils/MeasurementTable.cpp
 )
+
 SET(IU_SRCS
 ../libs/VppLib/src/FastFixedPointRGB24toYUV420Converter.cpp
 ../libs/VppLib/src/FastGpuRGB24toYUV420Converter.cpp
@@ -33,8 +35,6 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicRotateRGB24Impl.cpp
 ../libs/VppLib/src/PicRotateRGB32Impl.cpp
 ../libs/VppLib/src/PicRotateRGBBase.cpp
-../libs/VppLib/src/PicScalerRGB24Impl.cpp
-../libs/VppLib/src/PicScalerRGB32Impl.cpp
 ../libs/VppLib/src/PicScalerARGB32Impl.cpp
 ../libs/VppLib/src/PicScalerUYVYImpl.cpp
 ../libs/VppLib/src/PicScalerYUYVImpl.cpp
@@ -52,9 +52,43 @@ SET(IU_SRCS
 ../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2Ver16.cpp
 ../libs/VppLib/src/RealYUV444toRGB24Converter.cpp
 )
+IF (MMX_SSE_ACCELERATORS)
+  SET(IU_SRCS ${IU_SRCS}
+      ../libs/VppLib/src/PicScalerRGB24ImplA.cpp
+      ../libs/VppLib/src/PicScalerRGB32ImplA.cpp
+      ../libs/VppLib/src/PicScalerARGB32MMX.cpp
+      ../libs/VppLib/src/PicScalerARGB32SSE.cpp
+  )
+  if ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+    SET(IU_SRCS ${IU_SRCS}
+      ../libs/VppLib/src/raster_MSVC.asm
+      ../libs/VppLib/src/RowScallerARGB32_Win32.asm
+      ../libs/VppLib/src/RowScallerMMX_Win32.asm
+      ../libs/VppLib/src/RowScallerSSE_Win32.asm
+      ../libs/VppLib/src/ToolsCPU_Win32.asm
+    )
+  elseif ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
+    SET(IU_SRCS ${IU_SRCS}
+      ../libs/VppLib/src/raster_MSVC64.asm
+      ../libs/VppLib/src/RowScallerARGB32_x64.asm
+      ../libs/VppLib/src/RowScallerMMX_x64.asm
+      ../libs/VppLib/src/RowScallerSSE_x64.asm
+      ../libs/VppLib/src/ToolsCPU_x64.asm
+    )
+  else ()
+    message(SEND_ERROR "No assembly accelerators for this platform!")
+  endif ()
+ELSE (MMX_SSE_ACCELERATORS)
+  SET(IU_SRCS ${IU_SRCS}
+      ../libs/VppLib/src/PicScalerRGB24Impl.cpp
+      ../libs/VppLib/src/PicScalerRGB32Impl.cpp
+  )
+ENDIF(MMX_SSE_ACCELERATORS)
+
 SET(S_SRCS
 Shared/MediaSample.cpp
 )
+
 SET(DS_HEADERS
 DirectShow/CommonDefs.h
 DirectShow/CSettingsInterface.h

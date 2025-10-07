@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.12)
 # CMakeLists.txt in H264v2 dir
 
 # SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BUILD_FOR_SHORT -DH264V2_EXPORTS")

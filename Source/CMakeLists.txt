@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.12)
 
 PROJECT( vpp )
 
@@ -39,10 +39,17 @@ SET(REGISTER_DS_FILTERS false CACHE BOOL "Call regsvr32.exe, use it only if you 
 
 # NOTE: this has many additional dependencies such as boost, glog, LiveMediaExt, cpp-util
 # RtspSinkFilter relies on LiveMediaExt
-SET(BUILD_RTSP_SINK_FILTER true)
+SET(BUILD_RTSP_SINK_FILTER true CACHE BOOL "Build RTSP sink filter")
 
 # Opus
 SET(OPUS_SUPPORT true CACHE BOOL "Enable/Disable Opus")
+
+# MMX and SSE accelerators
+SET(MMX_SSE_ACCELERATORS true CACHE BOOL "Enable MMX and SSE accelerators in assembly")
+IF (MMX_SSE_ACCELERATORS)
+  add_compile_definitions(USE_MMX USE_SSE)
+ENDIF(MMX_SSE_ACCELERATORS)
+
 
 IF (BUILD_RTSP_SINK_FILTER)
 message("LiveMediaExt: $ENV{LIVE_MEDIA_EXT_ROOT}")
