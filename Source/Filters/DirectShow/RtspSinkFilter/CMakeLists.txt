@@ -1,5 +1,8 @@
 # CMakeLists.txt for <RtspSinkFilter> 
 
+IF (GLOG_SUPPORT)
+
+
 INCLUDE_DIRECTORIES(
 ${vppIncludes}
 ${vppCodecIncludes}
@@ -57,3 +60,5 @@ INSTALL(
   ARCHIVE DESTINATION bin
   LIBRARY DESTINATION bin
 )
+
+ENDIF (GLOG_SUPPORT)

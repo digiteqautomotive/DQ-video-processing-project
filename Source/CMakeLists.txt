@@ -44,6 +44,9 @@ SET(BUILD_RTSP_SINK_FILTER true CACHE BOOL "Build RTSP sink filter")
 # Opus
 SET(OPUS_SUPPORT true CACHE BOOL "Enable/Disable Opus")
 
+# Glog
+SET(GLOG_SUPPORT false CACHE BOOL "Enable/Disable Google log")
+
 # MMX and SSE accelerators
 SET(MMX_SSE_ACCELERATORS true CACHE BOOL "Enable MMX and SSE accelerators in assembly")
 IF (MMX_SSE_ACCELERATORS)

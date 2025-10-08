@@ -136,7 +136,7 @@ unsigned char *BlobIn, *BlobOut, *BlobTest;
 int i;
 bool Pause = false;
 
-  printf("<TEST> Testing scale computing %u[bits] %s %s", 8*sizeof(void*), __DATE__, __TIME__);
+  printf("<TEST> Testing scale computing %u[bits] MSVC: %u Build: %s %s", 8*sizeof(void*), _MSC_VER, __DATE__, __TIME__);
 
   if(argc>1)
   {
