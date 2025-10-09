@@ -38,6 +38,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdlib>
 #include "Conversion.h"
 
+
+#if _MSC_VER <= 1600
+ namespace std
+ {
+   inline string to_string(int value) {return toString((long long)value);}
+   inline string to_string(unsigned value) {return toString((unsigned long long)value);}
+ }
+#endif
+
+
 namespace artist {
 
 #ifdef _WIN32
