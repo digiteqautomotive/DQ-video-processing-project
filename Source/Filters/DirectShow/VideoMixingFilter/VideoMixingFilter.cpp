@@ -141,12 +141,12 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 		{
 		  const int RowLen = (nWidth*m_nBitsPerPixel)/8;
 		  BYTE *pDst = pBufferOut;
-	          const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
+	      const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
 		  int y = nHeight;
 		  while(y-->0)
 		  {
 		    pSrc -= RowLen;
-                    memcpy(pDst, pSrc, RowLen);
+            memcpy(pDst, pSrc, RowLen);
 		    pDst += RowLen;
 		  }
 		}
@@ -161,12 +161,12 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 		{
 		  const int RowLen = (nWidth*m_nBitsPerPixel)/8;
 		  BYTE *pDst = pBufferOut;
-	          const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
+	      const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
 		  int y = nHeight;
 		  while(y-->0)
 		  {
 		    pSrc -= RowLen;
-                    memcpy(pDst, pSrc, RowLen);
+            memcpy(pDst, pSrc, RowLen);
 		    pDst += RowLen;
 		  }
 		}
@@ -249,6 +249,7 @@ HRESULT VideoMixingFilter::ReceiveSecondSample( IMediaSample *pSample )
 		{
 			return hr;
 		}
+		if (pBuffer == NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
 
 		// Copy the buffer
 		memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
@@ -404,7 +405,7 @@ HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPI
 		break;
 		}
     }
-    nOutputSize =  m_nSampleSizes[0] + m_nSampleSizes[1];
+    nOutputSize =  (nOutputWidth*nOutputHeight*m_nBitsPerPixel)/8;;
 
 		// Setup the picture concatenator
     if(m_pPicConcat)

@@ -76,8 +76,8 @@ void PicInPicRGB32Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
     pDst += 4*(((_height-_yPos)*_width) + _xPos);
     for(int y = 0; y < _writeHeight; y++)
     {
+      pDst -= (4*_width);		// Next row.
       memcpy((void *)pDst, (const void *)pSrc, 4*_writeWidth);	// Whole row at a time.
-      pDst -= (4*_width);	// Next row.
       pSrc += (4*_subWidth);
     } //end for y...
   }
@@ -87,7 +87,7 @@ void PicInPicRGB32Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
     for(int y = 0; y < _writeHeight; y++)
     {
       memcpy((void *)pDst, (const void *)pSrc, 4*_writeWidth);	// Whole row at a time.
-      pDst += (4*_width);	// Next row.
+      pDst += (4*_width);		// Next row.
       pSrc += (4*_subWidth);
     } //end for y...
   }

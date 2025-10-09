@@ -75,17 +75,17 @@ void PicInPicRGB24Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
     if(VFlip)
     {
       pDst += 3*(((_height-_yPos)*_width) + _xPos);
-      for(int y = 0; y < _writeHeight; y++)
+      for(int y=0; y<_writeHeight; y++)
       {
+	pDst -= (3*_width);	// Next row.
         memcpy((void *)pDst, (const void *)pSrc, 3*_writeWidth);	// Whole row at a time.
-        pDst -= (3*_width);	// Next row.
         pSrc += (3*_subWidth);
       }  //end for y...
     }
     else
     {
       pDst += 3*((_yPos*_width) + _xPos);
-      for(int y = 0; y < _writeHeight; y++)
+      for(int y=0; y<_writeHeight; y++)
       {
         memcpy((void *)pDst, (const void *)pSrc, 3*_writeWidth);	// Whole row at a time.
         pDst += (3*_width);	// Next row.
@@ -93,6 +93,7 @@ void PicInPicRGB24Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
       }  //end for y...
    }
 }//end DoInsert.
+
 
 /** Insert the sub image into the main image with a border.
 Write the sub image into the main image at the top-left location of
