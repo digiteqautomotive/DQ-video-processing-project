@@ -17,6 +17,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${vpp_SOURCE_DIR}/../bin/build)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${vpp_SOURCE_DIR}/../lib)
 ENDIF(WIN32)
 
+FIND_PATH(DSHOW_BASECLASSES amextra.cpp HINTS $ENV{BASECLASSES} $ENV{DSHOWBASECLASSES})
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 message("ARTIST_CONTRIB_DIR directories:" $ENV{ARTIST_CONTRIB_DIR})
@@ -264,7 +266,7 @@ ${vpp_SOURCE_DIR}/../include/artist/Util
 ${vpp_SOURCE_DIR}/../include/codec_sdk_win32_ia32_release/include
 ${live555Includes}
 $ENV{BOOST_INCLUDE_DIR}
-$ENV{DSHOWBASECLASSES}
+${DSHOW_BASECLASSES}
 $ENV{MSSDK}/Include
 $ENV{MSSDK}/Include/um
 $ENV{MSSDK}/Include/shared
