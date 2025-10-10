@@ -87,6 +87,10 @@ void VideoMixingBase::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo2);
 }
 
 
@@ -168,6 +172,7 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
      }
     }
 
+	// Duplicate format from a primary pin including ConnectionFormat.
     HRESULT hr = pConnectedPin->ConnectionMediaType(pMediaType);
     if(FAILED(hr))
     {
@@ -224,18 +229,6 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       rcTarget->right = m_nOutputWidth;
       rcTarget->bottom = m_nOutputHeight;
     }
-		// Use exact format sniffed from pins.
-    if(ConnectionFormat[0]!=GUID_NULL)
-        pMediaType->SetSubtype(&ConnectionFormat[0]);
-    else if(ConnectionFormat[1]!=GUID_NULL)
-        pMediaType->SetSubtype(&ConnectionFormat[1]);
-    else
-    {		// When pin's subtype is not available, guess it from cached m_nBitsPerPixel.
-      if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
-        pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
-      else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
-        pMediaType->SetSubtype(&MEDIASUBTYPE_RGB32);
-    }
 
     return S_OK;
   }
@@ -254,32 +247,83 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 	//TODO: Check if the sizes match: The images must correlate in dimension!!!!!!!!!!!
 	if (direction == PINDIR_INPUT)
 	{
+	  const BITMAPINFOHEADER *bmih;
+	  if(pmt->formattype==FORMAT_VideoInfo)
+	  {
 		// Copy the video info header
-		const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pmt->pbFormat;
-		const BITMAPINFOHEADER *bmih = &pVih->bmiHeader;
+	    const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
+	    bmih = &pVih->bmiHeader;
 
 		// Reject different formats on input
-		if(nIndex==0)
-		  if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1]) return VFW_E_INVALID_MEDIA_TYPE;
+	    if(nIndex==0)
+	    {
+	      if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1])
+		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
+	      if(m_vOutputPins[0]->IsConnected())
+	      {			// Reject different connection if output is already connected.
+		    if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
+                       (bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight && m_VideoInHeader[0].bmiHeader.biHeight!=0))
+			  return E_FAIL;
+		  }
+		}
 		if(nIndex==1)
-		  if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0]) return VFW_E_INVALID_MEDIA_TYPE;
-		
-		// Reject connection if output is already connected
-		if(m_vOutputPins[0]->IsConnected() && nIndex==0)
 		{
-		  if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
-                     (bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight && m_VideoInHeader[0].bmiHeader.biHeight!=0))
-			return E_FAIL;
+		  if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0])
+		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
+		  if(m_vOutputPins[0]->IsConnected())
+		  {			// Reject different connection if output is already connected.
+		    if((bmih->biWidth!=m_VideoInHeader[1].bmiHeader.biWidth && m_VideoInHeader[1].bmiHeader.biWidth!=0) ||
+                       (bmih->biHeight!=m_VideoInHeader[1].bmiHeader.biHeight && m_VideoInHeader[1].bmiHeader.biHeight!=0))
+			  return E_FAIL;
+	      }
+	    }
+	    CopyMemory(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
+	  }
+	  else if(pmt->formattype==FORMAT_VideoInfo2)
+	  {
+		  		// Copy the video info header
+	    const VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
+	    bmih = &pVih2->bmiHeader;
+	    		// Reject different formats on input
+	    if(nIndex==0)
+	    {
+	      if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1])
+		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
+	      if(m_vOutputPins[0]->IsConnected())
+	      {			// Reject different connection if output is already connected.
+		    if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
+                       (bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight && m_VideoInHeader[0].bmiHeader.biHeight!=0))
+			  return E_FAIL;
+		  }
 		}
-
-		CopyMemory(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
-		ConnectionFormat[nIndex] = pmt->subtype;
-
-		hr = CreateVideoMixer(pmt, nIndex);
-		if(FAILED(hr))
+		if(nIndex==1)
 		{
-			return hr;
-		}
+		  if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0])
+		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
+		  if(m_vOutputPins[0]->IsConnected())
+		  {			// Reject different connection if output is already connected.
+		    if((bmih->biWidth!=m_VideoInHeader[1].bmiHeader.biWidth && m_VideoInHeader[1].bmiHeader.biWidth!=0) ||
+                       (bmih->biHeight!=m_VideoInHeader[1].bmiHeader.biHeight && m_VideoInHeader[1].bmiHeader.biHeight!=0))
+			  return E_FAIL;
+	      }
+	    }
+	    m_VideoInHeader[nIndex].AvgTimePerFrame = pVih2->AvgTimePerFrame;
+	    memcpy(&m_VideoInHeader[nIndex].bmiHeader, &pVih2->bmiHeader, sizeof(BITMAPINFOHEADER));
+            m_VideoInHeader[nIndex].dwBitErrorRate = pVih2->dwBitErrorRate;
+	    m_VideoInHeader[nIndex].dwBitRate = pVih2->dwBitRate;
+	    m_VideoInHeader[nIndex].rcSource = pVih2->rcSource;
+	    m_VideoInHeader[nIndex].rcTarget = pVih2->rcTarget;
+	  }
+	  else
+              return VFW_E_INVALID_MEDIA_TYPE;
+
+	  ConnectionFormat[nIndex] = pmt->subtype;
+
+	  hr = CreateVideoMixer(pmt, nIndex);
+	  if(FAILED(hr))
+	  {
+	    return hr;
+	  }
 
 		// Get first input dimensions
 		AM_MEDIA_TYPE mediaType1;
@@ -478,4 +522,15 @@ HRESULT VideoMixingBase::StartStreaming()
 HRESULT VideoMixingBase::StopStreaming()
 {
   return NO_ERROR;
+}
+
+
+void VideoMixingBase::OnDisconnect(int nIndex)
+{
+  CMultiIOBaseFilter::OnDisconnect(nIndex);
+  if(nIndex<=1)
+  {
+    memset(&m_VideoInHeader[nIndex],0,sizeof(VIDEOINFOHEADER));
+    memset(&ConnectionFormat[nIndex],0,sizeof(GUID));
+   }
 }

@@ -117,15 +117,7 @@ public:
 	  }
 	}
 */
-	virtual void OnDisconnect(int nIndex)
-	{
-	  CMultiIOBaseFilter::OnDisconnect(nIndex);
-	  if(nIndex<=1)
-	  {
-            memset(&m_VideoInHeader[nIndex],0,sizeof(VIDEOINFOHEADER));
-	    memset(&ConnectionFormat[nIndex],0,sizeof(GUID));
-	  }
-	}
+	virtual void OnDisconnect(int nIndex);
 
 
 	//virtual STDMETHODIMP NewSegment( REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate, int nIndex);

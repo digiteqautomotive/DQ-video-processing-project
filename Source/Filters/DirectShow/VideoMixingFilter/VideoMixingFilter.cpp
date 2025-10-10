@@ -49,14 +49,14 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mix
 	m_pPicConcat(NULL),
         m_Vflip(false)
 {
-	m_pSampleBuffers[0] = NULL;
-	m_pSampleBuffers[1] = NULL;
+  m_pSampleBuffers[0] = NULL;
+  m_pSampleBuffers[1] = NULL;
 
-	m_nSampleSizes[0] = 0;
-	m_nSampleSizes[1] = 0;
+  m_nSampleSizes[0] = 0;
+  m_nSampleSizes[1] = 0;
 
 	// Init parameters
-	initParameters();
+  initParameters();
 }
 
 
@@ -131,47 +131,47 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 	}
 
 	// Concat the pictures
-	if (m_pSampleBuffers[0] && m_pSampleBuffers[1])
+	if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
 		m_pPicConcat->Concat(m_pSampleBuffers[0], m_pSampleBuffers[1], pBufferOut, m_Vflip);
-	else if (m_pSampleBuffers[0])
+	else if(m_pSampleBuffers[0])
 	{
-		const int nWidth = labs(m_pPicConcat->Get1stWidth());
-		const int nHeight = labs(m_pPicConcat->Get1stHeight());
-		if(m_Vflip)
-		{
-		  const int RowLen = (nWidth*m_nBitsPerPixel)/8;
-		  BYTE *pDst = pBufferOut;
-	      const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
-		  int y = nHeight;
-		  while(y-->0)
-		  {
-		    pSrc -= RowLen;
-            memcpy(pDst, pSrc, RowLen);
-		    pDst += RowLen;
-		  }
-		}
-		else
-		  memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth*nHeight * m_nBitsPerPixel)/8);
+	  const int nWidth = labs(m_pPicConcat->Get1stWidth());
+	  const int nHeight = labs(m_pPicConcat->Get1stHeight());
+	  if(m_Vflip)
+	  {
+	    const int RowLen = (nWidth*m_nBitsPerPixel)/8;
+	    BYTE *pDst = pBufferOut;
+	    const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
+	    int y = nHeight;
+	    while(y-->0)
+	    {
+	      pSrc -= RowLen;
+              memcpy(pDst, pSrc, RowLen);
+	      pDst += RowLen;
+	    }
+	  }
+	  else
+     	      memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth*nHeight * m_nBitsPerPixel)/8);
 	}
-	else
+	else if(m_pSampleBuffers[1])
 	{
-		const int nWidth = labs(m_pPicConcat->Get2ndWidth());
-		const int nHeight = labs(m_pPicConcat->Get2ndHeight());
-		if(m_Vflip)
-		{
-		  const int RowLen = (nWidth*m_nBitsPerPixel)/8;
-		  BYTE *pDst = pBufferOut;
-	      const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
-		  int y = nHeight;
-		  while(y-->0)
-		  {
-		    pSrc -= RowLen;
-            memcpy(pDst, pSrc, RowLen);
-		    pDst += RowLen;
-		  }
-		}
-		else
-		  memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth*nHeight * m_nBitsPerPixel)/8);		
+	  const int nWidth = labs(m_pPicConcat->Get2ndWidth());
+	  const int nHeight = labs(m_pPicConcat->Get2ndHeight());
+	  if(m_Vflip)
+	  {
+	    const int RowLen = (nWidth*m_nBitsPerPixel)/8;
+	    BYTE *pDst = pBufferOut;
+	    const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
+	    int y = nHeight;
+	    while(y-->0)
+	    {
+	      pSrc -= RowLen;
+              memcpy(pDst, pSrc, RowLen);
+	      pDst += RowLen;
+	    }
+	  }
+	  else
+	      memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth*nHeight * m_nBitsPerPixel)/8);		
 	}
 
 	pOutSample->SetActualDataLength(m_nOutputSize);
@@ -218,47 +218,42 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 HRESULT VideoMixingFilter::ReceiveFirstSample( IMediaSample *pSample )
 {
 	// Copy the secondary sample into our buffer
-	if (pSample)
-	{
-		BYTE *pBuffer = NULL;
-		HRESULT hr = pSample->GetPointer(&pBuffer);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
+  if(pSample)
+  {
+    BYTE *pBuffer = NULL;
+    HRESULT hr = pSample->GetPointer(&pBuffer);
+    if(FAILED(hr))
+    {
+	return hr;
+    }
+    if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
 
 		// Copy the buffer
-		memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
-		return GenerateOutputSample(pSample, 0);
-	}
-	else
-	{
-		return E_POINTER;
-	}
+    memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
+    return GenerateOutputSample(pSample, 0);
+  }
+  return E_POINTER;  
 }
 
 
 HRESULT VideoMixingFilter::ReceiveSecondSample( IMediaSample *pSample )
 {
 	// Copy the secondary sample into our buffer
-	if (pSample)
-	{
-		BYTE *pBuffer = NULL;
-		HRESULT hr = pSample->GetPointer(&pBuffer);
-		if (FAILED(hr))
-		{
-			return hr;
-		}
-		if (pBuffer == NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
+  if(pSample)
+  {
+    BYTE *pBuffer = NULL;
+    HRESULT hr = pSample->GetPointer(&pBuffer);
+    if(FAILED(hr))
+    {
+	return hr;
+    }
+    if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
 
 		// Copy the buffer
-		memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
-		return GenerateOutputSample(pSample, 1);
-	}
-	else
-	{
-		return E_POINTER;
-	}
+    memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
+    return GenerateOutputSample(pSample, 1);
+  }
+  return E_POINTER;
 }
 
 
@@ -380,6 +375,16 @@ void VideoMixingFilter::OnDisconnect(int nIndex)
       FreeMediaType(mediaType1);
   if(pBmih2)
       FreeMediaType(mediaType2);
+
+  if(nIndex<=1)
+  {
+    if(m_pSampleBuffers[nIndex] != NULL)
+    {
+      free(m_pSampleBuffers[nIndex]);
+      m_pSampleBuffers[nIndex] = NULL;
+    }
+    m_nSampleSizes[nIndex] = 0;
+  }
 }
 
 
@@ -489,7 +494,7 @@ HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
     const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)pMediaType->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
+    const BITMAPINFOHEADER * const pBiOut = &(pVihOut->bmiHeader);
     if(pBiOut->biHeight != m_pPicConcat->GetOutHeight())
     {
       if(labs(pBiOut->biHeight) == labs(m_pPicConcat->GetOutHeight()))

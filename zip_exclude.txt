@@ -50,4 +50,5 @@ core
 TestImage.exe
 CSIR_VPP_DshowFiltersInstaller*.exe
 out.txt
+videoprocessing/bin/*
 videoprocessing/doc/*
