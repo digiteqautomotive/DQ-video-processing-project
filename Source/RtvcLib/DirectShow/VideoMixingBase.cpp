@@ -448,13 +448,11 @@ STDMETHODIMP VideoMixingBase::Pause()
 	// However, if we have an input pin we do have an output pin
   else
   {
-    if(m_vOutputPins[0]==NULL || m_vOutputPins[0]->IsConnected()==FALSE)
+    if(m_vOutputPins[0]==NULL) //|| m_vOutputPins[0]->IsConnected()==FALSE // JFO: Unwanted functionality removed. 
     {
-		// TOREVISE: This step is taken from the CBaseFilter but doesn't prevent the graph from running
-		// m_State = State_Paused;
-		// However this line prevents the graph from running if the output pin of the multiplexer is not connected
-		return E_FAIL;
-
+	// TOREVISE: This step is taken from the CBaseFilter but doesn't prevent the graph from running
+	// m_State = State_Paused; However this line prevents the graph from running if the output pin of the multiplexer is not connected.	
+	return E_FAIL;
     }
     else 
     {
@@ -468,6 +466,7 @@ STDMETHODIMP VideoMixingBase::Pause()
       {
 	hr = CBaseFilter::Pause();
       }
+      if(SUCCEEDED(hr) && m_vOutputPins[0]->IsConnected()==FALSE) return S_FALSE;
     }
   }
   return hr;

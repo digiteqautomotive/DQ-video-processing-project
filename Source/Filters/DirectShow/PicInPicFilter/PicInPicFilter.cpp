@@ -280,6 +280,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 
 HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
 {
+  if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
 	// Copy the secondary sample into our buffer
   if(pSample)
   {
@@ -303,6 +304,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
 
 HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
 {
+  if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
 	// Copy the secondary sample into our buffer
   if(pSample)
   {

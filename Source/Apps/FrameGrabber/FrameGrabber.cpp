@@ -12,7 +12,7 @@
 #include "CustomSampleGrabberCB.h"
 #include <DirectShow/DirectShowHelper.h>
 #include <Shared/CommonDefs.h>
-#include <Shared/StringUtil.h>
+#include <GeneralUtils/StringUtil.h>
 #include <Shared/TimerUtil.h>
 
 /// Command line arguments
