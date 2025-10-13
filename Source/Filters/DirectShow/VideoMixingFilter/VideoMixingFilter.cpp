@@ -215,10 +215,14 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 }
 
 
-HRESULT VideoMixingFilter::ReceiveFirstSample( IMediaSample *pSample )
+HRESULT VideoMixingFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
+  if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
+  if(!pSample) return E_POINTER;  
+  if(!m_vInputPins[1]->IsConnected())			// Do not modify anything  when input1 is not connected.
+      return m_vOutputPins[0]->GetInputPin()->Receive(pSample);
+
 	// Copy the secondary sample into our buffer
-  if(pSample)
   {
     BYTE *pBuffer = NULL;
     HRESULT hr = pSample->GetPointer(&pBuffer);
@@ -230,16 +234,19 @@ HRESULT VideoMixingFilter::ReceiveFirstSample( IMediaSample *pSample )
 
 		// Copy the buffer
     memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
-    return GenerateOutputSample(pSample, 0);
   }
-  return E_POINTER;  
+  return GenerateOutputSample(pSample, 0);
 }
 
 
-HRESULT VideoMixingFilter::ReceiveSecondSample( IMediaSample *pSample )
+HRESULT VideoMixingFilter::ReceiveSecondSample(IMediaSample *pSample)
 {
-	// Copy the secondary sample into our buffer
-  if(pSample)
+  if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
+  if(!pSample) return E_POINTER;  
+  if(!m_vInputPins[0]->IsConnected())			// Do not modify anything  when input0 is not connected.
+      return m_vOutputPins[0]->GetInputPin()->Receive(pSample);
+
+	// Copy the secondary sample into our buffer  
   {
     BYTE *pBuffer = NULL;
     HRESULT hr = pSample->GetPointer(&pBuffer);
@@ -251,9 +258,8 @@ HRESULT VideoMixingFilter::ReceiveSecondSample( IMediaSample *pSample )
 
 		// Copy the buffer
     memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
-    return GenerateOutputSample(pSample, 1);
   }
-  return E_POINTER;
+  return GenerateOutputSample(pSample, 1);
 }
 
 
@@ -531,4 +537,3 @@ void VideoMixingFilter::doGetVersion(std::string& sVersion)
 {
   sVersion = VersionInfo::toString();
 }
-
