@@ -167,13 +167,13 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       {
         m_pScaler = new PicScalerYUV420PImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
-      } else
-      if(pmt->subtype==MEDIASUBTYPE_YUYV || pmt->subtype==MEDIASUBTYPE_YUY2 || pmt->subtype==MEDIASUBTYPE_YVYU)
+      } 
+      else if(pmt->subtype==MEDIASUBTYPE_YUYV || pmt->subtype==MEDIASUBTYPE_YUY2 || pmt->subtype==MEDIASUBTYPE_YVYU)
       {
         m_pScaler = new PicScalerYUYVImpl();		// YVYU and YUYV are different, but the can use a same scaller.
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;
       }
-      if(pmt->subtype==MEDIASUBTYPE_UYVY)
+      else if(pmt->subtype==MEDIASUBTYPE_UYVY)
       {
         m_pScaler = new PicScalerUYVYImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same as UYVY

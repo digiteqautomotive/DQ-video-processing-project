@@ -135,7 +135,7 @@ private:
 	int m_nOrientation;
 
 	// Picture concatenation class
-	PicConcatBase* m_pPicConcat;
+	PicConcatBase *m_pPicConcat;
 
 	/// Stores bytes per needed to store pixel according to media type
 	unsigned m_nBitsPerPixel;

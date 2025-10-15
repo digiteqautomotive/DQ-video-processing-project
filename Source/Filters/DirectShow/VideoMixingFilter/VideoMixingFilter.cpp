@@ -307,7 +307,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     return S_OK;
   }
 
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
   {
     if(m_pPicConcat!=NULL)
     {
@@ -342,12 +342,12 @@ void VideoMixingFilter::OnDisconnect(int nIndex)
     {
       if(mediaType1.formattype==FORMAT_VideoInfo)
       {
-	VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType1.pbFormat;
+	VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*)mediaType1.pbFormat;
 	pBmih1 = &pVih->bmiHeader;
       }
       if(mediaType1.formattype==FORMAT_VideoInfo2)
       {
-	VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*) mediaType1.pbFormat;
+	VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*)mediaType1.pbFormat;
 	pBmih1 = &pVih2->bmiHeader;
       }
     }
@@ -362,12 +362,12 @@ void VideoMixingFilter::OnDisconnect(int nIndex)
     {
       if(mediaType2.formattype==FORMAT_VideoInfo)
       {
-	VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*) mediaType2.pbFormat;
+	VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*)mediaType2.pbFormat;
 	pBmih2 = &pVih->bmiHeader;
       }
       if(mediaType2.formattype==FORMAT_VideoInfo2)
       {
-	VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*) mediaType2.pbFormat;
+	VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*)mediaType2.pbFormat;
 	pBmih2 = &pVih2->bmiHeader;
       }
     }
@@ -524,9 +524,16 @@ HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
   }
   else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
   {
-    if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
     {
-      return S_OK;
+      if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
+        return S_OK;
+    }
+    else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+    {
+      if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
+         ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
+        return S_OK;
     }
   }
   return S_FALSE;

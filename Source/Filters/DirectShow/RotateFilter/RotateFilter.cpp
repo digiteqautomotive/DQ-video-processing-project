@@ -80,13 +80,15 @@ void RotateFilter::InitialiseInputTypes()
 	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
 	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
         AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+        AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
 }
+
 
 HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
 {
-	HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
-	if (direction == PINDIR_INPUT)
-	{
+  HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
+  if(direction == PINDIR_INPUT)
+  {
 		//Determine whether we are connected to a RGB24 or 32 source
 		if (pmt->majortype == MEDIATYPE_Video)
 		{
@@ -101,18 +103,18 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
 				m_pRotate = new PicRotateRGB24Impl();
 				m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
 			}
-			else if (pmt->subtype == MEDIASUBTYPE_RGB32 || pmt->subtype == MEDIASUBTYPE_ARGB32)
+			else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
 			{
 				m_pRotate = new PicRotateRGB32Impl();
 				m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
 			}
 		}
-	}
-	return hr;
+  }
+  return hr;
 }
 
 
-HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
+HRESULT RotateFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
 	if (iPosition < 0)
 	{
@@ -192,7 +194,8 @@ HRESULT RotateFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 	return VFW_S_NO_MORE_ITEMS;
 }
 
-HRESULT RotateFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp )
+
+HRESULT RotateFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
 	// Adding padding to take stride into account
 	pProp->cbBuffer = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
@@ -305,6 +308,12 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
   if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32) return S_OK;
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+
+  if(mtIn->subtype == MEDIASUBTYPE_AYUV)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_AYUV) return S_OK;
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
 

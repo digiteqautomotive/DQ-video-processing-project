@@ -373,7 +373,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
     }
     return S_OK;
   }
-  else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32)
+  else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
   {
     if(m_pPicInPic!=NULL)
     {
@@ -475,9 +475,16 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   }
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
   {
-    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32)
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
     {
-      return S_OK;
+      if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
+        return S_OK;
+    }
+    else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+    {
+      if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
+         ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
+        return S_OK;
     }
   }
   return S_FALSE;
