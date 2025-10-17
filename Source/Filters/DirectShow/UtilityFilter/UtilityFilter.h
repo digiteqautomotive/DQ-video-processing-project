@@ -129,33 +129,13 @@ public:
   STDMETHODIMP Run( REFERENCE_TIME tStart );
   STDMETHODIMP Stop(void);
 
-  STDMETHODIMP GetPages(CAUUID *pPages)
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_UtilityProperties;
-		return S_OK;
-	}
+  STDMETHODIMP GetPages(CAUUID *pPages);
 
   virtual void doGetVersion(std::string& sVersion);
 
   /// Overridden from CSettingsInterface
-  virtual void initParameters() 
-  {
-    addParameter(UF_PARAM_X, &m_uiX, 0);
-    addParameter(UF_PARAM_Y, &m_uiY, 0);
-    addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0);
-    addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0);
-    addParameter(UF_MODE, &m_uiFramerateEstimationMode, 1);
-    addParameter("writeonframe", &m_bWriteOnFrame, true);
-    addParameter(UF_PRECISION, &m_uiPrecision, 1);
-    addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
-  }
+  virtual void initParameters(void);
+
   STDMETHODIMP SetParameter( const char* type, const char* value);
 
   STDMETHODIMP GetMeasurement(char* value, int* buffersize);

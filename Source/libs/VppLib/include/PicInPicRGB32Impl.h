@@ -59,7 +59,7 @@ public:
 	PicInPicRGB32Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) { }
 	virtual ~PicInPicRGB32Impl(void) {}
 
-        virtual int GetVideoFormat(void) const {return 24;}
+        virtual int GetVideoFormat(void) const {return 32;}
 
 protected:
     // Interface.
