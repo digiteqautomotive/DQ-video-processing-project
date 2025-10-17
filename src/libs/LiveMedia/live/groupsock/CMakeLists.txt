@@ -13,12 +13,12 @@ NetInterface.cpp
 SET(GROUPSOCK_HEADERS
 include/GroupEId.hh
 include/Groupsock.hh
-include/GroupsockHelper.hh
 include/groupsock_version.hh
+include/GroupsockHelper.hh
 include/IOHandlers.hh
 include/NetAddress.hh
-include/NetInterface.hh
-include/TunnelEncaps.hh
+include/NetCommon.h
+include/NetInterface.hh 
 )
 
 INCLUDE_DIRECTORIES(

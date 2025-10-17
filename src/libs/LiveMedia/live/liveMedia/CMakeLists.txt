@@ -27,7 +27,7 @@ BitVector.cpp
 ByteStreamFileSource.cpp
 ByteStreamMemoryBufferSource.cpp
 ByteStreamMultiFileSource.cpp
-DarwinInjector.cpp
+#DarwinInjector.cpp
 DeviceSource.cpp
 DigestAuthentication.cpp
 DVVideoFileServerMediaSubsession.cpp
@@ -147,7 +147,7 @@ RTSPClient.cpp
 RTSPCommon.cpp
 RTSPRegisterSender.cpp
 RTSPServer.cpp
-RTSPServerSupportingHTTPStreaming.cpp
+#RTSPServerSupportingHTTPStreaming.cpp
 ServerMediaSession.cpp
 SimpleRTPSink.cpp
 SimpleRTPSource.cpp
@@ -155,7 +155,7 @@ SIPClient.cpp
 StreamParser.cpp
 StreamReplicator.cpp
 T140TextRTPSink.cpp
-TCPStreamSink.cpp
+#TCPStreamSink.cpp
 TextRTPSink.cpp
 TheoraVideoRTPSink.cpp
 TheoraVideoRTPSource.cpp
@@ -192,7 +192,7 @@ include/BitVector.hh
 include/ByteStreamFileSource.hh
 include/ByteStreamMemoryBufferSource.hh
 include/ByteStreamMultiFileSource.hh
-include/DarwinInjector.hh
+#include/DarwinInjector.hh
 include/DeviceSource.hh
 include/DigestAuthentication.hh
 include/DVVideoFileServerMediaSubsession.hh
@@ -299,14 +299,14 @@ include/RTSPClient.hh
 include/RTSPCommon.hh
 include/RTSPRegisterSender.hh
 include/RTSPServer.hh
-include/RTSPServerSupportingHTTPStreaming.hh
+#include/RTSPServerSupportingHTTPStreaming.hh
 include/ServerMediaSession.hh
 include/SimpleRTPSink.hh
 include/SimpleRTPSource.hh
 include/SIPClient.hh
 include/StreamReplicator.hh
 include/T140TextRTPSink.hh
-include/TCPStreamSink.hh
+#include/TCPStreamSink.hh
 include/TextRTPSink.hh
 include/TheoraVideoRTPSink.hh
 include/TheoraVideoRTPSource.hh
