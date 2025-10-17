@@ -21,7 +21,9 @@ All rights reserved.
 #include "FilterPropertiesBase.h"
 
 
-#define BUFFER_SIZE 256
+#ifndef BUFFER_SIZE
+  #define BUFFER_SIZE 256
+#endif
 
 
 HRESULT FilterPropertiesBase::OnConnect(IUnknown *pUnk)

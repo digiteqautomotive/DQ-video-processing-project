@@ -278,51 +278,36 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 }
 
 
-HRESULT PicInPicFilter::ReceiveFirstSample( IMediaSample *pSample )
+HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
+  if(!pSample) return E_POINTER;
 	// Copy the secondary sample into our buffer
-  if(pSample)
-  {
+  { 
     BYTE *pBuffer = NULL;
     HRESULT hr = pSample->GetPointer(&pBuffer);
-    if(FAILED(hr))
-    {
-	return hr;
-    }
-
-		// Copy the buffer
-    memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
-    return GenerateOutputSample(pSample, 0);	/// @TODO Output sample is generated on 2x expected framerate - fix needed.
+    if(FAILED(hr)) return hr; 
+    if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
+    memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);		// Copy the buffer
   }
-  else
-  {
-    return E_POINTER;
-  }
+  return GenerateOutputSample(pSample, 0);
 }
 
 
-HRESULT PicInPicFilter::ReceiveSecondSample( IMediaSample *pSample )
+HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
 {
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
+  if(!pSample) return E_POINTER;
 	// Copy the secondary sample into our buffer
-  if(pSample)
   {
     BYTE *pBuffer = NULL;
     HRESULT hr = pSample->GetPointer(&pBuffer);
-    if(FAILED(hr))
-    {
-      return hr;
-    }
-
-		// Copy the buffer
-    memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
-    return GenerateOutputSample(pSample, 1);	/// @TODO Output sample is generated on 2x expected framerate - fix needed.
+    if(FAILED(hr)) return hr;
+    if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
+    memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);		// Copy the buffer
   }
-  else
-  {
-    return E_POINTER;
-  }
+  if(m_vInputPins[0]->IsConnected()) return S_OK;			// Do not generate output twice.
+  return GenerateOutputSample(pSample, 1);
 }
 
 
@@ -491,7 +476,7 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
 }
 
 
-// Override to control state dependent behaviour
+/// Override to control state dependent behaviour
 STDMETHODIMP PicInPicFilter::SetParameter( const char* type, const char* value )
 {
 HRESULT hr;

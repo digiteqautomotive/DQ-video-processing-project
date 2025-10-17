@@ -44,6 +44,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
+
 
 using namespace Gdiplus;
 //using namespace artist;
@@ -116,8 +118,18 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
   {
     return hr;
   }
-  if(mt.formattype != FORMAT_VideoInfo) return VFW_E_TYPE_NOT_ACCEPTED;
-  BITMAPINFOHEADER *pbmi = HEADER(mt.pbFormat);
+  const BITMAPINFOHEADER *pbmi = NULL;
+  if(mt.formattype==FORMAT_VideoInfo)
+  {
+    pbmi = HEADER(mt.pbFormat);
+  }
+  else if(mt.formattype==FORMAT_VideoInfo2)
+  {
+    VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)mt.pbFormat;
+    if(pVih2) pbmi=&(pVih2->bmiHeader);
+  }
+  else
+      return VFW_E_TYPE_NOT_ACCEPTED;
 
   // Get image buffer
   BYTE *pBuffer(NULL);
@@ -337,13 +349,13 @@ inline REFERENCE_TIME UtilityFilter::getDifference(REFERENCE_TIME tSampleStartTi
 
 HRESULT UtilityFilter::CheckInputType(const CMediaType* mtIn)
 {
-  // Check the major type.
-  if (mtIn->majortype != MEDIATYPE_Video)
+	// Check the major type.
+  if(mtIn->majortype != MEDIATYPE_Video)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
 
-  if (mtIn->formattype != FORMAT_VideoInfo)
+  if(mtIn->formattype!=FORMAT_VideoInfo && mtIn->formattype!=FORMAT_VideoInfo2)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }

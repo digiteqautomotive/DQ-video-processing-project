@@ -45,6 +45,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/SettingsInterface.h>
 
 
+#define BUFFER_SIZE 256
+
 /**
 * Property dialog base class. This is the base classes for the property pages of filters that provide the ISettingsInterface COM interface.
 * Sub classes must implement 
