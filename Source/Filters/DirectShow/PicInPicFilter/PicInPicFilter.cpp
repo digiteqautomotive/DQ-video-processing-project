@@ -494,23 +494,26 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
 // Override to control state dependent behaviour
 STDMETHODIMP PicInPicFilter::SetParameter( const char* type, const char* value )
 {
+HRESULT hr;
 	// For now, one cannot set any parameters once the output has been connected -> this will affect the buffersize
   if(m_vOutputPins[0] && m_vOutputPins[0]->IsConnected())
   {
     if(parameterChangeAffectsOutput(type))
-  		return E_FAIL;
+    {
+      char Buffer[80];
+      int pLength;
+      hr = CSettingsInterface::GetParameter(type,sizeof(Buffer),Buffer,&pLength);
+      if(FAILED(hr)) return hr;
+      if(strcmp(Buffer,value)) return E_FAIL;
+      return S_FALSE;			// Nothing to change, parameter is identical.
+    }
   }
 
-  if(SUCCEEDED(CSettingsInterface::SetParameter(type,value)))
-  {
-    reconfigure();
-    return S_OK;
-  }
-  else
-  {
-    return E_FAIL;
-  }
+  hr = CSettingsInterface::SetParameter(type,value);
+  if(SUCCEEDED(hr)) reconfigure();
+  return hr;
 }
+
 
 bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 {

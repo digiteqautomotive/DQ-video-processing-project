@@ -159,6 +159,7 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\CStatusInterface.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\CustomBaseFilter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\DirectShowHelper.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\FilterPropertiesBase.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\MultiIOBaseFilter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\MultiIOInputPin.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\MultiIOOutputPin.cpp" />

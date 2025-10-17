@@ -5,6 +5,7 @@ DirectShow/CSettingsInterface.cpp
 DirectShow/CStatusInterface.cpp
 DirectShow/CustomBaseFilter.cpp
 DirectShow/DirectShowHelper.cpp
+DirectShow/FilterPropertiesBase.cpp
 DirectShow/MultiIOBaseFilter.cpp
 DirectShow/MultiIOInputPin.cpp
 DirectShow/MultiIOOutputPin.cpp

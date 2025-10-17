@@ -7,11 +7,11 @@ TAG								: PIPRGB32I
 FILE NAME					: PicInPicRGB32Impl.cpp
 
 DESCRIPTION				: An RGB32 implementation derived from the general
-										PicInPicBase() class. Insert a packed RGB32 image
-										into another packed RGB32 image.
+					PicInPicBase() class. Insert a packed RGB32 image
+					into another packed RGB32 image.
 
-COPYRIGHT					: (c)CSIR 2007-2010 all rights resevered
-						  Copyright (c) 2025 Jaroslav Fojtik
+COPYRIGHT				: (c)CSIR 2007-2010 all rights resevered
+					  Copyright (c) 2025 Jaroslav Fojtik
 
 LICENSE						: Software License Agreement (BSD License)
 
