@@ -4,8 +4,8 @@
 #include <string>
 
 const unsigned MAJOR_VERSION = 1;
-const unsigned MINOR_VERSION = 4;
-const unsigned BUILD_VERSION = 7;
+const unsigned MINOR_VERSION = 5;
+const unsigned BUILD_VERSION = 10;
 
 /// 0.0.0: - Initial release of filter with version control
 

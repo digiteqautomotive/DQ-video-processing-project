@@ -87,8 +87,9 @@ public:
 	/// the picture concatenator dynamically. This method also tells us if the advert stream is tagged
 	HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
 
-	STDMETHODIMP Stop();
-	STDMETHODIMP Pause();
+        virtual STDMETHODIMP Run(REFERENCE_TIME tStart);
+	virtual STDMETHODIMP Stop();
+	virtual STDMETHODIMP Pause();
 
 	virtual void InitialiseInputTypes();
 	virtual void InitialiseOutputTypes();
@@ -146,4 +147,12 @@ protected:
         unsigned m_uiEndOfStreamCount;
         unsigned m_uiBeginFlushCount;
         unsigned m_uiEndFlushCount;
+        unsigned m_LastFrame_us;
+        unsigned m_iRepeatTime;
 };
+
+
+extern "C" {
+unsigned long long GetTickCount_us(void);
+}
+

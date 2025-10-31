@@ -168,6 +168,13 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     return m_vInputPins[nIndex]->Receive(pSample);
   }
 
+	// Provide frame rate limitation.
+  if(m_iRepeatTime > 0)
+  {
+    const unsigned CurrentTick = GetTickCount_us();
+    if(m_LastFrame_us+m_iRepeatTime - CurrentTick < (unsigned)0x8000000) return S_OK;
+  }
+
   IMediaSample * pOutSample;
 	// Set up the output sample
   HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
@@ -254,6 +261,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     if (hr == NOERROR) 
     {
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
+      m_LastFrame_us += m_iRepeatTime;
     } 
     else 
     {
@@ -305,8 +313,7 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
     if(FAILED(hr)) return hr;
     if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
     memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);		// Copy the buffer
-  }
-  if(m_vInputPins[0]->IsConnected()) return S_OK;			// Do not generate output twice.
+  }  
   return GenerateOutputSample(pSample, 1);
 }
 
@@ -318,12 +325,20 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
   if(pMediaType->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER* const pVih = (const VIDEOINFOHEADER*) pMediaType->pbFormat;
-    if(pVih) bmih = &pVih->bmiHeader;
+    if(pVih)
+    {
+      if(pVih->AvgTimePerFrame>0) m_iRepeatTime=pVih->AvgTimePerFrame/10;
+      bmih = &pVih->bmiHeader;
+    }
   }
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
     const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*) pMediaType->pbFormat;
-    if(pVih2) bmih = &pVih2->bmiHeader;
+    if(pVih2)
+    {
+      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime=pVih2->AvgTimePerFrame/10;
+      bmih = &pVih2->bmiHeader;
+    }
   }
   if(bmih==NULL) return E_FAIL;
 

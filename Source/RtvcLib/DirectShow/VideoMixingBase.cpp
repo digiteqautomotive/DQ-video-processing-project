@@ -9,6 +9,7 @@ DESCRIPTION            :
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2017, CSIR
+Copyright (c) 2025, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,9 +50,10 @@ VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsi
     m_tStopTime2(0),
     m_uiEndOfStreamCount(0),
     m_uiBeginFlushCount(0),
-    m_uiEndFlushCount(0)
+    m_uiEndFlushCount(0),
+    m_LastFrame_us(0), m_iRepeatTime(0)
 {
-  memset(&m_VideoInHeader, 0, sizeof(VIDEOINFOHEADER) * 2);
+  memset(&m_VideoInHeader, 0, sizeof(m_VideoInHeader));
   memset(&ConnectionFormat,0,sizeof(ConnectionFormat));
 	//Hack virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
   Initialise();
@@ -193,6 +195,9 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
         VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
         if(pVih)
         {
+          pVih->AvgTimePerFrame = m_iRepeatTime*10;
+          if(m_iRepeatTime>0)
+              pVih->dwBitRate = ((unsigned long long)m_nOutputSize*8*1000000)/m_iRepeatTime;
 	  bmh1 = &pVih->bmiHeader;
           rcSource = &pVih->rcSource;
           rcTarget = &pVih->rcTarget;
@@ -203,6 +208,9 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
 	VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
         if(pVih2)
         {
+          pVih2->AvgTimePerFrame = m_iRepeatTime*10;
+          if(m_iRepeatTime>0)
+              pVih2->dwBitRate = ((unsigned long long)m_nOutputSize*8*1000000)/m_iRepeatTime;
 	  bmh1 = &pVih2->bmiHeader;
           rcSource = &pVih2->rcSource;
           rcTarget = &pVih2->rcTarget;
@@ -221,16 +229,22 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       bmh1->biCompression = BI_RGB;
 
 			// Set source rect
-      rcSource->left = 0;
-      rcSource->top = 0;
-      rcSource->right = m_nOutputWidth;
-      rcSource->bottom = m_nOutputHeight;
+      if(rcSource)
+      {
+        rcSource->left = 0;
+        rcSource->top = 0;
+        rcSource->right = m_nOutputWidth;
+        rcSource->bottom = m_nOutputHeight;
+      }
 
 			// Set target rect
-      rcTarget->left = 0;
-      rcTarget->top = 0;
-      rcTarget->right = m_nOutputWidth;
-      rcTarget->bottom = m_nOutputHeight;
+      if(rcTarget)
+      {
+        rcTarget->left = 0;
+        rcTarget->top = 0;
+        rcTarget->right = m_nOutputWidth;
+        rcTarget->bottom = m_nOutputHeight;
+      }
     }
 
     return S_OK;
@@ -385,32 +399,40 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 	return S_OK;
 }
 
+
+STDMETHODIMP VideoMixingBase::Run(REFERENCE_TIME tStart)
+{
+  m_LastFrame_us = GetTickCount_us();
+  return CMultiIOBaseFilter::Run(tStart);
+}
+
+
 STDMETHODIMP VideoMixingBase::Stop()
 {
-	CAutoLock lck1(&m_csFilter);
-	if (m_State == State_Stopped) {
+  CAutoLock lck1(&m_csFilter);
+  if(m_State == State_Stopped) {
 		return NOERROR;
-	}
+  }
 	// If the pins are not connected
-	if (((m_vInputPins[0] == NULL || m_vInputPins[0]->IsConnected() == FALSE) &&
+  if(((m_vInputPins[0] == NULL || m_vInputPins[0]->IsConnected() == FALSE) &&
 		(m_vInputPins[1] == NULL || m_vInputPins[1]->IsConnected() == FALSE))||
 		m_vOutputPins[0]->IsConnected() == FALSE) 
-	{
-		m_State = State_Stopped;
-		return NOERROR;
-	}
+  {
+    m_State = State_Stopped;
+    return NOERROR;
+  }
 
-	ASSERT(m_vOutputPins[0]);
+  ASSERT(m_vOutputPins[0]);
 
 	// decommit the input pin before locking or we can deadlock
-        if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
+  if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
 	    m_vInputPins[0]->Inactive();
-        if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
+  if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
 	    m_vInputPins[1]->Inactive();
 
 	// synchronize with Receive calls
-	CAutoLock lck2(&m_csReceive);
-	m_vOutputPins[0]->Inactive();
+  CAutoLock lck2(&m_csReceive);
+  m_vOutputPins[0]->Inactive();
 
 	// allow a class derived from VideoMixingBase
 	// to know about starting and stopping streaming
@@ -422,7 +444,7 @@ STDMETHODIMP VideoMixingBase::Stop()
     //m_bEOSDelivered = FALSE;
   }
 
-	return S_OK;
+  return S_OK;
 }
 
 STDMETHODIMP VideoMixingBase::Pause()

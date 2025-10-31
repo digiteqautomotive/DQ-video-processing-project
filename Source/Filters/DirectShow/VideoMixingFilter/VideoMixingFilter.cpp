@@ -62,33 +62,33 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mix
 
 VideoMixingFilter::~VideoMixingFilter()
 {
-	if (m_pPicConcat)
-	{
-		delete m_pPicConcat;
-		m_pPicConcat = NULL;
-	}
+  if (m_pPicConcat)
+  {
+    delete m_pPicConcat;
+    m_pPicConcat = NULL;
+  }
 
-	for (int i = 0; i < 2; i++)
-	{
-		if (m_pSampleBuffers[i])
-		{
-			delete[] m_pSampleBuffers[i];
-			m_pSampleBuffers[i] = NULL;
-		}
-	}
+  for (int i = 0; i < 2; i++)
+  {
+    if (m_pSampleBuffers[i])
+    {
+      delete[] m_pSampleBuffers[i];
+      m_pSampleBuffers[i] = NULL;
+    }
+  }
 }
 
 
 CUnknown * WINAPI VideoMixingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
-	VideoMixingFilter* pFilter = new VideoMixingFilter();
-	return pFilter;
+  VideoMixingFilter* pFilter = new VideoMixingFilter();
+  return pFilter;
 }
 
 
 void VideoMixingFilter::initParameters(void)
 {
-	addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
+  addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
 }
 
 
@@ -97,121 +97,127 @@ void VideoMixingFilter::initParameters(void)
 HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
 	// Prepare output sample
-	const AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
-	DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
-	if (pProps->dwStreamId != AM_STREAM_MEDIA) {
-		return m_vInputPins[nIndex]->Receive(pSample);
+  const AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
+  DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
+  if (pProps->dwStreamId != AM_STREAM_MEDIA) {
+  	return m_vInputPins[nIndex]->Receive(pSample);
 	}
 
-	IMediaSample * pOutSample;
+	// Provide frame rate limitation.
+  if(m_iRepeatTime > 0)
+  {
+    const unsigned CurrentTick = GetTickCount_us();
+    if(m_LastFrame_us+m_iRepeatTime - CurrentTick < (unsigned)0x8000000) return S_OK;
+  }
+	
+  IMediaSample * pOutSample;
 	// Set up the output sample
-	HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
+  HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
 
-	if (FAILED(hr)) {
-		return hr;
-	}
+  if(FAILED(hr)) return hr;
 
-	BYTE *pBufferOut = NULL;
-	hr = pOutSample->GetPointer(&pBufferOut);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+  BYTE *pBufferOut = NULL;
+  hr = pOutSample->GetPointer(&pBufferOut);
+  if (FAILED(hr))
+  {
+    return hr;
+  }
 
 	////Set orientation
-	if (m_nOrientation == 0)
-	{
+  if (m_nOrientation == 0)
+  {
 		// Horizontal 3 (RIGHT)
-		m_pPicConcat->SetOrientation(PicConcatBase::RIGHT);
-	}
-	else
-	{
+    m_pPicConcat->SetOrientation(PicConcatBase::RIGHT);
+  }
+  else
+  {
 		// Vertical = 1 (BOTTOM)
-		m_pPicConcat->SetOrientation(PicConcatBase::BOTTOM);
-	}
+    m_pPicConcat->SetOrientation(PicConcatBase::BOTTOM);
+  }
 
 	// Concat the pictures
-	if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
+  if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
 		m_pPicConcat->Concat(m_pSampleBuffers[0], m_pSampleBuffers[1], pBufferOut, m_Vflip);
-	else if(m_pSampleBuffers[0])
-	{
-	  const int nWidth = labs(m_pPicConcat->Get1stWidth());
-	  const int nHeight = labs(m_pPicConcat->Get1stHeight());
-	  if(m_Vflip)
-	  {
-	    const int RowLen = (nWidth*m_nBitsPerPixel)/8;
-	    BYTE *pDst = pBufferOut;
-	    const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
-	    int y = nHeight;
-	    while(y-->0)
-	    {
-	      pSrc -= RowLen;
-              memcpy(pDst, pSrc, RowLen);
-	      pDst += RowLen;
-	    }
-	  }
-	  else
-     	      memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth*nHeight * m_nBitsPerPixel)/8);
-	}
-	else if(m_pSampleBuffers[1])
-	{
-	  const int nWidth = labs(m_pPicConcat->Get2ndWidth());
-	  const int nHeight = labs(m_pPicConcat->Get2ndHeight());
-	  if(m_Vflip)
-	  {
-	    const int RowLen = (nWidth*m_nBitsPerPixel)/8;
-	    BYTE *pDst = pBufferOut;
-	    const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
-	    int y = nHeight;
-	    while(y-->0)
-	    {
-	      pSrc -= RowLen;
-              memcpy(pDst, pSrc, RowLen);
-	      pDst += RowLen;
-	    }
-	  }
-	  else
-	      memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth*nHeight * m_nBitsPerPixel)/8);		
-	}
+  else if(m_pSampleBuffers[0])
+  {
+    const int nWidth = labs(m_pPicConcat->Get1stWidth());
+    const int nHeight = labs(m_pPicConcat->Get1stHeight());
+    if(m_Vflip)
+    {
+      const int RowLen = (nWidth*m_nBitsPerPixel)/8;
+      BYTE *pDst = pBufferOut;
+      const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
+      int y = nHeight;
+      while(y-->0)
+      {
+        pSrc -= RowLen;
+        memcpy(pDst, pSrc, RowLen);
+	pDst += RowLen;
+      }
+    }
+    else
+        memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth*nHeight * m_nBitsPerPixel)/8);
+  }
+  else if(m_pSampleBuffers[1])
+  {
+    const int nWidth = labs(m_pPicConcat->Get2ndWidth());
+    const int nHeight = labs(m_pPicConcat->Get2ndHeight());
+    if(m_Vflip)
+    {
+      const int RowLen = (nWidth*m_nBitsPerPixel)/8;
+      BYTE *pDst = pBufferOut;
+      const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
+      int y = nHeight;
+      while(y-->0)
+      {
+        pSrc -= RowLen;
+        memcpy(pDst, pSrc, RowLen);
+	pDst += RowLen;
+      }
+    }
+    else
+        memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth*nHeight * m_nBitsPerPixel)/8);		
+  }
 
-	pOutSample->SetActualDataLength(m_nOutputSize);
-	pOutSample->SetSyncPoint(TRUE);
+  pOutSample->SetActualDataLength(m_nOutputSize);
+  pOutSample->SetSyncPoint(TRUE);
 
 	// Stop the clock and log it (if PERF is defined)
-	MSR_STOP(m_idTransform);
+  MSR_STOP(m_idTransform);
 
-	if (FAILED(hr)) {
+  if (FAILED(hr)) {
 		DbgLog((LOG_TRACE,1,TEXT("Error from transform")));
-	} 
-	else 
-	{
+  } 
+  else 
+  {
 		// the Transform() function can return S_FALSE to indicate that the
 		// sample should not be delivered; we only deliver the sample if it's
 		// really S_OK (same as NOERROR, of course.)
-		if (hr == NOERROR) 
-		{
-			hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
-		} 
-		else 
-		{
+    if (hr == NOERROR) 
+    {
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
+      m_LastFrame_us += m_iRepeatTime;
+    } 
+    else 
+    {
 			// S_FALSE returned from Transform is a PRIVATE agreement
 			// We should return NOERROR from Receive() in this cause because returning S_FALSE
 			// from Receive() means that this is the end of the stream and no more data should
 			// be sent.
-			if (S_FALSE == hr) 
-			{
+      if (S_FALSE == hr) 
+      {
 				//  Release the sample before calling notify to avoid
 				//  deadlocks if the sample holds a lock on the system
 				//  such as DirectDraw buffers do
-				pOutSample->Release();
-				return NOERROR;
-			}
-		}
-	}
+        pOutSample->Release();
+        return NOERROR;
+      }
+    }
+  }
 	// release the output buffer. If the connected pin still needs it,
 	// it will have addrefed it itself.
-	pOutSample->Release();
-	return hr;
+  pOutSample->Release();
+  return hr;
 }
 
 
@@ -270,12 +276,20 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
   if(pMediaType->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER* const pVih = (const VIDEOINFOHEADER*) pMediaType->pbFormat;
-    if(pVih) bmih = &pVih->bmiHeader;
+    if(pVih)
+    {
+      if(pVih->AvgTimePerFrame>0) m_iRepeatTime=pVih->AvgTimePerFrame/10;
+      bmih = &pVih->bmiHeader;
+    }
   }
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
     const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*) pMediaType->pbFormat;
-    if(pVih2) bmih = &pVih2->bmiHeader;
+    if(pVih2)
+    {
+      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime=pVih2->AvgTimePerFrame/10;
+      bmih = &pVih2->bmiHeader;
+    }
   }
   if(bmih==NULL) return E_FAIL;
 
@@ -471,7 +485,7 @@ return S_OK;
 
 
 /// Final agreement on output geometry.
-HRESULT VideoMixingFilter::CheckOutputType( const CMediaType* pMediaType )
+HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
 {
 	//Make sure the input and output types are related
   if(pMediaType->majortype != MEDIATYPE_Video)

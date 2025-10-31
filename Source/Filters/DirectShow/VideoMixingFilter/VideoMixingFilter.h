@@ -124,7 +124,7 @@ public:
 		}
 	}
 
-private:
+protected:
 
 	/// Pointers to our last received Media Sample
 	BYTE* m_pSampleBuffers[2];
