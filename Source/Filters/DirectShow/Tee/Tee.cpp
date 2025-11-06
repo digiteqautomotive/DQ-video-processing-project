@@ -263,7 +263,7 @@ HRESULT RtvcTee::CheckOutputType( const CMediaType* pMediaType )
 }
 
 
-void RtvcTee::doGetVersion(std::string& sVersion)
+void RtvcTee::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

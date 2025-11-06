@@ -4,13 +4,12 @@ MODULE				: VideoMixingFilter
 
 FILE NAME			: VideoMixingFilter.h
 
-DESCRIPTION			: Video Mixing Filter for RGB24 and RGB32 Media
+DESCRIPTION			: Video Mixing Filter for AYUV, RGB24 and RGB32 Media
 					  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-Copyright (c) 2025, Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025, Jaroslav Fojtik, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -75,7 +74,7 @@ public:
 	///  From CBasePin
 	virtual HRESULT CheckOutputType(const CMediaType* pMediaType);
 
-	/// Overridden from VideoMixingBase 
+		/// Overridden from VideoMixingBase 
 	virtual HRESULT ReceiveFirstSample(IMediaSample *pSample);
 	/// Overridden from VideoMixingBase 
 	virtual HRESULT ReceiveSecondSample(IMediaSample *pSample);
@@ -84,45 +83,21 @@ public:
 	/// Overridden from VideoMixingBase 
         virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
-	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
+	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex, const BYTE *pSampleBuffer0, const BYTE *pSampleBuffer1);
 
 	virtual void initParameters();
 
         virtual void OnDisconnect(int nIndex);
 
-	virtual void doGetVersion(std::string& sVersion);
+	virtual void doGetVersion(std::string& sVersion) const;
+
+        void FeedRegion(void* pImg) const;
 
 	/// For configuration dialog
-	STDMETHODIMP GetPages(CAUUID *pPages)
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_VideoMixingProperties;
-		return S_OK;
-	}
+	STDMETHODIMP GetPages(CAUUID *pPages);
 
 	/// For configuration dialog
-	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-	{
-		if (riid == IID_ISpecifyPropertyPages)
-		{
-			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else if(riid == (IID_ISettingsInterface))
-		{
-			return GetInterface((ISettingsInterface*) this, ppv);
-		}
-		else
-		{
-			// Call the parent class.
-			return VideoMixingBase::NonDelegatingQueryInterface(riid, ppv);
-		}
-	}
+	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
 protected:
 
@@ -140,4 +115,6 @@ protected:
 	/// Stores bytes per needed to store pixel according to media type
 	unsigned m_nBitsPerPixel;
 	bool m_Vflip;
+	unsigned m_FeedHeight, m_FeedWidth;
+	unsigned m_Feed_xPos, m_Feed_yPos;
 };

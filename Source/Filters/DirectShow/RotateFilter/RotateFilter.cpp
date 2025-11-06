@@ -380,7 +380,7 @@ void RotateFilter::RecalculateFilterParameters()
 }
 
 
-void RotateFilter::doGetVersion(std::string& sVersion)
+void RotateFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

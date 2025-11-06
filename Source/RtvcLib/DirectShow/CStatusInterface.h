@@ -75,7 +75,7 @@ public:
     STDMETHODIMP GetFriendlyID( long& lId );
 
 protected:
-  virtual void doGetVersion(std::string& sVersion) = 0;
+  virtual void doGetVersion(std::string& sVersion) const = 0;
   /**
    * @brief Helper method that can be used by sub-classes
    */

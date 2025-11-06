@@ -4,12 +4,12 @@ MODULE				: VideoMixingFilter
 
 FILE NAME			: VideoMixingFilter.cpp
 
-DESCRIPTION			: 
+DESCRIPTION			: Video Mixing Filter for AYUV, RGB24 and RGB32 Media
 					  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-Copyright (c) 2025, Jaroslav Fojtik All rights reserved.
+Copyright (c) 2025, Jaroslav Fojtik, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -47,7 +47,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
 	m_pPicConcat(NULL),
-        m_Vflip(false)
+        m_Vflip(false),
+        m_FeedHeight(0), m_FeedWidth(0),
+	m_Feed_xPos(0), m_Feed_yPos(0)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
@@ -62,13 +64,13 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mix
 
 VideoMixingFilter::~VideoMixingFilter()
 {
-  if (m_pPicConcat)
+  if(m_pPicConcat)
   {
     delete m_pPicConcat;
     m_pPicConcat = NULL;
   }
 
-  for (int i = 0; i < 2; i++)
+  for(int i = 0; i < 2; i++)
   {
     if (m_pSampleBuffers[i])
     {
@@ -94,7 +96,7 @@ void VideoMixingFilter::initParameters(void)
 
 /// This method renders output frame.
 /// @TODO: It looks like it is called twice time than necessary, must be limited framerate.
-HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
+HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex, const BYTE *pSampleBuffer0, const BYTE *pSampleBuffer1)
 {
 	// Prepare output sample
   const AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
@@ -136,9 +138,12 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
   }
 
 	// Concat the pictures
-  if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
-		m_pPicConcat->Concat(m_pSampleBuffers[0], m_pSampleBuffers[1], pBufferOut, m_Vflip);
-  else if(m_pSampleBuffers[0])
+  if(pSampleBuffer0 && pSampleBuffer1)
+  {
+    if(m_FeedHeight>0 && m_FeedWidth>0) FeedRegion(pBufferOut);
+    m_pPicConcat->Concat(pSampleBuffer0, pSampleBuffer1, pBufferOut, m_Vflip);    
+  }
+  else if(pSampleBuffer0)
   {
     const int nWidth = labs(m_pPicConcat->Get1stWidth());
     const int nHeight = labs(m_pPicConcat->Get1stHeight());
@@ -146,7 +151,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
     {
       const int RowLen = (nWidth*m_nBitsPerPixel)/8;
       BYTE *pDst = pBufferOut;
-      const BYTE *pSrc = m_pSampleBuffers[0] + (nWidth*nHeight*m_nBitsPerPixel) / 8;
+      const BYTE *pSrc = pSampleBuffer0 + (nWidth*nHeight*m_nBitsPerPixel) / 8;
       int y = nHeight;
       while(y-->0)
       {
@@ -156,9 +161,9 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
       }
     }
     else
-        memcpy(pBufferOut, m_pSampleBuffers[0], (nWidth*nHeight * m_nBitsPerPixel)/8);
+        memcpy(pBufferOut, pSampleBuffer0, (nWidth*nHeight * m_nBitsPerPixel)/8);
   }
-  else if(m_pSampleBuffers[1])
+  else if(pSampleBuffer1)
   {
     const int nWidth = labs(m_pPicConcat->Get2ndWidth());
     const int nHeight = labs(m_pPicConcat->Get2ndHeight());
@@ -166,7 +171,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
     {
       const int RowLen = (nWidth*m_nBitsPerPixel)/8;
       BYTE *pDst = pBufferOut;
-      const BYTE *pSrc = m_pSampleBuffers[1] + (nWidth * nHeight * m_nBitsPerPixel) / 8;
+      const BYTE *pSrc = pSampleBuffer1 + (nWidth * nHeight * m_nBitsPerPixel) / 8;
       int y = nHeight;
       while(y-->0)
       {
@@ -176,7 +181,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
       }
     }
     else
-        memcpy(pBufferOut, m_pSampleBuffers[1], (nWidth*nHeight * m_nBitsPerPixel)/8);		
+        memcpy(pBufferOut, pSampleBuffer1, (nWidth*nHeight * m_nBitsPerPixel)/8);		
   }
 
   pOutSample->SetActualDataLength(m_nOutputSize);
@@ -241,7 +246,7 @@ HRESULT VideoMixingFilter::ReceiveFirstSample(IMediaSample *pSample)
 		// Copy the buffer
     memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
   }
-  return GenerateOutputSample(pSample, 0);
+  return GenerateOutputSample(pSample, 0, m_pSampleBuffers[0], m_pSampleBuffers[1]);
 }
 
 
@@ -265,7 +270,7 @@ HRESULT VideoMixingFilter::ReceiveSecondSample(IMediaSample *pSample)
 		// Copy the buffer
     memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
   }
-  return GenerateOutputSample(pSample, 1);
+  return GenerateOutputSample(pSample, 1, m_pSampleBuffers[0], m_pSampleBuffers[1]);
 }
 
 
@@ -410,25 +415,48 @@ void VideoMixingFilter::OnDisconnect(int nIndex)
 
 HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
+  m_FeedHeight = m_FeedWidth = m_Feed_xPos = m_Feed_yPos = 0;
   if(pBmih1 && pBmih2)
   {
 		// Verify that the dimensions match and set output width and height
-    switch (m_nOrientation)
+    switch(m_nOrientation)
     {
-	case 0: 
-		{
-		//if (pBmih1->biHeight != pBmih2->biHeight) return E_FAIL; 			// Height must be the same
-		nOutputWidth = labs(pBmih1->biWidth) + labs(pBmih2->biWidth);
+	case 0: nOutputWidth = labs(pBmih1->biWidth) + labs(pBmih2->biWidth);
 		nOutputHeight = MAX(labs(pBmih1->biHeight),labs(pBmih2->biHeight));
-		break;
-		}
-	case 1: 
+		if(labs(pBmih1->biHeight) != labs(pBmih2->biHeight)) 
 		{
-		//if (pBmih1->biWidth!= pBmih2->biWidth) return E_FAIL; 			// Width must be the same
+	          if(labs(pBmih1->biHeight) < labs(pBmih2->biHeight)) 
+		  {
+		    m_FeedWidth = labs(pBmih1->biWidth);
+		    m_FeedHeight = nOutputHeight - labs(pBmih1->biHeight);
+		  }
+		  else
+		  {
+		    m_FeedWidth = labs(pBmih2->biWidth);
+		    m_FeedHeight = nOutputHeight - labs(pBmih2->biHeight);
+		    m_Feed_xPos = labs(pBmih1->biWidth);
+		  }
+		}
+		break;
+	case 1:
 		nOutputWidth = MAX(labs(pBmih1->biWidth), labs(pBmih2->biWidth));
 		nOutputHeight = labs(pBmih1->biHeight) + labs(pBmih2->biHeight);
-		break;
+	        if(labs(pBmih1->biWidth) != labs(pBmih2->biWidth))
+		{                  
+		  if(labs(pBmih1->biWidth) < labs(pBmih2->biWidth))
+		  {
+                    m_Feed_xPos = labs(pBmih1->biWidth);
+		    m_FeedHeight = labs(pBmih1->biHeight);
+		    m_Feed_yPos = nOutputHeight - m_FeedHeight;
+		  }
+		  else
+		  {
+                    m_Feed_xPos = labs(pBmih2->biWidth);
+		    m_FeedHeight = labs(pBmih2->biHeight);
+		  }
+		  m_FeedWidth = nOutputWidth - m_Feed_xPos;
 		}
+		break;		
     }
     nOutputSize =  (nOutputWidth*nOutputHeight*m_nBitsPerPixel)/8;;
 
@@ -497,24 +525,21 @@ HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
 
   	// Video format
   m_Vflip = false;
+  const BITMAPINFOHEADER * pBiOut = NULL;
   if(pMediaType->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)pMediaType->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_pPicConcat->GetOutHeight())
-    {
-      if(labs(pBiOut->biHeight) == labs(m_pPicConcat->GetOutHeight()))
-        m_Vflip = true;
-      else
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
-    }
-    if(pBiOut->biWidth != m_pPicConcat->GetOutWidth())
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+    if(pVihOut!=NULL) pBiOut = &(pVihOut->bmiHeader);
   }
-  else if(pMediaType->formattype==FORMAT_VideoInfo2)
+  else
+  if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
-    const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)pMediaType->pbFormat;
-    const BITMAPINFOHEADER * const pBiOut = &(pVihOut->bmiHeader);
+    const VIDEOINFOHEADER2 * const pVihOut2 = (const VIDEOINFOHEADER2*)pMediaType->pbFormat;
+    if(pVihOut2!=NULL) pBiOut = &(pVihOut2->bmiHeader);
+  }
+
+  if(pBiOut)
+  {
     if(pBiOut->biHeight != m_pPicConcat->GetOutHeight())
     {
       if(labs(pBiOut->biHeight) == labs(m_pPicConcat->GetOutHeight()))
@@ -527,7 +552,6 @@ HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
   }
   else
       return VFW_E_TYPE_NOT_ACCEPTED;
-
 
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
   {
@@ -554,7 +578,52 @@ HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
 }
 
 
-void VideoMixingFilter::doGetVersion(std::string& sVersion)
+void VideoMixingFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
+}
+
+
+void VideoMixingFilter::FeedRegion(void* pImg) const
+{
+  unsigned char *pDst = (unsigned char*)pImg;
+  const unsigned PxSz = m_nBitsPerPixel/8;
+
+  pDst += PxSz*(m_Feed_yPos*m_nOutputWidth + m_Feed_xPos);
+  unsigned y = m_FeedHeight;
+  while(y-- > 0)
+  {
+    memset(pDst, 0x0, PxSz*m_FeedWidth);	// Feed whole row at a time.
+    pDst += PxSz*m_nOutputWidth;		// Next row.
+  } //end for y...
+}
+
+
+/// For configuration dialog
+HRESULT VideoMixingFilter::GetPages(CAUUID *pPages)
+{
+  if (pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if (pPages->pElems == NULL) 
+  {
+	return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_VideoMixingProperties;
+  return S_OK;
+}
+
+
+HRESULT VideoMixingFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if (riid == IID_ISpecifyPropertyPages)
+  {
+    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  }
+  else if(riid == (IID_ISettingsInterface))
+  {
+    return GetInterface((ISettingsInterface*) this, ppv);
+  }
+			// Call the parent class.
+  return VideoMixingBase::NonDelegatingQueryInterface(riid, ppv);
 }

@@ -509,7 +509,7 @@ void UtilityFilter::initParameters(void)
 }
 
 
-void UtilityFilter::doGetVersion(std::string& sVersion)
+void UtilityFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

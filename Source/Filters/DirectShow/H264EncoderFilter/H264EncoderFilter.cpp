@@ -881,7 +881,7 @@ STDMETHODIMP H264EncoderFilter::GenerateIdr()
 }
 
 
-void H264EncoderFilter::doGetVersion(std::string& sVersion)
+void H264EncoderFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

@@ -296,7 +296,7 @@ HRESULT Stereo2MonoFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
 }
 
 
-void Stereo2MonoFilter::doGetVersion(std::string& sVersion)
+void Stereo2MonoFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

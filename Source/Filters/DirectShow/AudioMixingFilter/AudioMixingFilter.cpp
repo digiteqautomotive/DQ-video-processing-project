@@ -690,7 +690,7 @@ STDMETHODIMP AudioMixingFilter::EndFlush( int nIndex )
 }
 
 
-void AudioMixingFilter::doGetVersion(std::string& sVersion)
+void AudioMixingFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

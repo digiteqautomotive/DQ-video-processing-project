@@ -296,7 +296,7 @@ STDMETHODIMP RGBtoYUV420Filter::SetParameter( const char* type, const char* valu
 }
 
 
-void RGBtoYUV420Filter::doGetVersion(std::string& sVersion)
+void RGBtoYUV420Filter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

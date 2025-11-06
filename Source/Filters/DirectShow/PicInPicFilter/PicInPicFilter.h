@@ -87,7 +87,7 @@ public:
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
-        virtual void doGetVersion(std::string& sVersion);
+        virtual void doGetVersion(std::string& sVersion) const;
 
 	virtual void initParameters();
 

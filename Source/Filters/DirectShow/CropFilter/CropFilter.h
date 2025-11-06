@@ -91,7 +91,7 @@ public:
    * <table border="0" cols="2"> <tr valign="top"> <td  width="50%"><b>Value</b></td> <td width="50%"><b>Description</b></td> </tr> <tr valign="top"> <td width="50%">S_OK</td> <td width="50%">The media types are compatible.</td> </tr> <tr valign="top"> <td width="50%">VFW_E_TYPE_NOT_ACCEPTED</td> <td width="50%">The media types are not compatible.</td> </tr> </table>
    */
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
-  virtual void doGetVersion(std::string& sVersion);
+  virtual void doGetVersion(std::string& sVersion) const;
   /// Overridden from CSettingsInterface
   virtual void initParameters();
   /// Overridden from CSettingsInterface

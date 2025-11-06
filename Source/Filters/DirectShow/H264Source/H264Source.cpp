@@ -644,7 +644,7 @@ HRESULT H264SourceFilter::SetTimeFormat( const GUID *pFormat )
 }
 
 
-void H264SourceFilter::doGetVersion(std::string& sVersion)
+void H264SourceFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

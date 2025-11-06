@@ -340,7 +340,7 @@ bool YuvSourceFilter::updatePictureBuffer(int iWidth, int iHeight, double dBytes
 }
 
 
-void YuvSourceFilter::doGetVersion(std::string& sVersion)
+void YuvSourceFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

@@ -430,7 +430,7 @@ HRESULT CropFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 }
 
 
-void CropFilter::doGetVersion(std::string& sVersion)
+void CropFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

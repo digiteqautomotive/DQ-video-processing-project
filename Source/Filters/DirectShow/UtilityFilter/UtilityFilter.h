@@ -131,7 +131,7 @@ public:
 
   STDMETHODIMP GetPages(CAUUID *pPages);
 
-  virtual void doGetVersion(std::string& sVersion);
+  virtual void doGetVersion(std::string& sVersion) const;
 
   /// Overridden from CSettingsInterface
   virtual void initParameters(void);

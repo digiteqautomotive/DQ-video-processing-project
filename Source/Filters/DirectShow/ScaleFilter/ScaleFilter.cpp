@@ -455,7 +455,7 @@ HRESULT ScaleFilter::RecalculateFilterParameters()
 }
 
 
-void ScaleFilter::doGetVersion(std::string& sVersion)
+void ScaleFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

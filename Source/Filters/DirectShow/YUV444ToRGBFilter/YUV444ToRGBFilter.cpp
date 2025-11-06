@@ -324,7 +324,7 @@ STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value
 }
 
 
-void YUV444toRGBFilter::doGetVersion(std::string& sVersion)
+void YUV444toRGBFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

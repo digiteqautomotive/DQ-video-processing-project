@@ -82,7 +82,7 @@ public:
 		return S_OK;
 	}
 
-  virtual void doGetVersion(std::string& sVersion);
+  virtual void doGetVersion(std::string& sVersion) const;
 
   /// Overridden from CSettingsInterface
   virtual void initParameters() { addParameter("channel", &m_channel, 0); }

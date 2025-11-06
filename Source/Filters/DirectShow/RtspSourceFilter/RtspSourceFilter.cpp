@@ -413,7 +413,7 @@ void RtspSourceFilter::setSynchronisedOffset( double dOffset )
 }
 
 
-void RtspSourceFilter::doGetVersion(std::string& sVersion)
+void RtspSourceFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

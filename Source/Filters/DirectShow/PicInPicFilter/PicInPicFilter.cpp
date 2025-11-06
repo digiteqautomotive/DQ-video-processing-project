@@ -656,7 +656,7 @@ void PicInPicFilter::reconfigure()
 }
 
 
-void PicInPicFilter::doGetVersion(std::string& sVersion)
+void PicInPicFilter::doGetVersion(std::string& sVersion) const
 {
   sVersion = VersionInfo::toString();
 }

@@ -4,11 +4,11 @@
 //
 #define APP_COMPANY_NAME_STRING "Digiteq Automotive s.r.o"
 #define PRODUCT_INFO_STRING "Direct show filter for video scalling"
-#define PRODUCT_VERSION "1.5.10"
+#define PRODUCT_VERSION "1.5.11"
 
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,3,3,0
+ FILEVERSION 1,5,11,0
  //PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG

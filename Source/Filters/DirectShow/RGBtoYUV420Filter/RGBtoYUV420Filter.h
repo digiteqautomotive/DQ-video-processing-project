@@ -99,7 +99,7 @@ public:
    * @brief Overridden from CCustomBaseFilter to define allowed input types
    */
   virtual void InitialiseInputTypes();
-  virtual void doGetVersion(std::string& sVersion);
+  virtual void doGetVersion(std::string& sVersion) const;
   /**
    * @brief Overridden from CSettingsInterface to intialise filter parameters
    */
