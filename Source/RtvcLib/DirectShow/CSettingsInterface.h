@@ -48,8 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \ingroup DirectShowLib
  * ISettingsInterface implementation.
  */
-class CSettingsInterface :
-	public ISettingsInterface
+class CSettingsInterface: public ISettingsInterface
 {
 public:
 	CSettingsInterface(void);

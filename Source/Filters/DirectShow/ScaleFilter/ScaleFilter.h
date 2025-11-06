@@ -57,8 +57,7 @@ class PicScalerBase;
 /**
  * \ingroup DirectShowFilters
  * Scale Filter for RGB24 and YUV420P Media
- * Scale parameters are settable via the ISettingsInterface COM interface.
- */
+ * Scale parameters are settable via the ISettingsInterface COM interface. */
 class ScaleFilter : public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:

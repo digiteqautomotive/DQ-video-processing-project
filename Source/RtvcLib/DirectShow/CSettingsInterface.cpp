@@ -43,15 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace artist;
 #endif
 
+
 CSettingsInterface::CSettingsInterface(void)
 {
-  ;
 }
+
 
 CSettingsInterface::~CSettingsInterface(void)
 {
-  ;
 }
+
 
 void CSettingsInterface::addParameter(const std::string& sParamName, int* pAddr, int nDefaultValue, bool bReadOnly, std::vector<int> vAllowedValues)
 {
@@ -315,6 +316,7 @@ STDMETHODIMP CSettingsInterface::SetParameter(const char* type, const char* valu
   return S_OK;
 }
 
+
 STDMETHODIMP CSettingsInterface::GetParameterSettings(char* szResult, int nSize)
 {
   // Iterate over all the different params and display their current values
@@ -372,6 +374,7 @@ STDMETHODIMP CSettingsInterface::GetParameterSettings(char* szResult, int nSize)
   // Buffer is too small
   return E_FAIL;
 }
+
 
 bool CSettingsInterface::revertParameter(const char* type)
 {

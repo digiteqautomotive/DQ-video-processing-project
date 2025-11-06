@@ -47,7 +47,7 @@ typedef std::vector<GUID*> GUIDList_t;
  * \ingroup DirectShowLib
  *  Base class for CSIR 1 to 1 transform filters. This class inherits from CSettingsInterface and CStatusInterface to give all our filters basic configuration and notification functionality.
  */
-class CCustomBaseFilter : public CTransformFilter, public CSettingsInterface, public CStatusInterface
+class CCustomBaseFilter: public CTransformFilter, public CSettingsInterface, public CStatusInterface
 {
   //this needs to be declared for the extra interface (adds the COM AddRef, etc methods)
   DECLARE_IUNKNOWN;

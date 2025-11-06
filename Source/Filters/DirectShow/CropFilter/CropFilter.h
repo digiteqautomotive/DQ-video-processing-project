@@ -53,8 +53,7 @@ class PicCropperBase;
  * 
  * Crop parameters can be set using the COM SettingsInterface SetParameter method.
  */
-class CropFilter : public CCustomBaseFilter,
-  public ISpecifyPropertyPages
+class CropFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN

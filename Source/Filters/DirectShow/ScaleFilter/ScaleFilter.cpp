@@ -233,7 +233,13 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
     else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
             pMediaType->subtype==MEDIASUBTYPE_UYVY)
+    {
+       if((m_nOutWidth & 1)==1)
+       {
+         pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;			// Odd values cannot be used for YUYV encoding.
+       }
        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
+    }
     else
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
     pMediaType->lSampleSize = pBi->biSizeImage;
@@ -253,6 +259,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
   }
   return VFW_S_NO_MORE_ITEMS;
 }
+
 
 HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
