@@ -80,7 +80,7 @@ const AMOVIESETUP_PIN AMSPinVCam =
 const AMOVIESETUP_FILTER AMSFilterVCam =
 {
   &CLSID_VPP_VirtualCam,    // Filter CLSID
-  L"CSIR VPP Virtual Cam",  // String name
+  L"DQ VPP Virtual Cam",  // String name
   MERIT_DO_NOT_USE,         // Filter merit
   1,                        // Number pins
   &AMSPinVCam               // Pin details
@@ -89,7 +89,7 @@ const AMOVIESETUP_FILTER AMSFilterVCam =
 CFactoryTemplate g_Templates[] =
 {
   {
-    L"CSIR VPP Virtual Cam",
+    L"DQ VPP Virtual Cam",
     &CLSID_VPP_VirtualCam,
     CVCam::CreateInstance,
     NULL,
@@ -116,7 +116,7 @@ STDAPI RegisterFilters(BOOL bRegister)
   hr = CoInitialize(0);
   if (bRegister)
   {
-    hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualCam, L"CSIR VPP Virtual Cam", achFileName, L"Both", L"InprocServer32");
+    hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualCam, L"DQ VPP Virtual Cam", achFileName, L"Both", L"InprocServer32");
   }
 
   if (SUCCEEDED(hr))
@@ -133,7 +133,7 @@ STDAPI RegisterFilters(BOOL bRegister)
         rf2.dwMerit = MERIT_DO_NOT_USE;
         rf2.cPins = 1;
         rf2.rgPins = &AMSPinVCam;
-        hr = fm->RegisterFilter(CLSID_VPP_VirtualCam, L"CSIR VPP Virtual Cam", &pMoniker, &CLSID_VideoInputDeviceCategory, NULL, &rf2);
+        hr = fm->RegisterFilter(CLSID_VPP_VirtualCam, L"DQ VPP Virtual Cam", &pMoniker, &CLSID_VideoInputDeviceCategory, NULL, &rf2);
       }
       else
       {

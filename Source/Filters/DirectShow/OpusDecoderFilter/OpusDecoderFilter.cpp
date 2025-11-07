@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Shared/Conversion.h>
 
 OpusDecoderFilter::OpusDecoderFilter()
-	: CCustomBaseFilter(NAME("CSIR VPP Opus Decoder"), 0, CLSID_VPP_OpusDecoder), m_pCodec(NULL)
+	: CCustomBaseFilter(NAME("DQ VPP Opus Decoder"), 0, CLSID_VPP_OpusDecoder), m_pCodec(NULL)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
 	InitialiseInputTypes();

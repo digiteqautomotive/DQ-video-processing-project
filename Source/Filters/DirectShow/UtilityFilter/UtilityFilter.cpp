@@ -51,7 +51,7 @@ using namespace Gdiplus;
 //using namespace artist;
 
 UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr)
-  : CTransInPlaceFilter(NAME("CSIR VPP Utility Filter"), pUnk, CLSID_VPP_UtilityFilter, pHr, false),
+  : CTransInPlaceFilter(NAME("DQ VPP Utility Filter"), pUnk, CLSID_VPP_UtilityFilter, pHr, false),
   m_dEstimatedFramerate(-1.0),
   m_dEstimatedBitrate(-1.0),
   m_bSeenFirstFrame(false),

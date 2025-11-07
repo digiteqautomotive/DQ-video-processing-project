@@ -40,16 +40,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Forward
 class ICodecv2;
 
-// {D235A2D7-39FA-41E1-BB36-09D62EB394DD}
-static const GUID CLSID_VPP_OpusDecoder =
-{ 0xd235a2d7, 0x39fa, 0x41e1, { 0xbb, 0x36, 0x9, 0xd6, 0x2e, 0xb3, 0x94, 0xdd } };
 
-// {01B34370-1AB1-44FA-B1EF-4BB4B4EB8BE6}
-static const GUID CLSID_OpusProperties =
-{ 0x1b34370, 0x1ab1, 0x44fa, { 0xb1, 0xef, 0x4b, 0xb4, 0xb4, 0xeb, 0x8b, 0xe6 } };
+// {A651E40B-AE34-4A5A-91B8-81C53F19463F}
+static const GUID CLSID_VPP_OpusDecoder = 
+{ 0xa651e40b, 0xae34, 0x4a5a, { 0x91, 0xb8, 0x81, 0xc5, 0x3f, 0x19, 0x46, 0x3f } };
+
+// {DB82B2AD-96DE-4FEB-A066-EF7A1275722D}
+static const GUID CLSID_OpusProperties = 
+{ 0xdb82b2ad, 0x96de, 0x4feb, { 0xa0, 0x66, 0xef, 0x7a, 0x12, 0x75, 0x72, 0x2d } };
 
 
-class OpusDecoderFilter : public CCustomBaseFilter
+class OpusDecoderFilter: public CCustomBaseFilter
 {
 public:
 	/**

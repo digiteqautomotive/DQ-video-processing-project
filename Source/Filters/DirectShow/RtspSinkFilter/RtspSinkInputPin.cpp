@@ -13,7 +13,7 @@
 #include <Media/MediaTypes.h>
 
 RtspSinkInputPin::RtspSinkInputPin( HRESULT* phr, RtspSinkFilter* pFilter, unsigned uiId )
-: CRenderedInputPin(NAME("CSIR VPP RTSP Sink Filter Input Pin"), pFilter, &m_stateLock, phr, L"Input"),
+: CRenderedInputPin(NAME("DQ VPP RTSP Sink Filter Input Pin"), pFilter, &m_stateLock, phr, L"Input"),
 	m_pFilter(pFilter), // Parent filter
   m_uiId(uiId),
   m_eType(MT_NOT_SET),

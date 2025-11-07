@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 
-VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("CSIR VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
+VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
 	m_pPicConcat(NULL),
         m_Vflip(false),
         m_FeedHeight(0), m_FeedWidth(0),

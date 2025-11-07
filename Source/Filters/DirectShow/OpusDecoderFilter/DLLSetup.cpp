@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"CSIR VPP Opus Decoder";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP Opus Decoder";   /// A name for the filter 
 
 const AMOVIESETUP_MEDIATYPE sudMediaTypes[] = 
 {

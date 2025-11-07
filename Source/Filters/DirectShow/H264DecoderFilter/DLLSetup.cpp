@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"CSIR VPP H264 Decoder";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP H264 Decoder";   /// A name for the filter 
 
 const AMOVIESETUP_MEDIATYPE sudMediaTypes[] = 
 {

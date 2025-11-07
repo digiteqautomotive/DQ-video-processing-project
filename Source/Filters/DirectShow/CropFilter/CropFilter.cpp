@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
-CropFilter::CropFilter(): CCustomBaseFilter(NAME("CSIR VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
+CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
   m_pCropper(NULL),
   m_pCropBuffer(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),

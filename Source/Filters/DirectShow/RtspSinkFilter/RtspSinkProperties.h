@@ -49,7 +49,7 @@ public:
   }
 
   RtspSinkProperties::RtspSinkProperties(IUnknown *pUnk) : 
-  FilterPropertiesBase(NAME("CSIR VPP RTSP Sink Properties"), pUnk, IDD_RTSP_SINK_DIALOG, IDS_RTSP_SINK_CAPTION)
+  FilterPropertiesBase(NAME("DQ VPP RTSP Sink Properties"), pUnk, IDD_RTSP_SINK_DIALOG, IDS_RTSP_SINK_CAPTION)
   {;}
 
   INT_PTR OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

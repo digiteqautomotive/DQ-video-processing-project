@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Stereo2MonoProperties.h"
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"CSIR VPP Stereo2Mono Filter";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP Stereo2Mono Filter";   /// A name for the filter 
 
 const AMOVIESETUP_MEDIATYPE sudMediaTypes[] =
 {

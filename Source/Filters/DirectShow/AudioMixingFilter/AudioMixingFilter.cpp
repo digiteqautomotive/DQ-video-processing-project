@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 AudioMixingFilter::AudioMixingFilter()
-  :CMultiIOBaseFilter("CSIR VPP Audio Mixer", 0, CLSID_VPP_AudioMixingFilter),
+  :CMultiIOBaseFilter("DQ VPP Audio Mixer", 0, CLSID_VPP_AudioMixingFilter),
   //m_pSample1(NULL),
   //m_pSample2(NULL),
   m_uiBitsPerSample(0),

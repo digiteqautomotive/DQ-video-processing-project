@@ -37,19 +37,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fstream>
 #include <vector>
 
-// {DD467633-CFFA-4db7-8213-FE260668CD7F}
+
+// {D04C9742-E0E8-43FB-967F-260EAA156F7E}
 static const GUID CLSID_VPP_TimeStampLoggerFilter = 
-{ 0xdd467633, 0xcffa, 0x4db7, { 0x82, 0x13, 0xfe, 0x26, 0x6, 0x68, 0xcd, 0x7f } };
+{ 0xd04c9742, 0xe0e8, 0x43fb, { 0x96, 0x7f, 0x26, 0xe, 0xaa, 0x15, 0x6f, 0x7e } };
+
 
 // Forward declarations
 
-/**
- * \ingroup DirectShowFilters
+/** \ingroup DirectShowFilters
  * Filter that logs media sample timestamps and durations 
- * to file specified using IFileSourceFilter interface
- */
-class TimestampLoggerFilter : public CTransInPlaceFilter,
-							  public IFileSourceFilter
+ * to file specified using IFileSourceFilter interface */
+class TimestampLoggerFilter: public CTransInPlaceFilter,
+			     public IFileSourceFilter
 {
 public:
 	DECLARE_IUNKNOWN

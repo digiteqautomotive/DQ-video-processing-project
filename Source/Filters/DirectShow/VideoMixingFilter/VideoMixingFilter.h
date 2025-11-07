@@ -37,13 +37,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CSettingsInterface.h>
 #include "../FilterParameterStringConstants.h"
 
-// {48E4D730-389D-4bdc-BEC1-F178FA6DCDBA}
-static const GUID CLSID_VPP_VideoMixingFilter = 
-{ 0x48e4d730, 0x389d, 0x4bdc, { 0xbe, 0xc1, 0xf1, 0x78, 0xfa, 0x6d, 0xcd, 0xba } };
 
-// {EECA4B39-B8A9-4d38-A4AD-37D091C47403}
-static const GUID CLSID_VideoMixingProperties = 
-{ 0xeeca4b39, 0xb8a9, 0x4d38, { 0xa4, 0xad, 0x37, 0xd0, 0x91, 0xc4, 0x74, 0x3 } };
+// {2ECB8B03-633F-4D79-89DF-B390B213916D}
+DEFINE_GUID(CLSID_VPP_VideoMixingFilter, 
+0x2ecb8b03, 0x633f, 0x4d79, 0x89, 0xdf, 0xb3, 0x90, 0xb2, 0x13, 0x91, 0x6d);
+
+// {2799F9E3-1DEF-4C71-AEB8-279A7EDD2060}
+DEFINE_GUID(CLSID_VideoMixingProperties, 
+0x2799f9e3, 0x1def, 0x4c71, 0xae, 0xb8, 0x27, 0x9a, 0x7e, 0xdd, 0x20, 0x60);
+
 
 #ifdef _BUILD_FOR_SHORT
 typedef short yuvType;

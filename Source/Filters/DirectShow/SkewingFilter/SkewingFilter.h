@@ -37,21 +37,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include <Filters/DirectShow/DirectShowFilterGuids.h>
 #include <DirectShow/CSettingsInterface.h>
 
-// {01A5D2B0-E1F5-4fbf-97A7-2025FC13FB63}
-static const GUID CLSID_VPP_SkewingFilter = 
-{ 0x1a5d2b0, 0xe1f5, 0x4fbf, { 0x97, 0xa7, 0x20, 0x25, 0xfc, 0x13, 0xfb, 0x63 } };
 
-// {3B0BEFCE-7127-4484-B908-FE35FC2F96B8}
+// {BCE11DA2-B087-4CF1-B96B-FD186A4B5D32}
+static const GUID CLSID_VPP_SkewingFilter = 
+{ 0xbce11da2, 0xb087, 0x4cf1, { 0xb9, 0x6b, 0xfd, 0x18, 0x6a, 0x4b, 0x5d, 0x32 } };
+
+// {FFD8870B-832A-49FF-9E7A-03C48029DC9A}
 static const GUID CLSID_SkewingProperties = 
-{ 0x3b0befce, 0x7127, 0x4484, { 0xb9, 0x8, 0xfe, 0x35, 0xfc, 0x2f, 0x96, 0xb8 } };
+{ 0xffd8870b, 0x832a, 0x49ff, { 0x9e, 0x7a, 0x3, 0xc4, 0x80, 0x29, 0xdc, 0x9a } };
 
 
 // Forward declarations
 
 class SkewingFilter : public CTransInPlaceFilter,
                       public CSettingsInterface,
-                      public ISpecifyPropertyPages
-                       
+                      public ISpecifyPropertyPages                       
 {
 public:
   DECLARE_IUNKNOWN

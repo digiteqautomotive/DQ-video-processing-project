@@ -37,9 +37,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DirectShow/MultiIOBaseFilter.h>
 
-// {2BA06815-01F7-43fd-B1F3-55354400E849}
+
+// {4CCD08A1-0C4E-4367-BED1-38B7D92D24E7}
 static const GUID CLSID_VPP_Tee = 
-{ 0x2ba06815, 0x1f7, 0x43fd, { 0xb1, 0xf3, 0x55, 0x35, 0x44, 0x0, 0xe8, 0x49 } };
+{ 0x4ccd08a1, 0xc4e, 0x4367, { 0xbe, 0xd1, 0x38, 0xb7, 0xd9, 0x2d, 0x24, 0xe7 } };
+
 
 /**
  * \ingroup DirectShowFilters

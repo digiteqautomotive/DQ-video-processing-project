@@ -52,3 +52,4 @@ CSIR_VPP_DshowFiltersInstaller*.exe
 out.txt
 videoprocessing/bin/*
 videoprocessing/doc/*
+videoprocessing/output_file/*

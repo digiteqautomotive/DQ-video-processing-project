@@ -69,7 +69,7 @@ PicScalerBase *GetPicScallerRGB32(void)
 }
 
 
-PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("CSIR VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
+PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
   m_nTargetWidth(0),
   m_nTargetHeight(0),
   m_nSubPictureWidth(0),

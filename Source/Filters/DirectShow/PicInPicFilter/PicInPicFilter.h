@@ -37,13 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CSettingsInterface.h>
 #include "../FilterParameterStringConstants.h"
 
-// {31AD3B24-52E5-4227-B1D7-687AB061C2DE}
-static const GUID CLSID_VPP_PicInPicFilter = 
-{ 0x31ad3b24, 0x52e5, 0x4227, { 0xb1, 0xd7, 0x68, 0x7a, 0xb0, 0x61, 0xc2, 0xde } };
 
-// {AA41A585-1DE0-43bd-8450-F04712130B6F}
+// {17E57D6D-C6F2-4084-9165-A0A6CBA099FB}
+static const GUID CLSID_VPP_PicInPicFilter = 
+{ 0x17e57d6d, 0xc6f2, 0x4084, { 0x91, 0x65, 0xa0, 0xa6, 0xcb, 0xa0, 0x99, 0xfb } };
+
+// {44B81B95-38B1-49CC-8851-73CC3471DEA5}
 static const GUID CLSID_PicInPicProperties = 
-{ 0xaa41a585, 0x1de0, 0x43bd, { 0x84, 0x50, 0xf0, 0x47, 0x12, 0x13, 0xb, 0x6f } };
+{ 0x44b81b95, 0x38b1, 0x49cc, { 0x88, 0x51, 0x73, 0xcc, 0x34, 0x71, 0xde, 0xa5 } };
 
 
 #ifdef _BUILD_FOR_SHORT
@@ -58,8 +59,7 @@ class PicScalerBase;
 
 /**
  * @brief PicInPicFilter that accepts two RGB24 inputs.
- * The filter should only be confgured after the inputs have been connected.
- */
+ * The filter should only be confgured after the inputs have been connected. */
 class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {
 public:

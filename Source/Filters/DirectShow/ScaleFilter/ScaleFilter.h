@@ -36,13 +36,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomBaseFilter.h>
 #include "../FilterParameterStringConstants.h"
 
-// {60E0821D-9E6C-48f4-8E1C-1B25E67488F8}
-static const GUID CLSID_VPP_ScaleFilter =
-{ 0x60e0821d, 0x9e6c, 0x48f4, { 0x8e, 0x1c, 0x1b, 0x25, 0xe6, 0x74, 0x88, 0xf8 } };
 
-// {1DE541CE-7FF7-47be-9CE7-055E6C2BD53F}
-static const GUID CLSID_ScaleProperties =
-{ 0x1de541ce, 0x7ff7, 0x47be, { 0x9c, 0xe7, 0x5, 0x5e, 0x6c, 0x2b, 0xd5, 0x3f } };
+// {757FC317-228C-4340-8046-9F03C5C7E97F}
+static const GUID CLSID_VPP_ScaleFilter = 
+{ 0x757fc317, 0x228c, 0x4340, { 0x80, 0x46, 0x9f, 0x3, 0xc5, 0xc7, 0xe9, 0x7f } };
+
+// {0090FB5F-CE11-4ECF-91A3-4BFAD0EAD962}
+static const GUID CLSID_ScaleProperties = 
+{ 0x90fb5f, 0xce11, 0x4ecf, { 0x91, 0xa3, 0x4b, 0xfa, 0xd0, 0xea, 0xd9, 0x62 } };
+
 
 #ifdef _BUILD_FOR_SHORT
 typedef short yuvType;

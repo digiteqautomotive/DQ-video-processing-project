@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 RtvcTee::RtvcTee() 
-	:CMultiIOBaseFilter(NAME("CSIR VPP Tee Filter"), 0, CLSID_VPP_Tee)
+	:CMultiIOBaseFilter(NAME("DQ VPP Tee Filter"), 0, CLSID_VPP_Tee)
 {
 	//Hack virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
 	Initialise();

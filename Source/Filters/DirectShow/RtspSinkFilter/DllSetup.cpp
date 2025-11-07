@@ -12,7 +12,7 @@
 #include "RtspSinkInputPin.h"
 #include "RtspSinkProperties.h"
 
-static const WCHAR g_wszName[] = L"CSIR VPP RTSP Sink Filter";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP RTSP Sink Filter";   /// A name for the filter 
 
 // Filter setup data
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes[] =
@@ -78,7 +78,7 @@ CFactoryTemplate g_Templates[] =
   },
   // This entry is for the property page.
   {
-    L"CSIR VPP RTSP Sink Properties",
+    L"DQ VPP RTSP Sink Properties",
     &CLSID_RtspSinkProperties,
     RtspSinkProperties::CreateInstance,
     NULL, NULL

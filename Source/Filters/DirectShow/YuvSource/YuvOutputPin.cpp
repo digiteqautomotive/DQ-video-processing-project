@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 YuvOutputPin::YuvOutputPin(HRESULT *phr, YuvSourceFilter* pFilter)
-  : CSourceStream(NAME("CSIR VPP YUV Source"), phr, pFilter, L"Out"),
+  : CSourceStream(NAME("DQ VPP YUV Source"), phr, pFilter, L"Out"),
   m_pYuvFilter(pFilter),
   m_iCurrentFrame(0),
   m_rtFrameLength(FPS_30)

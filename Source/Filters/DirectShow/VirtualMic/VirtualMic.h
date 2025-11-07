@@ -39,9 +39,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <streams.h>
 #pragma warning(pop)      // restore original warning level
 
-// {D180F1D5-7E2E-4f45-A7C8-CACFD17178CD}
-static const GUID CLSID_VPP_VirtualMic =
-{ 0xd180f1d5, 0x7e2e, 0x4f45, { 0xa7, 0xc8, 0xca, 0xcf, 0xd1, 0x71, 0x78, 0xcd } };
+
+// {CF48A03B-E62E-4E9E-9C0B-DE2458595F5B}
+static const GUID CLSID_VPP_VirtualMic = 
+{ 0xcf48a03b, 0xe62e, 0x4e9e, { 0x9c, 0xb, 0xde, 0x24, 0x58, 0x59, 0x5f, 0x5b } };
+
 
 #define DECLARE_PTR(type, ptr, expr) type* ptr = (type*)(expr);
 

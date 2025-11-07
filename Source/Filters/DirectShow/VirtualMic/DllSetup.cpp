@@ -64,7 +64,7 @@ const AMOVIESETUP_PIN amsPinVirtualMic =
 const AMOVIESETUP_FILTER amsFilterVirtualMic =
 {
   &CLSID_VPP_VirtualMic,    // Filter CLSID
-  L"CSIR VPP Virtual Mic",  // String name
+  L"DQ VPP Virtual Mic",  // String name
   MERIT_DO_NOT_USE,         // Filter merit
   1,                        // Number pins
   &amsPinVirtualMic         // Pin details
@@ -73,7 +73,7 @@ const AMOVIESETUP_FILTER amsFilterVirtualMic =
 CFactoryTemplate g_Templates[] =
 {
   {
-    L"CSIR VPP Virtual Mic",
+    L"DQ VPP Virtual Mic",
     &CLSID_VPP_VirtualMic,
     VirtualMicSource::CreateInstance,
     NULL,
@@ -99,7 +99,7 @@ STDAPI RegisterFilters(BOOL bRegister)
   hr = CoInitialize(0);
   if (bRegister)
   {
-    hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualMic, L"CSIR VPP Virtual Mic", achFileName, L"Both", L"InprocServer32");
+    hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualMic, L"DQ VPP Virtual Mic", achFileName, L"Both", L"InprocServer32");
   }
 
   if (SUCCEEDED(hr))
@@ -116,7 +116,7 @@ STDAPI RegisterFilters(BOOL bRegister)
         rf2.dwMerit = MERIT_DO_NOT_USE;
         rf2.cPins = 1;
         rf2.rgPins = &amsPinVirtualMic;
-        hr = fm->RegisterFilter(CLSID_VPP_VirtualMic, L"CSIR VPP Virtual Mic", &pMoniker, &CLSID_AudioInputDeviceCategory, NULL, &rf2);
+        hr = fm->RegisterFilter(CLSID_VPP_VirtualMic, L"DQ VPP Virtual Mic", &pMoniker, &CLSID_AudioInputDeviceCategory, NULL, &rf2);
       }
       else
       {

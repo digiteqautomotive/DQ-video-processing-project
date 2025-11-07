@@ -36,18 +36,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DirectShow/CustomBaseFilter.h>
 
-// {E0734A05-F25B-4F42-9CBF-7F1F610266C6}
-static const GUID CLSID_VPP_Stereo2MonoFilter = 
-{ 0xe0734a05, 0xf25b, 0x4f42, { 0x9c, 0xbf, 0x7f, 0x1f, 0x61, 0x2, 0x66, 0xc6 } };
 
-// {740C164C-B778-4604-A97E-DABDEED47861}
+// {DE243F19-49C6-4F86-9B46-AAAFFCF89505}
+static const GUID CLSID_VPP_Stereo2MonoFilter = 
+{ 0xde243f19, 0x49c6, 0x4f86, { 0x9b, 0x46, 0xaa, 0xaf, 0xfc, 0xf8, 0x95, 0x5 } };
+
+// {D4D51F7C-50E7-434A-966C-FBFF889D00B1}
 static const GUID CLSID_Stereo2MonoProperties = 
-{ 0x740c164c, 0xb778, 0x4604, { 0xa9, 0x7e, 0xda, 0xbd, 0xee, 0xd4, 0x78, 0x61 } };
+{ 0xd4d51f7c, 0x50e7, 0x434a, { 0x96, 0x6c, 0xfb, 0xff, 0x88, 0x9d, 0x0, 0xb1 } };
+
 
 // Forward declarations
 
-class Stereo2MonoFilter : public CCustomBaseFilter,
-                            public ISpecifyPropertyPages
+class Stereo2MonoFilter: public CCustomBaseFilter,
+                         public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN

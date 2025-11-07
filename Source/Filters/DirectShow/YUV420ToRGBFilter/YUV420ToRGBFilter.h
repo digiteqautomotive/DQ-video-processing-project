@@ -40,15 +40,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CHROMINANCE_OFFSET "chrominanceoffset"
 #define INVERT "invert"
 
+
 // GUID
 
-// {FF539CF3-CB7A-4121-92C2-5A3EB8E7FE5E}
-static const GUID CLSID_VPP_YUV420toRGBColorConverter = 
-{ 0xff539cf3, 0xcb7a, 0x4121, { 0x92, 0xc2, 0x5a, 0x3e, 0xb8, 0xe7, 0xfe, 0x5e } };
+// {08F78B88-4A61-495A-9E9F-AAD47ED3EDF4}
+DEFINE_GUID(CLSID_VPP_YUV420toRGBColorConverter, 
+0x8f78b88, 0x4a61, 0x495a, 0x9e, 0x9f, 0xaa, 0xd4, 0x7e, 0xd3, 0xed, 0xf4);
 
-// {B1F14AD0-B641-4fc1-A3B6-692A8B2FC67D}
-static const GUID CLSID_YUVtoRGB420Properties = 
-{ 0xb1f14ad0, 0xb641, 0x4fc1, { 0xa3, 0xb6, 0x69, 0x2a, 0x8b, 0x2f, 0xc6, 0x7d } };
+// {554D85CB-E127-477E-B44D-3CE5A3AC956A}
+DEFINE_GUID(CLSID_YUVtoRGB420Properties, 
+0x554d85cb, 0xe127, 0x477e, 0xb4, 0x4d, 0x3c, 0xe5, 0xa3, 0xac, 0x95, 0x6a);
+
 
 // Forward declarations
 class YUV420toRGBConverter;

@@ -37,13 +37,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomBaseFilter.h>
 #include "Filters/DirectShow/FilterParameterStringConstants.h"
 
-// {F5E69199-7AB2-40f0-BFC0-6938430F4F19}
-static const GUID CLSID_VPP_CropFilter =
-{ 0xf5e69199, 0x7ab2, 0x40f0, { 0xbf, 0xc0, 0x69, 0x38, 0x43, 0xf, 0x4f, 0x19 } };
+// {2AA8007D-F5B9-4255-B4DD-A3BAD40681A8}
+static const GUID CLSID_VPP_CropFilter = 
+{ 0x2aa8007d, 0xf5b9, 0x4255, { 0xb4, 0xdd, 0xa3, 0xba, 0xd4, 0x6, 0x81, 0xa8 } };
 
-// {2E164ADE-2F13-4ee9-BA95-28CF9AE23511}
-static const GUID CLSID_CropProperties =
-{ 0x2e164ade, 0x2f13, 0x4ee9, { 0xba, 0x95, 0x28, 0xcf, 0x9a, 0xe2, 0x35, 0x11 } };
+// {AEF6D61E-C1CE-4B54-BC63-363EEB1DC2EB}
+static const GUID CLSID_CropProperties = 
+{ 0xaef6d61e, 0xc1ce, 0x4b54, { 0xbc, 0x63, 0x36, 0x3e, 0xeb, 0x1d, 0xc2, 0xeb } };
+
+
 
 // Forward declarations
 class PicCropperBase;

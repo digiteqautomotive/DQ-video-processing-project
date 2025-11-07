@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VirtualMic.h"
 
 VirtualMicSourceStream::VirtualMicSourceStream(HRESULT *phr, VirtualMicSource *pParent, LPCWSTR pPinName) :
-CSourceStream(NAME("CSIR VPP Virtual Mic"), phr, pParent, pPinName), m_pParent(pParent),
+CSourceStream(NAME("DQ VPP Virtual Mic"), phr, pParent, pPinName), m_pParent(pParent),
 m_uiFillSize(0)
 {
   // Set the default media type as 320x240x24@15

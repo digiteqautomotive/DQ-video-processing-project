@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"CSIR VPP Crop Filter";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP Crop Filter";   /// A name for the filter 
 
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =

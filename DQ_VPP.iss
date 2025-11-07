@@ -3,7 +3,7 @@
 
 #define MyAppName "DQ VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.5.11"
+#define MyAppVersion "1.6"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "DQ VPP video processing filters"
 #define MyAppURL "https://sourceforge.net/projects/direct-show-demo-filters/files/CSIR_VPP_VIDEOPROCESSING/"
@@ -14,7 +14,7 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{FA5C438A-19B8-414A-A382-21CF5CBD5681}}
+AppId={{FE25F071-BE71-4AD0-B51A-1F828CB0573A}}
 
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -27,7 +27,7 @@ DefaultDirName={pf}\{#MyAppName}
 UsePreviousAppDir=yes
 DefaultGroupName={#MyAppName}
 OutputDir=output_file
-OutputBaseFilename=CSIR_VPP_DshowFiltersInstaller-{#MyAppVersion}
+OutputBaseFilename=DQ_VPP_DshowFiltersInstaller-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 Uninstallable=yes

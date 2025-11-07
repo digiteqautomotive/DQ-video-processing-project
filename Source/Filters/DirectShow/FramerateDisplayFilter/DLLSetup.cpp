@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"CSIR VPP Framerate Display Filter"; 
+static const WCHAR g_wszName[] = L"DQ VPP Framerate Display Filter"; 
 
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =

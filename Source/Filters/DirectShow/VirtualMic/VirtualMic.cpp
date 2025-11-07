@@ -47,13 +47,13 @@ CUnknown * WINAPI VirtualMicSource::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr
 }
 
 VirtualMicSource::VirtualMicSource(LPUNKNOWN lpunk, HRESULT *phr) :
-CSource(NAME("CSIR VPP Virtual Mic"), lpunk, CLSID_VPP_VirtualMic)
+CSource(NAME("DQ VPP Virtual Mic"), lpunk, CLSID_VPP_VirtualMic)
 {
   ASSERT(phr);
   CAutoLock cAutoLock(&m_cStateLock);
   // Create the one and only output pin
   m_paStreams = (CSourceStream **) new VirtualMicSourceStream*[1];
-  m_paStreams[0] = new VirtualMicSourceStream(phr, this, L"CSIR VPP Virtual Mic");
+  m_paStreams[0] = new VirtualMicSourceStream(phr, this, L"DQ VPP Virtual Mic");
 }
 
 HRESULT VirtualMicSource::QueryInterface(REFIID riid, void **ppv)

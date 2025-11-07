@@ -47,9 +47,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma comment(lib, "comctl32.lib")
 
-// {8E974B99-BC09-4041-98F4-1103BAA1B0EA}
+/// {366493F7-8B84-42FF-BE57-24D20D19C38C}
 static const GUID CLSID_RTVCFramerateDisplayFilter = 
-{ 0x8e974b99, 0xbc09, 0x4041, { 0x98, 0xf4, 0x11, 0x3, 0xba, 0xa1, 0xb0, 0xea } };
+{ 0x366493f7, 0x8b84, 0x42ff, { 0xbe, 0x57, 0x24, 0xd2, 0xd, 0x19, 0xc3, 0x8c } };
+
 
 enum FramerateEstimationMode
 {

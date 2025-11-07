@@ -53,16 +53,19 @@ const REFERENCE_TIME FPS_1  = UNITS / 1;
 
 const REFERENCE_TIME rtDefaultFrameLength = FPS_10;
 
-// {C2E56BB0-A497-439B-A9BA-79D73D8D1549}
-static const GUID CLSID_VPP_H264Source = 
-{ 0xc2e56bb0, 0xa497, 0x439b, { 0xa9, 0xba, 0x79, 0xd7, 0x3d, 0x8d, 0x15, 0x49 } };
 
-// {E6A2AE5B-F41A-4595-84DB-D997242B4587}
+// {C5D414F6-4B64-4383-BB38-EFA3CCAC5B2D}
+static const GUID CLSID_VPP_H264Source = 
+{ 0xc5d414f6, 0x4b64, 0x4383, { 0xbb, 0x38, 0xef, 0xa3, 0xcc, 0xac, 0x5b, 0x2d } };
+
+// {0CEC4428-D30A-4954-BCC5-94F758633D04}
 static const GUID CLSID_H264Properties = 
-{ 0xe6a2ae5b, 0xf41a, 0x4595, { 0x84, 0xdb, 0xd9, 0x97, 0x24, 0x2b, 0x45, 0x87 } };
+{ 0xcec4428, 0xd30a, 0x4954, { 0xbc, 0xc5, 0x94, 0xf7, 0x58, 0x63, 0x3d, 0x4 } };
+
+
 
 // Filter name strings
-#define g_wszH264Source     L"CSIR VPP H264 Source"
+#define g_wszH264Source     L"DQ VPP H264 Source"
 
 #define SOURCE_DIMENSIONS	"sourcedimensions"
 #define SOURCE_FPS			  "fps"

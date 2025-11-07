@@ -51,17 +51,19 @@ class RtspSession;
 class MediaSubsession;
 
 // Filter name strings
-#define g_wszFilterName    L"CSIR VPP RTSP Source Filter"
+#define g_wszFilterName    L"DQ VPP RTSP Source Filter"
 
 #define STREAM_USING_TCP	"streamusingtcp"
 
-// {CF5878AC-78F0-4544-83B9-A940E20D9690}
-static const GUID CLSID_VPP_RtspSourceFilter = 
-{ 0xcf5878ac, 0x78f0, 0x4544, { 0x83, 0xb9, 0xa9, 0x40, 0xe2, 0xd, 0x96, 0x90 } };
 
-// {3955BE86-A1E9-4fa3-8654-623D73DD2F29}
+/// {369A0804-94E4-4992-A9CB-1ADFE5C76DB9}
+static const GUID CLSID_VPP_RtspSourceFilter = 
+{ 0x369a0804, 0x94e4, 0x4992, { 0xa9, 0xcb, 0x1a, 0xdf, 0xe5, 0xc7, 0x6d, 0xb9 } };
+
+/// {02D5E9AA-E7D5-4893-87F2-41076B47F71B}
 static const GUID CLSID_RtspProperties = 
-{ 0x3955be86, 0xa1e9, 0x4fa3, { 0x86, 0x54, 0x62, 0x3d, 0x73, 0xdd, 0x2f, 0x29 } };
+{ 0x2d5e9aa, 0xe7d5, 0x4893, { 0x87, 0xf2, 0x41, 0x7, 0x6b, 0x47, 0xf7, 0x1b } };
+
 
 /**
  * \ingroup DirectShowFilters

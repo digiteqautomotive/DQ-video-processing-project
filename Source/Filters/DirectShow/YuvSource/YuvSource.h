@@ -38,16 +38,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../FilterParameterStringConstants.h"
 
 
-// {DAC3AA2A-5AB3-4705-963B-FFAF9C0D08D8}
+// {85F942C4-F087-4EFE-9D87-192593CEFCA0}
 DEFINE_GUID(CLSID_VPP_YUVSource, 
-  0xdac3aa2a, 0x5ab3, 0x4705, 0x96, 0x3b, 0xff, 0xaf, 0x9c, 0xd, 0x8, 0xd8);
+0x85f942c4, 0xf087, 0x4efe, 0x9d, 0x87, 0x19, 0x25, 0x93, 0xce, 0xfc, 0xa0);
 
-// {B044F35E-A7BD-464a-AD9F-9A1BEFBD95ED}
+// {F887965B-9466-454B-9F24-E58AD948AF7F}
 DEFINE_GUID(CLSID_YUVProperties, 
-  0xb044f35e, 0xa7bd, 0x464a, 0xad, 0x9f, 0x9a, 0x1b, 0xef, 0xbd, 0x95, 0xed);
+0xf887965b, 0x9466, 0x454b, 0x9f, 0x24, 0xe5, 0x8a, 0xd9, 0x48, 0xaf, 0x7f);
+
+
+
 
 // Filter name strings
-#define g_wszYuvSource     L"CSIR VPP YUV Source"
+#define g_wszYuvSource     L"DQ VPP YUV Source"
 #define SOURCE_DIMENSIONS "sourcedimensions"
 #define SOURCE_FPS        "fps"
 

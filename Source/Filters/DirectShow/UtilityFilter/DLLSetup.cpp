@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "UtilityProperties.h"
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"CSIR VPP Utility Filter";
+static const WCHAR g_wszName[] = L"DQ VPP Utility Filter";
 
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =

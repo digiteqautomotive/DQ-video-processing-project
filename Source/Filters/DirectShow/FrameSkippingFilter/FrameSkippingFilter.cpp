@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 const double TIMESTAMP_FACTOR = 10000000.0;
 
 FrameSkippingFilter::FrameSkippingFilter(LPUNKNOWN pUnk, HRESULT *pHr)
-  : CTransInPlaceFilter(NAME("CSIR VPP Frame Skipping Filter"), pUnk, CLSID_VPP_FrameSkippingFilter, pHr, false),
+  : CTransInPlaceFilter(NAME("DQ VPP Frame Skipping Filter"), pUnk, CLSID_VPP_FrameSkippingFilter, pHr, false),
   m_uiSkipFrameNumber(0),
   m_uiTotalFrames(1),
   m_uiCurrentFrame(0),
