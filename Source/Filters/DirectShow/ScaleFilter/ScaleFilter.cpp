@@ -230,14 +230,18 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
-        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
+    {
+       if((m_nOutWidth & 1)==1)
+           pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;		// Odd values cannot be used for YUYV encoding.
+       if((m_nOutHeight & 1)==1)
+           pBi->biHeight = m_nOutHeight = m_nOutHeight & ~1;		// Nor odd height can be accepted.
+       pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
+    }
     else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
             pMediaType->subtype==MEDIASUBTYPE_UYVY)
     {
        if((m_nOutWidth & 1)==1)
-       {
          pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;			// Odd values cannot be used for YUYV encoding.
-       }
        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
     }
     else
