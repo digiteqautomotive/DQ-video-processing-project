@@ -38,19 +38,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // {757FC317-228C-4340-8046-9F03C5C7E97F}
-static const GUID CLSID_VPP_ScaleFilter = 
-{ 0x757fc317, 0x228c, 0x4340, { 0x80, 0x46, 0x9f, 0x3, 0xc5, 0xc7, 0xe9, 0x7f } };
+static const GUID CLSID_VPP_ScaleFilter = { 0x757fc317, 0x228c, 0x4340, { 0x80, 0x46, 0x9f, 0x3, 0xc5, 0xc7, 0xe9, 0x7f } };
 
 // {0090FB5F-CE11-4ECF-91A3-4BFAD0EAD962}
-static const GUID CLSID_ScaleProperties = 
-{ 0x90fb5f, 0xce11, 0x4ecf, { 0x91, 0xa3, 0x4b, 0xfa, 0xd0, 0xea, 0xd9, 0x62 } };
+static const GUID CLSID_ScaleProperties = { 0x90fb5f, 0xce11, 0x4ecf, { 0x91, 0xa3, 0x4b, 0xfa, 0xd0, 0xea, 0xd9, 0x62 } };
 
 
+/*
 #ifdef _BUILD_FOR_SHORT
 typedef short yuvType;
 #else
 typedef signed char yuvType;
 #endif
+*/
 
 // Forward declarations
 class PicScalerBase;
@@ -60,7 +60,7 @@ class PicScalerBase;
  * \ingroup DirectShowFilters
  * Scale Filter for RGB24 and YUV420P Media
  * Scale parameters are settable via the ISettingsInterface COM interface. */
-class ScaleFilter : public CCustomBaseFilter, public ISpecifyPropertyPages
+class ScaleFilter: public CCustomBaseFilter, public ISpecifyPropertyPages, public IPersistPropertyBag
 {
 public:
   DECLARE_IUNKNOWN;
@@ -95,37 +95,21 @@ public:
    * <table border="0" cols="2"> <tr valign="top"> <td  width="50%"><b>Value</b></td> <td width="50%"><b>Description</b></td> </tr> <tr valign="top"> <td width="50%">S_OK</td> <td width="50%">The media types are compatible.</td> </tr> <tr valign="top"> <td width="50%">VFW_E_TYPE_NOT_ACCEPTED</td> <td width="50%">The media types are not compatible.</td> </tr> </table>
    */
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
-  /// Overridden from CCustomBaseFilter
+	  /// Overridden from CCustomBaseFilter
   virtual void InitialiseInputTypes();
   virtual void doGetVersion(std::string& sVersion) const;
 
-  ///Overridden from CSettingsInterface
+	///Overridden from CSettingsInterface
   virtual void initParameters();  
   STDMETHODIMP SetParameter(const char* type, const char* value);
-  STDMETHODIMP GetPages(CAUUID *pPages)
-  {
-    if (pPages == NULL) return E_POINTER;
-    pPages->cElems = 1;
-    pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-    if (pPages->pElems == NULL)
-    {
-      return E_OUTOFMEMORY;
-    }
-    pPages->pElems[0] = CLSID_ScaleProperties;
-    return S_OK;
-  }
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-  {
-    if (riid == IID_ISpecifyPropertyPages)
-    {
-      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-    }
-    else
-    {
-      // Call the parent class.
-      return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-    }
-  }
+  STDMETHODIMP GetPages(CAUUID *pPages);
+  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+
+  virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+  virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+  virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+  virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
 private:
   /**
    * This method converts the input buffer from RGB24 | 32 to YUV420P

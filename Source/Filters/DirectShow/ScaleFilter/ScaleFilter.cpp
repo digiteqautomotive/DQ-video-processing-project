@@ -65,6 +65,7 @@ extern "C" unsigned GetFeaturesCPU(void);
 const unsigned FeaturesCPU = GetFeaturesCPU();
 #endif
 
+
 PicScalerBase *GetPicScallerRGB32(void)
 {
   //if(FeaturesCPU == 0x80) FeaturesCPU=GetFeaturesCPU();
@@ -269,11 +270,14 @@ HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIE
 {
   // Leaving this var so that we can cater for RGB32 at a later stage
   pProp->cbBuffer = (m_nOutPixels * m_nBitsPerPixel)/8;
+
+/*
   if (m_nBitsPerPixel == BITS_PER_PIXEL_YUV420P)
   {
     //Adjust the buffer requirements for our custom format
-    pProp->cbBuffer *= sizeof(yuvType);
+    pProp->cbBuffer *= sizeof(yuvType);			// TODO: remove this!
   }
+*/
 
   if (pProp->cbAlign == 0)
   {
@@ -463,6 +467,118 @@ HRESULT ScaleFilter::RecalculateFilterParameters()
   // Update the number of out pixels
   m_nOutPixels = labs(m_nOutWidth * m_nOutHeight);
   return S_OK;
+}
+
+
+HRESULT ScaleFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if(riid == IID_IPersistPropertyBag)
+  {
+    return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  }
+  if(riid == IID_ISpecifyPropertyPages)
+  {
+    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  }
+    // Call the parent class.
+  return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
+}
+
+
+HRESULT ScaleFilter::GetPages(CAUUID *pPages)
+{
+  if (pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if (pPages->pElems == NULL)
+  {
+    return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_ScaleProperties;
+  return S_OK;
+}
+
+
+HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_ScaleFilter;
+  return S_OK;
+}
+
+
+HRESULT ScaleFilter::InitNew(void)
+{
+  m_nOutWidth = m_nOutHeight = 0;
+  return S_OK;
+}
+
+
+HRESULT ScaleFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+int len;
+  if(pPropBag==NULL) return E_POINTER;
+
+  len = strlen(FILTER_PARAM_TARGET_WIDTH) + 1;
+  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  if(PropName)
+  {
+    memcpy((void*)PropName,FILTER_PARAM_TARGET_WIDTH,len);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      if(var.vt == 2) m_nOutWidth=var.intVal;
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  len = strlen(FILTER_PARAM_TARGET_HEIGHT) + 1;
+  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  if(PropName)
+  {
+    memcpy((void*)PropName,FILTER_PARAM_TARGET_HEIGHT,len);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      if(var.vt == 2) m_nOutHeight=var.intVal;
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
+}
+
+
+HRESULT ScaleFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+int len;
+  if(pPropBag==NULL) return E_POINTER;
+
+  len = strlen(FILTER_PARAM_TARGET_WIDTH) + 1;
+  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  if(PropName)
+  {
+    memcpy((void*)PropName,FILTER_PARAM_TARGET_WIDTH,len);
+    var.vt = 2;			//vbInteger;
+    var.intVal = m_nOutWidth;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+  len = strlen(FILTER_PARAM_TARGET_HEIGHT) + 1;
+  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  if(PropName)
+  {
+    memcpy((void*)PropName,FILTER_PARAM_TARGET_HEIGHT,len);
+    var.vt = 2;			//vbInteger;
+    var.intVal = m_nOutHeight;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
 }
 
 
