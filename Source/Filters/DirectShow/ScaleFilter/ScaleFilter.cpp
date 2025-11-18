@@ -476,6 +476,10 @@ HRESULT ScaleFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
   {
     return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
   }
+  if(riid == IID_IPropertyBag)
+  {
+    return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  }
   if(riid == IID_ISpecifyPropertyPages)
   {
     return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
@@ -499,6 +503,9 @@ HRESULT ScaleFilter::GetPages(CAUUID *pPages)
 }
 
 
+//----------------- IPersistPropertyBag------------------
+
+
 HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
 {
   if(pClassID==NULL) return E_POINTER;
@@ -514,18 +521,30 @@ HRESULT ScaleFilter::InitNew(void)
 }
 
 
+#define olestr(s) sstr(s)
+#if defined(_WIN32) && !defined(OLE2ANSI)
+ #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
+ #define sstr(s) L###s
+#else
+ #define olecmp(__str1,__str2) strcmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
+ #define sstr(s) #s
+#endif
+
+OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
+OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+
 HRESULT ScaleFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
 {
 LPCOLESTR PropName;
 VARIANT var;
-int len;
   if(pPropBag==NULL) return E_POINTER;
 
-  len = strlen(FILTER_PARAM_TARGET_WIDTH) + 1;
-  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_WIDTH));
   if(PropName)
   {
-    memcpy((void*)PropName,FILTER_PARAM_TARGET_WIDTH,len);
+    memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
       if(var.vt == 2) m_nOutWidth=var.intVal;
@@ -533,11 +552,10 @@ int len;
     CoTaskMemFree((void*)PropName);
   }
 
-  len = strlen(FILTER_PARAM_TARGET_HEIGHT) + 1;
-  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_HEIGHT));
   if(PropName)
   {
-    memcpy((void*)PropName,FILTER_PARAM_TARGET_HEIGHT,len);
+    memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
       if(var.vt == 2) m_nOutHeight=var.intVal;
@@ -553,26 +571,23 @@ HRESULT ScaleFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAl
 {
 LPCOLESTR PropName;
 VARIANT var;
-int len;
   if(pPropBag==NULL) return E_POINTER;
 
-  len = strlen(FILTER_PARAM_TARGET_WIDTH) + 1;
-  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_TARGET_WIDTH));
   if(PropName)
   {
-    memcpy((void*)PropName,FILTER_PARAM_TARGET_WIDTH,len);
-    var.vt = 2;			//vbInteger;
+    memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(FILTER_PARAM_TARGET_WIDTH));
+    var.vt = VT_INT;
     var.intVal = m_nOutWidth;
     pPropBag->Write(PropName,&var);
     CoTaskMemFree((void*)PropName);
   }
 
-  len = strlen(FILTER_PARAM_TARGET_HEIGHT) + 1;
-  PropName = (LPCOLESTR)CoTaskMemAlloc(len);
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_HEIGHT));
   if(PropName)
   {
-    memcpy((void*)PropName,FILTER_PARAM_TARGET_HEIGHT,len);
-    var.vt = 2;			//vbInteger;
+    memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
+    var.vt = VT_INT;
     var.intVal = m_nOutHeight;
     pPropBag->Write(PropName,&var);
     CoTaskMemFree((void*)PropName);
@@ -580,6 +595,41 @@ int len;
 
 return S_OK;
 }
+
+
+//----------------- IPropertyBag------------------
+
+HRESULT ScaleFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nOutWidth;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nOutHeight;
+    return S_OK;
+  }
+
+  return E_INVALIDARG;
+}
+
+
+HRESULT ScaleFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+  return E_NOTIMPL;
+}
+
+
+//////////////////////////////////////////////////////////////////////
 
 
 void ScaleFilter::doGetVersion(std::string& sVersion) const

@@ -60,7 +60,8 @@ class PicScalerBase;
  * \ingroup DirectShowFilters
  * Scale Filter for RGB24 and YUV420P Media
  * Scale parameters are settable via the ISettingsInterface COM interface. */
-class ScaleFilter: public CCustomBaseFilter, public ISpecifyPropertyPages, public IPersistPropertyBag
+class ScaleFilter: public CCustomBaseFilter, public ISpecifyPropertyPages, 
+                   public IPersistPropertyBag, public IPropertyBag
 {
 public:
   DECLARE_IUNKNOWN;
@@ -105,10 +106,15 @@ public:
   STDMETHODIMP GetPages(CAUUID *pPages);
   STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
+	// IPersistPropertyBag
   virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
   virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
   virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
   virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+	// IPropertyBag
+  STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+  STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 private:
   /**
