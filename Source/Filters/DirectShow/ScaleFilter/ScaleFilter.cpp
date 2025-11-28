@@ -65,6 +65,8 @@ extern "C" unsigned GetFeaturesCPU(void);
 const unsigned FeaturesCPU = GetFeaturesCPU();
 #endif
 
+#include "VariantTools.cpp"
+
 
 PicScalerBase *GetPicScallerRGB32(void)
 {
@@ -541,13 +543,15 @@ LPCOLESTR PropName;
 VARIANT var;
   if(pPropBag==NULL) return E_POINTER;
 
+  memset(&var,0,sizeof(var));
+
   PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_WIDTH));
   if(PropName)
   {
     memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      if(var.vt == 2) m_nOutWidth=var.intVal;
+      IntFromVariant(m_nOutWidth,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -556,13 +560,15 @@ VARIANT var;
   if(PropName)
   {
     memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
+    VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      if(var.vt == 2) m_nOutHeight=var.intVal;
+      IntFromVariant(m_nOutHeight,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
 
+  VariantClear(&var);
 return S_OK;
 }
 
@@ -625,7 +631,17 @@ HRESULT ScaleFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErro
 
 HRESULT ScaleFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
 {
-  return E_NOTIMPL;
+CheckPointer(pszPropName, E_INVALIDARG);
+CheckPointer(pVar, E_INVALIDARG);
+  if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
+  {   
+    if(IntFromVariant(m_nOutWidth,pVar)) return S_OK;
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
+  {
+    if(IntFromVariant(m_nOutHeight,pVar)) return S_OK;    
+  }
+  return E_INVALIDARG;
 }
 
 
