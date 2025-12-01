@@ -36,8 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomMediaTypes.h>
 #include "RealYUV444toRGB24Converter.h"
 
-#include"../VersionInfo.h"
-
 
 YUV444toRGBFilter::YUV444toRGBFilter()
   : CCustomBaseFilter(NAME("DQ VPP YUV444I 2 RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),
@@ -321,10 +319,4 @@ STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value
   {
     return E_FAIL;
   }
-}
-
-
-void YUV444toRGBFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

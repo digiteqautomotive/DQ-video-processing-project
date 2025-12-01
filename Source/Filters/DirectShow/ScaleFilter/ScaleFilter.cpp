@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include "ScaleFilter.h"
-#include "../VersionInfo.h"
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
@@ -85,7 +84,8 @@ PicScalerBase *GetPicScallerRGB32(void)
 
 ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("DQ VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
-  m_nBitsPerPixel(BITS_PER_PIXEL_RGB24)
+  m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
+  m_DirtyProps(true)
 {
   //Call the initialize input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -475,17 +475,14 @@ HRESULT ScaleFilter::RecalculateFilterParameters()
 HRESULT ScaleFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
   if(riid == IID_IPersistPropertyBag)
-  {
     return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
-  }
   if(riid == IID_IPropertyBag)
-  {
     return GetInterface(static_cast<IPropertyBag*>(this), ppv);
-  }
   if(riid == IID_ISpecifyPropertyPages)
-  {
     return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
+  if(riid == IID_IPersistStream)
+      return GetInterface((IPersistStream*) this, ppv);
+
     // Call the parent class.
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
@@ -645,10 +642,50 @@ CheckPointer(pVar, E_INVALIDARG);
 }
 
 
-//////////////////////////////////////////////////////////////////////
+//----------------- IPersistStream------------------
 
 
-void ScaleFilter::doGetVersion(std::string& sVersion) const
+HRESULT ScaleFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
 {
-  sVersion = VersionInfo::toString();
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = sizeof(m_nOutWidth) + sizeof(m_nOutHeight);
+  return S_OK;
+}
+
+
+HRESULT ScaleFilter::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT ScaleFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+int nOutWidth, nOutHeight;
+HRESULT hr;
+  ASSERT(sizeof(nOutWidth)==sizeof(m_nOutWidth));
+  ASSERT(sizeof(nOutHeight)==sizeof(m_nOutHeight));
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), NULL))) return hr;
+  if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), NULL))) return hr;
+  if(m_nOutWidth!=nOutWidth || m_nOutHeight!=nOutHeight)
+  {
+    m_nOutWidth = nOutWidth;
+    m_nOutHeight = nOutHeight;
+    m_DirtyProps = true;
+  }
+return S_OK;
+}
+
+
+HRESULT ScaleFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_nOutWidth, sizeof(m_nOutWidth), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nOutHeight, sizeof(m_nOutHeight), NULL))) return hr;
+  if(fClearDirty) m_DirtyProps=false;
+return S_OK;
 }

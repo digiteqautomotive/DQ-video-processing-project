@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
-#include "../VersionInfo.h"
 
 const unsigned TIMEOUT_MILLISECONDS = 3000;
 
@@ -410,10 +409,4 @@ void RtspSourceFilter::setSynchronisedOffset( double dOffset )
     // Convert to double
     m_dSynchronisedStreamTimeOffset = tStreamTimeOffset / 10000000.0;
   }
-}
-
-
-void RtspSourceFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

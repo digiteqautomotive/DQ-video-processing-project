@@ -85,8 +85,6 @@ public:
 
   STDMETHODIMP Stop();
   STDMETHODIMP Pause();
-
-  virtual void doGetVersion(std::string& sVersion) const;
   
   virtual void InitialiseInputTypes()
   {

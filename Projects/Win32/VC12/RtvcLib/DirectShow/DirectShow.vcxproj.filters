@@ -45,6 +45,9 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\FilterPropertiesBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VersionInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\DirectShow\CommonDefs.h">

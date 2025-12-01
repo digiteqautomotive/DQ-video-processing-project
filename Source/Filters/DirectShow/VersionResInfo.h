@@ -4,7 +4,7 @@
 //
 #define APP_COMPANY_NAME_STRING "Digiteq Automotive s.r.o"
 #define PRODUCT_INFO_STRING "Direct show filter for video scalling"
-#define PRODUCT_VERSION "1.5.11"
+#define PRODUCT_VERSION "1.6.2"
 
 
 VS_VERSION_INFO VERSIONINFO

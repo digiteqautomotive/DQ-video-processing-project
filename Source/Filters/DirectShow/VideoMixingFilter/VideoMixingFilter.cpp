@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <PicConcatRGB24Impl.h>
 #include <PicConcatRGB32Impl.h>
-#include "../VersionInfo.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
@@ -575,12 +574,6 @@ HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
     }
   }
   return S_FALSE;
-}
-
-
-void VideoMixingFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }
 
 

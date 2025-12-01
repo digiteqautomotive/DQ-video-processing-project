@@ -42,7 +42,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralUtils/Conversion.h"
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
-#include "../VersionInfo.h"
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 {
@@ -337,10 +336,4 @@ bool YuvSourceFilter::updatePictureBuffer(int iWidth, int iHeight, double dBytes
   {
     return false;
   }
-}
-
-
-void YuvSourceFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

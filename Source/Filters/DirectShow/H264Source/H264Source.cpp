@@ -38,7 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "H264v2/H264v2.h"
 #include "CodecUtils/ICodecv2.h"
 #include "GeneralUtils/Conversion.h"
-#include "../VersionInfo.h"
 
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
@@ -641,10 +640,4 @@ HRESULT H264SourceFilter::SetRate( double dRate )
 HRESULT H264SourceFilter::SetTimeFormat( const GUID *pFormat )
 {
   return E_NOTIMPL;
-}
-
-
-void H264SourceFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

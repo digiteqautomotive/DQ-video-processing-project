@@ -39,7 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralUtils/Conversion.h"
 
 #include "resource.h"
-#include "../VersionInfo.h"
 
 #define BUFFER_SIZE 256
 

@@ -38,7 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include "Tee.h"
-#include "../VersionInfo.h"
 
 
 RtvcTee::RtvcTee() 
@@ -260,10 +259,4 @@ HRESULT RtvcTee::CheckOutputType( const CMediaType* pMediaType )
 	{
 		return VFW_E_TYPE_NOT_ACCEPTED;
 	}
-}
-
-
-void RtvcTee::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

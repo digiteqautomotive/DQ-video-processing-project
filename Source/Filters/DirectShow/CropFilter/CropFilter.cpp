@@ -35,7 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <PicCropperRGB24Impl.h>
 #include <PicCropperRGB32Impl.h>
-#include "../VersionInfo.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
@@ -427,10 +426,4 @@ HRESULT CropFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
     // Call the parent class.
     return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
   }
-}
-
-
-void CropFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

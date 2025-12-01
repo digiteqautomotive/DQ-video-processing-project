@@ -39,7 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Gdiplus.h>
 #include <GdiPlusInit.h>
 #include <numeric>
-#include "../VersionInfo.h"
 
 #define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
@@ -506,11 +505,5 @@ void UtilityFilter::initParameters(void)
   addParameter("writeonframe", &m_bWriteOnFrame, true);
   addParameter(UF_PRECISION, &m_uiPrecision, 1);
   addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
-}
-
-
-void UtilityFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }
 

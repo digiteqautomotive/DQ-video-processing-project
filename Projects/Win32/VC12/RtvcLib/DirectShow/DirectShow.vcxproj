@@ -164,6 +164,7 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\MultiIOInputPin.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\MultiIOOutputPin.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\stdafx.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VersionInfo.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VideoMixingBase.cpp" />
   </ItemGroup>
   <ItemGroup>

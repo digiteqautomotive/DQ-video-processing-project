@@ -36,8 +36,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <DirectShow/CSettingsInterface.h>
 #include "../FilterParameterStringConstants.h"
+//#include "../../RtvcLib/DirectShow/VersionInfo.h 
+#include "DirectShow/VersionInfo.h"
 
-#include "../VersionInfo.h"
+
 /// {25F53140-D5D9-4F42-91D7-51288A40BB85}
 static const GUID CLSID_VPP_FrameSkippingFilter = 
 { 0x25f53140, 0xd5d9, 0x4f42, { 0x91, 0xd7, 0x51, 0x28, 0x8a, 0x40, 0xbb, 0x85 } };
@@ -59,7 +61,7 @@ enum FrameSkippingMode
  * @brief The FrameSkippingFilter allows x frames out of every y frames to be skipped.
  * TODO: Do input validation by overriding SetParameter
  */
-class FrameSkippingFilter : public CTransInPlaceFilter,
+class FrameSkippingFilter : public CTransInPlaceFilter, public VersionInfo,
   public CSettingsInterface,
   public ISpecifyPropertyPages
 {
@@ -104,10 +106,6 @@ public:
   STDMETHODIMP Run(REFERENCE_TIME tStart);
   STDMETHODIMP Stop(void);
 
-  virtual void doGetVersion(std::string& sVersion)
-  {
-    sVersion = VersionInfo::toString();
-  }
   /// Overridden from CSettingsInterface
   virtual void initParameters()
   {

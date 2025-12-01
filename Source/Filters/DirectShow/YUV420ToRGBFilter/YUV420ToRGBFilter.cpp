@@ -38,8 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/DirectShowMediaFormats.h"
 #include <RealYUV420toRGB24Converter.h>
 
-#include"../VersionInfo.h"
-
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
   0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
@@ -330,10 +328,4 @@ STDMETHODIMP YUV420toRGBFilter::SetParameter( const char* type, const char* valu
   {
     return E_FAIL;
   }
-}
-
-
-void YUV420toRGBFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

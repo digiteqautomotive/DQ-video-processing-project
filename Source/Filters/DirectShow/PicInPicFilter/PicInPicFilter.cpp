@@ -39,7 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicInPicRGB32Impl.h>
 #include <PicScalerRGB24Impl.h>
 #include <PicScalerRGB32Impl.h>
-#include "../VersionInfo.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #ifdef USE_MMX
@@ -653,10 +652,4 @@ void PicInPicFilter::reconfigure()
   {
     m_pPicInPic->SetDimensions(pBmih1->biWidth, pBmih1->biHeight);
   }
-}
-
-
-void PicInPicFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

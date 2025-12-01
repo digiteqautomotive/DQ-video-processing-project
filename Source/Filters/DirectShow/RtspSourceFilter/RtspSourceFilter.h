@@ -99,8 +99,6 @@ public:
 		addParameter(STREAM_USING_TCP, &m_bStreamUsingTCP, true);
 	}
 
-	virtual void doGetVersion(std::string& sVersion) const;
-
 	/// From IFileSourceFilter
 	STDMETHODIMP Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt);
 	/// From IFileSourceFilter

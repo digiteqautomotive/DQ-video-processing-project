@@ -49,11 +49,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StatusInterface.h"
 #include <Windows.h>
 
+#include "VersionInfo.h"
+
 /**
 * \ingroup DirectShowLib
 *  IStatusInterface implementation.
 */
-class CStatusInterface : public IStatusInterface
+class CStatusInterface: public IStatusInterface, public VersionInfo
 {
 public:
 	/// Constructor
@@ -75,7 +77,6 @@ public:
     STDMETHODIMP GetFriendlyID( long& lId );
 
 protected:
-  virtual void doGetVersion(std::string& sVersion) const = 0;
   /**
    * @brief Helper method that can be used by sub-classes
    */

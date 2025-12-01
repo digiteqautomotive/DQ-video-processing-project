@@ -88,7 +88,6 @@ public:
 	 */
 	HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
-        virtual void doGetVersion(std::string& sVersion) const;
 	/// Interface methods
 	///Overridden from CSettingsInterface
 	virtual void initParameters()

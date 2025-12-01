@@ -51,7 +51,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <GeneralUtils/Conversion.h>
 #include "../DirectShowFilterGuids.h"
 #include "DirectShow/DirectShowMediaFormats.h"
-#include "../VersionInfo.h"
 
 
 // HACK for backwards compatibility with pre-CMake projects
@@ -878,11 +877,5 @@ STDMETHODIMP H264EncoderFilter::GenerateIdr()
   CAutoLock lck(&m_csCodec);
   m_pCodec->Restart();
   return S_OK;
-}
-
-
-void H264EncoderFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }
 

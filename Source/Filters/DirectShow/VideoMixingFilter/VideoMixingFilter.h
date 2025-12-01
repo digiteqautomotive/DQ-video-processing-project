@@ -91,8 +91,6 @@ public:
 
         virtual void OnDisconnect(int nIndex);
 
-	virtual void doGetVersion(std::string& sVersion) const;
-
         void FeedRegion(void* pImg) const;
 
 	/// For configuration dialog

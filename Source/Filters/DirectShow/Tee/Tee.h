@@ -69,7 +69,6 @@ public:
 	virtual void InitialiseInputTypes();
 	virtual void InitialiseOutputTypes();
 	virtual void initParameters() {}
-        virtual void doGetVersion(std::string& sVersion) const;
 
 	///  From CBasePin
 	virtual HRESULT CheckOutputType(const CMediaType* pMediaType);

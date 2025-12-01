@@ -40,7 +40,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AudioMixingFilter.h"
 
 #include <DirectShow/CommonDefs.h>
-#include "../VersionInfo.h"
 
 
 AudioMixingFilter::AudioMixingFilter()
@@ -687,11 +686,5 @@ STDMETHODIMP AudioMixingFilter::EndFlush( int nIndex )
     m_vOutputPins[0]->DeliverEndFlush();
   }
   return S_OK;
-}
-
-
-void AudioMixingFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }
 

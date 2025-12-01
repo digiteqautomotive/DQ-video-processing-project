@@ -37,7 +37,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <PicRotateRGB24Impl.h>
 #include <PicRotateRGB32Impl.h>
-#include "../VersionInfo.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
@@ -377,10 +376,4 @@ void RotateFilter::RecalculateFilterParameters()
 		m_nPadding = 32 - (m_nStride%32);
 		//m_nStride += m_nStride % 32;
 	}
-}
-
-
-void RotateFilter::doGetVersion(std::string& sVersion) const
-{
-  sVersion = VersionInfo::toString();
 }

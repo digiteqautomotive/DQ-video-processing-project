@@ -32,7 +32,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <DirectShow/CustomBaseFilter.h>
 //#include <DirectShowExt/DirectShowMediaFormats.h>
 #include <DirectShow/NotifyCodes.h>
-#include "../VersionInfo.h"
 
 
 /// {F97F9C42-6DA9-40AE-8434-2DF8AFD8F0DE}
@@ -93,11 +92,6 @@ public:
   * <table border="0" cols="2"> <tr valign="top"> <td  width="50%"><b>Value</b></td> <td width="50%"><b>Description</b></td> </tr> <tr valign="top"> <td width="50%">S_OK</td> <td width="50%">The media types are compatible.</td> </tr> <tr valign="top"> <td width="50%">VFW_E_TYPE_NOT_ACCEPTED</td> <td width="50%">The media types are not compatible.</td> </tr> </table>
   */
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
-
-  virtual void doGetVersion(std::string& sVersion) const
-  {
-    sVersion = VersionInfo::toString();
-  }
 
   ///Overridden from CSettingsInterface
   virtual void initParameters(){;}

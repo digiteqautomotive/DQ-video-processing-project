@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include <DirectShow/VideoMixingBase.h>
+#include "DirectShow/VideoMixingBase.h"
 #include <DirectShow/CSettingsInterface.h>
 #include "../FilterParameterStringConstants.h"
 
@@ -86,8 +86,6 @@ public:
         virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
-
-        virtual void doGetVersion(std::string& sVersion) const;
 
 	virtual void initParameters();
 

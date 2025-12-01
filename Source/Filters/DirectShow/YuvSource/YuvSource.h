@@ -81,8 +81,6 @@ public:
   /// From CSource
   STDMETHODIMP Stop();
 
-  virtual void doGetVersion(std::string& sVersion) const;
-
   /// From CSettingsInterface
   virtual void initParameters()
   {
