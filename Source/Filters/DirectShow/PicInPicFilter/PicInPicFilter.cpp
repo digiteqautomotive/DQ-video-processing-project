@@ -54,6 +54,9 @@ extern "C" unsigned GetFeaturesCPU(void);
 const unsigned FeaturesCPU = GetFeaturesCPU();
 #endif
 
+#include "../VariantTools.cpp"
+
+
 PicScalerBase *GetPicScallerRGB32(void)
 {
 #ifdef USE_SSE
@@ -80,7 +83,8 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
   m_pSubPicScaler(NULL),
   m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL),
-  m_Vflip(false)
+  m_Vflip(false),
+  m_DirtyProps(true)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
@@ -116,7 +120,7 @@ PicInPicFilter::~PicInPicFilter()
     m_pBufferForScaledSecondaryImage = NULL;
   }
 
-  for(int i = 0; i < 2; i++)
+  for(int i=0; i<2; i++)
   {
     if (m_pSampleBuffers[i])
     {
@@ -653,3 +657,367 @@ void PicInPicFilter::reconfigure()
     m_pPicInPic->SetDimensions(pBmih1->biWidth, pBmih1->biHeight);
   }
 }
+
+
+/// For configuration dialog
+HRESULT PicInPicFilter::GetPages(CAUUID *pPages)
+{
+  if(pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+	return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_PicInPicProperties;
+  return S_OK;
+}
+
+
+/// For configuration dialog
+HRESULT PicInPicFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if(riid == IID_ISpecifyPropertyPages)
+      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == (IID_ISettingsInterface))
+      return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IPersistPropertyBag)
+      return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPropertyBag)
+      return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)
+      return GetInterface((IPersistStream*) this, ppv);
+
+  			// Call the parent class.
+  return VideoMixingBase::NonDelegatingQueryInterface(riid, ppv);
+}
+
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT PicInPicFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_PicInPicFilter;
+  return S_OK;
+}
+
+
+HRESULT PicInPicFilter::InitNew(void)
+{
+  m_nTargetWidth = m_nTargetHeight = 0;
+  return S_OK;
+}
+
+
+#define olestr(s) sstr(s)
+#if defined(_WIN32) && !defined(OLE2ANSI)
+ #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
+ #define sstr(s) L###s
+#else
+ #define olecmp(__str1,__str2) strcmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
+ #define sstr(s) #s
+#endif
+
+OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
+OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+OLECHAR OLE_PARAM_SUB_PIC_WIDTH[] =  olestr(FILTER_PARAM_SUB_PIC_WIDTH);
+OLECHAR OLE_PARAM_SUB_PIC_HEIGHT[] = olestr(FILTER_PARAM_SUB_PIC_HEIGHT);
+OLECHAR OLE_PARAM_OFFSET_X[] =  olestr(FILTER_PARAM_OFFSET_X);
+OLECHAR OLE_PARAM_OFFSET_Y[] = olestr(FILTER_PARAM_OFFSET_Y);
+
+
+HRESULT PicInPicFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  memset(&var,0,sizeof(var));
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_WIDTH));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nTargetWidth,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_HEIGHT));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nTargetHeight,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_SUB_PIC_WIDTH));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_SUB_PIC_WIDTH,sizeof(OLE_PARAM_SUB_PIC_WIDTH));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nSubPictureWidth,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_SUB_PIC_HEIGHT));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_SUB_PIC_HEIGHT,sizeof(OLE_PARAM_SUB_PIC_HEIGHT));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nSubPictureHeight,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_OFFSET_X));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_OFFSET_X,sizeof(OLE_PARAM_OFFSET_X));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nCustomOffsetX,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_OFFSET_Y));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_OFFSET_Y,sizeof(OLE_PARAM_OFFSET_Y));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nCustomOffsetY,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  VariantClear(&var);
+return S_OK;
+}
+
+
+HRESULT PicInPicFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_WIDTH));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
+    var.vt = VT_INT;
+    var.intVal = m_nTargetWidth;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_HEIGHT));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
+    var.vt = VT_INT;
+    var.intVal = m_nTargetHeight;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_SUB_PIC_WIDTH));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_SUB_PIC_WIDTH,sizeof(OLE_PARAM_SUB_PIC_WIDTH));
+    var.vt = VT_INT;
+    var.intVal = m_nSubPictureWidth;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_SUB_PIC_HEIGHT));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_SUB_PIC_HEIGHT,sizeof(OLE_PARAM_SUB_PIC_HEIGHT));
+    var.vt = VT_INT;
+    var.intVal = m_nSubPictureHeight;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_OFFSET_X));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_OFFSET_X,sizeof(OLE_PARAM_OFFSET_X));
+    var.vt = VT_INT;
+    var.intVal = m_nCustomOffsetX;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_OFFSET_Y));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_OFFSET_Y,sizeof(OLE_PARAM_OFFSET_Y));
+    var.vt = VT_INT;
+    var.intVal = m_nCustomOffsetY;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+HRESULT PicInPicFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nTargetWidth;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nTargetHeight;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_SUB_PIC_WIDTH) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nSubPictureWidth;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_SUB_PIC_HEIGHT) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nSubPictureHeight;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_OFFSET_X) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nCustomOffsetX;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_OFFSET_Y) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nCustomOffsetY;
+    return S_OK;
+  }
+  return E_INVALIDARG;
+}
+
+
+HRESULT PicInPicFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+CheckPointer(pszPropName, E_INVALIDARG);
+CheckPointer(pVar, E_INVALIDARG);
+  if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
+  {   
+    if(IntFromVariant(m_nTargetWidth,pVar)) return S_OK;
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
+  {
+    if(IntFromVariant(m_nTargetHeight,pVar)) return S_OK;    
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_SUB_PIC_WIDTH) == 0)
+  {   
+    if(IntFromVariant(m_nSubPictureWidth,pVar)) return S_OK;
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_SUB_PIC_HEIGHT) == 0)
+  {
+    if(IntFromVariant(m_nSubPictureHeight,pVar)) return S_OK;    
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_OFFSET_X) == 0)
+  {   
+    if(IntFromVariant(m_nCustomOffsetX,pVar)) return S_OK;
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_OFFSET_Y) == 0)
+  {
+    if(IntFromVariant(m_nCustomOffsetY,pVar)) return S_OK;    
+  }
+  return E_INVALIDARG;
+}
+
+
+//----------------- IPersistStream------------------
+
+
+HRESULT PicInPicFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
+{
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = sizeof(m_nTargetWidth) + sizeof(m_nTargetHeight) + sizeof(m_nSubPictureWidth) + sizeof(m_nSubPictureHeight) +
+		      sizeof(m_nCustomOffsetX) + sizeof(m_nCustomOffsetY);
+  return S_OK;
+}
+
+
+HRESULT PicInPicFilter::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT PicInPicFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+int nOutWidth, nOutHeight, nSubPicWidth, nSubPicHeight, nCustomOffsetX, nCustomOffsetY;
+HRESULT hr;
+  ASSERT(sizeof(nOutWidth)==sizeof(m_nTargetWidth));
+  ASSERT(sizeof(nOutHeight)==sizeof(m_nTargetHeight));
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nSubPicWidth, sizeof(nSubPicWidth), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nSubPicHeight, sizeof(nSubPicHeight), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nCustomOffsetX, sizeof(nCustomOffsetX), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nCustomOffsetY, sizeof(nCustomOffsetY), &pcbRead))) return hr;
+  if(m_nTargetWidth!=nOutWidth || m_nTargetHeight!=nOutHeight || m_nSubPictureWidth!=nSubPicWidth || m_nSubPictureHeight!=nSubPicHeight ||
+     m_nCustomOffsetX!=nCustomOffsetX || m_nCustomOffsetY!=nCustomOffsetY)
+  {
+    m_nTargetWidth = nOutWidth;
+    m_nTargetHeight = nOutHeight;
+    m_nSubPictureWidth = nSubPicWidth;
+    m_nSubPictureHeight = nSubPicHeight;
+    m_nCustomOffsetX = nCustomOffsetX;
+    m_nCustomOffsetY = nCustomOffsetY;
+    m_DirtyProps = true;
+  }
+return S_OK;
+}
+
+
+HRESULT PicInPicFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_nTargetWidth, sizeof(m_nTargetWidth), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nTargetHeight, sizeof(m_nTargetHeight), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nSubPictureWidth, sizeof(m_nSubPictureWidth), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nSubPictureHeight, sizeof(m_nSubPictureHeight), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nCustomOffsetX, sizeof(m_nCustomOffsetX), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nCustomOffsetY, sizeof(m_nCustomOffsetY), NULL))) return hr;
+  if(fClearDirty) m_DirtyProps=false;
+return S_OK;
+}
+

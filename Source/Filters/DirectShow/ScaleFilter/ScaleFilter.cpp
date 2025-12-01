@@ -64,7 +64,7 @@ extern "C" unsigned GetFeaturesCPU(void);
 const unsigned FeaturesCPU = GetFeaturesCPU();
 #endif
 
-#include "VariantTools.cpp"
+#include "../VariantTools.cpp"
 
 
 PicScalerBase *GetPicScallerRGB32(void)
@@ -464,7 +464,7 @@ HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lA
 }
 
 
-HRESULT ScaleFilter::RecalculateFilterParameters()
+HRESULT ScaleFilter::RecalculateFilterParameters(void)
 {
   // Update the number of out pixels
   m_nOutPixels = labs(m_nOutWidth * m_nOutHeight);
@@ -668,8 +668,8 @@ HRESULT hr;
   ASSERT(sizeof(nOutHeight)==sizeof(m_nOutHeight));
   CheckPointer(pStm, E_INVALIDARG);
 
-  if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), NULL))) return hr;
-  if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), NULL))) return hr;
+  if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), &pcbRead))) return hr;
   if(m_nOutWidth!=nOutWidth || m_nOutHeight!=nOutHeight)
   {
     m_nOutWidth = nOutWidth;

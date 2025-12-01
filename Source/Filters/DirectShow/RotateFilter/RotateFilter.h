@@ -56,8 +56,8 @@ class PicRotateBase;
  * Rotate for RGB24 and RGB32 media. 
  * Rotation parameters can be set using the COM SettingsInterface SetParameter method.
  */
-class RotateFilter : public CCustomBaseFilter,
-					public ISpecifyPropertyPages
+class RotateFilter: public CCustomBaseFilter, public ISpecifyPropertyPages,
+                    public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
 	DECLARE_IUNKNOWN
@@ -110,31 +110,26 @@ public:
 	/// Overridden from CCustomBaseFilter
 	virtual void InitialiseInputTypes();
 
-	STDMETHODIMP GetPages(CAUUID *pPages)
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_RotateProperties;
-		return S_OK;
-	}
+	STDMETHODIMP GetPages(CAUUID *pPages);
 
-	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-	{
-		if (riid == IID_ISpecifyPropertyPages)
-		{
-			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else
-		{
-			// Call the parent class.
-			return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-		}
-	}
+	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+
+		// IPersistPropertyBag
+	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+	virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+	virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+	virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+		// IPropertyBag
+	STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+	STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+
+		// IPersistStream
+	virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+	virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+	virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+	virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
+
 
 private:
 	/**
@@ -164,4 +159,5 @@ private:
 
 	int m_nStride;
 	int m_nPadding;
+	bool m_DirtyProps;
 };

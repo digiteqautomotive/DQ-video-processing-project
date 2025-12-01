@@ -60,7 +60,8 @@ class PicScalerBase;
 /**
  * @brief PicInPicFilter that accepts two RGB24 inputs.
  * The filter should only be confgured after the inputs have been connected. */
-class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages
+class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages,
+                      public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -90,36 +91,10 @@ public:
 	virtual void initParameters();
 
 	/// For configuration dialog
-	STDMETHODIMP GetPages(CAUUID *pPages)
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_PicInPicProperties;
-		return S_OK;
-	}
+	STDMETHODIMP GetPages(CAUUID *pPages);
 
 	/// For configuration dialog
-	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-	{
-		if (riid == IID_ISpecifyPropertyPages)
-		{
-			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else if(riid == (IID_ISettingsInterface))
-		{
-			return GetInterface((ISettingsInterface*) this, ppv);
-		}
-		else
-		{
-			// Call the parent class.
-			return VideoMixingBase::NonDelegatingQueryInterface(riid, ppv);
-		}
-	}
+	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
 	// TEMP Overriding to prevent RGB32
 	virtual void InitialiseInputTypes()
@@ -132,6 +107,23 @@ public:
 	}
 
 	STDMETHODIMP SetParameter( const char* type, const char* value);
+
+		// IPersistPropertyBag
+	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+	virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+	virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+	virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+		// IPropertyBag
+	STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+	STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+
+		// IPersistStream
+	virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+	virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+	virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+	virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
+
 private:
 	bool parameterChangeAffectsOutput( const char* szParam );
 	void reconfigure();
@@ -152,11 +144,11 @@ private:
 	/// Position where subvideo is inserted
 	//int m_nPosition;
 	/// target width: if zero the width of the primary picture is used
-	int m_nTargetWidth;
+  int m_nTargetWidth;
   /// target height: if zero the height of the primary picture is used
   int m_nTargetHeight;
 	/// target width of sub pic: if zero the width of the secondary picture is used
-	int m_nSubPictureWidth;
+  int m_nSubPictureWidth;
   /// target height of sub pic: if zero the width of the secondary picture is used
   int m_nSubPictureHeight;
 	/// custom X offset from bottom left corner used when position = SUB_PIC_POSITION_CUSTOM
@@ -174,4 +166,5 @@ private:
   /// buffer to scale secondary image into if required
   BYTE* m_pBufferForScaledSecondaryImage;
   bool m_Vflip;
+  bool m_DirtyProps;
 };

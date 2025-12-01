@@ -39,6 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicRotateRGB32Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
+#include "../VariantTools.cpp"
+
 
 RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
 	m_pRotate(NULL),
@@ -46,7 +48,8 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	m_nOutWidth(0),
 	m_nOutHeight(0),
 	m_nStride(0),
-	m_nPadding(0)
+	m_nPadding(0),
+        m_DirtyProps(true)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
 	InitialiseInputTypes();
@@ -376,4 +379,185 @@ void RotateFilter::RecalculateFilterParameters()
 		m_nPadding = 32 - (m_nStride%32);
 		//m_nStride += m_nStride % 32;
 	}
+}
+
+
+HRESULT RotateFilter::GetPages(CAUUID *pPages)
+{
+  if (pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+    return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_RotateProperties;
+  return S_OK;
+}
+
+
+HRESULT RotateFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if(riid == IID_ISpecifyPropertyPages)
+      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == IID_IPersistPropertyBag)
+      return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPropertyBag)
+      return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)
+      return GetInterface((IPersistStream*) this, ppv);
+			// Call the parent class.
+  return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
+}
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT RotateFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_RotateFilter;
+  return S_OK;
+}
+
+
+HRESULT RotateFilter::InitNew(void)
+{
+  m_nOutWidth = m_nOutHeight = 0;
+  return S_OK;
+}
+
+
+#define olestr(s) sstr(s)
+#if defined(_WIN32) && !defined(OLE2ANSI)
+ #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
+ #define sstr(s) L###s
+#else
+ #define olecmp(__str1,__str2) strcmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
+ #define sstr(s) #s
+#endif
+
+OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
+
+
+HRESULT RotateFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  memset(&var,0,sizeof(var));
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ROTATION));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_ROTATION,sizeof(OLE_PARAM_ROTATION));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nRotation,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  VariantClear(&var);
+return S_OK;
+}
+
+
+HRESULT RotateFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ROTATION));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_ROTATION,sizeof(OLE_PARAM_ROTATION));
+    var.vt = VT_INT;
+    var.intVal = m_nRotation;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+HRESULT RotateFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_PARAM_ROTATION) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nRotation;
+    return S_OK;
+  }
+
+  return E_INVALIDARG;
+}
+
+
+HRESULT RotateFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+CheckPointer(pszPropName, E_INVALIDARG);
+CheckPointer(pVar, E_INVALIDARG);
+  if(oleicmp(pszPropName, OLE_PARAM_ROTATION) == 0)
+  {   
+    if(IntFromVariant(m_nRotation,pVar)) return S_OK;
+  }
+  return E_INVALIDARG;
+}
+
+
+//----------------- IPersistStream------------------
+
+
+HRESULT RotateFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
+{
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = sizeof(m_nRotation);
+  return S_OK;
+}
+
+
+HRESULT RotateFilter::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT RotateFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+int nRotation;
+HRESULT hr;
+  ASSERT(sizeof(m_nRotation)==sizeof(nRotation));
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&nRotation, sizeof(nRotation), &pcbRead))) return hr;
+  if(m_nRotation!=nRotation)
+  {
+    m_nRotation = nRotation;
+    m_DirtyProps = true;
+  }
+return S_OK;
+}
+
+
+HRESULT RotateFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_nRotation, sizeof(m_nRotation), NULL))) return hr;
+  if(fClearDirty) m_DirtyProps=false;
+return S_OK;
 }
