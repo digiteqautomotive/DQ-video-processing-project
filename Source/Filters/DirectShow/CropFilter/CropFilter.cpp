@@ -37,13 +37,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicCropperRGB32Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
+#include "../VariantTools.cpp"
 
-CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
+
+ CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
   m_pCropper(NULL),
   m_pCropBuffer(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
   m_nStride(0),
-  m_nPadding(0)
+  m_nPadding(0),
+  m_DirtyPropsStream(true)
 {
   //Call the initialise input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -51,7 +54,7 @@ CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID
   initParameters();
 }
 
-CropFilter::~CropFilter()
+ CropFilter::~CropFilter()
 {
   if (m_pCropper)
   {
@@ -354,7 +357,7 @@ HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lAc
 }
 
 
-void CropFilter::RecalculateFilterParameters()
+void CropFilter::RecalculateFilterParameters(void)
 {
   //Set defaults and make sure that the target dimensions are valid
   m_nOutWidth = labs(m_nInWidth) - m_nLeftCrop - m_nRightCrop;
@@ -417,13 +420,278 @@ HRESULT CropFilter::GetPages(CAUUID *pPages)
 
 HRESULT CropFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-  if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else
-  {
-    // Call the parent class.
-    return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-  }
+  if(riid == IID_IPersistPropertyBag)
+      return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPropertyBag)
+      return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_ISpecifyPropertyPages)
+      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == IID_IPersistStream)
+      return GetInterface((IPersistStream*)this, ppv);
+	// Call the parent class.
+  return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);  
 }
+
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT CropFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_CropFilter;
+  return S_OK;
+}
+
+
+HRESULT CropFilter::InitNew(void)
+{
+  m_nLeftCrop = m_nRightCrop = m_nTopCrop = m_nBottomCrop = 0;
+  return S_OK;
+}
+
+
+#define olestr(s) sstr(s)
+#if defined(_WIN32) && !defined(OLE2ANSI)
+ #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
+ #define sstr(s) L###s
+#else
+ #define olecmp(__str1,__str2) strcmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
+ #define sstr(s) #s
+#endif
+
+OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);
+OLECHAR OLE_PARAM_RIGHT_CROP[] = olestr(FILTER_PARAM_RIGHT_CROP);
+OLECHAR OLE_PARAM_TOP_CROP[] =  olestr(FILTER_PARAM_TOP_CROP);
+OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
+
+
+HRESULT CropFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  memset(&var,0,sizeof(var));
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_LEFT_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_LEFT_CROP,sizeof(OLE_PARAM_LEFT_CROP));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nLeftCrop,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_RIGHT_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_RIGHT_CROP,sizeof(OLE_PARAM_RIGHT_CROP));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nRightCrop,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TOP_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_TOP_CROP,sizeof(OLE_PARAM_TOP_CROP));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nTopCrop,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_BOTTOM_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_BOTTOM_CROP,sizeof(OLE_PARAM_BOTTOM_CROP));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nBottomCrop,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  VariantClear(&var);
+return S_OK;
+}
+
+
+HRESULT CropFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_LEFT_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_LEFT_CROP,sizeof(FILTER_PARAM_LEFT_CROP));
+    var.vt = VT_INT;
+    var.intVal = m_nLeftCrop;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_RIGHT_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_RIGHT_CROP,sizeof(FILTER_PARAM_RIGHT_CROP));
+    var.vt = VT_INT;
+    var.intVal = m_nRightCrop;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_TOP_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_TOP_CROP,sizeof(FILTER_PARAM_TOP_CROP));
+    var.vt = VT_INT;
+    var.intVal = m_nTopCrop;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_BOTTOM_CROP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_BOTTOM_CROP,sizeof(FILTER_PARAM_BOTTOM_CROP));
+    var.vt = VT_INT;
+    var.intVal = m_nBottomCrop;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+HRESULT CropFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_PARAM_LEFT_CROP) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nLeftCrop;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_RIGHT_CROP) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nRightCrop;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_TOP_CROP) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nTopCrop;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_BOTTOM_CROP) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nBottomCrop;
+    return S_OK;
+  }
+
+  return E_INVALIDARG;
+}
+
+
+HRESULT CropFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+CheckPointer(pszPropName, E_INVALIDARG);
+CheckPointer(pVar, E_INVALIDARG);
+  if(oleicmp(pszPropName, OLE_PARAM_LEFT_CROP) == 0)
+  {   
+    if(IntFromVariant(m_nLeftCrop,pVar)) return S_OK;
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_RIGHT_CROP) == 0)
+  {
+    if(IntFromVariant(m_nRightCrop,pVar)) return S_OK;    
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_TOP_CROP) == 0)
+  {
+    if(IntFromVariant(m_nTopCrop,pVar)) return S_OK;    
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_BOTTOM_CROP) == 0)
+  {
+    if(IntFromVariant(m_nBottomCrop,pVar)) return S_OK;    
+  }
+  return E_INVALIDARG;
+}
+
+
+//----------------- IPersistStream------------------
+
+
+HRESULT CropFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
+{
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = sizeof(m_nLeftCrop) + sizeof(m_nRightCrop) + sizeof(m_nTopCrop) + sizeof(m_nBottomCrop);
+  return S_OK;
+}
+
+
+HRESULT CropFilter::IsDirty(void)
+{
+  return m_DirtyPropsStream ? S_OK : S_FALSE;
+}
+
+
+HRESULT CropFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+int nLeftCrop, nRightCrop, nTopCrop, nBottomCrop;
+HRESULT hr;
+  ASSERT(sizeof(nLeftCrop)==sizeof(m_nLeftCrop));
+  ASSERT(sizeof(nRightCrop)==sizeof(m_nRightCrop));
+  ASSERT(sizeof(nTopCrop)==sizeof(m_nTopCrop));
+  ASSERT(sizeof(nBottomCrop)==sizeof(m_nBottomCrop));
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&nLeftCrop, sizeof(nLeftCrop), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nRightCrop, sizeof(nRightCrop), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nTopCrop, sizeof(nTopCrop), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&nBottomCrop, sizeof(nBottomCrop), &pcbRead))) return hr;
+  if(m_nLeftCrop!=nLeftCrop || m_nRightCrop!=nRightCrop || m_nTopCrop!=nTopCrop || m_nBottomCrop!=nBottomCrop)
+  {
+    m_nLeftCrop = nLeftCrop;
+    m_nRightCrop = nRightCrop;
+    m_nTopCrop = nTopCrop;
+    m_nBottomCrop = nBottomCrop;
+    m_DirtyPropsStream = true;
+  }
+return S_OK;
+}
+
+
+HRESULT CropFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_nLeftCrop, sizeof(m_nLeftCrop), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nRightCrop, sizeof(m_nRightCrop), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nTopCrop, sizeof(m_nTopCrop), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nBottomCrop, sizeof(m_nBottomCrop), NULL))) return hr;
+  if(fClearDirty) m_DirtyPropsStream=false;
+return S_OK;
+}
+

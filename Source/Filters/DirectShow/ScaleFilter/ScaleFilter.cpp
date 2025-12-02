@@ -437,7 +437,7 @@ void ScaleFilter::initParameters()
 {
   addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
-//  addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
+  // addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
 }
 
 
@@ -601,6 +601,7 @@ return S_OK;
 
 
 //----------------- IPropertyBag------------------
+
 
 HRESULT ScaleFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
 {

@@ -67,10 +67,10 @@ enum UtilityMode
 {
   UTIL_EST_FRAMERATE_TIMESTAMP              = 0,
   UTIL_EST_FRAMERATE_SYSTEM_TIME            = 1,
-  UTIL_TIME_STAMP_FRAME 		                = 2,
-  UTIL_DATE_TIME_STAMP_FRAME 		            = 3,
-  UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS 		  = 4, // Combo
-  UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST 		  = 5, // Combo
+  UTIL_TIME_STAMP_FRAME 		    = 2,
+  UTIL_DATE_TIME_STAMP_FRAME 		    = 3,
+  UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS 	    = 4, // Combo
+  UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST 	    = 5, // Combo
   UTIL_MEASURE_BITRATE                      = 6, 
   UTIL_DETECT_UPSTREAM_SOURCE               = 7,
   UTIL_NONE = 8
@@ -103,69 +103,87 @@ static bool isFramerateEstimationMode(UtilityMode eMode )
  * Estimate framerate based on timestamps
  * \ingroup DirectShowFilters
  */
-class UtilityFilter : public CTransInPlaceFilter,
-                      public CStatusInterface,
-                      public CSettingsInterface,
-                      public ISpecifyPropertyPages,
-                      public IFilterInfoSourceInterface
+class UtilityFilter: public CTransInPlaceFilter,
+                     public CStatusInterface,
+                     public CSettingsInterface,
+                     public ISpecifyPropertyPages,
+                     public IFilterInfoSourceInterface,
+		     public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
-  DECLARE_IUNKNOWN
+    DECLARE_IUNKNOWN
 
-  /// Constructor
-  UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr);
-  /// Destructor
-  ~UtilityFilter();
+	/// Constructor
+    UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr);
+	/// Destructor
+    ~UtilityFilter();
 
-  /// Static object-creation method (for the class factory)
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
+	/// Static object-creation method (for the class factory)
+    static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
 
-  /// override this to publicize our interfaces
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+	/// override this to publicize our interfaces
+    STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-  //Overriding various CTransInPlace methods
-  HRESULT Transform(IMediaSample *pSample);
+	//Overriding various CTransInPlace methods
+    HRESULT Transform(IMediaSample *pSample);
 
-  HRESULT CheckInputType(const CMediaType* mtIn);
+    HRESULT CheckInputType(const CMediaType* mtIn);
 
-  STDMETHODIMP Run( REFERENCE_TIME tStart );
-  STDMETHODIMP Stop(void);
+    STDMETHODIMP Run( REFERENCE_TIME tStart );
+    STDMETHODIMP Stop(void);
 
-  STDMETHODIMP GetPages(CAUUID *pPages);
+    STDMETHODIMP GetPages(CAUUID *pPages);
 
-  /// Overridden from CSettingsInterface
-  virtual void initParameters(void);
+	// Overridden from CSettingsInterface
+    virtual void initParameters(void);
 
-  STDMETHODIMP SetParameter( const char* type, const char* value);
+    STDMETHODIMP SetParameter( const char* type, const char* value);
 
-  STDMETHODIMP GetMeasurement(char* value, int* buffersize);
+    STDMETHODIMP GetMeasurement(char* value, int* buffersize);
+
+	// IPersistPropertyBag
+    virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+    virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+    virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+    virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+	// IPropertyBag
+    STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+    STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+
+	// IPersistStream
+    virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+    virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+    virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+    virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
 
-  HRESULT drawTextOntoFrame(const std::string& sText, IMediaSample *pSample);
-  void initFramerateEstimation(REFERENCE_TIME tSampleStartTime);
+    HRESULT drawTextOntoFrame(const std::string& sText, IMediaSample *pSample);
+    void initFramerateEstimation(REFERENCE_TIME tSampleStartTime);
 
-  double calculateFramerate();
-  double calculateBitrate();
-  const std::string getString(double dFramerate);
-  REFERENCE_TIME getDifference(REFERENCE_TIME tSampleStartTime);
+    double calculateFramerate();
+    double calculateBitrate();
+    const std::string getString(double dFramerate);
+    REFERENCE_TIME getDifference(REFERENCE_TIME tSampleStartTime);
 
-  // parameters
-  unsigned m_uiX;
-  unsigned m_uiY;
-  double m_dEstimatedFramerate;
-  double m_dEstimatedBitrate;
+	// parameters
+    unsigned m_uiX;
+    unsigned m_uiY;
+    double m_dEstimatedFramerate;
+    double m_dEstimatedBitrate;
 
 
-  unsigned m_uiFramerateEstimationMode;
-  bool m_bWriteOnFrame;
-  unsigned m_uiPrecision;
+    unsigned m_uiFramerateEstimationMode;
+    bool m_bWriteOnFrame;
+    unsigned m_uiPrecision;
 
-  bool m_bSeenFirstFrame;
-  REFERENCE_TIME m_tPreviousTimestamp;
-  REFERENCE_TIME m_tMaxDifferenceBetweenFrames;
-  double m_dTimerFrequency;
-  unsigned __int64 m_iPerformanceFrequency;
+    bool m_bSeenFirstFrame;
+    REFERENCE_TIME m_tPreviousTimestamp;
+    REFERENCE_TIME m_tMaxDifferenceBetweenFrames;
+    double m_dTimerFrequency;
+    unsigned __int64 m_iPerformanceFrequency;
+
   class SampleInfo
   {
 public:
@@ -193,6 +211,6 @@ public:
   // for upstream mode
   IFilterInfoSourceInterfacePtr m_pFilterInfoSourceInterface;
   HRESULT m_hrInterfaceAquired;
+  bool m_DirtyProps;
   char m_pBuffer[BUFFER_SIZE];
-
 };
