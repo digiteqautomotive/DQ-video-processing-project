@@ -474,14 +474,10 @@ HRESULT ScaleFilter::RecalculateFilterParameters(void)
 
 HRESULT ScaleFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-  if(riid == IID_IPersistPropertyBag)
-    return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
-  if(riid == IID_IPropertyBag)
-    return GetInterface(static_cast<IPropertyBag*>(this), ppv);
-  if(riid == IID_ISpecifyPropertyPages)
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  if(riid == IID_IPersistStream)
-      return GetInterface((IPersistStream*) this, ppv);
+  if(riid == IID_IPersistPropertyBag)   return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)	return GetInterface(static_cast<IPersistStream*>(this), ppv);
+  if(riid == IID_IPropertyBag)		return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
 
     // Call the parent class.
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
@@ -520,19 +516,9 @@ HRESULT ScaleFilter::InitNew(void)
 }
 
 
-#define olestr(s) sstr(s)
-#if defined(_WIN32) && !defined(OLE2ANSI)
- #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
- #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
- #define sstr(s) L###s
-#else
- #define olecmp(__str1,__str2) strcmp(__str1,__str2)
- #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
- #define sstr(s) #s
-#endif
-
 OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+
 
 HRESULT ScaleFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
 {

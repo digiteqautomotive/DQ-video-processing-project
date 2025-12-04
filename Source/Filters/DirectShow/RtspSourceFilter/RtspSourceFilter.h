@@ -73,12 +73,12 @@ static const GUID CLSID_RtspProperties =
  * Note: RTVC_SYNC_RTSP can only be defined if you are using an old version of the live555 library
  * that still supports the synchronous RTSP client interface.
  */
-class RtspSourceFilter :	public CSource,     /* Source Filter */
-							public CSettingsInterface,      /* Rtvc Settings Interface */
-							public CStatusInterface,        /* Rtvc Status Interface */
-							public IFileSourceFilter,       /* To facilitate loading of URL */
-							public IAMFilterMiscFlags,      /* For Live Source purposes */
-							public ISpecifyPropertyPages
+class RtspSourceFilter:	public CSource,			// Source Filter
+			public CSettingsInterface,      // Rtvc Settings Interface
+			public CStatusInterface,        // Rtvc Status Interface
+			public IFileSourceFilter,       // To facilitate loading of URL
+			public IAMFilterMiscFlags,      // For Live Source purposes
+			public ISpecifyPropertyPages
 {
 	///this needs to be declared for the extra interface (adds the COM AddRef, etc methods)
 	DECLARE_IUNKNOWN;

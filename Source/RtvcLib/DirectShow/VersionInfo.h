@@ -1,14 +1,16 @@
-#pragma once
+#ifndef __VersionInfo_h__
+#define __VersionInfo_h__
 
-#include <string>
-
-const unsigned MAJOR_VERSION = 1;
-const unsigned MINOR_VERSION = 6;
-const unsigned BUILD_VERSION = 4;
+#define MAJOR_VERSION	1
+#define MINOR_VERSION	6
+#define BUILD_VERSION	4
 
 /// 0.0.0: - Initial release of filter with version control
 /// 1.6.0: - Refactored CSIR_VPP to DQ_VPP
 
+
+#ifdef __cplusplus
+#include <string>
 
 class VersionInfo
 {
@@ -17,3 +19,7 @@ public:
 
   static std::string toString(void);
 };
+
+#endif
+
+#endif

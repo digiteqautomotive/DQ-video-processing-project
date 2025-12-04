@@ -536,17 +536,6 @@ HRESULT UtilityFilter::InitNew(void)
 }
 
 
-#define olestr(s) sstr(s)
-#if defined(_WIN32) && !defined(OLE2ANSI)
- #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
- #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
- #define sstr(s) L###s
-#else
- #define olecmp(__str1,__str2) strcmp(__str1,__str2)
- #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
- #define sstr(s) #s
-#endif
-
 OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);
 OLECHAR OLE_UF_PARAM_Y[] = olestr(UF_PARAM_Y);
 OLECHAR OLE_UF_MODE[] = olestr(UF_MODE);

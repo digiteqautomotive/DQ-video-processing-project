@@ -49,43 +49,49 @@ static const GUID CLSID_Stereo2MonoProperties =
 // Forward declarations
 
 class Stereo2MonoFilter: public CCustomBaseFilter,
-                         public ISpecifyPropertyPages
+                         public ISpecifyPropertyPages,
+                         public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
-  DECLARE_IUNKNOWN
+    DECLARE_IUNKNOWN
 
-  /// Constructor
-  Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr);
-  /// Destructor
-  ~Stereo2MonoFilter();
+	/// Constructor
+    Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr);
+	/// Destructor
+    ~Stereo2MonoFilter();
 
-  /// Static object-creation method (for the class factory)
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
+	/// Static object-creation method (for the class factory)
+    static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
 
-  /// override this to publicize our interfaces
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+	/// override this to publicize our interfaces
+    STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-	HRESULT CheckInputType(const CMediaType *pMediaType);
-	HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
-	HRESULT GetMediaType(int iPosition, CMediaType *pMediaType);
-	HRESULT DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp);
-	HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
+    HRESULT CheckInputType(const CMediaType *pMediaType);
+    HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
+    HRESULT GetMediaType(int iPosition, CMediaType *pMediaType);
+    HRESULT DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp);
+    HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
-  STDMETHODIMP GetPages(CAUUID *pPages) // For the Property Page
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_Stereo2MonoProperties;
-		return S_OK;
-	}
+    STDMETHODIMP GetPages(CAUUID *pPages); // For the Property Page
 
-  /// Overridden from CSettingsInterface
+	// Overridden from CSettingsInterface
   virtual void initParameters() { addParameter("channel", &m_channel, 0); }
+
+	// IPersistPropertyBag
+  virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+  virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+  virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+  virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+	// IPropertyBag
+  STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+  STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+
+	// IPersistStream
+  virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+  virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+  virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+  virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
   	/// Overridden from CCustomBaseFilter
@@ -95,4 +101,5 @@ private:
   int m_channel;
   int m_nBitsPerSample;
   int m_nSamplesPerSecond;
+  bool m_DirtyProps;
 };

@@ -1,14 +1,22 @@
+#include "../../RtvcLib/DirectShow/VersionInfo.h"
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 #define APP_COMPANY_NAME_STRING "Digiteq Automotive s.r.o"
 #define PRODUCT_INFO_STRING "Direct show filter for video scalling"
-#define PRODUCT_VERSION "1.6.4"
+
+#ifndef STR_HELPER
+  #define STR_HELPER(__x) #__x
+  #define STR_(__x) STR_HELPER(__x)
+ #endif
+#define PRODUCT_VERSION STR_(MAJOR_VERSION) "." STR_(MINOR_VERSION) "." STR_(BUILD_VERSION)
 
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,5,11,0
+ FILEVERSION MAJOR_VERSION,MINOR_VERSION,BUILD_VERSION,0
  //PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG

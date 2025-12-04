@@ -36,12 +36,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Stereo2MonoFilter.h"
 #include "GeneralUtils/StringUtil.h"
 
+#include "../VariantTools.cpp"
 
-Stereo2MonoFilter::Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr)
-  : CCustomBaseFilter(NAME("CSIR RTVC Stereo2Mono Filter"), pUnk, CLSID_VPP_Stereo2MonoFilter),
+
+Stereo2MonoFilter::Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr):
+  CCustomBaseFilter(NAME("CSIR RTVC Stereo2Mono Filter"), pUnk, CLSID_VPP_Stereo2MonoFilter),
   m_channel(0),
   m_nBitsPerSample(8),
-  m_nSamplesPerSecond(0)
+  m_nSamplesPerSecond(0),
+  m_DirtyProps(true)
 {
   // Init parameters
   initParameters();
@@ -62,15 +65,13 @@ CUnknown * WINAPI Stereo2MonoFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 
 STDMETHODIMP Stereo2MonoFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
-  if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else
-  {
+  if(riid == IID_IPersistPropertyBag)   return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)	return GetInterface(static_cast<IPersistStream*>(this), ppv);
+  if(riid == IID_IPropertyBag)		return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_ISpecifyPropertyPages)	return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  
     // Call the parent class.
-    return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-  }
+  return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
 HRESULT Stereo2MonoFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
@@ -172,18 +173,18 @@ HRESULT Stereo2MonoFilter::CheckInputType(const CMediaType* mtIn)
 
 HRESULT Stereo2MonoFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
 {
-	HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
-	if (direction == PINDIR_INPUT)
-	{
+  HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
+  if(direction == PINDIR_INPUT)
+  {
 		//Determine whether we are connected to a RGB24 or 32 source
-    if (pmt->majortype == MEDIATYPE_Audio && pmt->formattype == FORMAT_WaveFormatEx)
-		{
+    if(pmt->majortype == MEDIATYPE_Audio && pmt->formattype == FORMAT_WaveFormatEx)
+    {
       WAVEFORMATEX* pWf = (WAVEFORMATEX*)pmt->Format();
       m_nBitsPerSample = pWf->wBitsPerSample;
       m_nSamplesPerSecond = pWf->nSamplesPerSec;
-		}
-	}
-	return hr;
+    }
+  }
+  return hr;
 }
 
 HRESULT Stereo2MonoFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
@@ -258,6 +259,7 @@ HRESULT Stereo2MonoFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
   return S_OK;
 }
 
+
 HRESULT Stereo2MonoFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *mtOut )
 {
   // Check the major type.
@@ -292,4 +294,159 @@ HRESULT Stereo2MonoFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
 
   // Everything is good.
   return S_OK;
+}
+
+
+HRESULT Stereo2MonoFilter::GetPages(CAUUID *pPages) // For the Property Page
+{
+  if(pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+	return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_Stereo2MonoProperties;
+  return S_OK;
+}
+
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT Stereo2MonoFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_Stereo2MonoFilter;
+  return S_OK;
+}
+
+
+HRESULT Stereo2MonoFilter::InitNew(void)
+{
+  m_channel = 0;  
+  return S_OK;
+}
+
+
+OLECHAR OLE_CHANNEL_PARAM[] = olestr("CHANNEL");
+
+
+HRESULT Stereo2MonoFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  memset(&var,0,sizeof(var));
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_CHANNEL_PARAM));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_CHANNEL_PARAM,sizeof(OLE_CHANNEL_PARAM));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_channel,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  VariantClear(&var);
+return S_OK;
+}
+
+
+HRESULT Stereo2MonoFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_CHANNEL_PARAM));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_CHANNEL_PARAM,sizeof(OLE_CHANNEL_PARAM));
+    var.vt = VT_INT;
+    var.intVal = m_channel;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+
+HRESULT Stereo2MonoFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_CHANNEL_PARAM) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_channel;
+    return S_OK;
+  }
+  return E_INVALIDARG;
+}
+
+
+HRESULT Stereo2MonoFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+CheckPointer(pszPropName, E_INVALIDARG);
+CheckPointer(pVar, E_INVALIDARG);
+  if(oleicmp(pszPropName, OLE_CHANNEL_PARAM) == 0)
+  {   
+    if(IntFromVariant(m_channel,pVar)) return S_OK;
+  }
+  return E_INVALIDARG;
+}
+
+
+//----------------- IPersistStream------------------
+
+
+HRESULT Stereo2MonoFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
+{
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = sizeof(m_channel);
+  return S_OK;
+}
+
+
+HRESULT Stereo2MonoFilter::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT Stereo2MonoFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+int channel;
+HRESULT hr;
+  ASSERT(sizeof(channel)==sizeof(m_channel));
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&channel, sizeof(channel), &pcbRead))) return hr;
+  if(m_channel != channel)
+  {
+    m_channel = channel;
+    m_DirtyProps = true;
+  }
+return S_OK;
+}
+
+
+HRESULT Stereo2MonoFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_channel, sizeof(m_channel), NULL))) return hr;
+  if(fClearDirty) m_DirtyProps=false;
+return S_OK;
 }

@@ -55,8 +55,8 @@ class RGBtoYUV420Converter;
  * \ingroup DirectShowFilters
  * DirectShow Filter that converts RGB24 or RGB32 media to I420 format.
  */
-class RGBtoYUV420Filter : public CCustomBaseFilter,
-                          public ISpecifyPropertyPages
+class RGBtoYUV420Filter: public CCustomBaseFilter,
+                         public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN
