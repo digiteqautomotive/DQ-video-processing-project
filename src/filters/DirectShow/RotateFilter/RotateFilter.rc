@@ -93,7 +93,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_ROTATE_CAPTION      "CSIR Rotate Filter Properties"
+    IDS_ROTATE_CAPTION      "DQ Rotate Filter Properties"
 END
 
 #endif    // English (South Africa) resources

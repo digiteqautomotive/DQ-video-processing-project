@@ -102,7 +102,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_FRAME_SKIP_CAPTION       "CSIR FrameSkip Properties"
+    IDS_FRAME_SKIP_CAPTION       "DQ FrameSkip Properties"
 END
 
 #endif    // English (South Africa) resources

@@ -123,7 +123,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_PIC_IN_PIC_CAPTION  "CSIR Pic in Pic Properties"
+    IDS_PIC_IN_PIC_CAPTION  "DQ Pic in Pic Properties"
 END
 
 #endif    // English (South Africa) resources

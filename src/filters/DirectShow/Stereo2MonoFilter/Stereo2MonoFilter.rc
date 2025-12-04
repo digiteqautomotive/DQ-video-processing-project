@@ -93,7 +93,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_STEREO2MONO_CAPTION       "CSIR STEREO2MONO Properties"
+    IDS_STEREO2MONO_CAPTION       "DQ STEREO2MONO Properties"
 END
 
 #endif    // English (South Africa) resources

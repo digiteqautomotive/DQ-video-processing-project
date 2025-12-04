@@ -91,7 +91,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_RGB2I420_CAPTION     "CSIR RGB to YUV converter Filter Properties"
+    IDS_RGB2I420_CAPTION     "DQ RGB to YUV converter Filter Properties"
 END
 
 #endif    // English (South Africa) resources

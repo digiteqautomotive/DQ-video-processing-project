@@ -103,7 +103,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_H264_CAPTION        "CSIR H264 Source Filter Properties"
+    IDS_H264_CAPTION        "DQ H264 Source Filter Properties"
 END
 
 #endif    // English (South Africa) resources

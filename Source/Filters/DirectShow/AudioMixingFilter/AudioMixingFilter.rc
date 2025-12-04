@@ -85,7 +85,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_AM_CAPTION          "CSIR Audio Mixing Filter Properties"
+    IDS_AM_CAPTION          "DQ Audio Mixing Filter Properties"
 END
 
 #endif    // English (South Africa) resources

@@ -91,7 +91,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_YUV2RGB_CAPTION     "CSIR Yuv 2 RGB Filter Properties"
+    IDS_YUV2RGB_CAPTION     "DQ YUV 2 RGB Filter Properties"
 END
 
 #endif    // English (South Africa) resources

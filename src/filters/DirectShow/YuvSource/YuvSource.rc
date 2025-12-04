@@ -110,7 +110,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_YUV_CAPTION         "CSIR YUV Source Filter Properties"
+    IDS_YUV_CAPTION         "DQ YUV Source Filter Properties"
 END
 
 #endif    // English (South Africa) resources

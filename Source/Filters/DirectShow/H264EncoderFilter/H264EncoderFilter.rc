@@ -136,7 +136,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDD_H264PROP_CAPTION      "CSIR H264 Encoder Properties"
+    IDD_H264PROP_CAPTION      "DQ H264 Encoder Properties"
 END
 
 #endif    // English (South Africa) resources

@@ -103,7 +103,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_UTILITY_CAPTION     "CSIR Utility Filter Properties"
+    IDS_UTILITY_CAPTION     "DQ Utility Filter Properties"
 END
 
 #endif    // English (South Africa) resources

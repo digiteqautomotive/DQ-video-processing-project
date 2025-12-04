@@ -93,7 +93,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_SKEWING_CAPTION       "CSIR Skewing Filter Properties"
+    IDS_SKEWING_CAPTION       "DQ Skewing Filter Properties"
 END
 
 #endif    // English (South Africa) resources

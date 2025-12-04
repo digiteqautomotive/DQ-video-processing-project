@@ -90,7 +90,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_RTSP_SINK_CAPTION      "CSIR VPP RTSP Sink Properties"
+    IDS_RTSP_SINK_CAPTION      "DQ VPP RTSP Sink Properties"
 END
 
 #endif    // English (South Africa) resources
