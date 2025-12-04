@@ -4,7 +4,7 @@
 
 const unsigned MAJOR_VERSION = 1;
 const unsigned MINOR_VERSION = 6;
-const unsigned BUILD_VERSION = 2;
+const unsigned BUILD_VERSION = 4;
 
 /// 0.0.0: - Initial release of filter with version control
 /// 1.6.0: - Refactored CSIR_VPP to DQ_VPP

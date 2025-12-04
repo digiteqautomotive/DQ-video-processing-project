@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \ingroup DirectShowFilters
  * Skewing Filter Property Dialog
  */
-class SkewingProperties : public FilterPropertiesBase
+class SkewingProperties: public FilterPropertiesBase
 {
 public:
 

@@ -7,24 +7,17 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "Windows.h"
-
-#ifdef IDC_STATIC
-#undef IDC_STATIC
-#endif
-#define IDC_STATIC              (-1)     // all static controls
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -51,7 +44,7 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -59,10 +52,8 @@ END
 // English (South Africa) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENS)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SOUTH_AFRICA
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -73,27 +64,28 @@ IDD_PIC_IN_PIC_DIALOG DIALOGEX 0, 0, 220, 190
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Target Width:",IDC_STATIC,16,32,46,8
-    LTEXT           "Target Height:",IDC_STATIC,16,48,48,8
-    EDITTEXT        IDC_EDIT_TARGET_WIDTH,78,32,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,25,10,14
-    EDITTEXT        IDC_EDIT_TARGET_HEIGHT,78,48,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,41,10,14
-    LTEXT           "Subpicture Width:",IDC_STATIC,16,64,58,8
-    LTEXT           "Subpicture Height:",IDC_STATIC,16,80,60,8
-    EDITTEXT        IDC_EDIT_SUBPICTURE_WIDTH,78,64,40,14,ES_AUTOHSCROLL
+    LTEXT           "Target Width:",IDC_STATIC,17,22,56,8
+    LTEXT           "Target Height:",IDC_STATIC,16,37,59,8
+    EDITTEXT        IDC_EDIT_TARGET_WIDTH,78,18,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,18,10,14
+    EDITTEXT        IDC_EDIT_TARGET_HEIGHT,78,34,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,34,10,14
+    LTEXT           "Subpicture Width:",IDC_STATIC,16,59,58,8
+    LTEXT           "Subpicture Height:",IDC_STATIC,16,75,60,8
+    EDITTEXT        IDC_EDIT_SUBPICTURE_WIDTH,78,58,40,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,58,11,14
-    EDITTEXT        IDC_EDIT_SUBPICTURE_HEIGHT,78,80,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SUBPICTURE_HEIGHT,78,74,40,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_SPIN4,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,74,11,14
-    LTEXT           "Offset X:",IDC_STATIC,16,96,30,8
-    LTEXT           "Offset Y:",IDC_STATIC,16,112,30,8
+    LTEXT           "Offset X:",IDC_STATIC,19,100,56,8
+    LTEXT           "Offset Y:",IDC_STATIC,20,115,52,8
     EDITTEXT        IDC_EDIT_SUBPICTURE_OFFSET_X,78,96,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN5,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,120,11,14
+    CONTROL         "",IDC_SPIN5,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,96,11,14
     EDITTEXT        IDC_EDIT_SUBPICTURE_OFFSET_Y,78,112,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN6,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,136,11,14
-    LTEXT           "Border width:", IDC_STATIC, 16, 128, 60, 8
-    EDITTEXT        IDC_EDIT_BORDER_WIDTH, 78, 128, 40, 14, ES_AUTOHSCROLL
-    CONTROL         "", IDC_SPIN7, "msctls_updown32", UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS, 117, 152, 11, 14
+    CONTROL         "",IDC_SPIN6,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,112,11,14
+    LTEXT           "Border width:",IDC_STATIC,16,138,60,8
+    EDITTEXT        IDC_EDIT_BORDER_WIDTH,78,136,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN7,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,136,11,14
+    LTEXT           "Use 0 for populating input video size.",IDC_STATIC,138,22,66,25
 END
 
 
@@ -103,7 +95,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_PIC_IN_PIC_DIALOG, DIALOG
     BEGIN
@@ -118,22 +110,12 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Version
-//
-#define ORIGINAL_FILENAME	"PicInPicFilter.dll"
-
-#include "../VersionResInfo.h"
-
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    IDS_PIC_IN_PIC_CAPTION  "CSIR Pic in Pic Properties"
+    IDS_PIC_IN_PIC_CAPTION  "DQ Pic in Pic Properties"
 END
 
 #endif    // English (South Africa) resources

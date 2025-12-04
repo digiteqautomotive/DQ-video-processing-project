@@ -60,7 +60,8 @@ class PicConcatBase;
  * \ingroup DirectShowFilters
  * Video Mixing Filter for RGB24 and RGB32 Media
  */
-class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages
+class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages,
+                         public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -99,22 +100,34 @@ public:
 	/// For configuration dialog
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-protected:
+	// IPersistPropertyBag
+        virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+        virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+        virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+        virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 
-	/// Pointers to our last received Media Sample
-	BYTE* m_pSampleBuffers[2];
-	// Sizes
-	int m_nSampleSizes[2];
+	// IPropertyBag
+       STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+       STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
-	/// 0 = horizontal, 1 = vertical
-	int m_nOrientation;
+	// IPersistStream
+       virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+       virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+       virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+       virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
-	// Picture concatenation class
-	PicConcatBase *m_pPicConcat;
+protected:		
+	BYTE* m_pSampleBuffers[2];	///< Pointers to our last received Media Sample.
+	int m_nSampleSizes[2];		///< Sizes
 
-	/// Stores bytes per needed to store pixel according to media type
+	int m_nOrientation;		///< 0 = horizontal, 1 = vertical
+
+	PicConcatBase *m_pPicConcat;	///< Picture concatenation class
+
+		/// Stores bytes per needed to store pixel according to media type
 	unsigned m_nBitsPerPixel;
-	bool m_Vflip;
+	bool m_Vflip;			///< Negative height sometimes enforces internal neccesity of flip.
 	unsigned m_FeedHeight, m_FeedWidth;
 	unsigned m_Feed_xPos, m_Feed_yPos;
+        bool m_DirtyProps;
 };

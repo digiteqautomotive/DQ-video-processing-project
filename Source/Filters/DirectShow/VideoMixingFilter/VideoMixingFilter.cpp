@@ -38,6 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicConcatRGB32Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
+#include "../VariantTools.cpp"
+
 
 #ifndef MAX
  #define MAX(a,b) ((a>b)?(a):(b))
@@ -48,7 +50,8 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer
 	m_pPicConcat(NULL),
         m_Vflip(false),
         m_FeedHeight(0), m_FeedWidth(0),
-	m_Feed_xPos(0), m_Feed_yPos(0)
+	m_Feed_xPos(0), m_Feed_yPos(0),
+        m_DirtyProps(true)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
@@ -609,14 +612,165 @@ HRESULT VideoMixingFilter::GetPages(CAUUID *pPages)
 
 HRESULT VideoMixingFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-  if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else if(riid == (IID_ISettingsInterface))
-  {
-    return GetInterface((ISettingsInterface*) this, ppv);
-  }
+  if(riid == IID_ISpecifyPropertyPages)  return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == (IID_ISettingsInterface))	 return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IPersistPropertyBag)	 return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPropertyBag)		 return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)	 return GetInterface((IPersistStream*)this, ppv);
 			// Call the parent class.
   return VideoMixingBase::NonDelegatingQueryInterface(riid, ppv);
+}
+
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT VideoMixingFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_VideoMixingFilter;
+  return S_OK;
+}
+
+
+HRESULT VideoMixingFilter::InitNew(void)
+{
+  m_nOrientation = 0;  
+  return S_OK;
+}
+
+
+#define olestr(s) sstr(s)
+#if defined(_WIN32) && !defined(OLE2ANSI)
+ #define olecmp(__str1,__str2) wcscmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) wcsicmp(__str1,__str2)
+ #define sstr(s) L###s
+#else
+ #define olecmp(__str1,__str2) strcmp(__str1,__str2)
+ #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
+ #define sstr(s) #s
+#endif
+
+OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
+
+
+HRESULT VideoMixingFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  memset(&var,0,sizeof(var));
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ORIENTATION));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_ORIENTATION,sizeof(OLE_PARAM_ORIENTATION));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      IntFromVariant(m_nOrientation,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  VariantClear(&var);
+return S_OK;
+}
+
+
+HRESULT VideoMixingFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ORIENTATION));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_ORIENTATION,sizeof(OLE_PARAM_ORIENTATION));
+    var.vt = VT_INT;
+    var.intVal = m_nOrientation;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+
+HRESULT VideoMixingFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_PARAM_ORIENTATION) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_nOrientation;
+    return S_OK;
+  }
+
+  return E_INVALIDARG;
+}
+
+
+HRESULT VideoMixingFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+CheckPointer(pszPropName, E_INVALIDARG);
+CheckPointer(pVar, E_INVALIDARG);
+  if(oleicmp(pszPropName, OLE_PARAM_ORIENTATION) == 0)
+  {   
+    if(IntFromVariant(m_nOrientation,pVar)) return S_OK;
+  }
+  return E_INVALIDARG;
+}
+
+
+//----------------- IPersistStream------------------
+
+
+HRESULT VideoMixingFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
+{
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = sizeof(m_nOrientation);
+  return S_OK;
+}
+
+
+HRESULT VideoMixingFilter::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT VideoMixingFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+int nOrientation;
+HRESULT hr;
+  ASSERT(sizeof(nOrientation)==sizeof(m_nOrientation));
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&nOrientation, sizeof(nOrientation), &pcbRead))) return hr;
+  if(m_nOrientation!=nOrientation)
+  {
+    m_nOrientation = nOrientation;
+    m_DirtyProps = true;
+  }
+return S_OK;
+}
+
+
+HRESULT VideoMixingFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_nOrientation, sizeof(m_nOrientation), NULL))) return hr;
+  if(fClearDirty) m_DirtyProps=false;
+return S_OK;
 }

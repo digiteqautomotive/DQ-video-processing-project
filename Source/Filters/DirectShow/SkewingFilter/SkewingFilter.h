@@ -49,55 +49,59 @@ static const GUID CLSID_SkewingProperties =
 
 // Forward declarations
 
-class SkewingFilter : public CTransInPlaceFilter,
-                      public CSettingsInterface,
-                      public ISpecifyPropertyPages                       
+class SkewingFilter: public CTransInPlaceFilter,
+                     public CSettingsInterface,
+                     public ISpecifyPropertyPages,
+                     public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
-  DECLARE_IUNKNOWN
+    DECLARE_IUNKNOWN
 
-  /// Constructor
-  SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr);
-  /// Destructor
-  ~SkewingFilter();
+	/// Constructor
+    SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr);
+	/// Destructor
+    ~SkewingFilter();
 
-  /// Static object-creation method (for the class factory)
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
+	/// Static object-creation method (for the class factory)
+    static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
 
-  /// override this to publicize our interfaces
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+	/// override this to publicize our interfaces
+    STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-  //Overriding various CTransInPlace methods
- HRESULT Transform(IMediaSample *pSample);/* Overrriding the receive method. 
+	//Overriding various CTransInPlace methods
+    HRESULT Transform(IMediaSample *pSample);/* Overrriding the receive method. 
                                            This method receives a media sample, processes it, and delivers it to the downstream filter.*/
 
-  HRESULT CheckInputType(const CMediaType* mtIn);
+    HRESULT CheckInputType(const CMediaType* mtIn);
 
-  STDMETHODIMP GetPages(CAUUID *pPages) // For the Skewing Property Page
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_SkewingProperties;
-		return S_OK;
-	}
+    STDMETHODIMP GetPages(CAUUID *pPages);	///< For the Skewing Property Page
 
-  STDMETHODIMP Run( REFERENCE_TIME tStart );
-  STDMETHODIMP Stop(void);
+    STDMETHODIMP Run( REFERENCE_TIME tStart );
+    STDMETHODIMP Stop(void);
 
-   /// Overridden from CSettingsInterface
-  virtual void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
+	// IPersistPropertyBag
+    virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+    virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+    virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+    virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+	// IPropertyBag
+    STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+    STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+
+	// IPersistStream
+    virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+    virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+    virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+    virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
+
+	/// Overridden from CSettingsInterface
+    virtual void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
 
 private:
+    bool seenFirstFrame;
+    REFERENCE_TIME previousTimestamp;  
 
-  bool seenFirstFrame;
-  REFERENCE_TIME previousTimestamp;  
-  
-  //for adding time to the timestamp filter
-  int add_time;
-   
+    int add_time;		///< For adding time to the timestamp filter.
+    bool m_DirtyProps;
 };
