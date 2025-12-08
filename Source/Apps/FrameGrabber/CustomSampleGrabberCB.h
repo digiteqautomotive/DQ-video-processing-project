@@ -13,19 +13,19 @@
 #include <streams.h>
 #pragma warning(pop)      // restore original warning level
 // Needed for sample grabber
-#include <qedit.h>
+#include "fixC/qedit.h"
 
 // Color conversion helper classes
-#include <Image/ImageHandlerV2.h>
-#include <Image/RealRGB24toYUV420Converter.h>
+#include "ImageHandlerV2.h"
+#include "RealRGB24toYUV420Converter.h"
 #ifdef USE_MULTI_THREADED
   #include <Image/MtRGB24toYUV420Converter.h>
 #endif
-#include <Image/RealYUV420toRGB24Converter.h>
-#include <Image/FastLookupTableRGB24toYUV420Converter.h>
-#include <Image/FastFixedPointRGB24toYUV420Converter.h>
-#include <Image/FastSimdRGB24toYUV420Converter.h>
-#include <Image/FastGpuRGB24toYUV420Converter.h>
+#include "RealYUV420toRGB24Converter.h"
+#include "FastLookupTableRGB24toYUV420Converter.h"
+#include "FastFixedPointRGB24toYUV420Converter.h"
+#include "FastSimdRGB24toYUV420Converter.h"
+#include "FastGpuRGB24toYUV420Converter.h"
 
 #include <Shared/TimerUtil.h>
 

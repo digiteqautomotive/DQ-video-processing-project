@@ -11,6 +11,7 @@ DirectShow/MultiIOInputPin.cpp
 DirectShow/MultiIOOutputPin.cpp
 DirectShow/stdafx.cpp
 DirectShow/VideoMixingBase.cpp
+DirectShow/VersionInfo.cpp
 )
 
 SET(GU_SRCS

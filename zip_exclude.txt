@@ -26,6 +26,7 @@
 *.pdb
 *.pch
 *.plg
+*.res
 *.rpo
 *.rwd
 *.scc

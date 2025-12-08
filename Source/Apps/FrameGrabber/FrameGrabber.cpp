@@ -6,14 +6,17 @@
 #include <algorithm>
 #include <dshow.h>
 // Needed for sample grabber
-#include <qedit.h>
+#include "fixC/qedit.h"
 
 #include "ComTypeDefs.h"
 #include "CustomSampleGrabberCB.h"
-#include <DirectShow/DirectShowHelper.h>
-#include <Shared/CommonDefs.h>
-#include <GeneralUtils/StringUtil.h>
-#include <Shared/TimerUtil.h>
+#include "DirectShow/DirectShowHelper.h"
+#include "Shared/CommonDefs.h"
+
+#define _CONVERT_WITH_ATL
+#include "GeneralUtils/StringUtil.h"
+#include "Shared/TimerUtil.h"
+
 
 /// Command line arguments
 StringMap_t g_mArguments;
@@ -95,7 +98,7 @@ int main(int argc, char** argv)
   BITMAPINFOHEADER bitmapInfoHeader;
 
   // Initialize the COM library.
-  HRESULT hr = CoInitialize(NULL);
+  HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED|COINIT_DISABLE_OLE1DDE);
   if (FAILED(hr))
   {
     printf("ERROR - Could not initialize COM library");

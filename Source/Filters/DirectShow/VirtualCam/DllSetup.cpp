@@ -113,7 +113,7 @@ STDAPI RegisterFilters(BOOL bRegister)
   MultiByteToWideChar(CP_ACP, 0L, achTemp, lstrlenA(achTemp) + 1,
     achFileName, NUMELMS(achFileName));
 
-  hr = CoInitialize(0);
+  hr = CoInitializeEx(0, COINIT_MULTITHREADED);
   if (bRegister)
   {
     hr = AMovieSetupRegisterServer(CLSID_VPP_VirtualCam, L"DQ VPP Virtual Cam", achFileName, L"Both", L"InprocServer32");

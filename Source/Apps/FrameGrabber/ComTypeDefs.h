@@ -25,7 +25,7 @@ _COM_SMARTPTR_TYPEDEF(IPin, IID_IPin);
 _COM_SMARTPTR_TYPEDEF(IFileSourceFilter, IID_IFileSourceFilter);
 
 //Sample Grabber Interface
-#include <QEdit.h>
+#include "fixC/QEdit.h"
 _COM_SMARTPTR_TYPEDEF(ISampleGrabber, IID_ISampleGrabber);
 _COM_SMARTPTR_TYPEDEF(ISampleGrabberCB, IID_ISampleGrabberCB);
 // For compression

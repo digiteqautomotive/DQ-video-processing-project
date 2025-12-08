@@ -49,7 +49,7 @@ YUV444toRGBFilter::YUV444toRGBFilter()
 
   // init converter
   m_pConverter->SetFlip(m_bInvert);
-  m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
+  //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
 }
 
 YUV444toRGBFilter::~YUV444toRGBFilter()
@@ -311,7 +311,7 @@ STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value
 {
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
-    m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
+    //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
     m_pConverter->SetFlip(m_bInvert);
     return S_OK;
   }

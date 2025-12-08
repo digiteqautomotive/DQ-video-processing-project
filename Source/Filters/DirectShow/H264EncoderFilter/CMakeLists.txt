@@ -31,7 +31,7 @@ H264EncoderFilter.h
 H264EncoderProperties.h
 resource.h
 stdafx.h
-../VersionInfo.h
+../../../RtvcLib/DirectShow/VersionInfo.h
 )
 
 SET(FLT_SRCS 
