@@ -55,7 +55,7 @@ public:
   virtual ~RealYUV444toRGB24Converter(void) {}
 
   // Interface.
-  virtual void Convert(void* pInputBuffer, void* pRgb);
+  virtual void Convert(const void* pInputBuffer, void* pRgb);
 
 
 

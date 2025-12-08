@@ -64,33 +64,32 @@ public:
 	/// Construction and destruction.
     YUV444toRGBConverter(void) {_width = 0; _height = 0; _rotate = 0; /*_chrOff = 0;*/ _flip = false; }
     YUV444toRGBConverter(int width, int height) {_width = width; _height = height; _rotate = 0; /*_chrOff = 0;*/ _flip = false; }
-    YUV444toRGBConverter(int width, int height, int chrOff) {_width = width; _height = height; _rotate = 0; _chrOff = chrOff; _flip = false;}
+    //YUV444toRGBConverter(int width, int height, int chrOff) {_width = width; _height = height; _rotate = 0; /*_chrOff = chrOff;*/ _flip = false;}
     virtual ~YUV444toRGBConverter(void) {}
 
 	/// Interface.
-    virtual void Convert(void* pInputBufferY, void* pRgb) = 0;
+    virtual void Convert(const void* pInputBufferY, void* pRgb) = 0;
 
 	/// Member interface.
 	int	GetWidth(void)			{ return(_width); }
 	int	GetHeight(void)			{ return(_height); }
 	int	GetRotate(void)			{ return(_rotate); }
-  int GetChrominanceOffset(void)	{ return(_chrOff); }
-  bool GetFlip(void)      { return _flip; }
+     //int GetChrominanceOffset(void)	{ return(_chrOff); }
+     bool GetFlip(void)      { return _flip; }
 	
-  void SetDimensions(int width, int height)	{_width = width; _height = height;}
-  void SetRotate(int rotate)									{ _rotate = rotate;}
-  void SetChrominanceOffset(int val) { _chrOff = val; }
-  void SetFlip(bool flip) { _flip = flip; }
+     void SetDimensions(int width, int height)	{_width = width; _height = height;}
+     void SetRotate(int rotate)									{ _rotate = rotate;}
+     //void SetChrominanceOffset(int val) { _chrOff = val; }
+     void SetFlip(bool flip) { _flip = flip; }
 protected:
 	/// Members.
-	int	_width;
-	int	_height;
-	int	_rotate;
-  /// Offset added to the chr values. Typically = 128 to shift all values to positive.
-	int	_chrOff;
+    int	_width;
+    int	_height;
+    int	_rotate;
+//	int	_chrOff;	  ///< Offset added to the chr values. Typically = 128 to shift all values to positive.
   /// Windows bitmaps are bottom to top, standard YUV formats are top to bottom
   /// for our YUV to be compatible with linux we need to flip the image
-  bool _flip;
+      bool _flip;
 };//end YUV444toRGBConverter.
 
 

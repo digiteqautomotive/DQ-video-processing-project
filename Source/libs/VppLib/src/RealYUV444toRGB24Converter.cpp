@@ -60,7 +60,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 
-void RealYUV444toRGB24Converter::Convert(void* pInputBuffer, void* pRgb)
+//Note: https://topic.alibabacloud.com/a/about-the-common-ayuv-formats-in-rgb-yuy2-yuyv-yvyu-uyvy-directshow-rgbyuv_8_8_10271129.html
+// The ¨AYUV format has an alpha channel, and the YUV component is extracted for each pixel, and the image Data format is as follows:
+// A0 Y0 U0 V0 A1 Y1 U1 V1 ... 
+
+
+void RealYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
 {
     BYTE* 	optr	=	(unsigned char *)pRgb;
     BYTE*				inBuffer		= (BYTE *)pInputBuffer;
@@ -69,9 +74,11 @@ void RealYUV444toRGB24Converter::Convert(void* pInputBuffer, void* pRgb)
 
     for (int i = 0; i < numberOfPixels; i++ )
     {
-        BYTE v = inBuffer[ (i * 4 ) + 0 ];
-        BYTE u = inBuffer[ (i * 4 ) + 1 ];
-        BYTE y = inBuffer[ (i * 4 ) + 2 ];
+        BYTE y = inBuffer[ (i * 4 ) + 1 ];	// JFO: Original byte ordering was wrong, fixed.
+        BYTE u = inBuffer[ (i * 4 ) + 2 ];
+        BYTE v = inBuffer[ (i * 4 ) + 3 ];
+        
+        
         //drop the 4th byte (= alpha-channel which is always 0 in AYUV) to go from 32bit to 24 bit per pixel
 
         int r = y + 1.402 * (v - 128);
