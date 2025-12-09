@@ -5,8 +5,6 @@
 .CODE             ;Indicates the start of a code segment.
 
 
-;	DO NOT USE THIS CODE. IT IS SLOWER THAN COMPILLED C++, no idea why.
-
 
 ;void ConvertRowAsmAYUV_ARGB24(void *pDst, void *pSrc, unsigned Pixels);
         public  ConvertRowAsmAYUV_ARGB24
@@ -39,7 +37,7 @@ LoopPx: movzx	ecx,byte ptr [rsi+3]	; V
 	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	ebx
 
-	sub	R9d,128
+	sub	R9d,128			; U-128
 
 	test	eax,R10d
 	cmovnz	ax,bx
@@ -56,11 +54,11 @@ LoopPx: movzx	ecx,byte ptr [rsi+3]	; V
 
 	mov	[rdi],ah		; STORE B ******
 
-	imul	eax,ecx,183		; 183*V	
-	imul	ecx,R9d,88		; 88*U	
+	imul	eax,ecx,183		; 183*V
+	sub	edx,eax	
+	imul	ecx,R9d,88		; 88*U		
 	sub	edx,ecx			; 255*Y - 102*U - 148*V
 					;EDX = 255*Y	
-	sub	edx,eax	
 	mov	ebx,edx
 	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	ebx		

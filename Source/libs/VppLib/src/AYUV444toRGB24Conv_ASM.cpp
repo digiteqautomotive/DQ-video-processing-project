@@ -60,5 +60,5 @@ extern "C" void ConvertRowAsmAYUV_ARGB24(void *pDst, const void *pSrc, unsigned 
 
 void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
 {
-  ConvertRowAsmAYUV_ARGB24(pRgb, pInputBuffer, _width*_height);
+  ConvertRowAsmAYUV_ARGB24(pRgb, pInputBuffer, labs(_width*_height));
 }

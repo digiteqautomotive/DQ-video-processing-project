@@ -36,9 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomMediaTypes.h>
 #include "AYUV444toRGB24Converter.h"
 
+#include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-YUV444toRGBFilter::YUV444toRGBFilter()
-  : CCustomBaseFilter(NAME("DQ VPP AYUV444 to RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),
+
+YUV444toRGBFilter::YUV444toRGBFilter():
+  CCustomBaseFilter(NAME("DQ VPP AYUV444 to RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),
   m_pConverter(new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight)),
   m_nSizeUV(0),
   m_bInvert(true)
@@ -222,6 +224,7 @@ HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
   return S_OK;
 }
 
+
 HRESULT YUV444toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   ASSERT(m_pConverter);
@@ -236,6 +239,7 @@ HRESULT YUV444toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
   return S_OK;
 }
 
+
 HRESULT YUV444toRGBFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *mtOut )
 {
   //Does this also occur when format changes occur such as when changing the renderer size???
@@ -246,15 +250,37 @@ HRESULT YUV444toRGBFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+
+  if(mtOut->subtype == MEDIASUBTYPE_RGB24)
   {
-    return VFW_E_TYPE_NOT_ACCEPTED;
-  }
-  else
-  {
-    // TEST
-    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
-    if (pVih)
+    BITMAPINFOHEADER *pBiOut = NULL;
+    BITMAPINFOHEADER *pBiIn = NULL;
+
+    if(mtOut->formattype == FORMAT_VideoInfo)
+    {
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
+      pBiOut = &(pVih->bmiHeader);
+    }
+    if(mtOut->formattype == FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)mtOut->pbFormat;
+      pBiOut = &(pVih2->bmiHeader);
+    }
+
+    if(mtIn->formattype == FORMAT_VideoInfo)
+    {
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtIn->pbFormat;
+      pBiIn = &(pVih->bmiHeader);
+    }
+    if(mtIn->formattype == FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)mtIn->pbFormat;
+      pBiIn = &(pVih2->bmiHeader);
+    }
+
+    if(pBiIn==NULL || pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+
     {
 #if 0
       //Now we need to calculate the size of the output image
@@ -276,36 +302,27 @@ HRESULT YUV444toRGBFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
 
       // check whether input and output height have the same sign
       // to prevent renderer from changing format
-      VIDEOINFOHEADER *pVih1 = (VIDEOINFOHEADER*)mtIn->pbFormat;
-      VIDEOINFOHEADER *pVih2 = (VIDEOINFOHEADER*)mtOut->pbFormat;
-
-      if ( pVih1 && pVih2 )
-      {
-        BITMAPINFOHEADER* pBi1 = &(pVih1->bmiHeader);
-        BITMAPINFOHEADER* pBi2 = &(pVih2->bmiHeader);
-
-        if (m_bInvert)
-        {
+     if (m_bInvert)
+     {
           // make sure height is positive
-          if (pBi2->biHeight < 0)
+        if (pBiOut->biHeight < 0)
             return VFW_E_TYPE_NOT_ACCEPTED;
-        }
-        else
-        {
-          // make sure height is negative
-          if (pBi2->biHeight > 0)
-            return VFW_E_TYPE_NOT_ACCEPTED;
-        }
+      }
+      else
+      {
+            // make sure height is negative
+        if (pBiOut->biHeight > 0)
+          return VFW_E_TYPE_NOT_ACCEPTED;
       }
     }
+
+    // Everything is good.
+    return S_OK;
   }
-  if (mtOut->formattype != FORMAT_VideoInfo)
-  {
-    return VFW_E_TYPE_NOT_ACCEPTED;
-  }
-  // Everything is good.
-  return S_OK;
+
+return VFW_E_TYPE_NOT_ACCEPTED;
 }
+
 
 STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value)
 {

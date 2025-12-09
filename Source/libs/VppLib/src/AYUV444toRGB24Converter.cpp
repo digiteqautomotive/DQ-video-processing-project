@@ -71,7 +71,7 @@ void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;
-int numberOfPixels = _width * _height;
+int numberOfPixels = labs(_width * _height);
 int32_t X;
 
   while(numberOfPixels-->0)
