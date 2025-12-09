@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "PicScalerBase.h"
@@ -10,8 +9,8 @@ int OrigScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
   if(pOutImg==NULL || pInImg == NULL || _widthIn==0 || _heightIn==0)
       return(0);
 
-  unsigned char*	pSrc		= (unsigned char*)pInImg;
-  unsigned char*	pDst		= (unsigned char*)pOutImg;
+  unsigned char *pSrc = (unsigned char*)pInImg;
+  unsigned char *pDst = (unsigned char*)pOutImg;
 	
   //double scalex = (_widthIn<=1||_widthOut<=1) ? ((double)_widthIn)/((double)_widthOut) : ((double)_widthIn-1)/((double)_widthOut-1);
   //double scaley = (_heightIn<=1 || _heightOut<=1) ? ((double)_heightIn)/((double)_heightOut) : ((double)_heightIn-1)/((double)_heightOut-1);

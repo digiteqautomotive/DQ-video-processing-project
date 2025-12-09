@@ -11,8 +11,7 @@ class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,34 +31,30 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifndef _REALYUV444TORGB24CONVERTER_H
-#define _REALYUV444TORGB24CONVERTER_H
+==========================================================================*/
+#ifndef _AYUV444TORGB24CONVERTER_H
+#define _AYUV444TORGB24CONVERTER_H
 #include <DirectShow/stdafx.h>
 #include "YUV444toRGBConverter.h"
+
 
 /**
 * \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 * colour convertion derived from the YUV420toRGBConverter base 
-* class.
-*/
-
-class RealYUV444toRGB24Converter: public YUV444toRGBConverter
+* class. */
+class AYUV444toRGB24Converter: public YUV444toRGBConverter
 {
 public:
   // Construction and destruction.
-  RealYUV444toRGB24Converter(void) { }
-  RealYUV444toRGB24Converter(int width, int height): YUV444toRGBConverter(width,height) { }
-  virtual ~RealYUV444toRGB24Converter(void) {}
+  AYUV444toRGB24Converter(void) { }
+  AYUV444toRGB24Converter(int width, int height): YUV444toRGBConverter(width,height) { }
+  virtual ~AYUV444toRGB24Converter(void) {}
 
   // Interface.
   virtual void Convert(const void* pInputBuffer, void* pRgb);
 
+};//end AYUV444toRGB24Converter.
 
 
-};//end RealYUV444toRGB24Converter.
-
-
-#endif	// _REALYUV444TORGB24CONVERTER_H
+#endif	// _AYUV444TORGB24CONVERTER_H

@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "PicRotateRGBBase.h"
 #include "DirectShow/CommonDefs.h"
 #include "RotateTesters.h"
@@ -8,15 +5,15 @@
 
 OrigRotateRGB24Impl::OrigRotateRGB24Impl()
 {
-	m_eMode = ROTATE_NONE;
+  m_eMode = ROTATE_NONE;
 }
 
 OrigRotateRGB24Impl::~OrigRotateRGB24Impl()
-{;}
+{}
 
 int OrigRotateRGB24Impl::BytesPerPixel()
 {
-	return BITS_PER_PIXEL_RGB24/8;
+  return BITS_PER_PIXEL_RGB24/8;
 }
 
 

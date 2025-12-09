@@ -17,7 +17,8 @@
 #include "PicRotateRGB24Impl.h"
 #include "RotateTesters.h"
 
-#include "RealYUV444toRGB24Converter.h"
+#include "AYUV444toRGB24Converter.h"
+#include "ConvertTesters.h"
 
 
 extern "C"
@@ -34,56 +35,10 @@ extern "C"
 unsigned char FeaturesCPU = 0x80;
 
 
-
-class AYUVtoRGB24Converter: public YUV444toRGBConverter
-{
-public:
-  // Construction and destruction.
-  AYUVtoRGB24Converter(void) { }
-  AYUVtoRGB24Converter(int width, int height): YUV444toRGBConverter(width,height) { }
-  virtual ~AYUVtoRGB24Converter(void) {}
-
-  // Interface.
-  virtual void Convert(const void* pInputBuffer, void* pRgb);
-
-};	//end AYUVtoRGB24Converter
-
-
 #ifndef int32_t
  #define int32_t int
 #endif
 
-void AYUVtoRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
-{
-unsigned char * Out = (unsigned char *)pRgb;
-const unsigned char * In = (const unsigned char *)pInputBuffer;
-int numberOfPixels = _width * _height;
-int32_t X;
-
-  while(numberOfPixels-->0)
-  {
-    const int32_t Y = 256 * In[1];
-    const signed char U = In[2] - 128; 
-    const signed char V = In[3] - 128;
-    
-
-    X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
-    if(X>255) Out[0]=255;
-    else if(X<0) Out[0]=0;
-    else Out[0] = X;
-    X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
-    if(X>255) Out[1]=255;
-    else if(X<0) Out[1]=0;
-    else Out[1] = X;
-    X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
-    if(X>255) Out[2]=255;
-    else if(X<0) Out[2]=0;
-    else Out[2] = X;
-
-    Out+=3;
-    In+=4;
-  }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -704,8 +659,8 @@ bool Pause = false;
  for(int Width=35; Width<39; Width++)
    for(int Height=35; Height<39; Height++)
    {
-     AYUVtoRGB24Converter picConvertedAYUV2RGB24(Width,Height);
-     RealYUV444toRGB24Converter picConvertedAYUVtoRGB24(Width,Height);
+     AYUV444toRGB24Converter picConvertedAYUV2RGB24(Width,Height);
+     OrigRealYUV444toRGB24Converter picConvertedAYUVtoRGB24(Width,Height);
 
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
      picConvertedAYUVtoRGB24.Convert(BlobIn+16, BlobTest+16);
@@ -751,12 +706,12 @@ bool Pause = false;
   unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
   {
     {
-      AYUVtoRGB24Converter picConvertedAYUV2RGB24(1920,1080);
+      AYUV444toRGB24Converter picConvertedAYUV2RGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedAYUV2RGB24, BlobIn, BlobOut);
     }
     printf("\nConvert AYUV to RGB24 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
     {
-      RealYUV444toRGB24Converter picConvertedAYUV2RGB24(1920,1080);
+      OrigRealYUV444toRGB24Converter picConvertedAYUV2RGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedAYUV2RGB24, BlobIn, BlobOut);
     }
     printf("\nConvert Orig AYUV to RGB24 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);

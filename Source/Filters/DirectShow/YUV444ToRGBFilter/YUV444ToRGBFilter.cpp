@@ -34,12 +34,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "YUV444ToRGBFilter.h"
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
-#include "RealYUV444toRGB24Converter.h"
+#include "AYUV444toRGB24Converter.h"
 
 
 YUV444toRGBFilter::YUV444toRGBFilter()
-  : CCustomBaseFilter(NAME("DQ VPP YUV444I 2 RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),
-  m_pConverter(new RealYUV444toRGB24Converter(m_nInWidth, m_nInHeight)),
+  : CCustomBaseFilter(NAME("DQ VPP AYUV444 to RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),
+  m_pConverter(new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight)),
   m_nSizeUV(0),
   m_bInvert(true)
 {

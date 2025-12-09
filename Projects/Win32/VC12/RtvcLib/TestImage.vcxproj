@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(BASECLASSES)\GetTickCount_ms.c" />
+    <ClCompile Include="..\..\..\..\Source\Apps\TestImage\ConvertTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\RotateTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\ScaleTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\TestImage.cpp" />

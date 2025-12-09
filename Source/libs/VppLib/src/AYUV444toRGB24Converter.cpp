@@ -1,17 +1,15 @@
 /** @file
 
-MODULE				: RealYUV420toRGB24Converter
+MODULE				: AYUV420toRGB24Converter
 
-FILE NAME			: RealYUV420toRGB24Converter.cpp
+FILE NAME			: AYUV420toRGB24Converter.cpp
 
-DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-					colour conversion derived from the YUV420toRGBConverter base 
-					class.
+DESCRIPTION			: Implementation of YUV420 (8 bpp) to RGB 24 bit 
+				  colour conversion derived from the YUV420toRGBConverter base class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -44,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 
-#include "RealYUV444toRGB24Converter.h"
+#include "AYUV444toRGB24Converter.h"
 
 /*
 ===========================================================================
@@ -65,38 +63,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // A0 Y0 U0 V0 A1 Y1 U1 V1 ... 
 
 
-void RealYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
+#ifndef int32_t
+ #define int32_t int
+#endif
+
+void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
 {
-    BYTE* 	optr	=	(unsigned char *)pRgb;
-    BYTE*				inBuffer		= (BYTE *)pInputBuffer;
+unsigned char * Out = (unsigned char *)pRgb;
+const unsigned char * In = (const unsigned char *)pInputBuffer;
+int numberOfPixels = _width * _height;
+int32_t X;
 
-    int numberOfPixels = _width * _height;
+  while(numberOfPixels-->0)
+  {
+    const int32_t Y = 256 * In[1];
+    const signed char U = In[2] - 128; 
+    const signed char V = In[3] - 128;
+    
 
-    for (int i = 0; i < numberOfPixels; i++ )
-    {
-        BYTE y = inBuffer[ (i * 4 ) + 1 ];	// JFO: Original byte ordering was wrong, fixed.
-        BYTE u = inBuffer[ (i * 4 ) + 2 ];
-        BYTE v = inBuffer[ (i * 4 ) + 3 ];
-        
-        
-        //drop the 4th byte (= alpha-channel which is always 0 in AYUV) to go from 32bit to 24 bit per pixel
+    X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
+    if(X>255) Out[0]=255;
+    else if(X<0) Out[0]=0;
+    else Out[0] = X;
+    X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
+    if(X>255) Out[1]=255;
+    else if(X<0) Out[1]=0;
+    else Out[1] = X;
+    X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
+    if(X>255) Out[2]=255;
+    else if(X<0) Out[2]=0;
+    else Out[2] = X;
 
-        int r = y + 1.402 * (v - 128);
-        int g = y - 0.344 * (u - 128) - 0.714 * (v - 128);
-        int b = y + 1.772 * (u - 128);
-
-        optr[i * 3] = (BYTE)RYUVRGB24C_RANGECHECK_0TO255(b);
-        optr[(i * 3) + 1] = (BYTE)RYUVRGB24C_RANGECHECK_0TO255(g);
-        optr[(i *3) + 2] = (BYTE)RYUVRGB24C_RANGECHECK_0TO255(r);
-
-    }
-
-
-
-}//end Convert
-
-
-
-
-
-
+    Out+=3;
+    In+=4;
+  }
+}
