@@ -197,10 +197,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     // Get the input pin's media type and return this as the output media type - we want to retain
     // all the information about the image
     HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
-    if (FAILED(hr))
-    {
-      return hr;
-    }
+    if (FAILED(hr)) return hr;
 
     // Get the bitmap info header and adapt the cropped 
     //make sure that it's a video info header

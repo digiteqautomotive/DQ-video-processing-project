@@ -90,7 +90,6 @@ HRESULT YuvOutputPin::GetMediaType(CMediaType *pMediaType)
   }
   }
 
-
   pvi->bmiHeader.biClrImportant = 0;
   pvi->bmiHeader.biClrUsed = 0;
   pvi->bmiHeader.biPlanes = 1;

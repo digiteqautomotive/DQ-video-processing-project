@@ -108,14 +108,21 @@ HRESULT YUV444toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
     // Get the input pin's media type and return this as the output media type - we want to retain
     // all the information about the image
     HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
-    if (FAILED(hr))
+    if(FAILED(hr)) return hr;
+
+    BITMAPINFOHEADER *pbmi = NULL;
+    if(pMediaType->formattype==FORMAT_VideoInfo)
     {
-      return hr;
+      VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+      if(pVih) {pbmi=&(pVih->bmiHeader);}
     }
-     
-    VIDEOINFOHEADER *pvi = (VIDEOINFOHEADER*)pMediaType->Format();
-    //Adjust the bitmapinfo header
-    BITMAPINFOHEADER *pbmi = HEADER(pMediaType->pbFormat);
+    else if(pMediaType->formattype==FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
+      if(pVih2) {pbmi=&(pVih2->bmiHeader);}
+    }
+    if(pbmi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
 
     // The hackery below should not be ncessary: we simply convert to RGB24
 #if 0
@@ -143,10 +150,11 @@ HRESULT YUV444toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 #else
 
     pbmi->biBitCount = 24;
-    pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB24 * 8;
+    pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB24 / 8;
 
 #endif
 
+/*
     // negative height of YUV DIBS should be ignored according to 
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd407212(v=vs.85).aspx
     // we will set our output height negative according to m_bInvert
@@ -161,6 +169,8 @@ HRESULT YUV444toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
       if (pvi->bmiHeader.biHeight > 0) // make sure height is not already negative
         pvi->bmiHeader.biHeight = -1 * pvi->bmiHeader.biHeight;
     }
+*/
+
 #if 0
     if (pvi->bmiHeader.biHeight < 0)
     {
@@ -235,7 +245,7 @@ HRESULT YUV444toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
   m_pConverter->Convert((void*)pBufferIn, (void*)pBufferOut);
   DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV444 to RGB Directly")));
   //RGB24 stores 3 Bytes per pixel
-  lOutActualDataLength = m_nInPixels * BITS_PER_PIXEL_RGB24 * 8;
+  lOutActualDataLength = m_nInPixels * BITS_PER_PIXEL_RGB24 / 8;
   return S_OK;
 }
 

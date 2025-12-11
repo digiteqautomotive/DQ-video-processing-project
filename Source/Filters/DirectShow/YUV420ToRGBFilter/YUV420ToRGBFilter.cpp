@@ -42,8 +42,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
   0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
 
-YUV420toRGBFilter::YUV420toRGBFilter()
-  : CCustomBaseFilter(NAME("DQ VPP YUV420P 2 RGB Converter"), 0, CLSID_VPP_YUV420toRGBColorConverter),
+
+YUV420toRGBFilter::YUV420toRGBFilter():
+  CCustomBaseFilter(NAME("DQ VPP YUV420P 2 RGB Converter"), 0, CLSID_VPP_YUV420toRGBColorConverter),
   m_pConverter(new RealYUV420toRGB24Converter(m_nInWidth, m_nInHeight)),
   m_nSizeUV(0),
   m_bInvert(true)
@@ -96,7 +97,8 @@ HRESULT YUV420toRGBFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
   return hr;
 }
 
-HRESULT YUV420toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
+
+HRESULT YUV420toRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
   if (iPosition < 0)
   {
@@ -142,7 +144,7 @@ HRESULT YUV420toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
 #else
 
     pbmi->biBitCount = 24;
-    pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB24/8;
+    pbmi->biSizeImage = (m_nInPixels * BITS_PER_PIXEL_RGB24) / 8;
 
 #endif
 

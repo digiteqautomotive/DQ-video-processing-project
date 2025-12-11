@@ -72,7 +72,7 @@ CUnknown * WINAPI YuvSourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 }
 
 YuvSourceFilter::YuvSourceFilter(IUnknown *pUnk, HRESULT *phr)
-  : CSource(NAME("CSIR RTVC YUV Source"), pUnk, CLSID_VPP_YUVSource),
+  : CSource(NAME("DQ RTVC YUV Source"), pUnk, CLSID_VPP_YUVSource),
   m_iWidth(352),
   m_iHeight(288),
   m_sDimensions("352x288"),

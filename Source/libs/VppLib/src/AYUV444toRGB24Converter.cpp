@@ -71,30 +71,65 @@ void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;
-int numberOfPixels = labs(_width * _height);
+
 int32_t X;
 
-  while(numberOfPixels-->0)
+  if(_flip)
   {
-    const int32_t Y = 256 * In[1];
-    const signed char U = In[2] - 128; 
-    const signed char V = In[3] - 128;
+    unsigned y = labs(_height);
+    Out += labs(_width)*(y-1)*3;
+    while(y-- > 0)
+    {
+      unsigned x = labs(_width);
+      while(x-- > 0)
+      {
+        const int32_t Y = 256 * In[1];
+        const signed char U = In[2] - 128; 
+        const signed char V = In[3] - 128;
     
+        X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
+        if(X>255) Out[0]=255;
+        else if(X<0) Out[0]=0;
+        else Out[0] = X;
+        X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
+        if(X>255) Out[1]=255;
+        else if(X<0) Out[1]=0;
+        else Out[1] = X;
+        X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
+        if(X>255) Out[2]=255;
+        else if(X<0) Out[2]=0;
+        else Out[2] = X;
 
-    X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
-    if(X>255) Out[0]=255;
-    else if(X<0) Out[0]=0;
-    else Out[0] = X;
-    X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
-    if(X>255) Out[1]=255;
-    else if(X<0) Out[1]=0;
-    else Out[1] = X;
-    X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
-    if(X>255) Out[2]=255;
-    else if(X<0) Out[2]=0;
-    else Out[2] = X;
+        Out+=3;
+        In+=4;
+      }
+      Out -= labs(_width)*2*3;
+    }
+  }
+  else
+  {
+    int numberOfPixels = labs(_width * _height);
+    while(numberOfPixels-->0)
+    {
+      const int32_t Y = 256 * In[1];
+      const signed char U = In[2] - 128; 
+      const signed char V = In[3] - 128;
+    
+      X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
+      if(X>255) Out[0]=255;
+      else if(X<0) Out[0]=0;
+      else Out[0] = X;
+      X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
+      if(X>255) Out[1]=255;
+      else if(X<0) Out[1]=0;
+      else Out[1] = X;
+      X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) Out[2]=255;
+      else if(X<0) Out[2]=0;
+      else Out[2] = X;
 
-    Out+=3;
-    In+=4;
+      Out+=3;
+      In+=4;
+    }
   }
 }

@@ -641,3 +641,18 @@ HRESULT H264SourceFilter::SetTimeFormat( const GUID *pFormat )
 {
   return E_NOTIMPL;
 }
+
+
+HRESULT H264SourceFilter::GetPages(CAUUID *pPages)
+{
+  if (pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if (pPages->pElems == NULL) 
+  {
+      return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_H264Properties;
+  return S_OK;
+}
+
