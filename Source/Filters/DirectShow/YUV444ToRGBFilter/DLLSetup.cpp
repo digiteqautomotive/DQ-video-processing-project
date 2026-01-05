@@ -38,12 +38,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"DQ VPP YUV444I 2 RGB Converter";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP YUV to RGB Converter";   /// A name for the filter 
 
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =
 {
-  &CLSID_VPP_YUV444toRGBColorConverter,	// CLSID
+  &CLSID_DQ_YUV444toRGBColorConverter,	// CLSID
   g_wszName,                            // Name
   MERIT_NORMAL,                       // Merit
   0,                                    // Number of AMOVIESETUP_PIN structs
@@ -55,7 +55,7 @@ CFactoryTemplate g_Templates[2] =
 {
   {
     g_wszName,                            // Name
-    &CLSID_VPP_YUV444toRGBColorConverter, // CLSID
+    &CLSID_DQ_YUV444toRGBColorConverter, // CLSID
     YUV444toRGBFilter::CreateInstance,    // Method to create an instance of MyComponent
     NULL,                                 // Initialization function
     &FilterInfo                           // Set-up information (for filters)

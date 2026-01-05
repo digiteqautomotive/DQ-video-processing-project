@@ -43,11 +43,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // GUID
 
 // {B9AEF94B-CDCB-48EA-B066-55860337FE5C}
-static const GUID CLSID_VPP_YUV444toRGBColorConverter = 
+const GUID CLSID_DQ_YUV444toRGBColorConverter = 
 { 0xb9aef94b, 0xcdcb, 0x48ea, { 0xb0, 0x66, 0x55, 0x86, 0x3, 0x37, 0xfe, 0x5c } };
 
 // {2C0FD6F6-620D-4817-8057-B1364F55BCEB}
-static const GUID CLSID_YUVtoRGB444Properties = 
+const GUID CLSID_YUVtoRGB444Properties = 
 { 0x2c0fd6f6, 0x620d, 0x4817, { 0x80, 0x57, 0xb1, 0x36, 0x4f, 0x55, 0xbc, 0xeb } };
 
 
@@ -106,56 +106,34 @@ public:
   /// Overridden from CSettingsInterface
   STDMETHODIMP SetParameter( const char* type, const char* value);
 
+  virtual HRESULT BreakConnect(PIN_DIRECTION dir);
+
   /// Overridden from CSettingsInterface
-  virtual void initParameters()
-  {
-    addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
-    addParameter(INVERT, &m_bInvert, true);
-  }
+  virtual void initParameters(void);
 
-  STDMETHODIMP GetPages(CAUUID *pPages)
-  {
-    if (pPages == NULL) return E_POINTER;
-    pPages->cElems = 1;
-    pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-    if (pPages->pElems == NULL) 
-    {
-      return E_OUTOFMEMORY;
-    }
-    pPages->pElems[0] = CLSID_YUVtoRGB444Properties;
-    return S_OK;
-  }
+  STDMETHODIMP GetPages(CAUUID *pPages);
 
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-  {
-    if (riid == IID_ISpecifyPropertyPages)
-    {
-      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-    }
-    else
-    {
-      // Call the parent class.
-      return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-    }
-  }
+  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+
 protected:
 
+  /** This method converts the input buffer from YUV444I to RGB32
+  * @param pSource The source buffer
+  * @param pDest The destination buffer */
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
 private:
-  /**
-  * This method converts the input buffer from YUV444I to RGB32
-  * @param pSource The source buffer
-  * @param pDest The destination buffer
-  */
-  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   /// Pointer to our YUV444 to RGB24 converter
   YUVtoRGBConverter* m_pConverter;
   // Size of YUV image
   int m_nSizeUV;
   // Chrominance offset
-  int m_nChrominanceOffset;
+  //int m_nChrominanceOffset;
   // YUV is always top down: the invert flag determines whether the image
   // is flipped during conversion, or whether the sign is simply set
   bool m_bInvert;
+
+  GUID in_MediaType;
+  GUID out_MediaType;
 };

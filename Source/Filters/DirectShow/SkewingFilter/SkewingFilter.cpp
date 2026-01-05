@@ -9,7 +9,7 @@ DESCRIPTION:		This filter skips a specified number of frames depending on the pa
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2011, CSIR All rights reserved.
-Copyright (c) 2025, Jaroslav Fojtik
+Copyright (c) 2025, Digiteq Automotive, programmed by Jaroslav Fojtik
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr): 
-    CTransInPlaceFilter(NAME("CSIR RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
+    CTransInPlaceFilter(NAME("DQ RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
     seenFirstFrame(false),
     previousTimestamp(0),
     add_time(0),
@@ -52,7 +52,7 @@ SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr):
 
 
 SkewingFilter::~SkewingFilter()
-{;}
+{}
 
 
 CUnknown * WINAPI SkewingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)

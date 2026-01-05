@@ -8,7 +8,6 @@ DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit
 colour convertion derived from the YUVtoRGBConverter base 
 class.
 					  
-					  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2025, Digiteq Automotive All rights reserved.
@@ -38,11 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "YUVtoRGBConverter.h"
 
 
-/**
-* \ingroup ImageLib
+/** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-* colour convertion derived from the YUVtoRGBConverter base 
-* class. */
+* colour convertion derived from the YUVtoRGBConverter base class. */
 class AYUV444toRGB24Converter: public YUVtoRGBConverter
 {
 public:
@@ -57,6 +54,9 @@ public:
 };//end AYUV444toRGB24Converter.
 
 
+/** \ingroup ImageLib
+* Floating point implementation of YUV420 (8 bpp) to RGB 32 bit 
+* colour convertion derived from the YUVtoRGBConverter base class. */
 class AYUV444toARGB32Converter: public YUVtoRGBConverter
 {
 public:

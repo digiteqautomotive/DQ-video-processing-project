@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,24 +32,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 */
 #include "YUV444ToRGBFilter.h"
-#include <DirectShow/CommonDefs.h>
+#include "DirectShow/CommonDefs.h"
 #include "DirectShow/CustomMediaTypes.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 #include "AYUV444toRGB24Converter.h"
 #include "RealYUV420toRGB24Converter.h"
+#include "YUYVtoRGBConverter.h"
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 
 
 YUV444toRGBFilter::YUV444toRGBFilter():
-  CCustomBaseFilter(NAME("DQ VPP AYUV444 to RGB Converter"), 0, CLSID_VPP_YUV444toRGBColorConverter),
+  CCustomBaseFilter(NAME("DQ VPP AYUV444 to RGB Converter"), 0, CLSID_DQ_YUV444toRGBColorConverter),
   m_pConverter(new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight)),
   m_nSizeUV(0),
   m_bInvert(true)
 {
+  out_MediaType = GUID_NULL;
+  in_MediaType = GUID_NULL;
+
   //Call the initialise input method to load all acceptable input types for this filter
   InitialiseInputTypes();
   initParameters();
@@ -86,21 +91,67 @@ void YUV444toRGBFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
 }
 
 
-HRESULT YUV444toRGBFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
+HRESULT YUV444toRGBFilter::BreakConnect(PIN_DIRECTION dir)
 {
-  ASSERT(m_pConverter);
+  if(m_pConverter) {delete m_pConverter; m_pConverter=NULL;}
+  if(dir == PINDIR_INPUT)
+    in_MediaType = GUID_NULL;
+  else
+    out_MediaType = GUID_NULL;
+  return CCustomBaseFilter::BreakConnect(dir);
+}
 
+
+
+HRESULT YUV444toRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
+{
   HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
-  if (direction == PINDIR_INPUT)
+  if(direction == PINDIR_INPUT)
   {
+    in_MediaType = pmt->subtype;
     m_nSizeUV = m_nInPixels >> 2;
-    m_pConverter->SetDimensions(m_nInWidth, m_nInHeight );
   }
   else
   {
+    out_MediaType = pmt->subtype;
+  }
+
+  if(out_MediaType!=GUID_NULL && in_MediaType!=GUID_NULL)
+  {
+    if(m_pConverter) {delete m_pConverter; m_pConverter=NULL;}
+
+    if(out_MediaType==MEDIASUBTYPE_RGB32 || out_MediaType==MEDIASUBTYPE_ARGB32)
+    {
+      if(in_MediaType == MEDIASUBTYPE_AYUV)
+          m_pConverter = new AYUV444toARGB32Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12)
+          m_pConverter = new YUV420toRGB32Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new YUYVtoARGB32Converter(m_nInWidth, m_nInHeight);
+    }
+    if(out_MediaType == MEDIASUBTYPE_RGB24)
+    {
+      if(in_MediaType == MEDIASUBTYPE_AYUV)
+          m_pConverter = new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12)
+          m_pConverter = new YUV420toRGB24Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new YUYVtoRGB24Converter(m_nInWidth, m_nInHeight);
+    }
+
+    if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+    if(out_MediaType==MEDIASUBTYPE_RGB32 || out_MediaType==MEDIASUBTYPE_ARGB32 || out_MediaType==MEDIASUBTYPE_RGB24)
+    {
+      m_pConverter->SetFlip(m_bInvert ^ (m_nOutHeight<0));
+    }
+
 /*	NEVER DO THIS NASTY JOB!
       VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
       //always flip the image
@@ -117,56 +168,42 @@ HRESULT YUV444toRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
   {
     return E_INVALIDARG;
   }
-  else if (iPosition == 0)
-  {
+  if(iPosition > 1)  return VFW_S_NO_MORE_ITEMS;
+
+
     // Get the input pin's media type and return this as the output media type - we want to retain
     // all the information about the image
-    HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
-    if(FAILED(hr)) return hr;
+  HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
+  if(FAILED(hr)) return hr;
 
-    BITMAPINFOHEADER *pbmi = NULL;
-    if(pMediaType->formattype==FORMAT_VideoInfo)
-    {
-      VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-      if(pVih) {pbmi=&(pVih->bmiHeader);}
-    }
-    else if(pMediaType->formattype==FORMAT_VideoInfo2)
-    {
-      VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
-      if(pVih2) {pbmi=&(pVih2->bmiHeader);}
-    }
-    if(pbmi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+  BITMAPINFOHEADER *pbmi = NULL;
+  if(pMediaType->formattype==FORMAT_VideoInfo)
+  {
+    VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+    if(pVih) {pbmi=&(pVih->bmiHeader);}
+  }
+  else if(pMediaType->formattype==FORMAT_VideoInfo2)
+  {
+    VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
+    if(pVih2) {pbmi=&(pVih2->bmiHeader);}
+  }
+  if(pbmi == NULL)
+      return VFW_E_TYPE_NOT_ACCEPTED;
 
 
-    // The hackery below should not be ncessary: we simply convert to RGB24
-#if 0
-    if (pbmi->biBitCount == 32)
-    {
-      // Set the bit count to 24 since the RBGtoYUV filter also accepts 32 bit but this filter only
-      // outputs 24 bit RGB.
-      pbmi->biBitCount = 24;
-      pbmi->biSizeImage = m_nInPixels * BYTES_PER_PIXEL_RGB24;
-    }
-    else if (pbmi->biBitCount == 24)
-    {
-      // We still need to set the size of the out image: the original image might have been scaled
-      // So we need to recalculate the size in RGB 24
-      pbmi->biSizeImage = m_nInPixels * BYTES_PER_PIXEL_RGB24;
-    }
-    // It's a 12bit YUV source
-    else if (pbmi->biBitCount == 12)
-    {
-      pbmi->biBitCount = 24;
-      // We still need to set the size of the out image: the original image might have been scaled
-      // So we need to recalculate the size in RGB 24
-      pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB24 * 8;
-    }
-#else
-
+  if(iPosition == 0)
+  {
     pbmi->biBitCount = 24;
     pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB24 / 8;
+    pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
+  }
+  else
+  {
+    pbmi->biBitCount = 32;
+    pbmi->biSizeImage = m_nInPixels * BITS_PER_PIXEL_RGB32 / 8;
+    pMediaType->SetSubtype(&MEDIASUBTYPE_RGB32);
+  }
 
-#endif
 
 /*
     // negative height of YUV DIBS should be ignored according to 
@@ -185,29 +222,14 @@ HRESULT YUV444toRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     }
 */
 
-#if 0
-    if (pvi->bmiHeader.biHeight < 0)
-    {
-      if (m_bInvert)
-        pvi->bmiHeader.biHeight = -1 * pvi->bmiHeader.biHeight;
-    }
-    else
-    {
-      if (m_bInvert)
-        pvi->bmiHeader.biHeight = -1 * pvi->bmiHeader.biHeight;
-    }
-#endif
-
-    pMediaType->SetSampleSize( pbmi->biSizeImage );
+  pMediaType->SetSampleSize(pbmi->biSizeImage);
     // adapt compression in case necessary
-    pbmi->biCompression = BI_RGB;
+  pbmi->biCompression = BI_RGB;
     //Reset the media subtype
     // Change the output format from MEDIASUBTYPE_YUV444P to RGB24
-    pMediaType->SetSubtype(&MEDIASUBTYPE_RGB24);
-    return S_OK;
-  }
-  return VFW_S_NO_MORE_ITEMS;
+  return S_OK;
 }
+
 
 HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp )
 {
@@ -236,7 +258,7 @@ HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
   // Set allocator properties.
   ALLOCATOR_PROPERTIES Actual;
   hr = pAlloc->SetProperties(pProp, &Actual);
-  if (FAILED(hr)) 
+  if(FAILED(hr)) 
   {
     return hr;
   }
@@ -250,15 +272,17 @@ HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
 
 
 HRESULT YUV444toRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
-{
-  ASSERT(m_pConverter);
+{  
+ if(m_pConverter==NULL) return E_POINTER;
   ASSERT(pBufferIn);
   ASSERT(pBufferOut);
 
-  m_pConverter->Convert(pBufferIn, (void*)pBufferOut);
+  lOutActualDataLength = m_nInPixels * m_videoOutHeader.bmiHeader.biBitCount / 8;
+  if(lOutBufferSize < lOutActualDataLength) return E_INVALIDARG;
+
+  m_pConverter->Convert(pBufferIn, pBufferOut);
   DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV444 to RGB Directly")));
-  //RGB24 stores 3 Bytes per pixel
-  lOutActualDataLength = m_nInPixels * BITS_PER_PIXEL_RGB24 / 8;
+  //RGB24 stores 3 Bytes per pixel  
   return S_OK;
 }
 
@@ -269,7 +293,7 @@ HRESULT YUV444toRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaTy
   long lSize = mtOut->GetSampleSize();
 
   // Check the major type.
-  if (mtOut->majortype != MEDIATYPE_Video)
+  if(mtOut->majortype != MEDIATYPE_Video)
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
@@ -304,30 +328,29 @@ HRESULT YUV444toRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaTy
   if(labs(pBiIn->biWidth)!=labs(pBiOut->biWidth) ||
      labs(pBiIn->biHeight)!=labs(pBiOut->biHeight)) return VFW_E_TYPE_NOT_ACCEPTED;
 
-  if(m_pConverter) {delete m_pConverter; m_pConverter=NULL;}
-  
+  bool TransformOK = false;  
   if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtIn->subtype == MEDIASUBTYPE_AYUV)
-        m_pConverter = new AYUV444toARGB32Converter(pBiIn->biWidth,pBiIn->biHeight);
+        TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
-        m_pConverter = new YUV420toRGB32Converter(pBiIn->biWidth,pBiIn->biHeight);
+        TransformOK = true;
+    if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+        TransformOK = true;
   }
 
   if(mtOut->subtype == MEDIASUBTYPE_RGB24)
   {
     if(mtIn->subtype == MEDIASUBTYPE_AYUV)
-        m_pConverter = new AYUV444toRGB24Converter(pBiIn->biWidth,pBiIn->biHeight);
+        TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
-        m_pConverter = new YUV420toRGB24Converter(pBiIn->biWidth,pBiIn->biHeight);
+        TransformOK = true;
+    if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+        TransformOK = true;
   }
 
-  if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
-
-  if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32 || mtOut->subtype == MEDIASUBTYPE_RGB24)
-  {
-    m_pConverter->SetFlip(m_bInvert ^ (pBiOut->biHeight<0));
-  }
+  if(!TransformOK)
+      return VFW_E_TYPE_NOT_ACCEPTED;  
 
   return S_OK;	    // Everything is good.
 }
@@ -345,4 +368,39 @@ STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value
   {
     return E_FAIL;
   }
+}
+
+
+HRESULT YUV444toRGBFilter::GetPages(CAUUID *pPages)
+{
+    if (pPages == NULL) return E_POINTER;
+    pPages->cElems = 1;
+    pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+    if (pPages->pElems == NULL) 
+    {
+      return E_OUTOFMEMORY;
+    }
+    pPages->pElems[0] = CLSID_YUVtoRGB444Properties;
+    return S_OK;
+}
+
+
+ HRESULT YUV444toRGBFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if (riid == IID_ISpecifyPropertyPages)
+  {
+    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  }
+  else
+  {
+      // Call the parent class.
+    return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
+  }
+}
+
+
+ void YUV444toRGBFilter::initParameters(void)
+{
+  //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
+  addParameter(INVERT, &m_bInvert, true);
 }

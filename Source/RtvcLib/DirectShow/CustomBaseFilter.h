@@ -8,8 +8,8 @@ DESCRIPTION			: Base class for CSIR DirectShow filters with one input and one ou
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2008-2014, CSIR
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,8 +29,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 #include <DirectShow/CStatusInterface.h>
 #include <DirectShow/CSettingsInterface.h>
@@ -80,6 +79,7 @@ public:
   /// This method needs to overridden by child classes - add all possible accepted input combinations
   /// using the AddInputType method
   virtual void InitialiseInputTypes() PURE;
+  virtual  HRESULT BreakConnect(PIN_DIRECTION dir);
 
 protected:
   /**

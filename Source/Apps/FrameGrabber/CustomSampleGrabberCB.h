@@ -125,7 +125,7 @@ public:
       }
     }
 
-    m_pYuvToRgbConverter = new RealYUV420toRGB24Converter();
+    m_pYuvToRgbConverter = new YUV420toRGB24Converter();
   }
 
   void setBitmapInfoHeader(BITMAPINFOHEADER* pBitmapInfoHeader)
@@ -144,7 +144,7 @@ public:
     m_pRgbToYuvConverter->SetChrominanceOffset(128);
     m_pRgbToYuvConverter->SetFlip(true);
     m_pYuvToRgbConverter->SetDimensions(m_pBbitmapInfoHeader->biWidth, m_pBbitmapInfoHeader->biHeight);
-    m_pYuvToRgbConverter->SetChrominanceOffset(128);
+    //m_pYuvToRgbConverter->SetChrominanceOffset(128);
     m_pYuvToRgbConverter->SetFlip(true);
     
     // allocate memory for YUV (1.5 suffices but BUILD_FOR_SHORT requires 2 x 1.5)

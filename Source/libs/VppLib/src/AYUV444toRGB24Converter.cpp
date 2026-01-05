@@ -29,34 +29,18 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
-
-#endif
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-
+===========================================================================*/
 #include "AYUV444toRGB24Converter.h"
 
-/*
-===========================================================================
+/*===========================================================================
 	Macros.
-===========================================================================
-*/
+===========================================================================*/
 #define RYUVRGB24C_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 
 
-/*
-===========================================================================
+/*===========================================================================
 	Private Methods.
-===========================================================================
-*/
+===========================================================================*/
 
 //Note: https://topic.alibabacloud.com/a/about-the-common-ayuv-formats-in-rgb-yuy2-yuyv-yvyu-uyvy-directshow-rgbyuv_8_8_10271129.html
 // The ¨AYUV format has an alpha channel, and the YUV component is extracted for each pixel, and the image Data format is as follows:
@@ -76,11 +60,11 @@ int32_t X;
 
   if(_flip)
   {
-    unsigned y = labs(_height);
-    Out += labs(_width)*(y-1)*3;
+    unsigned y = (_height);
+    Out += (_width)*(y-1)*3;
     while(y-- > 0)
     {
-      unsigned x = labs(_width);
+      unsigned x = (_width);
       while(x-- > 0)
       {
         const int32_t Y = 256 * In[1];
@@ -103,12 +87,12 @@ int32_t X;
         Out+=3;
         In+=4;
       }
-      Out -= labs(_width)*2*3;
+      Out -= (_width)*2*3;
     }
   }
   else
   {
-    int numberOfPixels = labs(_width * _height);
+    int numberOfPixels = (_width * _height);
     while(numberOfPixels-->0)
     {
       const int32_t Y = 256 * In[1];
@@ -144,26 +128,26 @@ int32_t X;
 
   if(_flip)
   {
-    unsigned y = labs(_height);
-    Out += labs(_width)*(y-1)*4;
+    unsigned y = (_height);
+    Out += (_width)*(y-1)*4;
     while(y-- > 0)
     {
-      unsigned x = labs(_width);
+      unsigned x = (_width);
       while(x-- > 0)
       {
         const int32_t Y = 256 * In[1];
         const signed char U = In[2] - 128; 
         const signed char V = In[3] - 128;
     
-        X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
+        X = (Y + 454*U) >> 8;		// B Y + 1.772	Y + 2.034*U;
         if(X>255) Out[0]=255;
         else if(X<0) Out[0]=0;
         else Out[0] = X;
-        X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
+        X = (Y -88*U - 183*V) >> 8;	// G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
         if(X>255) Out[1]=255;
         else if(X<0) Out[1]=0;
         else Out[1] = X;
-        X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
+        X = (Y + 359*V) >> 8;		// R Y + 1.402*V;   Y + 1.137*V;
         if(X>255) Out[2]=255;
         else if(X<0) Out[2]=0;
         else Out[2] = X;
@@ -171,12 +155,12 @@ int32_t X;
         Out+=4;
         In+=4;
       }
-      Out -= labs(_width)*2*3;
+      Out -= (_width)*2*3;
     }
   }
   else
   {
-    int numberOfPixels = labs(_width * _height);
+    int numberOfPixels = (_width * _height);
     while(numberOfPixels-->0)
     {
       Out[3] = In[0];
@@ -184,15 +168,15 @@ int32_t X;
       const signed char U = In[2] - 128; 
       const signed char V = In[3] - 128;
     
-      X = (Y + 454*U) >> 8;	// B Y + 1.772	Y + 2.034*U;
+      X = (Y + 454*U) >> 8;		// B Y + 1.772	Y + 2.034*U;
       if(X>255) Out[0]=255;
       else if(X<0) Out[0]=0;
       else Out[0] = X;
-      X = (Y -88*U - 183*V) >> 8; // G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
+      X = (Y -88*U - 183*V) >> 8;	// G Y - 0.344*U - 0.714 *V;   Y - 0.397*U - 0.58*V;
       if(X>255) Out[1]=255;
       else if(X<0) Out[1]=0;
       else Out[1] = X;
-      X = (Y + 359*V) >> 8;	// R Y + 1.402*V;   Y + 1.137*V;
+      X = (Y + 359*V) >> 8;		// R Y + 1.402*V;   Y + 1.137*V;
       if(X>255) Out[2]=255;
       else if(X<0) Out[2]=0;
       else Out[2] = X;

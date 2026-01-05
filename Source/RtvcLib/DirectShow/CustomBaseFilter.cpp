@@ -8,8 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
-#include <DirectShow/stdafx.h>
+#include "DirectShow/stdafx.h"
 #include "CustomBaseFilter.h"
 #include <Dvdmedia.h>
 
@@ -51,6 +51,23 @@ CCustomBaseFilter::CCustomBaseFilter(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID 
 CCustomBaseFilter::~CCustomBaseFilter(void)
 {
 }
+
+
+HRESULT CCustomBaseFilter::BreakConnect(PIN_DIRECTION dir)
+{
+  if(dir==PIN_DIRECTION::PINDIR_INPUT)
+  {
+    m_nInPixels = m_nInHeight = m_nInWidth = 0;
+    memset(&m_videoInHeader, 0, sizeof(VIDEOINFOHEADER));
+  }
+  else
+  {
+    m_nOutPixels = m_nOutHeight = m_nOutWidth = 0;
+    memset(&m_videoOutHeader, 0, sizeof(VIDEOINFOHEADER));
+  }
+  return CTransformFilter::BreakConnect(dir);
+}
+
 
 void CCustomBaseFilter::AddInputType( const GUID* pType, const GUID* pSubType, const GUID* pFormat )
 {
@@ -79,67 +96,88 @@ HRESULT CCustomBaseFilter::CheckInputType( const CMediaType *pMediaType )
 	return VFW_E_TYPE_NOT_ACCEPTED;
 }
 
+
 HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
 {
-	if (direction == PINDIR_INPUT)
-	{
-		if (pmt->formattype == FORMAT_VideoInfo)
-		{
+  if(direction == PINDIR_INPUT)
+  {
+    if(pmt->formattype == FORMAT_VideoInfo)
+    {
 			// WARNING! In general you cannot just copy a VIDEOINFOHEADER
 			// struct, because the BITMAPINFOHEADER member may be followed by
 			// random amounts of palette entries or color masks. (See VIDEOINFO
 			// structure in the DShow SDK docs.) Here it's OK because we just
 			// want the information that's in the VIDEOINFOHEADER struct itself.
 
-			VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pmt->pbFormat;
-			CopyMemory(&m_videoInHeader, pVih, sizeof(VIDEOINFOHEADER));
+      VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) pmt->pbFormat;
+      memcpy(&m_videoInHeader, pVih, sizeof(VIDEOINFOHEADER));
 			//Set these values now so we don't have to repeat it for each transform
-			m_nInHeight = abs(m_videoInHeader.bmiHeader.biHeight);
-			m_nInWidth = m_videoInHeader.bmiHeader.biWidth;
-			m_nInPixels = abs(m_nInHeight * m_nInWidth);
-			m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
-		}
-    else if (pmt->formattype == FORMAT_VideoInfo2)
-		{
-			VIDEOINFOHEADER2* pVih = (VIDEOINFOHEADER2*) pmt->pbFormat;
+      m_nInHeight = m_videoInHeader.bmiHeader.biHeight;
+      m_nInWidth = m_videoInHeader.bmiHeader.biWidth;
+      m_nInPixels = labs(m_nInHeight * m_nInWidth);
+      m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
+    }
+    else if(pmt->formattype == FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
+      m_videoInHeader.AvgTimePerFrame = pVih2->AvgTimePerFrame;
+      m_videoInHeader.dwBitErrorRate = pVih2->dwBitErrorRate;
+      m_videoInHeader.dwBitRate = pVih2->dwBitRate;
+      m_videoInHeader.rcSource = pVih2->rcSource;
+      m_videoInHeader.rcTarget = pVih2->rcTarget;
+      memcpy(&m_videoInHeader.bmiHeader,&pVih2->bmiHeader, sizeof(m_videoInHeader.bmiHeader));
 			//Set these values now so we don't have to repeat it for each transform
-			m_nInHeight = abs(pVih->bmiHeader.biHeight);
-			m_nInWidth = pVih->bmiHeader.biWidth;
-			m_nInPixels = m_nInHeight * m_nInWidth;
-			m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
-		}
+      m_nInHeight = pVih2->bmiHeader.biHeight;
+      m_nInWidth = pVih2->bmiHeader.biWidth;
+      m_nInPixels = labs(m_nInHeight * m_nInWidth);
+      m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
+    }
     else if (pmt->formattype == FORMAT_MPEG2Video)
-		{
-			MPEG2VIDEOINFO* pMpeg2Vih = (MPEG2VIDEOINFO*) pmt->pbFormat;
+    {
+      MPEG2VIDEOINFO* pMpeg2Vih = (MPEG2VIDEOINFO*) pmt->pbFormat;
 			//Set these values now so we don't have to repeat it for each transform
-			m_nInHeight = abs(pMpeg2Vih->hdr.bmiHeader.biHeight);
-			m_nInWidth = pMpeg2Vih->hdr.bmiHeader.biWidth;
-			m_nInPixels = m_nInHeight * m_nInWidth;
-			m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
-		}
-	}
-	else   // output pin
-	{
-		ASSERT(direction == PINDIR_OUTPUT);
-		if (pmt->formattype == FORMAT_VideoInfo)
-		{
-			// Store a copy of the video header info
-			VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
-			CopyMemory(&m_videoOutHeader, pVih, sizeof(VIDEOINFOHEADER));
+      m_nInHeight = pMpeg2Vih->hdr.bmiHeader.biHeight;
+      m_nInWidth = pMpeg2Vih->hdr.bmiHeader.biWidth;
+      m_nInPixels = labs(m_nInHeight * m_nInWidth);
+      m_nBitCount = m_videoInHeader.bmiHeader.biBitCount;
+    }
+  }
+  else   // output pin
+  {
+    ASSERT(direction == PINDIR_OUTPUT);
+    if(pmt->formattype == FORMAT_VideoInfo)
+    {			// Store a copy of the video header info
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
+      memcpy(&m_videoOutHeader, pVih, sizeof(VIDEOINFOHEADER));
 			//Set these values now so we don't have to repeat it for each transform
-			m_nOutHeight = abs(m_videoOutHeader.bmiHeader.biHeight);
-			m_nOutWidth = m_videoOutHeader.bmiHeader.biWidth;
-			m_nOutPixels = m_nOutHeight * m_nOutWidth;
-		}
-	}
-	return S_OK;
+      m_nOutHeight = m_videoOutHeader.bmiHeader.biHeight;
+      m_nOutWidth = m_videoOutHeader.bmiHeader.biWidth;
+      m_nOutPixels = labs(m_nOutHeight * m_nOutWidth);
+    }
+    if(pmt->formattype == FORMAT_VideoInfo2)
+    {			// Store a copy of the video header info
+      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
+      m_videoOutHeader.AvgTimePerFrame = pVih2->AvgTimePerFrame;
+      m_videoOutHeader.dwBitErrorRate = pVih2->dwBitErrorRate;
+      m_videoOutHeader.dwBitRate = pVih2->dwBitRate;
+      m_videoOutHeader.rcSource = pVih2->rcSource;
+      m_videoOutHeader.rcTarget = pVih2->rcTarget;
+      memcpy(&m_videoOutHeader.bmiHeader,&pVih2->bmiHeader, sizeof(m_videoOutHeader.bmiHeader));
+			//Set these values now so we don't have to repeat it for each transform
+      m_nOutHeight = m_videoOutHeader.bmiHeader.biHeight;
+      m_nOutWidth = m_videoOutHeader.bmiHeader.biWidth;
+      m_nOutPixels = labs(m_nOutHeight * m_nOutWidth);
+    }
+  }
+  return S_OK;
 }
+
 
 HRESULT CCustomBaseFilter::Transform( IMediaSample *pSource, IMediaSample *pDest )
 {
 	// Get pointers to the underlying buffers.
-	long lSrcDataLen = pSource->GetSize();
-	long lDestDataLen = pDest->GetSize();
+  long lSrcDataLen = pSource->GetSize();
+  long lDestDataLen = pDest->GetSize();
   long lSrcActualLen = pSource->GetActualDataLength();
   long lDestActualLen = 0; 
 
@@ -168,19 +206,20 @@ HRESULT CCustomBaseFilter::Transform( IMediaSample *pSource, IMediaSample *pDest
 	return hr;
 }
 
+
 STDMETHODIMP CCustomBaseFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
-	if(riid == (IID_ISettingsInterface))
-	{
-		return GetInterface((ISettingsInterface*) this, ppv);
-	}
-	else if (riid == IID_IStatusInterface)
-	{
-		return GetInterface((IStatusInterface*) this, ppv);
-	}
-	else
-	{
-		return CTransformFilter::NonDelegatingQueryInterface(riid, ppv);
-	}
+  if(riid == (IID_ISettingsInterface))
+  {
+    return GetInterface((ISettingsInterface*) this, ppv);
+  }
+  else if (riid == IID_IStatusInterface)
+  {
+    return GetInterface((IStatusInterface*) this, ppv);
+  }
+  else
+  {
+    return CTransformFilter::NonDelegatingQueryInterface(riid, ppv);
+  }
 }
 
