@@ -37,9 +37,7 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
 OF THE POSSIBILITY OF SUCH DAMAGE.
-===========================================================================
-
-*/
+===========================================================================*/
 
 #pragma once
 
@@ -50,9 +48,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FILTER_PARAM_MEDIA_ID                 "media_id"
 #define FILTER_PARAM_GROUP_ID                 "group_id"
 
-#define FILTER_PARAM_ORIENTATION			        "orientation"
-#define FILTER_PARAM_ROTATION_MODE		        "rotationmode"
-#define FILTER_PARAM_SUB_PICTURE_POSITION	    "position"
+#define FILTER_PARAM_ORIENTATION	      "orientation"
+#define FILTER_PARAM_ROTATION_MODE	      "rotationmode"
+#define FILTER_PARAM_SUB_PICTURE_POSITIO      "position"
 
 #define FILTER_PARAM_TARGET_WIDTH             "target_width"
 #define FILTER_PARAM_TARGET_HEIGHT            "target_height"

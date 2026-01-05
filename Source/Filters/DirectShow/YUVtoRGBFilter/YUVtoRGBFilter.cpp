@@ -8,8 +8,8 @@ DESCRIPTION			:
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
-Copyright (c) 2025, Digiteq Automotive All rights reserved.
+Copyright (c) 2008-2014, CSIR
+Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,8 +29,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #include "YUVtoRGBFilter.h"
 #include "DirectShow/CommonDefs.h"
 #include "DirectShow/CustomMediaTypes.h"
@@ -38,8 +37,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AYUV444toRGB24Converter.h"
 #include "RealYUV420toRGB24Converter.h"
 #include "YUYVtoRGBConverter.h"
+#include "YVYUtoRGBConverter.h"
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
+#include "../VariantTools.cpp"
 
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
@@ -50,7 +51,8 @@ YUVtoRGBFilter::YUVtoRGBFilter():
   CCustomBaseFilter(NAME("DQ VPP YUV to RGB converter"), 0, CLSID_VPP_YUVtoRGBColorConverter),
   m_pConverter(NULL),
   m_nSizeUV(0),
-  m_bInvert(false)
+  m_bInvert(false),
+  m_DirtyProps(true)
 {
   out_MediaType = GUID_NULL;
   in_MediaType = GUID_NULL;
@@ -93,6 +95,19 @@ void YUVtoRGBFilter::InitialiseInputTypes()
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+	/////////////////////////////////////////////////
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo2);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo2); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo2);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo2);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo2);
 }
 
 
@@ -133,6 +148,8 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
           m_pConverter = new YUV420toRGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new YUYVtoARGB32Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_YVYU)
+          m_pConverter = new YVYUtoARGB32Converter(m_nInWidth, m_nInHeight);
     }
     if(out_MediaType == MEDIASUBTYPE_RGB24)
     {
@@ -142,6 +159,8 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
           m_pConverter = new YUV420toRGB24Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new YUYVtoRGB24Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_YVYU)
+          m_pConverter = new YVYUtoRGB24Converter(m_nInWidth, m_nInHeight);
     }
 
     if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
@@ -150,12 +169,6 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
     {
       m_pConverter->SetFlip((!m_bInvert) ^ (m_nOutHeight<0));
     }
-
-/*	NEVER DO THIS NASTY JOB!
-      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
-      //always flip the image
-      pVih->bmiHeader.biHeight *= -1;
-*/
   }
   return hr;
 }
@@ -184,7 +197,28 @@ HRESULT YUVtoRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
     VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
-    if(pVih2) {pbmi=&(pVih2->bmiHeader);}
+    if(pVih2)
+    {
+      pbmi = &(pVih2->bmiHeader);
+/*		// This does not work properly, needs to be investigated.
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)CoTaskMemAlloc(sizeof(VIDEOINFOHEADER));
+      if(pVih)
+      {
+        //memset(pVih,0,sizeof(VIDEOINFOHEADER));
+        pVih->AvgTimePerFrame = pVih2->AvgTimePerFrame;
+        memcpy(&pVih->bmiHeader, pbmi, sizeof(BITMAPINFOHEADER));
+        pVih->dwBitErrorRate = pVih2->dwBitErrorRate;
+        pVih->dwBitRate = pVih2->dwBitRate;
+        pVih->rcSource = pVih2->rcSource;
+        pVih->rcTarget = pVih2->rcTarget;
+
+        CoTaskMemFree(pMediaType->pbFormat);
+        pMediaType->pbFormat = (BYTE*)pVih;
+        pMediaType->cbFormat = sizeof(VIDEOINFOHEADER);
+        pMediaType->formattype = FORMAT_VideoInfo;
+      }
+*/
+    }
   }
   if(pbmi == NULL)
       return VFW_E_TYPE_NOT_ACCEPTED;
@@ -336,15 +370,18 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
         TransformOK = true;
     if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
         TransformOK = true;
+    if(in_MediaType==MEDIASUBTYPE_YVYU)
+        TransformOK = true;
   }
-
-  if(mtOut->subtype == MEDIASUBTYPE_RGB24)
+  else if(mtOut->subtype == MEDIASUBTYPE_RGB24)
   {
     if(mtIn->subtype == MEDIASUBTYPE_AYUV)
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
         TransformOK = true;
     if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+        TransformOK = true;
+    if(in_MediaType==MEDIASUBTYPE_YVYU)
         TransformOK = true;
   }
 
@@ -386,15 +423,13 @@ HRESULT YUVtoRGBFilter::GetPages(CAUUID *pPages)
 
  HRESULT YUVtoRGBFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-  if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else
-  {
+  if(riid == IID_IPersistPropertyBag)   return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)	return GetInterface(static_cast<IPersistStream*>(this), ppv);
+  if(riid == IID_IPropertyBag)		return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  
       // Call the parent class.
-    return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-  }
+  return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
 
@@ -402,4 +437,154 @@ HRESULT YUVtoRGBFilter::GetPages(CAUUID *pPages)
 {
   //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
   addParameter(INVERT, &m_bInvert,  m_bInvert);
+}
+
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT  YUVtoRGBFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_YUVtoRGBColorConverter;
+  return S_OK;
+}
+
+
+HRESULT  YUVtoRGBFilter::InitNew(void)
+{
+  m_nOutWidth = m_nOutHeight = 0;
+  return S_OK;
+}
+
+
+OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
+
+
+HRESULT YUVtoRGBFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  memset(&var,0,sizeof(var));
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_FLIP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_FLIP,sizeof(OLE_PARAM_FLIP));
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      int Val;
+      IntFromVariant(Val,&var);
+      m_bInvert = Val;
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  VariantClear(&var);
+return S_OK;
+}
+
+
+HRESULT  YUVtoRGBFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+LPCOLESTR PropName;
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_FLIP));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_FLIP,sizeof(OLE_PARAM_FLIP));
+    var.vt = VT_BOOL;
+    var.boolVal = m_bInvert;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+
+return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+
+HRESULT  YUVtoRGBFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+
+  if(oleicmp(pszPropName, OLE_PARAM_FLIP) == 0)
+  {   
+    pVar->vt = VT_BOOL;
+    pVar->boolVal = m_bInvert;
+    return S_OK;
+  }
+
+  return E_INVALIDARG;
+}
+
+
+HRESULT  YUVtoRGBFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  if(oleicmp(pszPropName, OLE_PARAM_FLIP) == 0)
+  { 
+    int val;
+    if(IntFromVariant(val,pVar))
+    {
+      m_bInvert = val;
+      return S_OK;
+    }
+  } 
+  return E_INVALIDARG;
+}
+
+
+//----------------- IPersistStream------------------
+
+
+HRESULT  YUVtoRGBFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
+{
+CheckPointer(pcbSize, E_INVALIDARG);
+  pcbSize->QuadPart = 1;
+  return S_OK;
+}
+
+
+HRESULT  YUVtoRGBFilter::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT YUVtoRGBFilter::Load(IStream *pStm)
+{
+ULONG pcbRead;
+char flip;
+HRESULT hr;
+  CheckPointer(pStm, E_INVALIDARG);
+
+  if(FAILED(hr=pStm->Read(&flip,1,&pcbRead))) return hr;
+  if(flip!=m_bInvert)
+  {
+    m_bInvert = flip;
+    m_DirtyProps = true;
+  }
+return S_OK;
+}
+
+
+HRESULT  YUVtoRGBFilter::Save(IStream *pStm, BOOL fClearDirty)
+{
+HRESULT hr;
+CheckPointer(pStm, E_INVALIDARG);
+  if(FAILED(hr=pStm->Write(&m_bInvert, 1, NULL))) return hr;
+  if(fClearDirty) m_DirtyProps=false;
+return S_OK;
 }

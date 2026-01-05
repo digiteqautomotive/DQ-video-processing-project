@@ -60,7 +60,8 @@ class YUVtoRGBConverter;
 * \ingroup DirectShowFilters
 * This Filter converts the YUV444 Interleaved media back into RGB24 media.
 */
-class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
+class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages,
+		      public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
   DECLARE_IUNKNOWN
@@ -73,9 +74,7 @@ public:
   /// Static object-creation method (for the class factory)
   static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
 
-  /**
-  * Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter
-  */
+  /** Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter */
   HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
 
   /**
@@ -124,6 +123,22 @@ protected:
   * @param pDest The destination buffer */
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
+	// IPersistPropertyBag
+  virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+  virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+  virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+  virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+	// IPropertyBag
+  STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+  STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+
+	// IPersistStream
+  virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
+  virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
+  virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
+  virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
+
 private:
 
   /// Pointer to our YUV444 to RGB24 converter
@@ -135,6 +150,7 @@ private:
   // YUV is always top down: the invert flag determines whether the image
   // is flipped during conversion, or whether the sign is simply set
   bool m_bInvert;
+  bool m_DirtyProps;
 
   GUID in_MediaType;
   GUID out_MediaType;

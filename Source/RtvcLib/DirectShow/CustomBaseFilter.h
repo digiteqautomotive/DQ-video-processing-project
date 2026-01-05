@@ -9,7 +9,7 @@ DESCRIPTION			: Base class for CSIR DirectShow filters with one input and one ou
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2014, CSIR
-Copyright (c) 2025, Digiteq Automotive All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -79,7 +79,7 @@ public:
   /// This method needs to overridden by child classes - add all possible accepted input combinations
   /// using the AddInputType method
   virtual void InitialiseInputTypes() PURE;
-  virtual  HRESULT BreakConnect(PIN_DIRECTION dir);
+  virtual HRESULT BreakConnect(PIN_DIRECTION dir);
 
 protected:
   /**
