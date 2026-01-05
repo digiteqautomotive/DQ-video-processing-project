@@ -8,8 +8,8 @@ DESCRIPTION			: This Filter converts the YUV444 Interleaved media back into RGB2
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2008-2014, CSIR
+Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -40,15 +40,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CHROMINANCE_OFFSET "chrominanceoffset"
 #define INVERT "invert"
 
+
 // GUID
 
-// {B9AEF94B-CDCB-48EA-B066-55860337FE5C}
-const GUID CLSID_DQ_YUV444toRGBColorConverter = 
-{ 0xb9aef94b, 0xcdcb, 0x48ea, { 0xb0, 0x66, 0x55, 0x86, 0x3, 0x37, 0xfe, 0x5c } };
+// {08F78B88-4A61-495A-9E9F-AAD47ED3EDF4}
+DEFINE_GUID(CLSID_VPP_YUVtoRGBColorConverter, 
+0x8f78b88, 0x4a61, 0x495a, 0x9e, 0x9f, 0xaa, 0xd4, 0x7e, 0xd3, 0xed, 0xf4);
 
-// {2C0FD6F6-620D-4817-8057-B1364F55BCEB}
-const GUID CLSID_YUVtoRGB444Properties = 
-{ 0x2c0fd6f6, 0x620d, 0x4817, { 0x80, 0x57, 0xb1, 0x36, 0x4f, 0x55, 0xbc, 0xeb } };
+// {554D85CB-E127-477E-B44D-3CE5A3AC956A}
+DEFINE_GUID(CLSID_YUVtoRGBProperties, 
+0x554d85cb, 0xe127, 0x477e, 0xb4, 0x4d, 0x3c, 0xe5, 0xa3, 0xac, 0x95, 0x6a);
+
 
 
 // Forward declarations

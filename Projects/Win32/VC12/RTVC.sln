@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CropFilter", "DirectShowFilters\CropFilter\CropFilter.vcxproj", "{420C1281-9A86-4F5F-B36F-686138A54592}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RGBtoYUV420Filter", "DirectShowFilters\RGBtoYUV420Filter\RGBtoYUV420Filter.vcxproj", "{0259B0A2-D2A1-4F9E-B702-2BF27119BDB7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScaleFilter", "DirectShowFilters\ScaleFilter\ScaleFilter.vcxproj", "{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YUV420ToRGBFilter", "DirectShowFilters\YUV420ToRGBFilter\YUV420ToRGBFilter.vcxproj", "{B493B382-8041-40AB-8252-B94DFF585283}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectShow", "RtvcLib\DirectShow\DirectShow.vcxproj", "{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}"
 EndProject
@@ -96,7 +94,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VirtualCam", "DirectShowFil
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UtilityFilter", "DirectShowFilters\UtilityFilter\UtilityFilter.vcxproj", "{CBBE0835-5C6B-46D0-BACC-898BFF4A3911}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YUV444ToRGBFilter", "DirectShowFilters\YUV444ToRGBFilter\YUV444ToRGBFilter.vcxproj", "{C4BBEDB3-86EF-4ED3-8AFF-7DA60EACD38E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YUVtoRGBFilter", "DirectShowFilters\YUVtoRGBFilter\YUVtoRGBFilter.vcxproj", "{C4BBEDB3-86EF-4ED3-8AFF-7DA60EACD38E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,13 +128,6 @@ Global
 		{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}.Release|Win32.Build.0 = Release|Win32
 		{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}.Release|x64.ActiveCfg = Release|x64
 		{4C5CFE52-20C3-4EAE-AF77-0F3E38F82A9D}.Release|x64.Build.0 = Release|x64
-		{B493B382-8041-40AB-8252-B94DFF585283}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B493B382-8041-40AB-8252-B94DFF585283}.Debug|Win32.Build.0 = Debug|Win32
-		{B493B382-8041-40AB-8252-B94DFF585283}.Debug|x64.ActiveCfg = Debug|x64
-		{B493B382-8041-40AB-8252-B94DFF585283}.Release|Win32.ActiveCfg = Release|Win32
-		{B493B382-8041-40AB-8252-B94DFF585283}.Release|Win32.Build.0 = Release|Win32
-		{B493B382-8041-40AB-8252-B94DFF585283}.Release|x64.ActiveCfg = Release|x64
-		{B493B382-8041-40AB-8252-B94DFF585283}.Release|x64.Build.0 = Release|x64
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}.Debug|Win32.ActiveCfg = Debug|Win32
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}.Debug|Win32.Build.0 = Debug|Win32
 		{382B7FFF-3C67-4370-8D39-2FB7FD1693E1}.Debug|x64.ActiveCfg = Debug|x64

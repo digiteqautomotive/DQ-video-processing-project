@@ -8,8 +8,8 @@ DESCRIPTION			:
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2015, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -33,21 +33,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "stdafx.h"
 
-#include "YUV420toRGBFilter.h"
+#include "YUVtoRGBFilter.h"
 #include "YUY2RGBProperties.h"
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"DQ VPP YUV420P 2 RGB Converter";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP YUV to RGB Converter";   /// A name for the filter 
 
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =
 {
-  &CLSID_VPP_YUV420toRGBColorConverter,	// CLSID
-  g_wszName,                            // Name
-  MERIT_DO_NOT_USE,                     // Merit
-  0,                                    // Number of AMOVIESETUP_PIN structs
-  NULL                                  // Pin registration information.
+  &CLSID_VPP_YUVtoRGBColorConverter,	// CLSID
+  g_wszName,				// Name
+  MERIT_NORMAL,				// Merit
+  0,					// Number of AMOVIESETUP_PIN structs
+  NULL					// Pin registration information.
 };
 
 
@@ -55,15 +55,15 @@ CFactoryTemplate g_Templates[2] =
 {
   {
     g_wszName,                            // Name
-    &CLSID_VPP_YUV420toRGBColorConverter, // CLSID
-    YUV420toRGBFilter::CreateInstance,    // Method to create an instance of MyComponent
+    &CLSID_VPP_YUVtoRGBColorConverter, // CLSID
+    YUV444toRGBFilter::CreateInstance,    // Method to create an instance of MyComponent
     NULL,                                 // Initialization function
     &FilterInfo                           // Set-up information (for filters)
   },
   // This entry is for the property page.
   {
     L"YUV2RGB Properties",
-    &CLSID_YUVtoRGB420Properties,
+    &CLSID_YUVtoRGBProperties,
     YUV2RGBProperties::CreateInstance,
     NULL, NULL
   }

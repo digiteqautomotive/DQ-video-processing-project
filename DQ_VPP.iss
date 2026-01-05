@@ -5,7 +5,7 @@
 
 #define MyAppName "DQ VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.6.10"
+#define MyAppVersion "1.6.11"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "DQ VPP video processing filters"
 #define MyAppURL "https://sourceforge.net/projects/direct-show-demo-filters/files/CSIR_VPP_VIDEOPROCESSING/"
@@ -37,7 +37,7 @@ AppendDefaultDirName=yes
 ;SetupLogging=yes
 ;AppMutex=Controller_Mutex
 LicenseFile=license.txt
-;AppCopyright=Copyright (C) 2025
+;AppCopyright=Copyright (C) 2025-2026
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -119,14 +119,22 @@ Source: ".\Projects\Win32\VC12\Win32\Release\UtilityFilter.dll"; DestDir: "{app}
 Source: ".\Projects\Win32\VC12\x64\Release\UtilityFilter.dll"; DestDir: "{app}\Win64"; Components: UtilityFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win32"; Components: VideoMixingFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win64"; Components: VideoMixingFilter; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\YUV420ToRGBFilter.dll"; DestDir: "{app}\Win32"; Components: YUV420ToRGBFilter; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\YUV420ToRGBFilter.dll"; DestDir: "{app}\Win64"; Components: YUV420ToRGBFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\YUVtoRGBFilter.dll"; DestDir: "{app}\Win32"; Components: YUV420ToRGBFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\YUVtoRGBFilter.dll"; DestDir: "{app}\Win64"; Components: YUV420ToRGBFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\YuvSource.dll"; DestDir: "{app}\Win32"; Components: YuvSource; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\YuvSource.dll"; DestDir: "{app}\Win64"; Components: YuvSource; Flags: ignoreversion; Check: IsWin64;
 
 
 Source: ".\redist\VC2013\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstallx86
 Source: ".\redist\VC2013\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstallx64
+
+
+[InstallDelete]
+Type: files; name: "{app}\Win32\YUV420toRGBFilter.dll";
+Type: files; name: "{app}\Win32\YUV444toRGBFilter.dll";
+Type: files; name: "{app}\Win64\YUV420toRGBFilter.dll";
+Type: files; name: "{app}\Win64\YUV444toRGBFilter.dll";
+
 
 [Run]
 ; conditional installation Check for Visual Studio Redistributable
@@ -169,8 +177,8 @@ Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\UtilityFilter.dll"""; Co
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\UtilityFilter.dll"""; Components: UtilityFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VideoMixingFilter.dll"""; Components: VideoMixingFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\VideoMixingFilter.dll"""; Components: VideoMixingFilter; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YUV420ToRGBFilter.dll"""; Components: YUV420ToRGBFilter
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YUV420ToRGBFilter.dll"""; Components: YUV420ToRGBFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YUVtoRGBFilter.dll"""; Components: YUV420ToRGBFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YUVtoRGBFilter.dll"""; Components: YUV420ToRGBFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YuvSource.dll"""; Components: YuvSource
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YuvSource.dll"""; Components: YuvSource; Check: IsWin64;
 
@@ -213,8 +221,8 @@ Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\UtilityFilter.dll\"""
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\UtilityFilter.dll\"""; Components: UtilityFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VideoMixingFilter.dll\"""; Components: VideoMixingFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\VideoMixingFilter.dll\"""; Components: VideoMixingFilter; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YUV420ToRGBFilter.dll\"""; Components: YUV420ToRGBFilter
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YUV420ToRGBFilter.dll\"""; Components: YUV420ToRGBFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YUVtoRGBFilter.dll\"""; Components: YUV420ToRGBFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YUVtoRGBFilter.dll\"""; Components: YUV420ToRGBFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YuvSource.dll\"""; Components: YuvSource
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YuvSource.dll\"""; Components: YuvSource; Check: IsWin64;
 

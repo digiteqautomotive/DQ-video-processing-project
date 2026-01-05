@@ -22,6 +22,7 @@
     <ProjectGuid>{C4BBEDB3-86EF-4ED3-8AFF-7DA60EACD38E}</ProjectGuid>
     <RootNamespace>YUV444ToRGBFilter</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>YUVtoRGBFilter</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -108,7 +109,7 @@
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Strmbasd.lib;Msvcrtd.lib;Winmm.lib;comctl32.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>YUV444ToRGBFilter.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>YUVtoRGBFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -138,7 +139,7 @@
       <AdditionalOptions>/NODEFAULTLIB:LIBCMTD %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>Strmbasd.lib;Msvcrtd.lib;Winmm.lib;comctl32.lib;libRtvcImageD.lib;libRtvcDirectShowD.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>YUV444ToRGBFilter.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>YUVtoRGBFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -166,7 +167,7 @@
     <Link>
       <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Msvcrt.lib;Winmm.lib;odbc32.lib;odbccp32.lib;comctl32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>YUV444ToRGBFilter.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>YUVtoRGBFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -197,7 +198,7 @@
     <Link>
       <AdditionalDependencies>strmiids.lib;STRMBASE.lib;Winmm.lib;odbc32.lib;odbccp32.lib;comctl32.lib;libRtvcImage.lib;libRtvcDirectShow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\$(ProjectName).dll</OutputFile>
-      <ModuleDefinitionFile>YUV444ToRGBFilter.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>YUVtoRGBFilter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -225,21 +226,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\DLLSetup.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\stdafx.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\YUV444ToRGBFilter.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="YUV444ToRGBFilter.def" />
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUVtoRGBFilter\DLLSetup.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUVtoRGBFilter\stdafx.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUVtoRGBFilter\YUVtoRGBFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\resource.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\stdafx.h" />
-    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\YUV444ToRGBFilter.h" />
-    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\YUY2RGBProperties.h" />
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\YUVtoRGBFilter\YUVtoRGBFilter.h" />
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\YUVtoRGBFilter\YUY2RGBProperties.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUV444ToRGBFilter\YUV444ToRGBFilter.rc" />
+    <ResourceCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YUVtoRGBFilter\YUVtoRGBFilter.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="YUVtoRGBFilter.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

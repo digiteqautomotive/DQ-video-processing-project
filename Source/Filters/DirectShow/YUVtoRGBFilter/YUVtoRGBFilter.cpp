@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
 */
-#include "YUV444ToRGBFilter.h"
+#include "YUVtoRGBFilter.h"
 #include "DirectShow/CommonDefs.h"
 #include "DirectShow/CustomMediaTypes.h"
 #include "DirectShow/DirectShowMediaFormats.h"
@@ -47,7 +47,7 @@ DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00,
 
 
 YUV444toRGBFilter::YUV444toRGBFilter():
-  CCustomBaseFilter(NAME("DQ VPP AYUV444 to RGB Converter"), 0, CLSID_DQ_YUV444toRGBColorConverter),
+  CCustomBaseFilter(NAME("DQ VPP YUV to RGB converter"), 0, CLSID_VPP_YUVtoRGBColorConverter),
   m_pConverter(new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight)),
   m_nSizeUV(0),
   m_bInvert(true)
@@ -380,7 +380,7 @@ HRESULT YUV444toRGBFilter::GetPages(CAUUID *pPages)
     {
       return E_OUTOFMEMORY;
     }
-    pPages->pElems[0] = CLSID_YUVtoRGB444Properties;
+    pPages->pElems[0] = CLSID_YUVtoRGBProperties;
     return S_OK;
 }
 
