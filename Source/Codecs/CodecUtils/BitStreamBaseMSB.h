@@ -47,7 +47,7 @@ public:
 		{_bitStream = NULL; _bitSize = 0; _bytePos = 0; _bitPos = 7; }
 	virtual ~BitStreamBaseMSB()	{ }
 
-	virtual void SetStream(void* stream, int bitSize)	
+	virtual void SetStream(const void* stream, int bitSize)	
 		{ _bitStream = (unsigned char *)stream; 
 			_bitSize = bitSize; 
 			_bytePos = 0; _bitPos = 7; 

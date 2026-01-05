@@ -33,10 +33,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "YUV444ToRGBFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <DirectShow/CustomMediaTypes.h>
+#include "DirectShow/CustomMediaTypes.h"
+#include "DirectShow/DirectShowMediaFormats.h"
 #include "AYUV444toRGB24Converter.h"
+#include "RealYUV420toRGB24Converter.h"
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
+
+
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 
 YUV444toRGBFilter::YUV444toRGBFilter():
@@ -50,15 +55,17 @@ YUV444toRGBFilter::YUV444toRGBFilter():
   initParameters();
 
   // init converter
-  m_pConverter->SetFlip(m_bInvert);
+  //m_pConverter->SetFlip(m_bInvert);
   //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
 }
 
 YUV444toRGBFilter::~YUV444toRGBFilter()
 {
-  ASSERT(m_pConverter);
-  delete m_pConverter;
-  m_pConverter = NULL;
+  if(m_pConverter)
+  {
+    delete m_pConverter;
+    m_pConverter = NULL;
+  }
 }
 
 CUnknown * WINAPI YUV444toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
@@ -75,6 +82,10 @@ CUnknown * WINAPI YUV444toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 void YUV444toRGBFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
 }
 
 
@@ -90,14 +101,17 @@ HRESULT YUV444toRGBFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
   }
   else
   {
+/*	NEVER DO THIS NASTY JOB!
       VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
       //always flip the image
       pVih->bmiHeader.biHeight *= -1;
+*/
   }
   return hr;
 }
 
-HRESULT YUV444toRGBFilter::GetMediaType( int iPosition, CMediaType *pMediaType )
+
+HRESULT YUV444toRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
   if (iPosition < 0)
   {
@@ -235,14 +249,13 @@ HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
 }
 
 
-HRESULT YUV444toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT YUV444toRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   ASSERT(m_pConverter);
   ASSERT(pBufferIn);
   ASSERT(pBufferOut);
 
-  yuvType* pYUV = (yuvType*)pBufferIn;
-  m_pConverter->Convert((void*)pBufferIn, (void*)pBufferOut);
+  m_pConverter->Convert(pBufferIn, (void*)pBufferOut);
   DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV444 to RGB Directly")));
   //RGB24 stores 3 Bytes per pixel
   lOutActualDataLength = m_nInPixels * BITS_PER_PIXEL_RGB24 / 8;
@@ -250,7 +263,7 @@ HRESULT YUV444toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
 }
 
 
-HRESULT YUV444toRGBFilter::CheckTransform( const CMediaType *mtIn, const CMediaType *mtOut )
+HRESULT YUV444toRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
   //Does this also occur when format changes occur such as when changing the renderer size???
   long lSize = mtOut->GetSampleSize();
@@ -261,76 +274,62 @@ HRESULT YUV444toRGBFilter::CheckTransform( const CMediaType *mtIn, const CMediaT
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
 
-  if(mtOut->subtype == MEDIASUBTYPE_RGB24)
+  BITMAPINFOHEADER *pBiOut = NULL;
+  BITMAPINFOHEADER *pBiIn = NULL;
+
+  if(mtOut->formattype == FORMAT_VideoInfo)
   {
-    BITMAPINFOHEADER *pBiOut = NULL;
-    BITMAPINFOHEADER *pBiIn = NULL;
-
-    if(mtOut->formattype == FORMAT_VideoInfo)
-    {
-      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
-      pBiOut = &(pVih->bmiHeader);
-    }
-    if(mtOut->formattype == FORMAT_VideoInfo2)
-    {
-      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)mtOut->pbFormat;
-      pBiOut = &(pVih2->bmiHeader);
-    }
-
-    if(mtIn->formattype == FORMAT_VideoInfo)
-    {
-      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtIn->pbFormat;
-      pBiIn = &(pVih->bmiHeader);
-    }
-    if(mtIn->formattype == FORMAT_VideoInfo2)
-    {
-      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)mtIn->pbFormat;
-      pBiIn = &(pVih2->bmiHeader);
-    }
-
-    if(pBiIn==NULL || pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
-
-
-    {
-#if 0
-      //Now we need to calculate the size of the output image
-      BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
-      int iNewStride = pBi->biWidth;
-      // TEMP HACK TO TEST IF IMAGE RENDERS CORRECTLY
-      /*if (iNewStride != m_nOutWidth)
-      {
-      return VFW_E_TYPE_NOT_ACCEPTED;
-      }*/
-      int iNewWidth = pVih->rcSource.right - pVih->rcSource.left;
-      int iNewHeight = pBi->biHeight;
-      if (iNewHeight < 0)
-      {
-        // REJECT INVERTED PICTURES
-        return VFW_E_TYPE_NOT_ACCEPTED;
-      }
-#endif
-
-      // check whether input and output height have the same sign
-      // to prevent renderer from changing format
-     if (m_bInvert)
-     {
-          // make sure height is positive
-        if (pBiOut->biHeight < 0)
-            return VFW_E_TYPE_NOT_ACCEPTED;
-      }
-      else
-      {
-            // make sure height is negative
-        if (pBiOut->biHeight > 0)
-          return VFW_E_TYPE_NOT_ACCEPTED;
-      }
-    }
-
-    // Everything is good.
-    return S_OK;
+    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtOut->pbFormat;
+    pBiOut = &(pVih->bmiHeader);
+  }
+  if(mtOut->formattype == FORMAT_VideoInfo2)
+  {
+    VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)mtOut->pbFormat;
+    pBiOut = &(pVih2->bmiHeader);
   }
 
-return VFW_E_TYPE_NOT_ACCEPTED;
+  if(mtIn->formattype == FORMAT_VideoInfo)
+  {
+    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)mtIn->pbFormat;
+    pBiIn = &(pVih->bmiHeader);
+  }
+  if(mtIn->formattype == FORMAT_VideoInfo2)
+  {
+    VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)mtIn->pbFormat;
+    pBiIn = &(pVih2->bmiHeader);
+  }
+
+  if(pBiIn==NULL || pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(labs(pBiIn->biWidth)!=labs(pBiOut->biWidth) ||
+     labs(pBiIn->biHeight)!=labs(pBiOut->biHeight)) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(m_pConverter) {delete m_pConverter; m_pConverter=NULL;}
+  
+  if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32)
+  {
+    if(mtIn->subtype == MEDIASUBTYPE_AYUV)
+        m_pConverter = new AYUV444toARGB32Converter(pBiIn->biWidth,pBiIn->biHeight);
+    if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
+        m_pConverter = new YUV420toRGB32Converter(pBiIn->biWidth,pBiIn->biHeight);
+  }
+
+  if(mtOut->subtype == MEDIASUBTYPE_RGB24)
+  {
+    if(mtIn->subtype == MEDIASUBTYPE_AYUV)
+        m_pConverter = new AYUV444toRGB24Converter(pBiIn->biWidth,pBiIn->biHeight);
+    if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
+        m_pConverter = new YUV420toRGB24Converter(pBiIn->biWidth,pBiIn->biHeight);
+  }
+
+  if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32 || mtOut->subtype == MEDIASUBTYPE_RGB24)
+  {
+    m_pConverter->SetFlip(m_bInvert ^ (pBiOut->biHeight<0));
+  }
+
+  return S_OK;	    // Everything is good.
 }
 
 

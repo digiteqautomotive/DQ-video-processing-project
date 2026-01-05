@@ -113,7 +113,7 @@ private:
   * @param[in] lOutBufferSize The size of the destination buffer
   * @param[in,out] lOutActualDataLength The size of the data encoded into the destination buffer
   */
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   HRESULT initialiseH264Decoder();
   void resizeEncodedPictureBufferIfNecessary(long lActualDataLength);
@@ -129,6 +129,6 @@ private:
   // and stores length of length field preceding H264 data
   unsigned m_uiAvc1PrefixLength;
   // buffer in case we have to copy the incoming data
-  BYTE* m_pEncodedPictureBuffer;
+  const BYTE* m_pEncodedPictureBuffer;
   unsigned m_uiEncodedPictureBufferLength;
 };

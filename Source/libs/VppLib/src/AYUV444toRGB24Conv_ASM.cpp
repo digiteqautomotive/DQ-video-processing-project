@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AYUV444toRGB24Converter.h"
 
 extern "C" void ConvertRowAsmAYUV_ARGB24(void *pDst, const void *pSrc, unsigned Pixels);
+extern "C" void ConvertRowAsmAYUV_ARGB32(void *pDst, const void *pSrc, unsigned Pixels);
 
 
 /*
@@ -58,20 +59,39 @@ extern "C" void ConvertRowAsmAYUV_ARGB24(void *pDst, const void *pSrc, unsigned 
 // A0 Y0 U0 V0 A1 Y1 U1 V1 ... 
 
 
-void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
+void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
   if(_flip)
   {
-    unsigned y = labs(_height);
-    const unsigned w = labs(_width);
+    unsigned y = _height;
+    const unsigned w = _width;
     pRgb = (char*)(pRgb) + w*(y-1)*3;
     while(y-- > 0)
     {      
       ConvertRowAsmAYUV_ARGB24(pRgb, pInputBuffer, w);
-      pRgb = (char*)(pRgb) - w*3;
-      pInputBuffer = (char*)(pInputBuffer) + w*3;
+      pRgb = (char*)(pRgb) - w*3;				// RGB
+      pInputBuffer = (char*)(pInputBuffer) + w*4;		// AYUV
     }
   }
   else
-      ConvertRowAsmAYUV_ARGB24(pRgb, pInputBuffer, labs(_width*_height));
+      ConvertRowAsmAYUV_ARGB24(pRgb, pInputBuffer, _width*_height);
+}
+
+
+void AYUV444toARGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
+{
+  if(_flip)
+  {
+    unsigned y = _height;
+    const unsigned w = _width;
+    pRgb = (char*)(pRgb) + w*(y-1)*4;
+    while(y-- > 0)
+    {      
+      ConvertRowAsmAYUV_ARGB32(pRgb, pInputBuffer, w);
+      pRgb = (char*)(pRgb) - w*4;
+      pInputBuffer = (char*)(pInputBuffer) + w*4;
+    }
+  }
+  else
+      ConvertRowAsmAYUV_ARGB32(pRgb, pInputBuffer, _width*_height);
 }

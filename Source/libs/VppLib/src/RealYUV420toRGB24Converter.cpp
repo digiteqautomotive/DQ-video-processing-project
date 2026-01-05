@@ -1,17 +1,15 @@
 /** @file
 
-MODULE				: RealYUV420toRGB24Converter
+MODULE				:YUV420toRGB24Converter
 
-FILE NAME			: RealYUV420toRGB24Converter.cpp
+FILE NAME			:YUV420toRGB24Converter.cpp
 
-DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-					colour conversion derived from the YUV420toRGBConverter base 
-					class.
+DESCRIPTION			: Integer implementation of YUV420 (8 bpp) to RGB 24 bit 
+				  colour conversion derived from the YUV420toRGBConverter base 	class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,326 +29,319 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
-#include <stdio.h>
-#endif
-
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
+==========================================================================*/
 
 #include "RealYUV420toRGB24Converter.h"
 
-/*
-===========================================================================
-	Macros.
-===========================================================================
-*/
-#define RYUVRGB24C_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 
-#define RYUVRGB24C_U0		 2.032
-#define RYUVRGB24C_U1		-0.394
-#define RYUVRGB24C_V1		-0.581
-#define RYUVRGB24C_V0		 1.140
+#define int32_t int
 
-/*
-===========================================================================
+
+/*===========================================================================
 	Private Methods.
-===========================================================================
-*/
-void RealYUV420toRGB24Converter::InvertConvert(void* pY, void* pU, void* pV, void* pRgb)
+==========================================================================*/
+
+void YUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	yuvType*				py		= (yuvType *)pY;
-	yuvType*				pu		= (yuvType *)pU;
-	yuvType*				pv		= (yuvType *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+int32_t X;
+const unsigned char *y = (const unsigned char *)pY;
+const signed char *u = (const signed char *)pU;
+const signed char *v = (const signed char *)pV;
+unsigned char *OutData = (unsigned char *)pRgb + 3*_width*(_height-1);
 
-	int x,y;
-	int lumposy;
-	int rgbposy;
-	int uvposy;
-  int r,b,g;
+  for(int row=0; row<_height; row++)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *u++ - 128;
+      const signed char V = *v++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
 
-	int tworows  = lumX << 1;
-	int rgb1row  = (_width * 3);
-	int rgb2rows = (_width * 3) << 1;
-  int lastrow = _width * (_height - 1) * 3;
-	for(y = 0,lumposy = 0,uvposy = 0,rgbposy = lastrow;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy -= rgb2rows)
-	{
-		int lumpos0 = lumposy;					// Reset to start of rows.
-		int lumpos1 = lumposy + lumX;
-		int uvpos	 = uvposy;
+      int32_t Y = 256 * *(y++);
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) OutData[2]=255;
+      else if(X<0) OutData[2]=0;
+      else OutData[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[1]=255;
+      else if(X<0) OutData[1]=0;
+      else OutData[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) OutData[0]=255;
+      else if(X<0) OutData[0]=0;
+      else OutData[0] = X;
 
-		int rgbpos0 = rgbposy;
-		int rgbpos1 = rgbposy - rgb1row;
+      Y = 256 * *(y++);
 
-		for(x = 0; x < lumX; x += 2)
-		{
-			double dlum00 = (double)((int)(py[lumpos0++]));
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) OutData[5]=255;
+      else if(X<0) OutData[5]=0;
+      else OutData[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[4]=255;
+      else if(X<0) OutData[4]=0;
+      else OutData[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) OutData[3]=255;
+      else if(X<0) OutData[3]=0;
+      else OutData[3] = X;
 
- 			double du		 = (double)(((int)(pu[uvpos])) );
-			double dv		 = (double)(((int)(pv[uvpos++])) );
+      OutData += 6;
+    }
+    OutData -= 6*_width;
+    if((row&1) == 0)
+    {
+      u -= _width/2;
+      v -= _width/2;
+    }  
+  }
+} //end FlipConvert
 
-			unsigned char lum00 = dlum00;
-      signed char u		 = (double)(du + _chrOff);
-			signed char v		 = (double)(dv + _chrOff);
 
-			// Lum00, u and v.
-  		// Fast calculation intermediate variables. 
-			double cc = (RYUVRGB24C_U0 * u) + 0.5;
-			double cb = (RYUVRGB24C_U1 * u) + (RYUVRGB24C_V1 * v) + 0.5;
-			double ca = (RYUVRGB24C_V0 * v) + 0.5;
-
-			b = (int)(lum00 + cc);
-			g = (int)(lum00 + cb);
-			r = (int)(lum00 + ca);
-  
-			// R, G & B have range 0..255.
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-
-			// Lum01.
-			double dlum01 = (double)((int)(py[lumpos0++]));
-      unsigned char lum01 = dlum01;
-			b = (int)(lum01 + cc);
-			g = (int)(lum01 + cb);
-			r = (int)(lum01 + ca);
-  
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-
-			// Lum10.
-			double dlum10 = (double)((int)(py[lumpos1++]));
-      unsigned char lum10 = dlum10;
-
-			b = (int)(lum10 + cc);
-			g = (int)(lum10 + cb);
-			r = (int)(lum10 + ca);
-  
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-
-			// Lum11.
-			double dlum11 = (double)((int)(py[lumpos1++]));
-      unsigned char lum11 = dlum11;
-
-			b = (int)(lum11 + cc);
-			g = (int)(lum11 + cb);
-			r = (int)(lum11 + ca);
-  
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-
-		}//end for x...
-		
-	}//end for y...
-
-}//end NonRotateConvert.
-
-void RealYUV420toRGB24Converter::NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb)
+void YUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	yuvType*				py		= (yuvType *)pY;
-	yuvType*				pu		= (yuvType *)pU;
-	yuvType*				pv		= (yuvType *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+int32_t X;
+const unsigned width3 = _width * 3;
+const unsigned char *y = (const unsigned char *)pY;
+const signed char *u = (const signed char *)pU;
+const signed char *v = (const signed char *)pV;
+unsigned char *OutData = (unsigned char *)pRgb;
 
-	int x,y;
-	int lumposy;
-	int rgbposy;
-	int uvposy;
-  int r,b,g;
+  for(int row=0; row<_height; row+=2)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *u++ - 128;
+      const signed char V = *v++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
 
-	int tworows  = lumX << 1;
-	int rgb1row  = (_width * 3);
-	int rgb2rows = (_width * 3) << 1;
+      int32_t Y = 256 * *y;
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) OutData[2]=255;
+      else if(X<0) OutData[2]=0;
+      else OutData[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[1]=255;
+      else if(X<0) OutData[1]=0;
+      else OutData[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) OutData[0]=255;
+      else if(X<0) OutData[0]=0;
+      else OutData[0] = X;
 
-	for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
-	{
-		int lumpos0 = lumposy;					// Reset to start of rows.
-		int lumpos1 = lumposy + lumX;
-		int uvpos	 = uvposy;
+      Y = 256 * y[1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) OutData[5]=255;
+      else if(X<0) OutData[5]=0;
+      else OutData[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[4]=255;
+      else if(X<0) OutData[4]=0;
+      else OutData[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) OutData[3]=255;
+      else if(X<0) OutData[3]=0;
+      else OutData[3] = X;
 
-		int rgbpos0 = rgbposy;
-		int rgbpos1 = rgbposy + rgb1row;
+      OutData += width3;
 
-		for(x = 0; x < lumX; x += 2)
-		{
-			double dlum00 = (double)((int)(py[lumpos0++]));
+      Y = 256 * y[_width];
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) OutData[2]=255;
+      else if(X<0) OutData[2]=0;
+      else OutData[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[1]=255;
+      else if(X<0) OutData[1]=0;
+      else OutData[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) OutData[0]=255;
+      else if(X<0) OutData[0]=0;
+      else OutData[0] = X;
 
- 			double du		 = (double)(((int)(pu[uvpos])));
-			double dv		 = (double)(((int)(pv[uvpos++])));
+      Y = 256 * y[_width+1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) OutData[5]=255;
+      else if(X<0) OutData[5]=0;
+      else OutData[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[4]=255;
+      else if(X<0) OutData[4]=0;
+      else OutData[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) OutData[3]=255;
+      else if(X<0) OutData[3]=0;
+      else OutData[3] = X;
 
-			unsigned char lum00 = dlum00;
-      signed char u		 = (double)(du + _chrOff);
-			signed char v		 = (double)(dv + _chrOff);
+      OutData = OutData - width3 + 6;
+      y += 2;
+    }
+    OutData += width3;
+    y += _width;
+  }
+} //end NonRotateConvert.
 
-			// Lum00, u and v.
-  		// Fast calculation intermediate variables. 
-			double cc = (RYUVRGB24C_U0 * u) + 0.5;
-			double cb = (RYUVRGB24C_U1 * u) + (RYUVRGB24C_V1 * v) + 0.5;
-			double ca = (RYUVRGB24C_V0 * v) + 0.5;
 
-			b = (int)(lum00 + cc);
-			g = (int)(lum00 + cb);
-			r = (int)(lum00 + ca);
-  
-			// R, G & B have range 0..255.
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			// Lum01.
-			double dlum01 = (double)((int)(py[lumpos0++]));
-      unsigned char lum01 = dlum01;
-			b = (int)(lum01 + cc);
-			g = (int)(lum01 + cb);
-			r = (int)(lum01 + ca);
-  
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos0++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
 
-			// Lum10.
-			double dlum10 = (double)((int)(py[lumpos1++]));
-      unsigned char lum10 = dlum10;
-
-			b = (int)(lum10 + cc);
-			g = (int)(lum10 + cb);
-			r = (int)(lum10 + ca);
-  
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-
-			// Lum11.
-			double dlum11 = (double)((int)(py[lumpos1++]));
-      unsigned char lum11 = dlum11;
-
-			b = (int)(lum11 + cc);
-			g = (int)(lum11 + cb);
-			r = (int)(lum11 + ca);
-  
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos1++] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-
-		}//end for x...
-		
-	}//end for y...
-
-}//end NonRotateConvert.
-
-void RealYUV420toRGB24Converter::RotateConvert(void* pY, void* pU, void* pV, void* pRgb)
+void YUV420toRGB32Converter::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	yuvType*				py		= (yuvType *)pY;
-	yuvType*				pu		= (yuvType *)pU;
-	yuvType*				pv		= (yuvType *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+int32_t X;
+const unsigned char *y = (const unsigned char *)pY;
+const signed char *u = (const signed char *)pU;
+const signed char *v = (const signed char *)pV;
+unsigned char *OutData = (unsigned char *)pRgb + 3*_width*(_height-1);
 
-	int x,y;
-	int lumposy;
-	int rgbposx;
-	int uvposy;
-  int r,b,g;
+  for(int row=0; row<_height; row++)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *u++ - 128;
+      const signed char V = *v++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
 
-	int tworows  = lumX << 1;
-	//int rgb1row  = (_width * 3);
-	int rgb1row  = (_height * 3);
+      int32_t Y = 256 * *(y++);
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) OutData[2]=255;
+      else if(X<0) OutData[2]=0;
+      else OutData[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[1]=255;
+      else if(X<0) OutData[1]=0;
+      else OutData[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) OutData[0]=255;
+      else if(X<0) OutData[0]=0;
+      else OutData[0] = X;
 
-	for(y = 0,lumposy = 0,uvposy = 0,rgbposx = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposx += 6)
-	{
-		int lumpos0 = lumposy;					// Reset to start of rows.
-		int lumpos1 = lumposy + lumX;
-		int uvpos	 = uvposy;
+      Y = 256 * *(y++);
 
-		int rgbpos0 = rgbposx;
-		int rgbpos1 = rgbposx + 3;
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) OutData[5]=255;
+      else if(X<0) OutData[5]=0;
+      else OutData[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[4]=255;
+      else if(X<0) OutData[4]=0;
+      else OutData[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) OutData[3]=255;
+      else if(X<0) OutData[3]=0;
+      else OutData[3] = X;
 
-		for(x = 0; x < lumX; x += 2)
-		{
-			double lum00 = (double)((int)(py[lumpos0++]));
-			double u		 = (double)(((int)(pu[uvpos])) - 128);
-			double v		 = (double)(((int)(pv[uvpos++])) - 128);
-      //double u		 = (double)(((int)(pu[uvpos])) - 0);
-      //double v		 = (double)(((int)(pv[uvpos++])) - 0);
-
-			// Lum00, u and v.
-
-  		// Fast calculation intermediate variables. 
-			double cc = (RYUVRGB24C_U0 * u) + 0.5;
-			double cb = (RYUVRGB24C_U1 * u) + (RYUVRGB24C_V1 * v) + 0.5;
-			double ca = (RYUVRGB24C_V0 * v) + 0.5;
-
-			b = (int)(lum00 + cc);
-			g = (int)(lum00 + cb);
-			r = (int)(lum00 + ca);
-  
-			// R, G & B have range 0..255.
-			optr[rgbpos0]		= (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos0+1] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos0+2] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-			rgbpos0 += rgb1row;
-
-			// Lum01.
-			double lum01 = (double)((int)(py[lumpos0++]));
-
-			b = (int)(lum01 + cc);
-			g = (int)(lum01 + cb);
-			r = (int)(lum01 + ca);
-  
-			optr[rgbpos0]		= (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos0+1] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos0+2] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-			rgbpos0 += rgb1row;
-
-			// Lum10.
-			double lum10 = (double)((int)(py[lumpos1++]));
-
-			b = (int)(lum10 + cc);
-			g = (int)(lum10 + cb);
-			r = (int)(lum10 + ca);
-  
-			optr[rgbpos1]		= (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos1+1] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos1+2] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-			rgbpos1 += rgb1row;
-
-			// Lum11.
-			double lum11 = (double)((int)(py[lumpos1++]));
-
-			b = (int)(lum11 + cc);
-			g = (int)(lum11 + cb);
-			r = (int)(lum11 + ca);
-  
-			optr[rgbpos1]		= (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(b));
-			optr[rgbpos1+1] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(g));
-			optr[rgbpos1+2] = (unsigned char)(RYUVRGB24C_RANGECHECK_0TO255(r));
-			rgbpos1 += rgb1row;
-
-		}//end for x...
-		
-	}//end for y...
-
-}//end NonNonRotateConvert.
+      OutData += 8;
+    }
+    OutData -= 8*_width;
+    if((row&1) == 0)
+    {
+      u -= _width/2;
+      v -= _width/2;
+    }  
+  }
+} //end FlipConvert
 
 
+void YUV420toRGB32Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+{
+int32_t X;
+const unsigned width3 = _width * 3;
+const unsigned char *y = (const unsigned char *)pY;
+const signed char *u = (const signed char *)pU;
+const signed char *v = (const signed char *)pV;
+unsigned char *OutData = (unsigned char *)pRgb;
 
+  for(int row=0; row<_height; row+=2)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *u++ - 128;
+      const signed char V = *v++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
+
+      int32_t Y = 256 * *y;
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) OutData[2]=255;
+      else if(X<0) OutData[2]=0;
+      else OutData[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[1]=255;
+      else if(X<0) OutData[1]=0;
+      else OutData[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) OutData[0]=255;
+      else if(X<0) OutData[0]=0;
+      else OutData[0] = X;
+
+      OutData[3] = 0;			// A
+
+      Y = 256 * y[1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) OutData[6]=255;
+      else if(X<0) OutData[6]=0;
+      else OutData[6] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[5]=255;
+      else if(X<0) OutData[5]=0;
+      else OutData[5] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) OutData[4]=255;
+      else if(X<0) OutData[4]=0;
+      else OutData[4] = X;
+
+      OutData[7] = 0;			// A
+
+      OutData += width3;
+
+      Y = 256 * y[_width];
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) OutData[2]=255;
+      else if(X<0) OutData[2]=0;
+      else OutData[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[1]=255;
+      else if(X<0) OutData[1]=0;
+      else OutData[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) OutData[0]=255;
+      else if(X<0) OutData[0]=0;
+      else OutData[0] = X;
+
+      OutData[3] = 0;			// A
+
+      Y = 256 * y[_width+1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) OutData[6]=255;
+      else if(X<0) OutData[6]=0;
+      else OutData[6] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) OutData[5]=255;
+      else if(X<0) OutData[5]=0;
+      else OutData[5] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) OutData[4]=255;
+      else if(X<0) OutData[4]=0;
+      else OutData[4] = X;
+
+      OutData[7] = 0;			// A
+
+      OutData = OutData - width3 + 6;
+      y += 2;
+    }
+    OutData += width3;
+    y += _width;
+  }
+} //end NonRotateConvert.
 

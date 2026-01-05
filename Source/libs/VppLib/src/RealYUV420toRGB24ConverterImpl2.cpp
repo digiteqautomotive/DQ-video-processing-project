@@ -39,26 +39,13 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
-#include <stdio.h>
-#endif
-
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
+==========================================================================*/
 
 #include "RealYUV420toRGB24ConverterImpl2.h"
 
-/*
-===========================================================================
-	Macros.
-===========================================================================
-*/
+/*===========================================================================
+			  Macros
+===========================================================================*/
 #define RYUVRGB24CI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 
 #define RYUVRGB24CI2_U0		 2.032
@@ -66,46 +53,40 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #define RYUVRGB24CI2_V1		-0.581
 #define RYUVRGB24CI2_V0		 1.140
 
-/*
-===========================================================================
-	Constructors.
-===========================================================================
-*/
+/*===========================================================================
+			Constructors
+===========================================================================*/
 RealYUV420toRGB24ConverterImpl2::RealYUV420toRGB24ConverterImpl2(int width, int height): YUV420toRGBConverter(width, height)
 { 
 }//end constructor.
 
-RealYUV420toRGB24ConverterImpl2::RealYUV420toRGB24ConverterImpl2(int width, int height, int chrOff): YUV420toRGBConverter(width, height, chrOff)
-{ 
-}//end constructor.
 
-/*
-===========================================================================
-	Private Methods.
-===========================================================================
-*/
-void RealYUV420toRGB24ConverterImpl2::NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb)
+/*===========================================================================
+		     Private Methods.
+===========================================================================*/
+
+void RealYUV420toRGB24ConverterImpl2::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	yuvType*				py		= (yuvType *)pY;
-	yuvType*				pu		= (yuvType *)pU;
-	yuvType*				pv		= (yuvType *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+  unsigned char *optr	= (unsigned char *)pRgb;
+  yuvType *py		= (yuvType *)pY;
+  yuvType *pu		= (yuvType *)pU;
+  yuvType *pv		= (yuvType *)pV;
+  int	lumX	= _width;
+  int	lumY	= _height;
+  int	uvX		= _width >> 1;
 
-	int x,y;
-	int lumposy;
-	int rgbposy;
-	int uvposy;
+  int x,y;
+  int lumposy;
+  int rgbposy;
+  int uvposy;
   int r,b,g;
 
-	int tworows  = lumX << 1;
-	int rgb1row  = (_width * 3);
-	int rgb2rows = (_width * 3) << 1;
+  int tworows  = lumX << 1;
+  int rgb1row  = (_width * 3);
+  int rgb2rows = (_width * 3) << 1;
 
-	for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
-	{
+  for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
+  {
 		int lumpos0 = lumposy;					///< Reset to start of rows.
 		int lumpos1 = lumposy + lumX;
 		int uvpos	 = uvposy;
@@ -174,7 +155,9 @@ void RealYUV420toRGB24ConverterImpl2::NonRotateConvert(void* pY, void* pU, void*
 
 }//end NonRotateConvert.
 
-void RealYUV420toRGB24ConverterImpl2::RotateConvert(void* pY, void* pU, void* pV, void* pRgb)
+
+/*
+void RealYUV420toRGB24ConverterImpl2::RotateConvert(void* pY, void* pU, void* pV, void* pRgb) const
 {
 	unsigned char* 	optr	=	(unsigned char *)pRgb;
 	yuvType*				py		= (yuvType *)pY;
@@ -267,8 +250,9 @@ void RealYUV420toRGB24ConverterImpl2::RotateConvert(void* pY, void* pU, void* pV
 	}//end for y...
 
 }//end RotateConvert.
+*/
 
-void RealYUV420toRGB24ConverterImpl2::FlipConvert( void* pY, void* pU, void* pV, void* pRgb )
+void RealYUV420toRGB24ConverterImpl2::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
 {
   unsigned char* 	optr	=	(unsigned char *)pRgb;
   yuvType*				py		= (yuvType *)pY;

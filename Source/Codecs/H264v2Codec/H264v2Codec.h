@@ -113,8 +113,8 @@ public:
 	void	Restart(void);
 	int		Open(void);
 	int		Close(void);
-	int		Code(void* pSrc, void* pCmp, int codeParameter);
-	int		Decode(void* pCmp, int bitLength, void* pDst);
+	int		Code(const void* pSrc, void* pCmp, int codeParameter);
+	int		Decode(const void* pCmp, int bitLength, void* pDst);
 
 /// ICodecInnerAccess Interface Implementation
 public:

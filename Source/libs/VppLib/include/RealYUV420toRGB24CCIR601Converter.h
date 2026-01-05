@@ -40,8 +40,9 @@ class RealYUV420toRGB24CCIR601Converter: public YUV420toRGBConverter
 		// Interface.
 		virtual void Convert(void* pY, void* pU, void* pV, void* pRgb) 
 		{
-			if(_rotate) RotateConvert(pY, pU, pV, pRgb);
-			else				NonRotateConvert(pY, pU, pV, pRgb);
+			//if(_rotate) RotateConvert(pY, pU, pV, pRgb);
+			//else
+			   NonRotateConvert(pY, pU, pV, pRgb);
 		};
 
 	protected:

@@ -74,14 +74,14 @@ STDMETHODIMP Stereo2MonoFilter::NonDelegatingQueryInterface( REFIID riid, void *
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
-HRESULT Stereo2MonoFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT Stereo2MonoFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   switch (m_nBitsPerSample)
   {
   case 8:
     {
       BYTE* pDst = pBufferOut;
-      BYTE* pSrc;
+      const BYTE* pSrc;
       switch (m_channel)
       {
       case 0:
@@ -95,7 +95,7 @@ HRESULT Stereo2MonoFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
           break;
         }
       }
-      BYTE* pEnd = pBufferIn + lActualDataLength;
+      const BYTE* pEnd = pBufferIn + lActualDataLength;
       while (pSrc < pEnd)
       {
         *pDst = *pSrc;

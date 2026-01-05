@@ -55,29 +55,18 @@ class RealYUV420toRGB24ConverterImpl2Ver16: public YUV420toRGBConverter
 {
 public:
 	// Construction and destruction.
-	RealYUV420toRGB24ConverterImpl2Ver16(void) { }
-	RealYUV420toRGB24ConverterImpl2Ver16(int width, int height);
-	RealYUV420toRGB24ConverterImpl2Ver16(int width, int height, int chrOff);
-	virtual ~RealYUV420toRGB24ConverterImpl2Ver16(void) { }
+    RealYUV420toRGB24ConverterImpl2Ver16(void) { }
+    RealYUV420toRGB24ConverterImpl2Ver16(int width, int height);
+    //RealYUV420toRGB24ConverterImpl2Ver16(int width, int height, int chrOff);
+    virtual ~RealYUV420toRGB24ConverterImpl2Ver16(void) { }
 
 	// Interface.
-	virtual void Convert(void* pY, void* pU, void* pV, void* pRgb) 
-	{
-    if (_flip)
-    {
-      FlipConvert(pY, pU, pV, pRgb);
-    }
-    else
-    {
-      if(_rotate) RotateConvert(pY, pU, pV, pRgb);
-      else				NonRotateConvert(pY, pU, pV, pRgb);
-    }
-	};
+    virtual void Convert(const void* pBufferIn, void* pRgb) const;
 
 protected:
-  virtual void FlipConvert(void* pY, void* pU, void* pV, void* pRgb);
-  virtual void NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-	virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
+    virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+    virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+    virtual void RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
 
 };//end RealYUV420toRGB24ConverterImpl2Ver16.
 

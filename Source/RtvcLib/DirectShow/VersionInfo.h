@@ -3,7 +3,7 @@
 
 #define MAJOR_VERSION	1
 #define MINOR_VERSION	6
-#define BUILD_VERSION	7
+#define BUILD_VERSION	9
 
 /// 0.0.0: - Initial release of filter with version control
 /// 1.6.0: - Refactored CSIR_VPP to DQ_VPP

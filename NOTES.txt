@@ -1,4 +1,5 @@
-The tee project demonstrates the usage of the MultiIOBaseFilter base class but has only been tested in a limited fashion. (Using a webcam video/audio feed and teeing it into renderers.) It might NOT work for other media types etc.
+The tee project demonstrates the usage of the MultiIOBaseFilter base class but has only been tested in a limited fashion. 
+(Using a webcam video/audio feed and teeing it into renderers.) It might NOT work for other media types etc.
 Use this project solely to see how the MultiIOBaseFilter base class works.
 Use the standard tee instead.
 
@@ -11,3 +12,6 @@ www.live555.com) streaming 8/16 bit PCM, AMR and MP3, AAC, LATM audio, and H.264
 
 MASM must be explicitly allowed:
 https://programminghaven.home.blog/2020/02/16/setup-an-assembly-project-on-visual-studio-2019/
+  Right click at the project name > Build Dependencies > Build Customizations…
+  Select the “masm”, then OK.
+

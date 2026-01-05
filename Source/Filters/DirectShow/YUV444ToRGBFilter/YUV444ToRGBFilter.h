@@ -52,14 +52,13 @@ static const GUID CLSID_YUVtoRGB444Properties =
 
 
 // Forward declarations
-class YUV444toRGBConverter;
+class YUVtoRGBConverter;
 
 /**
 * \ingroup DirectShowFilters
 * This Filter converts the YUV444 Interleaved media back into RGB24 media.
 */
-class YUV444toRGBFilter :   public CCustomBaseFilter,
-  public ISpecifyPropertyPages
+class YUV444toRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN
@@ -148,10 +147,10 @@ private:
   * @param pSource The source buffer
   * @param pDest The destination buffer
   */
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   /// Pointer to our YUV444 to RGB24 converter
-  YUV444toRGBConverter* m_pConverter;
+  YUVtoRGBConverter* m_pConverter;
   // Size of YUV image
   int m_nSizeUV;
   // Chrominance offset

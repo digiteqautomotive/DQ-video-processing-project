@@ -96,7 +96,7 @@ public:
 private:
   	/// Overridden from CCustomBaseFilter
 	  virtual void InitialiseInputTypes();
-    virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+    virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   int m_channel;
   int m_nBitsPerSample;

@@ -918,7 +918,7 @@ int H264v2Codec::Open(void)
 #ifdef _CCIR601
 			_pOutColourConverter = new RealYUV420toRGB24CCIR601ConverterVer16(_width, _height);
 #else
-			_pOutColourConverter = new RealYUV420toRGB24ConverterImpl2Ver16(_width, _height, 128);
+			_pOutColourConverter = new RealYUV420toRGB24ConverterImpl2Ver16(_width, _height);	//, 128
 #endif
 
 		if(_pOutColourConverter == NULL)
@@ -1220,7 +1220,7 @@ pSrc is ignored.
 @param  codeParameter : Mode of operation based bit size limits.
 @return               : 1 = success, 0 = failure.
 */
-int	H264v2Codec::Code(void* pSrc, void* pCmp, int codeParameter)
+int	H264v2Codec::Code(const void* pSrc, void* pCmp, int codeParameter)
 {
 	int allowedBits, bitsUsed;
 
@@ -1477,7 +1477,7 @@ by the "outcolour" codec parameter.
 @param  pDst      : Raw pel output.
 @return           : 1 = success, 0 = failure.
 */
-int	H264v2Codec::Decode(void* pCmp, int bitLength, void* pDst)
+int	H264v2Codec::Decode(const void* pCmp, int bitLength, void* pDst)
 {
   int	runOutOfBits	= 0;
 	int frameBitSize	= bitLength;
@@ -1730,7 +1730,12 @@ int	H264v2Codec::Decode(void* pCmp, int bitLength, void* pDst)
       ((unsigned char *)pDst)[i] = (unsigned char)_pLum[i];
   }//end if H264V2_YUV420P8...
 	else
-		_pOutColourConverter->Convert(_pRLum, _pRChrU, _pRChrV, pDst);
+        {
+          if(_pOutColourConverter->GetFlip()) 
+            _pOutColourConverter->FlipConvert(_pRLum, _pRChrU, _pRChrV, pDst);
+          else
+	    _pOutColourConverter->NonRotateConvert(_pRLum, _pRChrU, _pRChrV, pDst);
+        }
 
   return(1);
 

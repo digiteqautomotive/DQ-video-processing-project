@@ -334,7 +334,7 @@ STDMETHODIMP CropFilter::SetParameter(const char* type, const char* value)
   }
 }
 
-HRESULT CropFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT CropFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   //make sure we were able to initialise our cropper
   ASSERT(m_pCropper);

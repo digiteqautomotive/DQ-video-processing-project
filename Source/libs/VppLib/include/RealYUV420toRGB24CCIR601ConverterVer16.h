@@ -45,31 +45,32 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _REALYUV420TORGB24CCIR601CONVERTERVER16_H
 #define _REALYUV420TORGB24CCIR601CONVERTERVER16_H
 
-#include "YUV420toRGBConverter.h"
+#include "YUVtoRGBConverter.h"
 
 /*
 ===========================================================================
   Class definition.
 ===========================================================================
 */
-class RealYUV420toRGB24CCIR601ConverterVer16: public YUV420toRGBConverter
+class RealYUV420toRGB24CCIR601ConverterVer16: public YUVtoRGBConverter
 {
 	public:
 		// Construction and destruction.
 		RealYUV420toRGB24CCIR601ConverterVer16(void) { }
-		RealYUV420toRGB24CCIR601ConverterVer16(int width, int height): YUV420toRGBConverter(width,height) { }
+		RealYUV420toRGB24CCIR601ConverterVer16(int width, int height): YUVtoRGBConverter(width,height) { }
 		virtual ~RealYUV420toRGB24CCIR601ConverterVer16(void) {}
 
 		// Interface.
 		virtual void Convert(void* pY, void* pU, void* pV, void* pRgb) 
 		{
-			if(_rotate) RotateConvert(pY, pU, pV, pRgb);
-			else				NonRotateConvert(pY, pU, pV, pRgb);
+			//if(_rotate) RotateConvert(pY, pU, pV, pRgb);
+			//else
+				NonRotateConvert(pY, pU, pV, pRgb);
 		};
 
 	protected:
 		virtual void NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-		virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
+		//virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
 
 };//end RealYUV420toRGB24CCIR601ConverterVer16.
 

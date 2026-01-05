@@ -67,7 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #define int32_t int
 #endif
 
-void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb)
+void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;
@@ -78,6 +78,74 @@ int32_t X;
   {
     unsigned y = labs(_height);
     Out += labs(_width)*(y-1)*3;
+    while(y-- > 0)
+    {
+      unsigned x = labs(_width);
+      while(x-- > 0)
+      {
+        const int32_t Y = 256 * In[1];
+        const signed char U = In[2] - 128; 
+        const signed char V = In[3] - 128;
+    
+        X = (Y + 520*U) >> 8;		// B: Y + 2.032*U
+        if(X>255) Out[0]=255;
+        else if(X<0) Out[0]=0;
+        else Out[0] = X;
+        X = (Y -101*U - 149*V) >> 8;	// G: Y - 0.395*U - 0.581*V
+        if(X>255) Out[1]=255;
+        else if(X<0) Out[1]=0;
+        else Out[1] = X;
+        X = (Y + 292*V) >> 8;		// R: Y + 1.40*V;
+        if(X>255) Out[2]=255;
+        else if(X<0) Out[2]=0;
+        else Out[2] = X;
+
+        Out+=3;
+        In+=4;
+      }
+      Out -= labs(_width)*2*3;
+    }
+  }
+  else
+  {
+    int numberOfPixels = labs(_width * _height);
+    while(numberOfPixels-->0)
+    {
+      const int32_t Y = 256 * In[1];
+      const signed char U = In[2] - 128; 
+      const signed char V = In[3] - 128;
+    
+       X = (Y + 520*U) >> 8;		// B: Y + 2.032*U
+      if(X>255) Out[0]=255;
+      else if(X<0) Out[0]=0;
+      else Out[0] = X;
+      X = (Y -101*U - 149*V) >> 8;	// G: Y - 0.395*U - 0.581*V
+      if(X>255) Out[1]=255;
+      else if(X<0) Out[1]=0;
+      else Out[1] = X;
+      X = (Y + 292*V) >> 8;		// R: Y + 1.40*V;
+      if(X>255) Out[2]=255;
+      else if(X<0) Out[2]=0;
+      else Out[2] = X;
+
+      Out+=3;
+      In+=4;
+    }
+  }
+}
+
+
+void AYUV444toARGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
+{
+unsigned char * Out = (unsigned char *)pRgb;
+const unsigned char * In = (const unsigned char *)pInputBuffer;
+
+int32_t X;
+
+  if(_flip)
+  {
+    unsigned y = labs(_height);
+    Out += labs(_width)*(y-1)*4;
     while(y-- > 0)
     {
       unsigned x = labs(_width);
@@ -100,7 +168,7 @@ int32_t X;
         else if(X<0) Out[2]=0;
         else Out[2] = X;
 
-        Out+=3;
+        Out+=4;
         In+=4;
       }
       Out -= labs(_width)*2*3;
@@ -111,6 +179,7 @@ int32_t X;
     int numberOfPixels = labs(_width * _height);
     while(numberOfPixels-->0)
     {
+      Out[3] = In[0];
       const int32_t Y = 256 * In[1];
       const signed char U = In[2] - 128; 
       const signed char V = In[3] - 128;
@@ -128,7 +197,7 @@ int32_t X;
       else if(X<0) Out[2]=0;
       else Out[2] = X;
 
-      Out+=3;
+      Out+=4;
       In+=4;
     }
   }

@@ -173,7 +173,7 @@ private:
 	 * @param pSource The source buffer
 	 * @param pDest The destination buffer
 	 */
-	virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+	virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   int m_nH264Type;
 	ICodecv2* m_pCodec;

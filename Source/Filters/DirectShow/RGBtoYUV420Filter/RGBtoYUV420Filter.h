@@ -154,7 +154,7 @@ private:
    * @param pSource The source buffer
    * @param pDest The destination buffer
    */
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   /// Pointer to our RGB24 | 32 to YUV420 converter
   RGBtoYUV420Converter* m_pConverter;

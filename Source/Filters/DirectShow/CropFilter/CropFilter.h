@@ -122,7 +122,7 @@ private:
   /** This method applies the crop transform
    * @param pSource The source buffer
    * @param pDest The destination buffer */
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
   /// Sets crop parameters if values are valid
   HRESULT SetCropIfValid(int nTotalDimensionImage, int nNewCrop, int& nOldCrop, int nOppositeCrop);
   /// This method calculates how much should be cropped from the picture based on the crop ratios

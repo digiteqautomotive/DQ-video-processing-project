@@ -5,7 +5,7 @@ MODULE				: RealYUV420toRGB24Converter
 FILE NAME			: RealYUV420toRGB24Converter.h
 
 DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-colour convertion derived from the YUV420toRGBConverter base 
+colour convertion derived from the YUVtoRGBConverter base 
 class.
 					  
 					  
@@ -35,26 +35,40 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _AYUV444TORGB24CONVERTER_H
 #define _AYUV444TORGB24CONVERTER_H
 #include <DirectShow/stdafx.h>
-#include "YUV444toRGBConverter.h"
+#include "YUVtoRGBConverter.h"
 
 
 /**
 * \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-* colour convertion derived from the YUV420toRGBConverter base 
+* colour convertion derived from the YUVtoRGBConverter base 
 * class. */
-class AYUV444toRGB24Converter: public YUV444toRGBConverter
+class AYUV444toRGB24Converter: public YUVtoRGBConverter
 {
 public:
   // Construction and destruction.
   AYUV444toRGB24Converter(void) { }
-  AYUV444toRGB24Converter(int width, int height): YUV444toRGBConverter(width,height) { }
+  AYUV444toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) { }
   virtual ~AYUV444toRGB24Converter(void) {}
 
   // Interface.
-  virtual void Convert(const void* pInputBuffer, void* pRgb);
+  virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };//end AYUV444toRGB24Converter.
+
+
+class AYUV444toARGB32Converter: public YUVtoRGBConverter
+{
+public:
+  // Construction and destruction.
+  AYUV444toARGB32Converter(void) { }
+  AYUV444toARGB32Converter(int width, int height): YUVtoRGBConverter(width,height) { }
+  virtual ~AYUV444toARGB32Converter(void) {}
+
+  // Interface.
+  virtual void Convert(const void* pInputBuffer, void* pRgb) const;
+
+};//end AYUV444toARGB32Converter.
 
 
 #endif	// _AYUV444TORGB24CONVERTER_H

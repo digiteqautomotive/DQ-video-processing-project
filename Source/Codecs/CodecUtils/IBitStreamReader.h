@@ -71,7 +71,7 @@ public:
 	@param bitSize	: Length in bits of the stream.
 	@return					:	none.
 	*/
-	virtual void SetStream(void* stream, int bitSize) = 0;	
+	virtual void SetStream(const void* stream, int bitSize) = 0;	
 
 	/** Get the stream used.
 	@return	:	stream pointer.

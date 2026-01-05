@@ -30,13 +30,17 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================
+
+
+   ** THIS FILTER WILL BE REMOVED, YUV444 to RGB SHOULD ACCEPT ALSO YUV420.**
+
 */
 #include "YUV420ToRGBFilter.h"
 
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
-#include <RealYUV420toRGB24Converter.h>
+#include "RealYUV420toRGB24Converter.h"
 
 
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
@@ -45,7 +49,7 @@ DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
 
 YUV420toRGBFilter::YUV420toRGBFilter():
   CCustomBaseFilter(NAME("DQ VPP YUV420P 2 RGB Converter"), 0, CLSID_VPP_YUV420toRGBColorConverter),
-  m_pConverter(new RealYUV420toRGB24Converter(m_nInWidth, m_nInHeight)),
+  m_pConverter(new YUV420toRGB24Converter(m_nInWidth, m_nInHeight)),
   m_nSizeUV(0),
   m_bInvert(true)
 {
@@ -55,7 +59,7 @@ YUV420toRGBFilter::YUV420toRGBFilter():
  
   // init converter
   m_pConverter->SetFlip(m_bInvert);
-  m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
+  //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
 }
 
 YUV420toRGBFilter::~YUV420toRGBFilter()
@@ -225,12 +229,13 @@ HRESULT YUV420toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
   return S_OK;
 }
 
-HRESULT YUV420toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT YUV420toRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   ASSERT(m_pConverter);
   ASSERT(pBufferIn);
   ASSERT(pBufferOut);
 
+/*
   yuvType* pYUV = (yuvType*)pBufferIn;
   //set the Y, U and V pointers to point to the correct positions within the byte array
   yuvType* pY = pYUV;
@@ -239,6 +244,9 @@ HRESULT YUV420toRGBFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
   // Convert
   m_pConverter->SetRotate(0);
   m_pConverter->Convert((void*)pY, (void*)pU, (void*)pV, (void*)pBufferOut);
+*/
+  m_pConverter->Convert(pBufferIn, pBufferOut);
+
   DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV420 to RGB Directly")));
   //RGB24 stores 3 Bytes per pixel
   lOutActualDataLength = m_nInPixels * BITS_PER_PIXEL_RGB24/8;
@@ -322,7 +330,7 @@ STDMETHODIMP YUV420toRGBFilter::SetParameter( const char* type, const char* valu
 
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
-    m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
+    //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
     m_pConverter->SetFlip(m_bInvert);
     return S_OK;
   }

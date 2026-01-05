@@ -539,7 +539,7 @@ HRESULT H264EncoderFilter::Transform( IMediaSample *pSource, IMediaSample *pDest
   return hr;
 }
 
-HRESULT H264EncoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT H264EncoderFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   // lock filter so that it can not be reconfigured during a code operation
   CAutoLock lck(&m_csCodec);

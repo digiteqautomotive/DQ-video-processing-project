@@ -345,7 +345,7 @@ STDMETHODIMP RotateFilter::SetParameter( const char* type, const char* value )
 }
 
 
-HRESULT RotateFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT RotateFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   if(m_pRotate==NULL)
   {

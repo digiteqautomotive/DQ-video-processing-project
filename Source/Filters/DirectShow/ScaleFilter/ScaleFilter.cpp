@@ -438,7 +438,7 @@ void ScaleFilter::initParameters()
 }
 
 
-HRESULT ScaleFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
 	//make sure we were able to initialize our converter
   if(m_pScaler==NULL)

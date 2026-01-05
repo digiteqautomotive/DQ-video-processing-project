@@ -93,7 +93,7 @@ protected:
    * This method must be overridden in the sub class to apply the filter specific transformation
    * It must return the size of the resulting transformed output buffer
    */
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength) PURE;
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength) PURE;
 
   /// Video header of input
   VIDEOINFOHEADER m_videoInHeader;
@@ -104,8 +104,7 @@ protected:
   int m_nInHeight;
   /// Width of image
   int m_nInWidth;
-  /// Number of pixels in image
-  int m_nInPixels;
+  int m_nInPixels;			  ///< Number of pixels in image
   /// Height in output image
   int m_nOutHeight;
   /// Width in output image

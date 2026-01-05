@@ -169,6 +169,8 @@ void RealYUV420toRGB24CCIR601ConverterVer16::NonRotateConvert(void* pY, void* pU
 
 }//end NonRotateConvert.
 
+
+/*
 void RealYUV420toRGB24CCIR601ConverterVer16::RotateConvert(void* pY, void* pU, void* pV, void* pRgb)
 {
 	unsigned char* 	optr	=	(unsigned char *)pRgb;
@@ -261,6 +263,7 @@ void RealYUV420toRGB24CCIR601ConverterVer16::RotateConvert(void* pY, void* pU, v
 		
 	}//end for y...
 
-}//end NonNonRotateConvert.
+}//end RotateConvert
+*/
 
 

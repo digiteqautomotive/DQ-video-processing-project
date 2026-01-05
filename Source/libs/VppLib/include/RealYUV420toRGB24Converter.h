@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: RealYUV420toRGB24Converter
+MODULE				: YUV420toRGB24Converter
 
-FILE NAME			: RealYUV420toRGB24Converter.h
+FILE NAME			: YUV420toRGB24Converter.h
 
 DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 colour convertion derived from the YUV420toRGBConverter base 
@@ -37,42 +37,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _REALYUV420TORGB24CONVERTER_H
 #define _REALYUV420TORGB24CONVERTER_H
 
-#include "YUV420toRGBConverter.h"
+#include "YUVtoRGBConverter.h"
 
 /**
 * \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 * colour convertion derived from the YUV420toRGBConverter base 
-* class.
-*/
-
-class RealYUV420toRGB24Converter: public YUV420toRGBConverter
+* class. */
+class YUV420toRGB24Converter: public YUV420toRGBConverter
 {
 public:
   // Construction and destruction.
-  RealYUV420toRGB24Converter(void) { }
-  RealYUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) { }
-  virtual ~RealYUV420toRGB24Converter(void) {}
+  YUV420toRGB24Converter(void) { }
+  YUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) { }
+  virtual ~YUV420toRGB24Converter(void) {}
 
   // Interface.
-  virtual void Convert(void* pY, void* pU, void* pV, void* pRgb) 
-  {
-    // let invert take precedence, not catering for both
-    if(_flip) 
-      InvertConvert(pY, pU, pV, pRgb);
-    else				
-    {
-      if(_rotate) RotateConvert(pY, pU, pV, pRgb);
-      else				NonRotateConvert(pY, pU, pV, pRgb);
-    }
-  };
 
 protected:
-  void InvertConvert(void* pY, void* pU, void* pV, void* pRgb);
-  virtual void NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-  virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
+  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+  //virtual void RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
 
-};//end RealYUV420toRGB24Converter.
+}; //end YUV420toRGB24Converter.
+
+
+/**
+* \ingroup ImageLib
+* Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
+* colour convertion derived from the YUV420toRGBConverter base 
+* class. */
+class YUV420toRGB32Converter: public YUV420toRGBConverter
+{
+public:
+  // Construction and destruction.
+  YUV420toRGB32Converter(void) { }
+  YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) { }
+  virtual ~YUV420toRGB32Converter(void) {}
+
+  // Interface.
+
+protected:
+  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+  //virtual void RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+
+}; //end YUV420toRGB24Converter.
 
 
 #endif	// _REALYUV420TORGB24CONVERTER_H

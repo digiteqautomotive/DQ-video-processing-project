@@ -86,7 +86,7 @@ public:
 
 ///	Use base class implementations.
 public:
-	void SetStream(void* stream, int bitSize) { BitStreamBaseMSB::SetStream(stream, bitSize); }	
+	void SetStream(const void* stream, int bitSize) { BitStreamBaseMSB::SetStream(stream, bitSize); }	
 
 	void* GetStream(void) { return(BitStreamBaseMSB::GetStream()); }	
 

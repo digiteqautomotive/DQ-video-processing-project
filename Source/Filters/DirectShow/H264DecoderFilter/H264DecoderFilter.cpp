@@ -430,7 +430,7 @@ HRESULT H264DecoderFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
   return S_OK;
 }
 
-HRESULT H264DecoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT H264DecoderFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   //make sure we were able to initialise our converter
   if (m_pCodec)
@@ -455,10 +455,10 @@ HRESULT H264DecoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, l
               int nNaluLength = (pBufferIn[iCurrentPos] << 24) | (pBufferIn[iCurrentPos + 1] << 16) 
                 | (pBufferIn[iCurrentPos + 2] << 8) | pBufferIn[iCurrentPos + 3];
               // just replace length with start code
-              pBufferIn[iCurrentPos] = 0;
-              pBufferIn[iCurrentPos + 1] = 0;
-              pBufferIn[iCurrentPos + 2] = 0;
-              pBufferIn[iCurrentPos + 3] = 1;
+              ((BYTE*)pBufferIn)[iCurrentPos] = 0;
+              ((BYTE*)pBufferIn)[iCurrentPos + 1] = 0;
+              ((BYTE*)pBufferIn)[iCurrentPos + 2] = 0;
+              ((BYTE*)pBufferIn)[iCurrentPos + 3] = 1;
               iCurrentPos += nNaluLength + m_uiAvc1PrefixLength;
             }
             // update pointer without copy
@@ -527,10 +527,10 @@ void H264DecoderFilter::resizeEncodedPictureBufferIfNecessary(long lActualDataLe
     m_pEncodedPictureBuffer = new BYTE[2 * lActualDataLength];
     m_uiEncodedPictureBufferLength = 2 * lActualDataLength;
     // insert start code
-    m_pEncodedPictureBuffer[0] = 0;
-    m_pEncodedPictureBuffer[1] = 0;
-    m_pEncodedPictureBuffer[2] = 0;
-    m_pEncodedPictureBuffer[3] = 1;
+    ((BYTE*)m_pEncodedPictureBuffer)[0] = 0;
+    ((BYTE*)m_pEncodedPictureBuffer)[1] = 0;
+    ((BYTE*)m_pEncodedPictureBuffer)[2] = 0;
+    ((BYTE*)m_pEncodedPictureBuffer)[3] = 1;
   }
 }
 

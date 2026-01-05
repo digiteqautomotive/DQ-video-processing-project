@@ -144,7 +144,7 @@ public:
 	@param codeParameter	: Codec dependent interpretation.
 	@return								: 1 = success, 0 = failure.
 	*/
-	virtual int Code(void* pSrc, void* pCmp, int codeParameter) = 0;
+	virtual int Code(const void* pSrc, void* pCmp, int codeParameter) = 0;
 
 	/** Decode to the dest.
 	@param pCmp				: Source reference of the encoded stream.
@@ -152,7 +152,7 @@ public:
 	@param pDst				: Dest reference whose type is implicitly defined.
 	@return						: 1 = success, 0 = failure.
 	*/
-	virtual int Decode(void* pCmp, int bitLength, void* pDst) = 0;
+	virtual int Decode(const void* pCmp, int bitLength, void* pDst) = 0;
 
 };// end class ICodecv2.
 

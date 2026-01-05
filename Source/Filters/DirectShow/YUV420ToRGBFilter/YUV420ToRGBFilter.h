@@ -53,7 +53,7 @@ DEFINE_GUID(CLSID_YUVtoRGB420Properties,
 
 
 // Forward declarations
-class YUV420toRGBConverter;
+class YUVtoRGBConverter;
 
 /**
 * \ingroup DirectShowFilters
@@ -111,7 +111,7 @@ public:
   /// Overridden from CSettingsInterface
   virtual void initParameters()
   {
-    addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
+    //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
     addParameter(INVERT, &m_bInvert, true);
   }
 
@@ -149,14 +149,14 @@ private:
   * @param pSource The source buffer
   * @param pDest The destination buffer
   */
-  virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+  virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
   /// Pointer to our RGB24 | 32 to YUV420 converter
-  YUV420toRGBConverter* m_pConverter;
+  YUVtoRGBConverter* m_pConverter;
   // Size of YUV image
   int m_nSizeUV;
   // Chrominance offset
-  int m_nChrominanceOffset;
+  //int m_nChrominanceOffset;
   // YUV is always top down: the invert flag determines whether the image
   // is flipped during conversion, or whether the sign is simply set
   bool m_bInvert;

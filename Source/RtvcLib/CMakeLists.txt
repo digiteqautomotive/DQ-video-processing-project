@@ -52,7 +52,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/RealYUV420toRGB24Converter.cpp
 ../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2.cpp
 ../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2Ver16.cpp
-../libs/VppLib/src/RealYUV444toRGB24Converter.cpp
+../libs/VppLib/src/YUVtoRGBConverter.cpp
 )
 IF (MMX_SSE_ACCELERATORS)
   SET(IU_SRCS ${IU_SRCS}
@@ -60,10 +60,12 @@ IF (MMX_SSE_ACCELERATORS)
       ../libs/VppLib/src/PicScalerRGB32ImplA.cpp
       ../libs/VppLib/src/PicScalerARGB32MMX.cpp
       ../libs/VppLib/src/PicScalerARGB32SSE.cpp
+      ../libs/VppLib/src/AYUV444toRGB24Conv_ASM.cpp 
   )
   if ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     SET(IU_SRCS ${IU_SRCS}
       ../libs/VppLib/src/raster_MSVC.asm
+      ../libs/VppLib/src/RowConvert_Win32.asm
       ../libs/VppLib/src/RowScallerARGB32_Win32.asm
       ../libs/VppLib/src/RowScallerMMX_Win32.asm
       ../libs/VppLib/src/RowScallerSSE_Win32.asm
@@ -72,6 +74,7 @@ IF (MMX_SSE_ACCELERATORS)
   elseif ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     SET(IU_SRCS ${IU_SRCS}
       ../libs/VppLib/src/raster_MSVC64.asm
+      ../libs/VppLib/src/RowConvert_Win64.asm
       ../libs/VppLib/src/RowScallerARGB32_x64.asm
       ../libs/VppLib/src/RowScallerMMX_x64.asm
       ../libs/VppLib/src/RowScallerSSE_x64.asm
@@ -84,6 +87,7 @@ ELSE (MMX_SSE_ACCELERATORS)
   SET(IU_SRCS ${IU_SRCS}
       ../libs/VppLib/src/PicScalerRGB24Impl.cpp
       ../libs/VppLib/src/PicScalerRGB32Impl.cpp
+      ../libs/VppLib/src/AYUV444toRGB24Converter.cpp
   )
 ENDIF(MMX_SSE_ACCELERATORS)
 
@@ -152,7 +156,7 @@ SET(IU_HEADERS
 ../libs/VppLib/include/RGBtoYUV420Converter.h
 ../libs/VppLib/include/YUV420toRGBConverter.h
 ../libs/VppLib/include/YUV444toRGBConverter.h
-../libs/VppLib/include/RealYUV444toRGB24Converter.h
+../libs/VppLib/include/AYUV444toRGB24Converter.h
 )
 SET(S_HEADERS
 Shared/CommonDefs.h
