@@ -33,58 +33,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include <cassert>
 #include <DirectShow/FilterPropertiesBase.h>
 
 #include "resource.h"
 
-#define BUFFER_SIZE 256
 
-/**
- * \ingroup DirectShowFilters
- * RGB2YUV property dialog class
- */
-class YUV2RGBProperties : public FilterPropertiesBase
+/** \ingroup DirectShowFilters
+ * RGB2YUV property dialog class */
+class YUV2RGBProperties: public FilterPropertiesBase
 {
 public:
 
-	static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr) 
-	{
-		YUV2RGBProperties *pNewObject = new YUV2RGBProperties(pUnk);
-		if (pNewObject == NULL) 
-		{
-			*pHr = E_OUTOFMEMORY;
-		}
-		return pNewObject;
-	}
+    static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
 
-	YUV2RGBProperties::YUV2RGBProperties(IUnknown *pUnk) : 
-		FilterPropertiesBase(NAME("YUV 2 RGB Properties"), pUnk, IDD_YUV2RGB_DIALOG, IDS_YUV2RGB_CAPTION)
-	{;}
+    YUV2RGBProperties(IUnknown *pUnk): FilterPropertiesBase(NAME("YUV 2 RGB Properties"), pUnk, IDD_YUV2RGB_DIALOG, IDS_YUV2RGB_CAPTION)
+    {;}
 
-	HRESULT ReadSettings()
-	{
-		setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
-
-    // chrominance offset
-    HRESULT hr = setEditTextFromIntFilterParameter(CHROMINANCE_OFFSET, IDC_EDIT_CHR_OFFSET);
-    if (FAILED(hr)) return hr;
-
-    // invert
-    hr = setCheckBoxFromBoolFilterParameter(INVERT, IDC_CHECK_INVERT);
-
-    return hr;
-	}
-
-	HRESULT OnApplyChanges(void)
-	{
-		// chrom offset
-    HRESULT hr = setIntFilterParameterFromEditText(CHROMINANCE_OFFSET, IDC_EDIT_CHR_OFFSET);
-    assert(SUCCEEDED(hr));
-    // invert
-    hr = setBoolFilterParameterFromCheckBox(INVERT, IDC_CHECK_INVERT);
-    assert(SUCCEEDED(hr));
-		return S_OK;
-	} 
+    HRESULT ReadSettings(void);
+    HRESULT OnApplyChanges(void);
 };
 

@@ -29,12 +29,13 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+==========================================================================*/
 #include "stdafx.h"
+#include <cassert>
 
 #include "YUVtoRGBFilter.h"
 #include "YUY2RGBProperties.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
@@ -56,11 +57,11 @@ CFactoryTemplate g_Templates[2] =
   {
     g_wszName,                            // Name
     &CLSID_VPP_YUVtoRGBColorConverter, // CLSID
-    YUV444toRGBFilter::CreateInstance,    // Method to create an instance of MyComponent
+    YUVtoRGBFilter::CreateInstance,    // Method to create an instance of MyComponent
     NULL,                                 // Initialization function
     &FilterInfo                           // Set-up information (for filters)
   },
-  // This entry is for the property page.
+		// This entry is for the property page.
   {
     L"YUV2RGB Properties",
     &CLSID_YUVtoRGBProperties,
@@ -68,7 +69,9 @@ CFactoryTemplate g_Templates[2] =
     NULL, NULL
   }
 };
+
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);
+
 
 //////////////////////////////////////////////////////////////////////////
 // Functions needed by the DLL, for registration.
@@ -89,3 +92,34 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 {
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+CUnknown * WINAPI YUV2RGBProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr) 
+{
+  YUV2RGBProperties *pNewObject = new YUV2RGBProperties(pUnk);
+  if(pNewObject == NULL) 
+  {
+    *pHr = E_OUTOFMEMORY;
+  }
+  return pNewObject;
+}
+
+
+HRESULT YUV2RGBProperties::ReadSettings(void)
+{
+	    // invert
+  HRESULT hr = setCheckBoxFromBoolFilterParameter(INVERT, IDC_CHECK_INVERT);
+  return hr;
+}
+
+
+HRESULT YUV2RGBProperties::OnApplyChanges(void)
+{
+		// invert
+  HRESULT hr = setBoolFilterParameterFromCheckBox(INVERT, IDC_CHECK_INVERT);
+  assert(SUCCEEDED(hr));
+  return hr;
+} 

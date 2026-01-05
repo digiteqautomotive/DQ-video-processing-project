@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: YUV444ToRGBFilter
+MODULE				: YUVtoRGBFilter
 
-FILE NAME			: YUV444ToRGBFilter.h
+FILE NAME			: YUVtoRGBFilter.h
 
 DESCRIPTION			: This Filter converts the YUV444 Interleaved media back into RGB24 media.
 
@@ -60,15 +60,15 @@ class YUVtoRGBConverter;
 * \ingroup DirectShowFilters
 * This Filter converts the YUV444 Interleaved media back into RGB24 media.
 */
-class YUV444toRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
+class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN
 
   /// Constructor
-  YUV444toRGBFilter();
+  YUVtoRGBFilter();
   /// Destructor
-  ~YUV444toRGBFilter();
+  ~YUVtoRGBFilter();
 
   /// Static object-creation method (for the class factory)
   static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 

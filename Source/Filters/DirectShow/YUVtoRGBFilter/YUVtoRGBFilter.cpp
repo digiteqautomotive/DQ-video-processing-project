@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: YUV444ToRGBFilter
+MODULE				: YUVtoRGBFilter
 
-FILE NAME			: YUV444ToRGBFilter.cpp
+FILE NAME			: YUVtoRGBFilter.cpp
 
 DESCRIPTION			: 
 
@@ -46,11 +46,11 @@ DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xa
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 
 
-YUV444toRGBFilter::YUV444toRGBFilter():
+YUVtoRGBFilter::YUVtoRGBFilter():
   CCustomBaseFilter(NAME("DQ VPP YUV to RGB converter"), 0, CLSID_VPP_YUVtoRGBColorConverter),
-  m_pConverter(new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight)),
+  m_pConverter(NULL),
   m_nSizeUV(0),
-  m_bInvert(true)
+  m_bInvert(false)
 {
   out_MediaType = GUID_NULL;
   in_MediaType = GUID_NULL;
@@ -61,10 +61,9 @@ YUV444toRGBFilter::YUV444toRGBFilter():
 
   // init converter
   //m_pConverter->SetFlip(m_bInvert);
-  //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
 }
 
-YUV444toRGBFilter::~YUV444toRGBFilter()
+YUVtoRGBFilter::~YUVtoRGBFilter()
 {
   if(m_pConverter)
   {
@@ -73,9 +72,9 @@ YUV444toRGBFilter::~YUV444toRGBFilter()
   }
 }
 
-CUnknown * WINAPI YUV444toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+CUnknown * WINAPI YUVtoRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
-  YUV444toRGBFilter *pFilter = new YUV444toRGBFilter();
+  YUVtoRGBFilter *pFilter = new YUVtoRGBFilter();
   if (pFilter== NULL) 
   {
     *pHr = E_OUTOFMEMORY;
@@ -84,7 +83,7 @@ CUnknown * WINAPI YUV444toRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 }
 
 
-void YUV444toRGBFilter::InitialiseInputTypes()
+void YUVtoRGBFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
 
@@ -97,7 +96,7 @@ void YUV444toRGBFilter::InitialiseInputTypes()
 }
 
 
-HRESULT YUV444toRGBFilter::BreakConnect(PIN_DIRECTION dir)
+HRESULT YUVtoRGBFilter::BreakConnect(PIN_DIRECTION dir)
 {
   if(m_pConverter) {delete m_pConverter; m_pConverter=NULL;}
   if(dir == PINDIR_INPUT)
@@ -109,7 +108,7 @@ HRESULT YUV444toRGBFilter::BreakConnect(PIN_DIRECTION dir)
 
 
 
-HRESULT YUV444toRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
+HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 {
   HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
   if(direction == PINDIR_INPUT)
@@ -149,7 +148,7 @@ HRESULT YUV444toRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
 
     if(out_MediaType==MEDIASUBTYPE_RGB32 || out_MediaType==MEDIASUBTYPE_ARGB32 || out_MediaType==MEDIASUBTYPE_RGB24)
     {
-      m_pConverter->SetFlip(m_bInvert ^ (m_nOutHeight<0));
+      m_pConverter->SetFlip((!m_bInvert) ^ (m_nOutHeight<0));
     }
 
 /*	NEVER DO THIS NASTY JOB!
@@ -162,7 +161,7 @@ HRESULT YUV444toRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
 }
 
 
-HRESULT YUV444toRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
+HRESULT YUVtoRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
   if (iPosition < 0)
   {
@@ -231,7 +230,7 @@ HRESULT YUV444toRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 }
 
 
-HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp )
+HRESULT YUVtoRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp )
 {
   AM_MEDIA_TYPE mt;
   HRESULT hr = m_pOutput->ConnectionMediaType(&mt);
@@ -271,7 +270,7 @@ HRESULT YUV444toRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
 }
 
 
-HRESULT YUV444toRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT YUVtoRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {  
  if(m_pConverter==NULL) return E_POINTER;
   ASSERT(pBufferIn);
@@ -287,7 +286,7 @@ HRESULT YUV444toRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferS
 }
 
 
-HRESULT YUV444toRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
+HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
   //Does this also occur when format changes occur such as when changing the renderer size???
   long lSize = mtOut->GetSampleSize();
@@ -356,12 +355,12 @@ HRESULT YUV444toRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaTy
 }
 
 
-STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value)
+STDMETHODIMP YUVtoRGBFilter::SetParameter(const char* type, const char* value)
 {
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
     //m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
-    m_pConverter->SetFlip(m_bInvert);
+    m_pConverter->SetFlip((!m_bInvert) ^ (m_nOutHeight<0));
     return S_OK;
   }
   else
@@ -371,7 +370,7 @@ STDMETHODIMP YUV444toRGBFilter::SetParameter(const char* type, const char* value
 }
 
 
-HRESULT YUV444toRGBFilter::GetPages(CAUUID *pPages)
+HRESULT YUVtoRGBFilter::GetPages(CAUUID *pPages)
 {
     if (pPages == NULL) return E_POINTER;
     pPages->cElems = 1;
@@ -385,7 +384,7 @@ HRESULT YUV444toRGBFilter::GetPages(CAUUID *pPages)
 }
 
 
- HRESULT YUV444toRGBFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+ HRESULT YUVtoRGBFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
   if (riid == IID_ISpecifyPropertyPages)
   {
@@ -399,8 +398,8 @@ HRESULT YUV444toRGBFilter::GetPages(CAUUID *pPages)
 }
 
 
- void YUV444toRGBFilter::initParameters(void)
+ void YUVtoRGBFilter::initParameters(void)
 {
   //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
-  addParameter(INVERT, &m_bInvert, true);
+  addParameter(INVERT, &m_bInvert,  m_bInvert);
 }
