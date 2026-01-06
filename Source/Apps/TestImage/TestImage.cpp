@@ -707,6 +707,55 @@ bool Pause = false;
          }     
      }
 
+     AYUV444toARGB32Converter picConvertedAYUV2ARGB32(Width,Height);
+
+     picConvertedAYUV2ARGB32.Convert(BlobIn+16, BlobOut+16);
+     {       
+       int diffs1 = 0;
+       for(int y=0; y<Height; y++)
+         for(int x=0; x<Width; x++)
+         {
+           pos = 16 + 4*(x + Width*y);			// BGRA
+	   const int posR = 16 + 3*(x + Width*y);	// BGR
+           if(BlobOut[pos]!=BlobTest[posR] || BlobOut[pos+1]!=BlobTest[posR+1] || BlobOut[pos+2]!=BlobTest[posR+2])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[posR])>1 || labs(BlobOut[pos+1]-BlobTest[posR+1])>1 || labs(BlobOut[pos+2]-BlobTest[posR+2])>1)
+           {
+             printf("\nAYUV444toRGB32 %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos+1],BlobTest[posR], BlobOut[pos+2],BlobTest[posR+1], BlobOut[pos+3],BlobTest[posR+2]);
+             goto ReturnErr;
+           }
+           if(BlobIn[pos] != BlobOut[pos+3])
+           {
+             printf("\nAYUV444toRGB32 %ux%u: x=%d y=%d ... A=%d|%d.", Width,Height, x,y, BlobIn[pos], BlobOut[pos+3]);
+             goto ReturnErr;
+           }
+         }     
+     }
+
+     picConvertedAYUV2ARGB32.SetFlip(true);
+     picConvertedAYUV2ARGB32.Convert(BlobIn+16, BlobOut+16);
+     {       
+       int diffs1 = 0;
+       for(int y=0; y<Height; y++)
+         for(int x=0; x<Width; x++)
+         {
+           pos = 16 + 4*(x + Width*y);				// BGRA
+	   const int posR = 16 + 3*(x + Width*(Height-y-1));	// BGR
+           if(BlobOut[pos]!=BlobTest[posR] || BlobOut[pos+1]!=BlobTest[posR+1] || BlobOut[pos+2]!=BlobTest[posR+2])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[posR])>1 || labs(BlobOut[pos+1]-BlobTest[posR+1])>1 || labs(BlobOut[pos+2]-BlobTest[posR+2])>1)           
+           {
+             printf("\nAYUV444toRGB32 flip %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos+1],BlobTest[posR], BlobOut[pos+2],BlobTest[posR+1], BlobOut[pos+3],BlobTest[posR+2]);
+             goto ReturnErr;
+           }
+           const int posRI = 16 + 4*(x + Width*(Height-y-1));
+           if(BlobIn[posRI] != BlobOut[pos+3])
+           {
+             printf("\nAYUV444toRGB32 flip %ux%u: x=%d y=%d ... A=%d|%d.", Width,Height, x,y, BlobIn[posRI], BlobOut[pos+3]);
+             goto ReturnErr;
+           }
+         }     
+     }
    }
 
 

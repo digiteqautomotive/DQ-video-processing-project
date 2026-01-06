@@ -8,8 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2017, CSIR
-              2025 Jaroslav Fojtik
+Copyright (c) 2008-2017, CSIR
+              2025-2026 Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -578,8 +578,7 @@ void PicInPicFilter::reconfigure()
     int iSubWidth = 0;
     int iSubHeight = 0;
     if (!((m_nSubPictureWidth > 0 && m_nSubPictureWidth < getOutputWidth()) &&
-      (m_nSubPictureHeight > 0 && m_nSubPictureHeight < getOutputHeight()))
-      )
+      (m_nSubPictureHeight > 0 && m_nSubPictureHeight < getOutputHeight())))
     {
       m_nSubPictureWidth = iSecondaryWidth;
       m_nSubPictureHeight = iSecondaryHeight;

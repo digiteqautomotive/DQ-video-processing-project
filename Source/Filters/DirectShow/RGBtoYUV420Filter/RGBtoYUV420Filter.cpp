@@ -63,12 +63,12 @@ RGBtoYUV420Filter::~RGBtoYUV420Filter()
 
 CUnknown * WINAPI RGBtoYUV420Filter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
-	RGBtoYUV420Filter *pFilter = new RGBtoYUV420Filter();
-	if (pFilter== NULL) 
-	{
-		*pHr = E_OUTOFMEMORY;
-	}
-	return pFilter;
+  RGBtoYUV420Filter *pFilter = new RGBtoYUV420Filter();
+  if(pFilter== NULL) 
+  {
+    *pHr = E_OUTOFMEMORY;
+  }
+  return pFilter;
 }
 
 

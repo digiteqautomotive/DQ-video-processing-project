@@ -126,6 +126,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
 }
 
+
 HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 {
   HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
@@ -177,7 +178,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       else if(pmt->subtype==MEDIASUBTYPE_UYVY)
       {
         m_pScaler = new PicScalerUYVYImpl();
-        m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same as UYVY
+        m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same bpp as UYVY
       }
     }
   }

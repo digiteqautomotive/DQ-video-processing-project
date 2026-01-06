@@ -5,7 +5,7 @@
 
 #define MyAppName "DQ VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.6.11"
+#define MyAppVersion "1.6.12"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "DQ VPP video processing filters"
 #define MyAppURL "https://sourceforge.net/projects/direct-show-demo-filters/files/CSIR_VPP_VIDEOPROCESSING/"
