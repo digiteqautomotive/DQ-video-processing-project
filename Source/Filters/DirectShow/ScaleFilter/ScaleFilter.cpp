@@ -53,10 +53,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #include <PicScalerARGB32SSE.h>
 #endif
 
+#include <wmcodecdsp.h>			// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
-
-
-DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 
 #if defined(USE_MMX) || defined(USE_SSE)

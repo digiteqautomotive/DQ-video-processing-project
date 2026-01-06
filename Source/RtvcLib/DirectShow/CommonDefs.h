@@ -29,11 +29,8 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
-
-#include <vector>
 
 #define BITS_PER_PIXEL_RGB24	3*8
 #define BITS_PER_PIXEL_RGB32	4*8

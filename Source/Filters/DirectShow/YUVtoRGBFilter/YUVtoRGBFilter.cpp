@@ -20,11 +20,11 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 #include "YUYVtoRGBConverter.h"
 #include "YVYUtoRGBConverter.h"
 
+#include <wmcodecdsp.h>			// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 #include "../VariantTools.cpp"
 
 
-DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 
 
@@ -78,6 +78,7 @@ void YUVtoRGBFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+ 
 	/////////////////////////////////////////////////
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo2);
 
@@ -101,7 +102,6 @@ HRESULT YUVtoRGBFilter::BreakConnect(PIN_DIRECTION dir)
     out_MediaType = GUID_NULL;
   return CCustomBaseFilter::BreakConnect(dir);
 }
-
 
 
 HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)

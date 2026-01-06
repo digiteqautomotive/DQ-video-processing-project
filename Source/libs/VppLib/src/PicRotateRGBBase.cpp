@@ -29,18 +29,22 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
+#include <string.h>
+#include <math.h>
 #include "PicRotateRGBBase.h"
 #include "DirectShow\CommonDefs.h"
+
 
 PicRotateRGBBase::PicRotateRGBBase()
 {
 	m_eMode = ROTATE_NONE;
 }
 
+
 PicRotateRGBBase::~PicRotateRGBBase()
-{;}
+{}
+
 
 bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 {
@@ -51,7 +55,7 @@ bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 	{
 	case ROTATE_NONE:
 		{
-			memcpy(pOutImg, pInImg, m_nWidth * m_nHeight * nBytesPerPixel);
+			memcpy(pOutImg, pInImg, m_nWidth*m_nHeight*nBytesPerPixel);
 			return true;
 		}
 	case ROTATE_90_DEGREES_CLOCKWISE:
@@ -92,7 +96,7 @@ bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 			BYTE* pSrc = (BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iTargetRowLength - nBytesPerPixel;
 
-			for ( int y = 0; y < m_nHeight; y++ )
+			for(int y = 0; y < m_nHeight; y++ )
 			{
 				BYTE* pDestPixel = pDest;
 				for (int x = 0; x < m_nWidth; ++x, pSrc += nBytesPerPixel, pDestPixel += iTargetRowLength)
@@ -110,7 +114,7 @@ bool PicRotateRGBBase::Rotate(const void* pInImg, void* pOutImg)
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			//BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight * nRowLength ) - nRowLength);
 			BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight - 1) * nRowLength);
-			for (int i = 0; i < m_nHeight; ++i, pSrc += nRowLength, pDest -= nRowLength)
+			for(int i = 0; i < m_nHeight; ++i, pSrc += nRowLength, pDest -= nRowLength)
 			{
 				memcpy(pDest, pSrc, nRowLength);
 			}

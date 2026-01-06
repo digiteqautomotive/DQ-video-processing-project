@@ -24,10 +24,9 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-===========================================================================
-*/
+===========================================================================*/
 #include "H264DecoderFilter.h"
-#include "wmcodecdsp.h"
+#include "wmcodecdsp.h"			// MEDIASUBTYPE_AVC1
 #include "Dvdmedia.h"
 
 // RTVC

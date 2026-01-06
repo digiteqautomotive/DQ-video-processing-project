@@ -262,7 +262,7 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2Ver16.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB32toYUV420Converter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24CCIR601ConverterVer16.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24Converter.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGBconverter.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

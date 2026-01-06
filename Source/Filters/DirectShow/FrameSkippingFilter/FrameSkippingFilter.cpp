@@ -232,10 +232,11 @@ HRESULT FrameSkippingFilter::Run(REFERENCE_TIME tStart)
         // populate to be skipped: note that this index is 1-indexed
         for (size_t iCount = 1; iCount <= m_uiSkipFrameNumber; ++iCount)
         {
+          int iToBeSkipped = 
 #if _MSC_VER > 1600
-          int iToBeSkipped = static_cast<int>(round(iCount * dRatio));
+              static_cast<int>(round(iCount * dRatio));
 #else
-          int iToBeSkipped = static_cast<int>(floor(iCount * dRatio + 0.5));
+              static_cast<int>(floor(iCount * dRatio + 0.5));
 #endif
           toBeSkipped.insert(iToBeSkipped);
         }
