@@ -8,26 +8,7 @@ DESCRIPTION			:
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008-2014, CSIR
 Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* Neither the name of the CSIR nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================*/
 #include "YUVtoRGBFilter.h"
@@ -192,32 +173,43 @@ HRESULT YUVtoRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
   if(pMediaType->formattype==FORMAT_VideoInfo)
   {
     VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-    if(pVih) {pbmi=&(pVih->bmiHeader);}
+    if(pMediaType->cbFormat >= sizeof(VIDEOINFOHEADER))
+        if(pVih) {pbmi=&(pVih->bmiHeader);}
   }
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
     VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
     if(pVih2)
     {
-      pbmi = &(pVih2->bmiHeader);
-/*		// This does not work properly, needs to be investigated.
-      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)CoTaskMemAlloc(sizeof(VIDEOINFOHEADER));
-      if(pVih)
+      if(pMediaType->cbFormat >= sizeof(VIDEOINFOHEADER2))
       {
-        //memset(pVih,0,sizeof(VIDEOINFOHEADER));
-        pVih->AvgTimePerFrame = pVih2->AvgTimePerFrame;
-        memcpy(&pVih->bmiHeader, pbmi, sizeof(BITMAPINFOHEADER));
-        pVih->dwBitErrorRate = pVih2->dwBitErrorRate;
-        pVih->dwBitRate = pVih2->dwBitRate;
-        pVih->rcSource = pVih2->rcSource;
-        pVih->rcTarget = pVih2->rcTarget;
+        pbmi = &(pVih2->bmiHeader);
+		// This does not work properly, needs to be investigated.
+/*
+        VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)CoTaskMemAlloc(sizeof(VIDEOINFOHEADER));
+        if(pVih)
+        {
+          //memset(pVih,0,sizeof(VIDEOINFOHEADER));
+          pVih->rcSource = pVih2->rcSource;
+          pVih->rcTarget = pVih2->rcTarget;
+          pVih->dwBitRate = pVih2->dwBitRate;
+          pVih->AvgTimePerFrame = pVih2->AvgTimePerFrame;
+          pVih->dwBitErrorRate = pVih2->dwBitErrorRate;
+          memcpy(&pVih->bmiHeader, pbmi, sizeof(BITMAPINFOHEADER));        
 
-        CoTaskMemFree(pMediaType->pbFormat);
-        pMediaType->pbFormat = (BYTE*)pVih;
-        pMediaType->cbFormat = sizeof(VIDEOINFOHEADER);
-        pMediaType->formattype = FORMAT_VideoInfo;
-      }
+//          AM_MEDIA_TYPE amt;
+//	  memcpy(&amt, (AM_MEDIA_TYPE*)pMediaType, sizeof(AM_MEDIA_TYPE));
+//          amt.pbFormat = (BYTE*)pVih;
+//          amt.cbFormat = sizeof(VIDEOINFOHEADER);
+//          pMediaType->Set(amt);
+              
+          CoTaskMemFree(pMediaType->pbFormat);
+          pMediaType->pbFormat = (BYTE*)pVih;
+          pMediaType->cbFormat = sizeof(VIDEOINFOHEADER);
+          pMediaType->formattype = FORMAT_VideoInfo;
+        }
 */
+      }
     }
   }
   if(pbmi == NULL)
@@ -272,9 +264,18 @@ HRESULT YUVtoRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPE
   {
     return hr;
   }
+  BITMAPINFOHEADER *pbmi = NULL;
+
   //Make sure that the format type is our custom format
-  ASSERT(mt.formattype == FORMAT_VideoInfo);
-  BITMAPINFOHEADER *pbmi = HEADER(mt.pbFormat);
+  if(mt.formattype==FORMAT_VideoInfo)
+      pbmi = HEADER(mt.pbFormat);
+  if(mt.formattype==FORMAT_VideoInfo2)
+  {
+    VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)mt.pbFormat;
+    if(pVih2) pbmi = &(pVih2->bmiHeader);
+  }
+  if(pbmi==NULL) return E_INVALIDARG;
+
   pProp->cbBuffer = DIBSIZE(*pbmi);
 
   if (pProp->cbAlign == 0)
@@ -314,7 +315,7 @@ HRESULT YUVtoRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize
   if(lOutBufferSize < lOutActualDataLength) return E_INVALIDARG;
 
   m_pConverter->Convert(pBufferIn, pBufferOut);
-  DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV444 to RGB Directly")));
+  DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV to RGB Directly")));
   //RGB24 stores 3 Bytes per pixel  
   return S_OK;
 }
@@ -368,9 +369,9 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
         TransformOK = true;
-    if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+    if(mtIn->subtype==MEDIASUBTYPE_YUYV || mtIn->subtype==MEDIASUBTYPE_YUY2)
         TransformOK = true;
-    if(in_MediaType==MEDIASUBTYPE_YVYU)
+    if(mtIn->subtype==MEDIASUBTYPE_YVYU)
         TransformOK = true;
   }
   else if(mtOut->subtype == MEDIASUBTYPE_RGB24)
@@ -379,9 +380,9 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
         TransformOK = true;
-    if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
+    if(mtIn->subtype==MEDIASUBTYPE_YUYV || mtIn->subtype==MEDIASUBTYPE_YUY2)
         TransformOK = true;
-    if(in_MediaType==MEDIASUBTYPE_YVYU)
+    if(mtIn->subtype==MEDIASUBTYPE_YVYU)
         TransformOK = true;
   }
 
