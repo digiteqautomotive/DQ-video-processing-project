@@ -13,8 +13,8 @@ CUnknown * WINAPI PicInPicProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pH
 PicInPicProperties::PicInPicProperties(IUnknown *pUnk) :
 FilterPropertiesBase(NAME("Pic in pic Properties"), pUnk, IDD_PIC_IN_PIC_DIALOG, IDS_PIC_IN_PIC_CAPTION)
 {
-
 }
+
 
 HRESULT PicInPicProperties::ReadSettings()
 {
@@ -74,7 +74,7 @@ void PicInPicProperties::initialiseControls()
   InitCommonControls();
 
   short lower = 0;
-  short upper = (short)USHRT_MAX;
+  short upper = SHRT_MAX;
   setSpinBoxRange(IDC_SPIN1, lower, upper);
   setSpinBoxRange(IDC_SPIN2, lower, upper);
   setSpinBoxRange(IDC_SPIN3, lower, upper);
