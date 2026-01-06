@@ -637,16 +637,19 @@ void PicInPicFilter::reconfigure()
       }
     }
 
-    // Check validity of sub picture position else use default value
-    if (!((m_nCustomOffsetX + m_nSubPictureWidth < getOutputWidth()) &&
-      (m_nCustomOffsetY + m_nSubPictureHeight < getOutputHeight())))
+	// Check validity of sub picture position
+    if(m_nCustomOffsetX + m_nSubPictureWidth > getOutputWidth())
     {
-      // otherwise just use 10 pixels
-      m_nCustomOffsetX = 10;
-      m_nCustomOffsetY = 10;
+      m_nCustomOffsetX = getOutputWidth() - m_nSubPictureWidth;
     }
+    if(m_nCustomOffsetX<0) m_nCustomOffsetX=0;
+    if(m_nCustomOffsetY + m_nSubPictureHeight > getOutputHeight())
+    {
+      m_nCustomOffsetY = getOutputHeight() - m_nSubPictureHeight;
+    }
+    if(m_nCustomOffsetY<0) m_nCustomOffsetY=0;
 
-    // Setup the picture in picture
+	// Setup the picture in picture
     m_pPicInPic->SetDimensions(getOutputWidth(), getOutputHeight());
     m_pPicInPic->SetSubDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
     m_pPicInPic->SetPos(m_nCustomOffsetX, m_nCustomOffsetY);
