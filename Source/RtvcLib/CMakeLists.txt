@@ -49,10 +49,13 @@ SET(IU_SRCS
 ../libs/VppLib/src/RealRGB32toYUV420Converter.cpp
 ../libs/VppLib/src/RealYUV420toRGB24CCIR601Converter.cpp
 ../libs/VppLib/src/RealYUV420toRGB24CCIR601ConverterVer16.cpp
-../libs/VppLib/src/RealYUV420toRGB24Converter.cpp
+../libs/VppLib/src/YUV420toRGBConverter.cpp
 ../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2.cpp
 ../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2Ver16.cpp
+../libs/VppLib/src/YUYVtoRGBConverter.cpp
 ../libs/VppLib/src/YUVtoRGBConverter.cpp
+../libs/VppLib/src/YV24toRGBconverter.cpp
+../libs/VppLib/src/YVYUtoRGBConverter.cpp
 )
 IF (MMX_SSE_ACCELERATORS)
   SET(IU_SRCS ${IU_SRCS}

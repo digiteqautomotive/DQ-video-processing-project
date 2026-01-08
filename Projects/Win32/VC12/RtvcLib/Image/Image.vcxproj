@@ -277,7 +277,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUYVtoRGBConverter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YV24toRGB24Converter.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YV24toRGBconverter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YVYUtoRGBConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
