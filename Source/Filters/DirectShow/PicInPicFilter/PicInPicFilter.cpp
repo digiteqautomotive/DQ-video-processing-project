@@ -9,8 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2017, CSIR
-              2025-2026 Jaroslav Fojtik
-All rights reserved.
+              2025-2026 Digiteq Automotive; Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -102,7 +101,7 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
 
 PicInPicFilter::~PicInPicFilter()
 {
-  if (m_pPicInPic)
+  if(m_pPicInPic)
   {
     delete m_pPicInPic;
     m_pPicInPic = NULL;
@@ -112,12 +111,12 @@ PicInPicFilter::~PicInPicFilter()
     delete m_pTargetPicScaler;
     m_pTargetPicScaler = NULL;
   }
-  if (m_pSubPicScaler)
+  if(m_pSubPicScaler)
   {
     delete m_pSubPicScaler;
     m_pSubPicScaler = NULL;
   }
-  if (m_pBufferForScaledSecondaryImage)
+  if(m_pBufferForScaledSecondaryImage)
   {
     delete[]m_pBufferForScaledSecondaryImage;
     m_pBufferForScaledSecondaryImage = NULL;
@@ -230,9 +229,8 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
       m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
       m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut, m_Vflip);
     }
-    else
+    else	// copy direct from buffer
     {
-      // copy direct from buffer
       m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut,m_Vflip);
     }
   }
@@ -244,8 +242,7 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
       m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut,m_Vflip);
     }
     else
-    {
-      // copy direct from buffer
+    {		// copy direct from buffer
       m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut,m_Vflip);
     }
   }
@@ -405,10 +402,10 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
 }
 
 
-HRESULT PicInPicFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
+HRESULT PicInPicFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
 	// target picture scaler
-  if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
+  if(m_nTargetWidth>0 && m_nTargetHeight>0)
   {
 	// if target width and height have been set use those dimensions
     nOutputWidth = m_nTargetWidth;
@@ -582,25 +579,26 @@ void PicInPicFilter::reconfigure()
   int iSecondaryHeight = pBmih2->biHeight;
 	// check if pin of subpicture has been connected
 	// we can only configure the pip once both pins have been connected
-  if(iSecondaryWidth > 0)
+  if(iSecondaryWidth>0 && iSecondaryHeight>0)
   {
-    ASSERT(iSecondaryHeight > 0);
-    int iSubWidth = 0;
-    int iSubHeight = 0;
-    if (!((m_nSubPictureWidth > 0 && m_nSubPictureWidth < getOutputWidth()) &&
-      (m_nSubPictureHeight > 0 && m_nSubPictureHeight < getOutputHeight())))
+    if(m_nSubPictureWidth>getOutputWidth() || m_nSubPictureHeight>getOutputHeight() ||
+       (m_nSubPictureWidth==0 && iSecondaryWidth>getOutputWidth()) ||
+       (m_nSubPictureHeight==0 && iSecondaryHeight>getOutputHeight()))
     {
       m_nSubPictureWidth = iSecondaryWidth;
       m_nSubPictureHeight = iSecondaryHeight;
-      // if the inner picture is bigger than half the target picture, scale it by a factor of 0.4
-      // TODO: do we need to scale to multiples of 4?
-      if (m_nSubPictureWidth > getOutputWidth() / 2)
-        m_nSubPictureWidth = m_nSubPictureWidth * 0.4;
-      if (m_nSubPictureHeight > getOutputHeight() / 2)
-        m_nSubPictureHeight = m_nSubPictureHeight * 0.4;
+
+	// If the inner picture is bigger than half the target picture
+      if(m_nSubPictureWidth>getOutputWidth())
+	  m_nSubPictureWidth = getOutputWidth()/2;
+      if(m_nSubPictureHeight>getOutputHeight())
+	  m_nSubPictureHeight = getOutputHeight()/2;
     }
 
-    if(iSecondaryWidth != m_nSubPictureWidth || iSecondaryHeight != m_nSubPictureHeight)
+    m_pPicInPic->SetDimensions(getOutputWidth(), getOutputHeight());
+
+    if((m_nSubPictureWidth!=0 && iSecondaryWidth!=m_nSubPictureWidth) || 
+       (m_nSubPictureHeight!=0 && iSecondaryHeight!=m_nSubPictureHeight))
     {
       if(m_pSubPicScaler)
       {
@@ -632,6 +630,17 @@ void PicInPicFilter::reconfigure()
         m_pBufferForScaledSecondaryImage = NULL;
       }
       m_pBufferForScaledSecondaryImage = new BYTE[(m_nSubPictureWidth * m_nSubPictureHeight * m_nBitsPerPixel)/8];
+
+	// Check validity of sub picture position
+      if(m_nCustomOffsetX + m_nSubPictureWidth > getOutputWidth())
+      {
+        m_nCustomOffsetX = getOutputWidth() - m_nSubPictureWidth;
+      }
+      if(m_nCustomOffsetY + m_nSubPictureHeight > getOutputHeight())
+      {
+        m_nCustomOffsetY = getOutputHeight() - m_nSubPictureHeight;
+      }
+      m_pPicInPic->SetSubDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
     }
     else
     {
@@ -645,23 +654,22 @@ void PicInPicFilter::reconfigure()
         delete[]m_pBufferForScaledSecondaryImage;
         m_pBufferForScaledSecondaryImage = NULL;
       }
+
+      if(m_nCustomOffsetX + iSecondaryWidth > getOutputWidth())
+      {
+        m_nCustomOffsetX = getOutputWidth() - iSecondaryWidth;
+      }
+      if(m_nCustomOffsetY + iSecondaryHeight > getOutputHeight())
+      {
+        m_nCustomOffsetY = getOutputHeight() - iSecondaryHeight;
+      }
+      m_pPicInPic->SetSubDimensions(iSecondaryWidth, iSecondaryHeight);
     }
 
-	// Check validity of sub picture position
-    if(m_nCustomOffsetX + m_nSubPictureWidth > getOutputWidth())
-    {
-      m_nCustomOffsetX = getOutputWidth() - m_nSubPictureWidth;
-    }
     if(m_nCustomOffsetX<0) m_nCustomOffsetX=0;
-    if(m_nCustomOffsetY + m_nSubPictureHeight > getOutputHeight())
-    {
-      m_nCustomOffsetY = getOutputHeight() - m_nSubPictureHeight;
-    }
     if(m_nCustomOffsetY<0) m_nCustomOffsetY=0;
 
 	// Setup the picture in picture
-    m_pPicInPic->SetDimensions(getOutputWidth(), getOutputHeight());
-    m_pPicInPic->SetSubDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
     m_pPicInPic->SetPos(m_nCustomOffsetX, m_nCustomOffsetY);
   }
   else

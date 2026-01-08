@@ -172,7 +172,6 @@ HRESULT YUVtoRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
   }
   if(iPosition > 1)  return VFW_S_NO_MORE_ITEMS;
 
-
     // Get the input pin's media type and return this as the output media type - we want to retain
     // all the information about the image
   HRESULT hr = m_pInput->ConnectionMediaType(pMediaType);
@@ -321,11 +320,10 @@ HRESULT YUVtoRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize
   ASSERT(pBufferOut);
 
   lOutActualDataLength = m_nInPixels * m_videoOutHeader.bmiHeader.biBitCount / 8;
-  if(lOutBufferSize < lOutActualDataLength) return E_INVALIDARG;
+  if(lOutBufferSize < lOutActualDataLength) return E_INVALIDARG;	// Check block size
 
   m_pConverter->Convert(pBufferIn, pBufferOut);
   DbgLog((LOG_TRACE, 0, TEXT("Converted from YUV to RGB Directly")));
-  //RGB24 stores 3 Bytes per pixel  
   return S_OK;
 }
 

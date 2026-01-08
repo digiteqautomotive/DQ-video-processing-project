@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Base class for video mixing renderers. 
  * Implements common video mixing functionality for RGB24/32 mixers with two inputs and one output.
  */
-class VideoMixingBase : public CMultiIOBaseFilter
+class VideoMixingBase: public CMultiIOBaseFilter
 {
 public:
 	/// Destructor
@@ -72,7 +72,7 @@ public:
 	/// The values set in this method will be used in GetMediaType and hence in DecideBufferSize
 	/// The Subclass should also reject invalid media types in this method: e.g. a simple concatenation
 	/// filter should return E_FAIL from this method if the image dimensions do not match
-        virtual HRESULT SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize) = 0;
+        virtual HRESULT SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize) = 0;
 
 	/// Delegates call to virtual ReceiveFirstSample and ReceiveSecondSample methods.
 	virtual HRESULT Receive(IMediaSample *pSample, int nIndex);
