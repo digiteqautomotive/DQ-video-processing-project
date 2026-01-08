@@ -10,7 +10,7 @@ class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025, Digiteq Automotive All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -45,7 +45,7 @@ class AYUV444toRGB24Converter: public YUVtoRGBConverter
 public:
   // Construction and destruction.
   AYUV444toRGB24Converter(void) { }
-  AYUV444toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) { }
+  AYUV444toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) {}
   virtual ~AYUV444toRGB24Converter(void) {}
 
   // Interface.
@@ -55,20 +55,48 @@ public:
 
 
 /** \ingroup ImageLib
-* Floating point implementation of YUV420 (8 bpp) to RGB 32 bit 
+* Integer implementation of AYUV444 (32 bpp) to RGB 32 bit 
 * colour convertion derived from the YUVtoRGBConverter base class. */
 class AYUV444toARGB32Converter: public YUVtoRGBConverter
 {
 public:
   // Construction and destruction.
   AYUV444toARGB32Converter(void) { }
-  AYUV444toARGB32Converter(int width, int height): YUVtoRGBConverter(width,height) { }
+  AYUV444toARGB32Converter(int width, int height): YUVtoRGBConverter(width,height) {}
   virtual ~AYUV444toARGB32Converter(void) {}
 
   // Interface.
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };//end AYUV444toARGB32Converter.
+
+
+class YV24toRGB24Converter: public YUVtoRGBConverter
+{
+public:
+  // Construction and destruction.
+  YV24toRGB24Converter(void) { }
+  YV24toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) {}
+  virtual ~YV24toRGB24Converter(void) {}
+
+  // Interface.
+  virtual void Convert(const void* pInputBuffer, void* pRgb) const;
+
+};	//end YV24toRGB24Converter.
+
+
+class YV24toRGB32Converter: public YUVtoRGBConverter
+{
+public:
+  // Construction and destruction.
+  YV24toRGB32Converter(void) { }
+  YV24toRGB32Converter(int width, int height): YUVtoRGBConverter(width,height) {}
+  virtual ~YV24toRGB32Converter(void) {}
+
+  // Interface.
+  virtual void Convert(const void* pInputBuffer, void* pRgb) const;
+
+};	//end YV24toRGB24Converter.
 
 
 #endif	// _AYUV444TORGB24CONVERTER_H

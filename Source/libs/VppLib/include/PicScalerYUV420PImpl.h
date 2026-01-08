@@ -48,13 +48,12 @@ typedef short scaleType;
 typedef char scaleType ;
 #endif
 
-/**
- * \ingroup ImageLib
+
+/** \ingroup ImageLib
  * A YUV420P planar implementation derived from the 
  * general PicScalerBase() class. Scale a YUV420P
  * planar image to the dimensions of another YUV420P
- * planar image.
- */
+ * planar image. */
 class PicScalerYUV420PImpl: public PicScalerBase
 {
 public:
@@ -67,7 +66,7 @@ public:
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
-};//end PicScalerYUV420PImpl.
+}; //end PicScalerYUV420PImpl.
 
 
 #endif	// _PICSCALERYUV420PIMPL_H

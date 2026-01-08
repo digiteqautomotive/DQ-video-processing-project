@@ -57,6 +57,9 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 #include "../VariantTools.cpp"
 
 
+//DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
+
 PicScalerBase *GetPicScallerRGB32(void)
 {
 #ifdef USE_SSE
@@ -355,7 +358,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
   m_pSampleBuffers[nIndex] = new BYTE[m_nSampleSizes[nIndex]];
 
 	// Create appropriate picture concatenator
-  if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB24)	// || pMediaType->subtype==MEDIASUBTYPE_YV24)
   {
     if(m_pPicInPic!=NULL)
     {
@@ -471,23 +474,30 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
 
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
   {
-    if (pMediaType->subtype == MEDIASUBTYPE_RGB24)
+/*    if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
     {
-      return S_OK;
+      if(ConnectionFormat[0]==MEDIASUBTYPE_YV24 || ConnectionFormat[1]==MEDIASUBTYPE_YV24)
+          return S_OK;
+    }
+    else */
+    if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+    {
+      if(ConnectionFormat[0]==MEDIASUBTYPE_RGB24 || ConnectionFormat[1]==MEDIASUBTYPE_RGB24)
+          return S_OK;
     }
   }
-  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
+  else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
   {
     if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
     {
       if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
-        return S_OK;
+          return S_OK;
     }
     else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
     {
       if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
          ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
-        return S_OK;
+          return S_OK;
     }
   }
   return S_FALSE;

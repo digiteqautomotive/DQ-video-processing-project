@@ -8,8 +8,8 @@ DESCRIPTION			:
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2017, CSIR
-Copyright (c) 2025, Jaroslav Fojtik
+Copyright (c) 2008-2017, CSIR
+Copyright (c) 2025-2026, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "../VariantTools.cpp"
+
+
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 
  CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
@@ -85,6 +88,7 @@ void CropFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  //AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
 }
 
 
@@ -116,13 +120,12 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
         delete m_pCropBuffer;
         m_pCropBuffer = NULL;
       }
-      if(pmt->subtype == MEDIASUBTYPE_RGB24)
+      if(pmt->subtype==MEDIASUBTYPE_RGB24 || pmt->subtype==MEDIASUBTYPE_YV24)
       {
         m_pCropper = new PicCropperRGB24Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
         // Create temp buffer for crop
         m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8];
-
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
       {
@@ -271,9 +274,17 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
       return VFW_E_TYPE_NOT_ACCEPTED;
 
 	//Subtypes
-  if (mtIn->subtype == MEDIASUBTYPE_RGB24)
+  if(mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_YV24)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_YV24)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

@@ -65,6 +65,9 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 #include "../VariantTools.cpp"
 
 
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
+
 PicScalerBase *GetPicScallerRGB32(void)
 {
   //if(FeaturesCPU == 0x80) FeaturesCPU=GetFeaturesCPU();
@@ -124,6 +127,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  //AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
 }
 
 
@@ -151,6 +155,11 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         m_pScaler = NULL;
       }
       if(pmt->subtype==MEDIASUBTYPE_RGB24)
+      {
+	m_pScaler = new PicScalerRGB24Impl();
+        m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+      }
+      if(pmt->subtype==MEDIASUBTYPE_YV24)
       {
 	m_pScaler = new PicScalerRGB24Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
@@ -344,9 +353,17 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
 
 
 	//Subtypes
-  if (mtIn->subtype == MEDIASUBTYPE_RGB24)
+  if(mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_YV24)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_YV24)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

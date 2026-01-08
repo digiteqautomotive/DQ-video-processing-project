@@ -26,6 +26,7 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 
 YUVtoRGBFilter::YUVtoRGBFilter():
@@ -46,6 +47,7 @@ YUVtoRGBFilter::YUVtoRGBFilter():
   //m_pConverter->SetFlip(m_bInvert);
 }
 
+
 YUVtoRGBFilter::~YUVtoRGBFilter()
 {
   if(m_pConverter)
@@ -54,6 +56,7 @@ YUVtoRGBFilter::~YUVtoRGBFilter()
     m_pConverter = NULL;
   }
 }
+
 
 CUnknown * WINAPI YUVtoRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
@@ -69,6 +72,7 @@ CUnknown * WINAPI YUVtoRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 void YUVtoRGBFilter::InitialiseInputTypes()
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
@@ -81,6 +85,7 @@ void YUVtoRGBFilter::InitialiseInputTypes()
  
 	/////////////////////////////////////////////////
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo2);
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo2); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo2);
@@ -125,6 +130,8 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
     {
       if(in_MediaType == MEDIASUBTYPE_AYUV)
           m_pConverter = new AYUV444toARGB32Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType == MEDIASUBTYPE_YV24)
+          m_pConverter = new YV24toRGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12)
           m_pConverter = new YUV420toRGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
@@ -136,6 +143,8 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
     {
       if(in_MediaType == MEDIASUBTYPE_AYUV)
           m_pConverter = new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType == MEDIASUBTYPE_YV24)
+          m_pConverter = new YV24toRGB24Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12)
           m_pConverter = new YUV420toRGB24Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
@@ -367,6 +376,8 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
   {
     if(mtIn->subtype == MEDIASUBTYPE_AYUV)
         TransformOK = true;
+    if(mtIn->subtype == MEDIASUBTYPE_YV24)
+        TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUYV || mtIn->subtype==MEDIASUBTYPE_YUY2)
@@ -377,6 +388,8 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
   else if(mtOut->subtype == MEDIASUBTYPE_RGB24)
   {
     if(mtIn->subtype == MEDIASUBTYPE_AYUV)
+        TransformOK = true;
+    if(mtIn->subtype == MEDIASUBTYPE_YV24)
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
         TransformOK = true;

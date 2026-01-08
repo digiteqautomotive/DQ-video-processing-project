@@ -53,14 +53,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Interface Methods.
 ===========================================================================
 */
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. The 
 lum Y 8 bit pels are followed immediately by the U and then V 8 bit values.
 No memory size checking is done and is delegated to the calling process.
 @param pOutImg	: Planar YUV420P format output image.
 @param pInImg		: Planar YUV420P format input image.
-@return					: 0 = failed, 1 = success.
-*/
+@return			: 0 = failed, 1 = success. */
 int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
 	if( (pOutImg == NULL) || (pInImg == NULL) )
