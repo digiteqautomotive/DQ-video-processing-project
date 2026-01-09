@@ -89,6 +89,7 @@ public:
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
 	virtual void initParameters();
+        virtual HRESULT StartStreaming(void);
 
 	/// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages);
@@ -125,6 +126,7 @@ public:
 	virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
+        void VFlipImg1(const BYTE* pSrc, BYTE* pDest);
 	bool parameterChangeAffectsOutput( const char* szParam );
 	void reconfigure();
 	/// Pointers to our last received Media Sample

@@ -8,8 +8,8 @@ DESCRIPTION			: Video Mixing Filter for AYUV, RGB24 and RGB32 Media
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2014, CSIR
-Copyright (c) 2025, Jaroslav Fojtik, Digiteq Automotive All rights reserved.
+Copyright (c) 2008-2014, CSIR
+Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "VideoMixingFilter.h"
 #include <DirectShow/CommonDefs.h>
@@ -273,6 +271,14 @@ HRESULT VideoMixingFilter::ReceiveSecondSample(IMediaSample *pSample)
     memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
   }
   return GenerateOutputSample(pSample, 1, m_pSampleBuffers[0], m_pSampleBuffers[1]);
+}
+
+
+HRESULT VideoMixingFilter::StartStreaming(void)
+{
+  if(m_pSampleBuffers[0]!=NULL) memset(m_pSampleBuffers[0], 0, m_nSampleSizes[0]);
+  if(m_pSampleBuffers[1]!=NULL) memset(m_pSampleBuffers[1], 0, m_nSampleSizes[1]);
+  return VideoMixingBase::StartStreaming();
 }
 
 

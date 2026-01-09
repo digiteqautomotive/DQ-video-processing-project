@@ -145,14 +145,12 @@ HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
   else   // output pin
   {
     ASSERT(direction == PINDIR_OUTPUT);
+    const BITMAPINFOHEADER *pBmi = NULL;
     if(pmt->formattype == FORMAT_VideoInfo)
     {			// Store a copy of the video header info
       VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
       memcpy(&m_videoOutHeader, pVih, sizeof(VIDEOINFOHEADER));
-			//Set these values now so we don't have to repeat it for each transform
-      m_nOutHeight = m_videoOutHeader.bmiHeader.biHeight;
-      m_nOutWidth = m_videoOutHeader.bmiHeader.biWidth;
-      m_nOutPixels = labs(m_nOutHeight * m_nOutWidth);
+      pBmi = &pVih->bmiHeader;
     }
     if(pmt->formattype == FORMAT_VideoInfo2)
     {			// Store a copy of the video header info
@@ -163,11 +161,14 @@ HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
       m_videoOutHeader.rcSource = pVih2->rcSource;
       m_videoOutHeader.rcTarget = pVih2->rcTarget;
       memcpy(&m_videoOutHeader.bmiHeader,&pVih2->bmiHeader, sizeof(m_videoOutHeader.bmiHeader));
-			//Set these values now so we don't have to repeat it for each transform
-      m_nOutHeight = m_videoOutHeader.bmiHeader.biHeight;
-      m_nOutWidth = m_videoOutHeader.bmiHeader.biWidth;
-      m_nOutPixels = labs(m_nOutHeight * m_nOutWidth);
+      pBmi = &pVih2->bmiHeader;
     }
+    if(pBmi)
+    {			//Set these values now so we don't have to repeat it for each transform
+      m_nOutHeight = pBmi->biHeight;
+      m_nOutWidth = pBmi->biWidth;      
+    }
+    m_nOutPixels = labs(m_nOutHeight * m_nOutWidth);
   }
   return S_OK;
 }

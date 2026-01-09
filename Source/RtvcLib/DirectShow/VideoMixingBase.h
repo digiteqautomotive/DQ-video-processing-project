@@ -100,8 +100,8 @@ public:
 	virtual bool OnFullCreateMoreOutputs()	{ return false; }
 
 	// you can also override these if you want to know about streaming
-	virtual HRESULT StartStreaming();
-	virtual HRESULT StopStreaming();
+	virtual HRESULT StartStreaming(void);
+	virtual HRESULT StopStreaming(void);
 
 	// Streaming calls delegated from input pins
 	virtual STDMETHODIMP EndOfStream(int nIndex);

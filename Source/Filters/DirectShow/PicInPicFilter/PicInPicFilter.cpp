@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2017, CSIR
-              2025-2026 Digiteq Automotive; Jaroslav Fojtik		All rights reserved.
+              2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,8 +29,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "PicInPicFilter.h"
 #include <DirectShow/CommonDefs.h>
@@ -142,21 +141,17 @@ CUnknown * WINAPI PicInPicFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 
 void PicInPicFilter::initParameters()
 {
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);		// width output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);	// height output picture is scaled to
+
+  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);	// width inner picture is scaled to
+  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);	// height inner picture is scaled to
+
   // currently unused: supposed to be one of the standard positions to insert 
   // the picture i.e. top left or top right corner.
-	// addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
-	// width output picture is scaled to
-  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);
-	// height output picture is scaled to
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);
-	// width inner picture is scaled to
-  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);
-	// height inner picture is scaled to
-  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);
-	// x offset from bottom left corner
-  addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);
-	// y offset from bottom left corner
-  addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);
+  // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
+  addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
+  addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
 }
 
 
@@ -183,7 +178,8 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
   IMediaSample * pOutSample;
 	// Set up the output sample
   HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
-
+  if(FAILED(hr)) return hr;
+  hr = pOutSample->SetActualDataLength(m_nOutputSize);
   if(FAILED(hr)) return hr;
 
   BYTE *pBufferOut = NULL;
@@ -203,17 +199,9 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     else
     {
       if(m_Vflip)	// Code to flip image vertically
-      {
-        int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
-	const BYTE* pSrc = (const BYTE*)m_pSampleBuffers[0];
-	BYTE* pDest = (BYTE*)pBufferOut + ((labs(m_pPicInPic->GetHeight()) - 1) * nRowLength);
-	for(int i=0; i<m_pPicInPic->GetHeight(); ++i, pSrc+=nRowLength, pDest-=nRowLength)
-	{
-	  memcpy(pDest, pSrc, nRowLength);
-	}
-      }
+        VFlipImg1(m_pSampleBuffers[0],pBufferOut);
       else
-        memcpy(pBufferOut, m_pSampleBuffers[0], (labs(m_pPicInPic->GetWidth()*m_pPicInPic->GetHeight()) * (size_t)m_nBitsPerPixel)/8);
+        memcpy(pBufferOut, m_pSampleBuffers[0], (labs(m_pPicInPic->GetWidth()*m_pPicInPic->GetHeight())*(size_t)m_nBitsPerPixel)/8);
     }
   }
   else
@@ -247,7 +235,6 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
     }
   }
 
-  pOutSample->SetActualDataLength(m_nOutputSize);
   pOutSample->SetSyncPoint(TRUE);
 
 	// Stop the clock and log it (if PERF is defined)
@@ -289,18 +276,60 @@ HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 }
 
 
+void PicInPicFilter::VFlipImg1(const BYTE* pSrc, BYTE* pDest)
+{
+const int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
+ ASSERT(pSrc!=NULL);
+ ASSERT(pDest!=NULL);
+ pDest += ((labs(m_pPicInPic->GetHeight()) - 1) * nRowLength);
+ int i = m_pPicInPic->GetHeight();
+ while(i-- > 0)
+ {
+   memcpy(pDest, pSrc, nRowLength);
+   pSrc+=nRowLength; pDest-=nRowLength;
+ }
+}
+
+
 HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
   if(!pSample) return E_POINTER;
-	// Copy the secondary sample into our buffer
-  { 
-    BYTE *pBuffer = NULL;
-    HRESULT hr = pSample->GetPointer(&pBuffer);
-    if(FAILED(hr)) return hr; 
-    if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
-    memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);		// Copy the buffer
+
+  BYTE *pBufferIn1 = NULL;
+  HRESULT hr = pSample->GetPointer(&pBufferIn1);
+  if(FAILED(hr)) return hr;
+  if(pBufferIn1==NULL) return E_POINTER;
+
+	// When only input1 is connected, do not cache anything.
+  if(!m_vInputPins[1]->IsConnected())
+  {
+    if(m_pTargetPicScaler==NULL && !m_Vflip)
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);		// Populate intact sample to the output.
+    else
+    {
+      IMediaSample *pOutSample;	
+      HRESULT hr = InitializeOutputSample(pSample, &pOutSample, 0, 0);	// Set up the output sample
+      if(FAILED(hr)) return hr;
+      hr = pOutSample->SetActualDataLength(m_nOutputSize);
+      if(FAILED(hr)) return hr;
+      BYTE *pBufferOut = NULL;
+      hr = pOutSample->GetPointer(&pBufferOut);
+      if(FAILED(hr)) return hr;
+      if(m_pTargetPicScaler)
+          m_pTargetPicScaler->Scale(pBufferOut, pBufferIn1, m_Vflip);
+      else
+          VFlipImg1(pBufferIn1,pBufferOut);
+      pOutSample->SetSyncPoint(TRUE);
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
+      pOutSample->Release();
+    }
+    m_LastFrame_us += m_iRepeatTime;
+    return hr;   
   }
+	// Copy the primary sample into our buffer
+  if(m_pSampleBuffers[0]==NULL) return E_POINTER;
+  memcpy(m_pSampleBuffers[0], pBufferIn1, m_nSampleSizes[0]);		// Copy the buffer
   return GenerateOutputSample(pSample, 0);
 }
 
@@ -309,6 +338,9 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
 {
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
   if(!pSample) return E_POINTER;
+  //if(!m_vInputPins[0]->IsConnected())
+  //{
+  //}
 	// Copy the secondary sample into our buffer
   {
     BYTE *pBuffer = NULL;
@@ -318,6 +350,14 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
     memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);		// Copy the buffer
   }  
   return GenerateOutputSample(pSample, 1);
+}
+
+
+HRESULT PicInPicFilter::StartStreaming(void)
+{
+  if(m_pSampleBuffers[0]!=NULL) memset(m_pSampleBuffers[0], 0, m_nSampleSizes[0]);
+  if(m_pSampleBuffers[1]!=NULL) memset(m_pSampleBuffers[1], 0, m_nSampleSizes[1]);
+  return VideoMixingBase::StartStreaming();
 }
 
 
@@ -415,11 +455,18 @@ HRESULT PicInPicFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, cons
   else
   {
     if(pBmih1==NULL)
-        return E_POINTER;
-	// Use size of first input
-    nOutputSize = m_nSampleSizes[0];
-    nOutputWidth = pBmih1->biWidth;
-    nOutputHeight = pBmih1->biHeight;
+    {
+      if(pBmih2==NULL) return E_POINTER;
+      nOutputSize = m_nSampleSizes[1];
+      nOutputWidth = pBmih2->biWidth;
+      nOutputHeight = pBmih2->biHeight;
+    }
+    else
+    {	// Use size of first input
+      nOutputSize = m_nSampleSizes[0];
+      nOutputWidth = pBmih1->biWidth;
+      nOutputHeight = pBmih1->biHeight;
+    }
   }  
 
   reconfigure();
@@ -536,7 +583,7 @@ bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 }
 
 
-void PicInPicFilter::reconfigure()
+void PicInPicFilter::reconfigure(void)
 {
   const BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
   const BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;

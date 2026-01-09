@@ -78,7 +78,7 @@ public:
 
   /// This method needs to overridden by child classes - add all possible accepted input combinations
   /// using the AddInputType method
-  virtual void InitialiseInputTypes() PURE;
+  virtual void InitialiseInputTypes(void) PURE;
   virtual HRESULT BreakConnect(PIN_DIRECTION dir);
 
 protected:
@@ -89,32 +89,24 @@ protected:
    */
   void AddInputType(const GUID* pType, const GUID* pSubType, const GUID* pFormat);
 
-  /**
-   * This method must be overridden in the sub class to apply the filter specific transformation
-   * It must return the size of the resulting transformed output buffer
-   */
+  /** This method must be overridden in the sub class to apply the filter specific transformation
+   * It must return the size of the resulting transformed output buffer. */
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength) PURE;
 
-  /// Video header of input
-  VIDEOINFOHEADER m_videoInHeader;
-  /// Video header of output
-  VIDEOINFOHEADER m_videoOutHeader;
-  // Other video information
-  /// Height of image
-  int m_nInHeight;
-  /// Width of image
-  int m_nInWidth;
-  int m_nInPixels;			  ///< Number of pixels in image
-  /// Height in output image
-  int m_nOutHeight;
-  /// Width in output image
-  int m_nOutWidth;
+  VIDEOINFOHEADER m_videoInHeader;	///< Video header of input
+  VIDEOINFOHEADER m_videoOutHeader;	///< Video header of output
+	// Other video information  
+  int m_nInHeight;			/// Height of image
+  int m_nInWidth;			/// Width of image
+  int m_nInPixels;			///< Number of pixels in image
+  int m_nOutHeight;			///< Height in output image
+  int m_nOutWidth;			///< Width in output image
   unsigned m_nOutPixels;		///< Number of pixels in output image
   int m_nBitCount;			///< Bit count of image
   bool m_Vflip;
 
 private:
-  // Used for storing and checking connection types
+	// Used for storing and checking connection types
   GUIDList_t m_vInTypes;
   GUIDList_t m_vInSubTypes;
   GUIDList_t m_vInFormats;

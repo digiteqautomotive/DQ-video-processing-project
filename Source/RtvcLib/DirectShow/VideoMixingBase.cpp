@@ -178,6 +178,7 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
     }
 
 	// Duplicate format from a primary pin including ConnectionFormat.
+    if(pConnectedPin==NULL) return E_POINTER;
     HRESULT hr = pConnectedPin->ConnectionMediaType(pMediaType);
     if(FAILED(hr))
     {
@@ -187,6 +188,10 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
     if(pOtherPin)
     {		// We need to recalculate the new width and height
       hr = SetOutputDimensions(&(m_VideoInHeader[0].bmiHeader), &(m_VideoInHeader[1].bmiHeader), m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
+      if(FAILED(hr)) return hr;
+    }
+
+    {
       BITMAPINFOHEADER *bmh1 = NULL;
       RECT *rcSource = NULL;
       RECT *rcTarget = NULL;
@@ -522,7 +527,7 @@ STDMETHODIMP VideoMixingBase::BeginFlush( int nIndex )
 }
 
 
-STDMETHODIMP VideoMixingBase::EndFlush( int nIndex )
+STDMETHODIMP VideoMixingBase::EndFlush(int nIndex)
 {
   ++m_uiEndFlushCount;
   if (m_uiEndFlushCount == 2)
@@ -533,7 +538,7 @@ STDMETHODIMP VideoMixingBase::EndFlush( int nIndex )
 }
 
 
-HRESULT VideoMixingBase::StartStreaming()
+HRESULT VideoMixingBase::StartStreaming(void)
 {
   // reset counters
   m_uiEndOfStreamCount = 0;

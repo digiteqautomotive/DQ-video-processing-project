@@ -56,10 +56,8 @@ typedef signed char yuvType ;
 // Forward declarations
 class PicConcatBase;
 
-/**
- * \ingroup DirectShowFilters
- * Video Mixing Filter for RGB24 and RGB32 Media
- */
+/**\ingroup DirectShowFilters
+ * Video Mixing Filter for RGB24 and RGB32 Media */
 class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages,
                          public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
@@ -93,6 +91,8 @@ public:
         virtual void OnDisconnect(int nIndex);
 
         void FeedRegion(void* pImg) const;
+
+        HRESULT StartStreaming(void);
 
 	/// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages);
