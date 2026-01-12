@@ -402,3 +402,137 @@ int OrigScalerYUYVImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
   return(1);
 } //end Scale.
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef char scaleType;
+
+
+int OrigScalerYUV420Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
+{
+	if( (pOutImg == NULL) || (pInImg == NULL) )
+		return(0);
+
+	scaleType*	pSrc		= (scaleType*)pInImg;
+	scaleType*	pDst		= (scaleType*)pOutImg;
+	
+	//double scalex = ((double)_widthIn)/((double)_widthOut);
+	//double scaley = ((double)_heightIn)/((double)_heightOut);
+
+	int x,y,posx,posy,i,j;
+	int accuX, accuY;	
+
+	/// Lum 1st.
+        accuY = posy = 0;
+	for(y = 0; y < _heightOut; y++)
+	{
+		//posy = (int)((scaley * (double)y) + 0.5);
+		//if(posy < 0)	posy = 0;
+		//else if(posy >= _heightIn) posy = _heightIn-1;
+
+		accuX = posx = 0;
+		for(x = 0; x < _widthOut; x++)
+		{
+			//posx = (int)((scalex * (double)x) + 0.5);
+			//if(posx < 0) posx = 0;
+			//else if(posx >= _widthIn) posx = _widthIn-1;
+
+			/// Apply a weighted 3x3 FIR filter.
+			int ai = (posy*_widthIn) + posx;
+			int lum = 7 * (int)(*(pSrc + ai));
+			for(i = -1; i <= 1; i++)
+			{
+				int row = posy + i;
+				if(row < 0)	row = 0;
+				else if(row >= _heightIn) row = _heightIn-1;
+				for(j = -1; j <= 1; j++)
+				{
+					int col = posx + j;
+					if(col < 0) col = 0;
+					else if(col >= _widthIn) col = _widthIn-1;
+
+					int aii = (row*_widthIn) + col;
+					lum += (int)(*(pSrc + aii));
+
+				}//end for j...
+			}//end for i...
+
+			/// Round before scaling.
+			int ao = (y*_widthOut) + x;
+			*(pDst + ao) = (scaleType)((lum + 8) >> 4);
+
+			accuX += _widthIn;			// DAA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
+		}//end for x...
+
+		accuY += _heightIn;				// DAA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;		
+	}//end for y...
+
+	/// Chr U and V.
+	int chrWidthIn		= _widthIn/2;
+	int chrHeightIn		= _heightIn/2;
+	int chrWidthOut		= _widthOut/2;
+	int chrHeightOut	= _heightOut/2;
+
+	scaleType*	pSrcU		= (scaleType*)pInImg + (_widthIn * _heightIn);
+	scaleType*	pSrcV		= (scaleType*)pInImg + (_widthIn * _heightIn) + (chrWidthIn * chrHeightIn);
+	scaleType*	pDstU		= (scaleType*)pOutImg + (_widthOut * _heightOut);
+	scaleType*	pDstV		= (scaleType*)pOutImg + (_widthOut * _heightOut) + (chrWidthOut * chrHeightOut);
+
+	accuY = posy = 0;
+	for(y = 0; y < chrHeightOut; y++)
+	{
+		//posy = (int)((scaley * (double)y) + 0.5);
+		//if(posy < 0)	posy = 0;
+		//else if(posy >= chrHeightIn) posy = chrHeightIn-1;
+
+		accuX = posx = 0;
+		for(x = 0; x < chrWidthOut; x++)
+		{
+			//posx = (int)((scalex * (double)x) + 0.5);
+			//if(posx < 0) posx = 0;
+			//else if(posx >= chrWidthIn) posx = chrWidthIn-1;
+
+			/// Apply a weighted 3x3 FIR filter.
+			int ai = (posy*chrWidthIn) + posx;
+			int chrU = 7 * (int)(*(pSrcU + ai));
+			int chrV = 7 * (int)(*(pSrcV + ai));
+			for(i = -1; i <= 1; i++)
+			{
+				int row = posy + i;
+				if(row < 0)	row = 0;
+				else if(row >= chrHeightIn) row = chrHeightIn-1;
+				for(j = -1; j <= 1; j++)
+				{
+					int col = posx + j;
+					if(col < 0) col = 0;
+					else if(col >= chrWidthIn) col = chrWidthIn-1;
+
+					int aii = (row*chrWidthIn) + col;
+					chrU += (int)(*(pSrcU + aii));
+					chrV += (int)(*(pSrcV + aii));
+
+				}//end for j...
+			}//end for i...
+
+			/// Round before scaling.
+			int ao = (y*chrWidthOut) + x;
+			*(pDstU + ao) = (scaleType)((chrU + 8) >> 4);
+			*(pDstV + ao) = (scaleType)((chrV + 8) >> 4);
+
+			accuX += _widthIn;			// DDA integer only algorithm
+			posx += accuX / _widthOut;
+			accuX = accuX % _widthOut;
+		}//end for x...
+
+		accuY += _heightIn;				// DDA integer only algorithm
+                posy += accuY / _heightOut;
+                accuY = accuY % _heightOut;		
+	}//end for y...
+	return(1);
+}//end Scale.
+
+

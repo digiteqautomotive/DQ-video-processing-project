@@ -69,7 +69,7 @@ class OrigScalerYUYVImpl: public PicScalerBase
 {
 public:
 	// Construction and destruction.
-	OrigScalerYUYVImpl(void) { }
+	OrigScalerYUYVImpl(void) {}
 	OrigScalerYUYVImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerYUYVImpl(void) {}
 
@@ -78,4 +78,20 @@ public:
 	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};	
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
-}; //end OrigScalerUYVYImpl.
+}; //end OrigScalerUYVYImpl
+
+
+class OrigScalerYUV420Impl: public PicScalerBase
+{
+public:
+	// Construction and destruction.
+	OrigScalerYUV420Impl(void) {}
+	OrigScalerYUV420Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
+	virtual ~OrigScalerYUV420Impl(void) {}
+
+	// Interface.
+	virtual int GetVideoFormat(void) const {return 16;}
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};	
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
+
+}; //end OrigScalerYUV420

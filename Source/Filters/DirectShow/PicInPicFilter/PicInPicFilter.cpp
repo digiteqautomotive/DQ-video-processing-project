@@ -832,7 +832,7 @@ HRESULT hr;
 bool PicInPicFilter::parameterChangeAffectsOutput( const char* szParam )
 {
   if((strcmp(szParam, FILTER_PARAM_TARGET_WIDTH) == 0) ||
-		 ( strcmp(szParam, FILTER_PARAM_TARGET_HEIGHT) == 0))
+     (strcmp(szParam, FILTER_PARAM_TARGET_HEIGHT) == 0))
   {
     return true;
   }

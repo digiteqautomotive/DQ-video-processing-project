@@ -35,14 +35,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _PICSCALERYUV420PIMPL_H
 #define _PICSCALERYUV420PIMPL_H
 
-#pragma once
 
 #include "PicScalerBase.h"
 
 #ifdef _BUILD_FOR_SHORT
 typedef short scaleType;
 #else
-typedef char scaleType ;
+typedef char scaleType;
 #endif
 
 
@@ -55,7 +54,7 @@ class PicScalerYUV420PImpl: public PicScalerBase
 {
 public:
 		// Construction and destruction.
-	PicScalerYUV420PImpl(void) { }
+	PicScalerYUV420PImpl(void) {}
 	PicScalerYUV420PImpl(int widthOut, int heightOut, int widthIn, int heightIn): PicScalerBase(widthOut,heightOut,widthIn,heightIn) { }
 	virtual ~PicScalerYUV420PImpl(void) {}	
 

@@ -1,4 +1,4 @@
-/** Copyright (c) 2025 Jaroslav Fojtik
+/** Copyright (c) 2025-2026 Jaroslav Fojtik
     All rights reserved.
 **/
 #include <stdio.h>
@@ -11,6 +11,7 @@
 #include "PicScalerARGB32MMX.h"
 #include "PicScalerARGB32SSE.h"
 #include "PicScalerYUYVImpl.h"
+#include "PicScalerYUV420PImpl.h"
 #include "ScaleTesters.h"
 
 #include "PicRotateRGB32Impl.h"
@@ -40,6 +41,7 @@ unsigned char FeaturesCPU = 0x80;
  #define int32_t int
 #endif
 
+#define BITS_PER_PIXEL_YUV420P	12
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -406,6 +408,40 @@ bool Pause = false;
          if(pos)
          {
            printf("\nYUYV Compare error %ux%u -> %ux%u; pos=%d.", WithIn, HeightIn, WithOut, HeightOut, pos);
+           goto ReturnErr;
+         }
+
+       }
+     }
+
+//-----------------------------------YV420-----------------------------------------------
+
+  for(int WithIn=0; WithIn<12; WithIn+=2)
+   for(int HeightIn=0; HeightIn<10; HeightIn+=2)
+    for(int WithOut=0; WithOut<12; WithOut+=2)
+     for(int HeightOut=0; HeightOut<10; HeightOut+=2)
+     {
+       {
+         int InSize = (BITS_PER_PIXEL_YUV420P * WithIn * HeightIn) / 8;
+         int OutSize = (BITS_PER_PIXEL_YUV420P * WithOut * HeightOut) / 8;
+         if(InSize==0) OutSize=0;
+         PicScalerYUV420PImpl picScalerYUV420(WithOut,HeightOut,WithIn,HeightIn);
+         OrigScalerYUV420Impl origScalerYUV420(WithOut,HeightOut,WithIn,HeightIn);
+
+         memcpy(BlobOut,BlobIn,16);
+         memcpy(BlobTest,BlobIn,16);
+         memset(BlobOut+16,0xFE,OutSize);
+         memset(BlobTest+16,0xFC,OutSize);
+         memcpy(BlobOut+16+OutSize,BlobIn,16);		// tail
+         memcpy(BlobTest+16+OutSize,BlobIn,16);		// reference tail
+
+         picScalerYUV420.Scale(BlobOut+16,BlobIn+16);
+         origScalerYUV420.Scale(BlobTest+16,BlobIn+16);
+
+         const int pos = memcmp(BlobTest, BlobOut, OutSize+32);
+         if(pos)
+         {
+           printf("\nYUV420 Compare error %ux%u -> %ux%u; pos=%d.", WithIn, HeightIn, WithOut, HeightOut, pos);
            goto ReturnErr;
          }
 
@@ -868,6 +904,8 @@ bool Pause = false;
     }
     printf("\nConvert Orig YUV420 to RGB24 resolution 1920,1080 time %.3f[ms].", DurationMin/1000.0);
 
+	/////////////////////////////////////////////////////////
+
     {
       PicScalerRGB24Impl picScalerRGB24(1920,1080,800,600);
       DurationMin = BenchScaller(picScalerRGB24, BlobIn, BlobOut);
@@ -916,7 +954,21 @@ bool Pause = false;
       PicScalerYUYVImpl PicScalerYUYV(1920,1080,800,600);
       DurationMin = BenchScaller(PicScalerYUYV, BlobIn, BlobOut);
     }
-      printf("\nScale YUYV from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+    printf("\nScale YUYV from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+
+    {
+      PicScalerYUV420PImpl ScalerYUV420(1920,1080,800,600);
+      DurationMin = BenchScaller(ScalerYUV420, BlobIn, BlobOut);
+    }
+    printf("\nScale YUV420 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+
+    {
+      OrigScalerYUV420Impl origScalerYUV420(1920,1080,800,600);
+      DurationMin = BenchScaller(origScalerYUV420, BlobIn, BlobOut);
+    }
+    printf(" Orig %.3f[ms].", DurationMin/1000.0);
+
+	/////////////////////////////////////////////////////////
 
     {
       PicRotateRGB24Impl PicRotateRGB24;
