@@ -460,81 +460,6 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
 }
 
 
-/*
-HRESULT PicInPicFilter::InitializeOutputSample(IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex)
-{
-	AM_SAMPLE2_PROPERTIES * const pProperties = m_vInputPins[nInputIndex]->SampleProps();
-
-	IMediaSample *pOutSample;
-	//Let's get rid of the const
-
-	AM_SAMPLE2_PROPERTIES* pProps = (AM_SAMPLE2_PROPERTIES*)pProperties;
-	// default - times are the same
-	DWORD dwFlags = 0;
-	// This will prevent the image renderer from switching us to DirectDraw
-	// when we can't do it without skipping frames because we're not on a
-	// keyframe.  If it really has to switch us, it still will, but then we
-	// will have to wait for the next keyframe
-	if (!(pProps->dwSampleFlags & AM_SAMPLE_SPLICEPOINT)) {
-		dwFlags |= AM_GBF_NOTASYNCPOINT;
-	}
-
-	ASSERT(m_vOutputPins[nOutputIndex]->GetAllocator() != NULL);
-	HRESULT hr = m_vOutputPins[nOutputIndex]->GetAllocator()->GetBuffer(
-		&pOutSample
-		, pProps->dwSampleFlags & AM_SAMPLE_TIMEVALID ?
-		&pProps->tStart : NULL
-		, pProps->dwSampleFlags & AM_SAMPLE_STOPVALID ?
-		&pProps->tStop : NULL
-		, dwFlags
-		);
-	*ppOutSample = pOutSample;
-	if (FAILED(hr)) {
-		return hr;
-	}
-
-	ASSERT(pOutSample);
-	IMediaSample2 *pOutSample2;
-	if (SUCCEEDED(pOutSample->QueryInterface(IID_IMediaSample2,
-		(void **)&pOutSample2))) {
-			//  Modify it
-			AM_SAMPLE2_PROPERTIES OutProps;
-			EXECUTE_ASSERT(SUCCEEDED(pOutSample2->GetProperties(
-				FIELD_OFFSET(AM_SAMPLE2_PROPERTIES, tStart), (PBYTE)&OutProps)
-				));
-			OutProps.dwTypeSpecificFlags = pProps->dwTypeSpecificFlags;
-			OutProps.dwSampleFlags =
-				(OutProps.dwSampleFlags & AM_SAMPLE_TYPECHANGED) |
-				(pProps->dwSampleFlags & ~AM_SAMPLE_TYPECHANGED);
-			OutProps.tStart = pProps->tStart;
-			OutProps.tStop  = pProps->tStop;
-			OutProps.cbData = FIELD_OFFSET(AM_SAMPLE2_PROPERTIES, dwStreamId);
-			hr = pOutSample2->SetProperties(
-				FIELD_OFFSET(AM_SAMPLE2_PROPERTIES, dwStreamId),
-				(PBYTE)&OutProps
-				);
-			pOutSample2->Release();
-	} else {
-		if (pProps->dwSampleFlags & AM_SAMPLE_TIMEVALID) {
-			pOutSample->SetTime(&pProps->tStart,
-				&pProps->tStop);
-		}
-		if (pProps->dwSampleFlags & AM_SAMPLE_SPLICEPOINT) {
-			pOutSample->SetSyncPoint(TRUE);
-		}
-		if (pProps->dwSampleFlags & AM_SAMPLE_DATADISCONTINUITY) {
-			pOutSample->SetDiscontinuity(TRUE);
-		}
-		// Copy the media times
-		
-		if(m_MediaStart>=0) {
-			pOutSample->SetMediaTime(&m_MediaStart,&m_MediaEnd);
-		}
-	}
-	return S_OK;
-}
-*/
-
 
 /** 
 #ifdef _WIN32
@@ -850,12 +775,14 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   {
     if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
     {
-      if(ConnectionFormat[0]==MEDIASUBTYPE_YV24 || ConnectionFormat[1]==MEDIASUBTYPE_YV24)
+      if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vOutputPins[0]->IsConnected()) ||
+         (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vOutputPins[1]->IsConnected()))
           return S_OK;
     }
     else if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
     {
-      if(ConnectionFormat[0]==MEDIASUBTYPE_RGB24 || ConnectionFormat[1]==MEDIASUBTYPE_RGB24)
+      if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vOutputPins[0]->IsConnected()) ||
+         (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vOutputPins[1]->IsConnected()))
           return S_OK;
     }
   }
@@ -863,13 +790,14 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   {
     if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
     {
-      if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
+      if((ConnectionFormat[0]==MEDIASUBTYPE_AYUV && m_vOutputPins[0]->IsConnected()) ||
+         (ConnectionFormat[1]==MEDIASUBTYPE_AYUV && m_vOutputPins[1]->IsConnected()))
           return S_OK;
     }
     else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
     {
-      if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
-         ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
+      if(((ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32) && m_vOutputPins[0]->IsConnected()) ||
+         ((ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32) && m_vOutputPins[1]->IsConnected()))
           return S_OK;
     }
   }

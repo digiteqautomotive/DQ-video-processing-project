@@ -9,8 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2015, CSIR
-Copyright (c) 2025-2026, Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -136,14 +135,6 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
   if (direction == PINDIR_INPUT)
   {
     //Set defaults
-    if (m_nOutWidth == 0)
-    {
-      m_nOutWidth = m_nInWidth;
-    }
-    if (m_nOutHeight == 0)
-    {
-      m_nOutHeight = m_nInHeight;
-    }
     //Determine whether we are connected to a RGB24 or 32 source
     if (pmt->majortype == MEDIATYPE_Video)
     {
@@ -224,38 +215,39 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pBi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
     //Now we need to calculate the size of the output image
-
+    if(m_nOutHeight!=0 && m_nOutWidth!=0)
+    {
 	// Set height
-    pBi->biHeight = (pBi->biHeight<0) ? -m_nOutHeight : m_nOutHeight;	// Propagate negative height to output.
-    if(pBi->biHeight == 0) return E_INVALIDARG;
+      pBi->biHeight = (pBi->biHeight<0) ? -m_nOutHeight : m_nOutHeight;	// Propagate negative height to output.
+      if(pBi->biHeight == 0) return E_INVALIDARG;
 
 	// Set width
-    pBi->biWidth = m_nOutWidth;
-    if(pBi->biWidth <= 0) return E_INVALIDARG;
+      pBi->biWidth = m_nOutWidth;
+      if(pBi->biWidth <= 0) return E_INVALIDARG;
 
 	// Set size
-    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
-        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
-    else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
-    {
-       if((m_nOutWidth & 1)==1)
-           pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;		// Odd values cannot be used for YUYV encoding.
-       if((m_nOutHeight & 1)==1)
-           pBi->biHeight = m_nOutHeight = m_nOutHeight & ~1;		// Nor odd height can be accepted.
-       pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
+      if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
+          pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
+      else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
+      {
+        if((m_nOutWidth & 1)==1)
+            pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;		// Odd values cannot be used for YUYV encoding.
+        if((m_nOutHeight & 1)==1)
+            pBi->biHeight = m_nOutHeight = m_nOutHeight & ~1;		// Nor odd height can be accepted.
+        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
+      }
+      else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
+             pMediaType->subtype==MEDIASUBTYPE_UYVY)
+      {
+        if((m_nOutWidth & 1)==1)
+          pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;			// Odd values cannot be used for YUYV encoding.
+        pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
+      }
+      else
+          pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
+     pMediaType->lSampleSize = pBi->biSizeImage;
     }
-    else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
-            pMediaType->subtype==MEDIASUBTYPE_UYVY)
-    {
-       if((m_nOutWidth & 1)==1)
-         pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;			// Odd values cannot be used for YUYV encoding.
-       pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
-    }
-    else
-        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
-    pMediaType->lSampleSize = pBi->biSizeImage;
-
-    // Adjust recs
+	// Adjust recs
     rcSource->top = 0;
     rcSource->left = 0;
     rcSource->right = pBi->biWidth;
@@ -323,28 +315,28 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
   {
     const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)mtOut->pbFormat;
     const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutHeight)
+    if(m_nOutHeight!=0 && pBiOut->biHeight!=m_nOutHeight)
     {
       if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
         m_Vflip = true;
       else
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
-    if(pBiOut->biWidth != m_nOutWidth)
+    if(m_nOutWidth!=0 && pBiOut->biWidth!=m_nOutWidth)
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
   }
   else if(mtOut->formattype==FORMAT_VideoInfo2)
   {
     const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)mtOut->pbFormat;
     const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutHeight)
+    if(m_nOutHeight!=0 && pBiOut->biHeight != m_nOutHeight)
     {
       if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
         m_Vflip = true;
       else
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
-    if(pBiOut->biWidth != m_nOutWidth)
+    if(m_nOutWidth!=0 && pBiOut->biWidth!=m_nOutWidth)
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
   }
   else
@@ -456,22 +448,29 @@ void ScaleFilter::initParameters()
 HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
 	//make sure we were able to initialize our converter
-  if(m_pScaler==NULL)
-  {
-    DbgLog((LOG_TRACE, 0, TEXT("Scaller is not initialised - unable to scale")));
-    return E_FAIL;
-  }
   if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
 
-  lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;
-  if(lOutActualDataLength > lOutBufferSize) return E_FAIL;			// Output buffer is too small
-  if(labs(m_nInWidth* m_nInHeight*m_nBitsPerPixel)/8 > lInBufferSize) return E_FAIL; // Input buffer is too small
+  lOutActualDataLength = labs(m_nInWidth * m_nInHeight * m_nBitsPerPixel) / 8;		// Calculate input data length
+  if(labs(lOutActualDataLength) > lInBufferSize) return E_INVALIDARG;			// Input buffer is too small
 
+  if(m_nOutWidth==0 || m_nOutHeight==0 || (m_nOutWidth==m_nInWidth && m_nOutHeight==m_nInHeight))
+  {
+    memcpy(pBufferOut,pBufferIn,lOutActualDataLength);
+  }
+  else
+  {
+    lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;	// Calculate output data length
+    if(m_pScaler==NULL)
+    {
+      DbgLog((LOG_TRACE, 0, TEXT("Scaller is not initialised - unable to scale")));
+      return E_FAIL;
+    }
 	//Call scaling conversion code
-  m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
-  m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
-  int res = m_pScaler->Scale(pBufferOut, pBufferIn, m_Vflip);
-  ASSERT(res == 1);
+    m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
+    m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
+    int res = m_pScaler->Scale(pBufferOut, pBufferIn, m_Vflip);
+    ASSERT(res == 1);
+  }
   return S_OK;
 }
 

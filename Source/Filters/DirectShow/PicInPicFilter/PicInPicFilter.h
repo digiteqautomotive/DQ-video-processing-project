@@ -8,7 +8,7 @@ DESCRIPTION			: Picture in picture Filter for RGB24 and RGB32 Media
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008-2012, CSIR
               2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,16 +104,6 @@ public:
 
 	/// For configuration dialog
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
-
-	// TEMP Overriding to prevent RGB32
-	//virtual void InitialiseInputTypes()
-	//{
-	//	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-	//}
-	//virtual void InitialiseOutputTypes()
-	//{
-	//	AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-	//}
 
 	STDMETHODIMP SetParameter( const char* type, const char* value);
 
