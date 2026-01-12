@@ -1,5 +1,4 @@
 /** @file
-
 MODULE				: PicScalerRGB32Impl
 
 FILE NAME			: PicScalerRGB32Impl.cpp
@@ -12,20 +11,25 @@ DESCRIPTION			: An RGB32 implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025 Jaroslav Fojtik
-All rights reserved.
-
-===========================================================================
-*/
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
+===========================================================================*/
 #include <stdlib.h>
 
 #include "PicScalerRGB32Impl.h"
 
-/*
-===========================================================================
+#include <uuids.h>
+
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+bool PicScalerRGB32Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB32;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.

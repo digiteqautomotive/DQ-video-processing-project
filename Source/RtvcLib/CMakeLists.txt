@@ -34,6 +34,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicCropperRGB32Impl.cpp
 ../libs/VppLib/src/PicInPicRGB24Impl.cpp
 ../libs/VppLib/src/PicInPicRGB32Impl.cpp
+../libs/VppLib/src/PicInPicYV24Impl.cpp
 ../libs/VppLib/src/PicRotateRGB24Impl.cpp
 ../libs/VppLib/src/PicRotateRGB32Impl.cpp
 ../libs/VppLib/src/PicRotateRGBBase.cpp

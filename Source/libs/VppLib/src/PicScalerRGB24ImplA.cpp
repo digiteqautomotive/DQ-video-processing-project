@@ -17,8 +17,7 @@ LICENSE: Software License Agreement (BSD License)
 Copyright (c) 2025 Jaroslav Fojtik
 All rights reserved.
 
-===========================================================================
-*/
+===========================================================================*/
 #include <stdlib.h>
 
 #include "PicScalerRGB24Impl.h"

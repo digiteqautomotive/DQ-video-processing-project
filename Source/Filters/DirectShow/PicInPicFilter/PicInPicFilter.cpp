@@ -775,14 +775,14 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   {
     if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
     {
-      if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vOutputPins[0]->IsConnected()) ||
-         (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vOutputPins[1]->IsConnected()))
+      if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
+         (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
           return S_OK;
     }
     else if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
     {
-      if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vOutputPins[0]->IsConnected()) ||
-         (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vOutputPins[1]->IsConnected()))
+      if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vInputPins[0]->IsConnected()) ||
+         (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vInputPins[1]->IsConnected()))
           return S_OK;
     }
   }
@@ -790,14 +790,14 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   {
     if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
     {
-      if((ConnectionFormat[0]==MEDIASUBTYPE_AYUV && m_vOutputPins[0]->IsConnected()) ||
-         (ConnectionFormat[1]==MEDIASUBTYPE_AYUV && m_vOutputPins[1]->IsConnected()))
+      if((ConnectionFormat[0]==MEDIASUBTYPE_AYUV && m_vInputPins[0]->IsConnected()) ||
+         (ConnectionFormat[1]==MEDIASUBTYPE_AYUV && m_vInputPins[1]->IsConnected()))
           return S_OK;
     }
     else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
     {
-      if(((ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32) && m_vOutputPins[0]->IsConnected()) ||
-         ((ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32) && m_vOutputPins[1]->IsConnected()))
+      if(((ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32) && m_vInputPins[0]->IsConnected()) ||
+         ((ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32) && m_vInputPins[1]->IsConnected()))
           return S_OK;
     }
   }

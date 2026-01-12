@@ -39,18 +39,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicScalerRGB24Impl.h"
 
-/*
-===========================================================================
+#include <uuids.h>
+
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicScalerRGB24Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.
 @param pOutImg	: Packed RGB 888 format main base image.
 @param pInImg		: Packed RGB 888 format smaller sub image.
-@return					: 0 = failed, 1 = success.
-*/
+@return					: 0 = failed, 1 = success. */
 int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
 	if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)
@@ -71,7 +79,7 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
                 posy += accuY / _heightOut;
                 accuY = accuY % _heightOut;
 
-		const int pRow[3] = {						// Calculate row starts only once per row
+		const unsigned pRow[3] = {						// Calculate row starts only once per row
 			((posy==0) ? 0 : (3*_widthIn*(posy-1))),
 			3*_widthIn*posy,
 			((posy+1>=_heightIn) ? (3*_widthIn*(_heightIn-1)) : (3*_widthIn*(posy+1)))};
@@ -91,7 +99,7 @@ int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 
 			for(i=0; i<=2; i++)
 			{
-				int aii = pRow[i] + 3 * ((posx==0) ? (0) : (posx - 1));
+				size_t aii = pRow[i] + 3 * ((posx==0) ? (0) : (posx - 1));
 				b += (*(pSrc + aii));
 				g += (*(pSrc + (aii+1)));
 				r += (*(pSrc + (aii+2)));

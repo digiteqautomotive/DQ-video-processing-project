@@ -490,7 +490,7 @@ HRESULT ScaleFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
   if(riid == IID_IPropertyBag)		return GetInterface(static_cast<IPropertyBag*>(this), ppv);
   if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
 
-    // Call the parent class.
+	// Call the parent class.
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
