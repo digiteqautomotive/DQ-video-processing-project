@@ -844,6 +844,15 @@ bool Pause = false;
     }
     printf("\nConvert Orig AYUV to RGB24 resolution 1920,1080 time %.3f[ms].", DurationMin/1000.0);
 
+   {
+      AYUV444toARGB32Converter picConvertedAYUV2ARGB32(1920,1080);
+      DurationMin = BenchConverter(picConvertedAYUV2ARGB32, BlobIn, BlobOut);
+      printf("\nConvert AYUV to ARGB32 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      picConvertedAYUV2ARGB32.SetFlip(true);
+      DurationMin = BenchConverter(picConvertedAYUV2ARGB32, BlobIn, BlobOut);
+    }
+    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+
     {
       YUV420toRGB24Converter picConvertedYUV420toRGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);

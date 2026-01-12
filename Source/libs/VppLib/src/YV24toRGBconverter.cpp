@@ -36,15 +36,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #define RYUVRGB24C_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
 
 /*===========================================================================
 	Private Methods.
 ===========================================================================*/
 
-
 #ifndef int32_t
  #define int32_t int
 #endif
+
+
+bool YV24toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_YV24;
+}
+
 
 void YV24toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
@@ -111,6 +119,15 @@ int32_t X;
       Out+=3;
     }
   }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+bool YV24toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_YV24;
 }
 
 

@@ -33,26 +33,30 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
+===========================================================================*/
 #include <stdio.h>
-#endif
-
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
 
 #include "PicScalerYUV420PImpl.h"
 
-/*
-===========================================================================
+#include <uuids.h>
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
+static const GUID MEDIASUBTYPE_YUV420P_S = { 0xc528b79f, 0xf025, 0x4eb7, { 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8 } };
+//DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicScalerYUV420PImpl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_YUV420P_S || VideoFormat==MEDIASUBTYPE_I420 || VideoFormat==MEDIASUBTYPE_YV12;
+}
+
 
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. The 

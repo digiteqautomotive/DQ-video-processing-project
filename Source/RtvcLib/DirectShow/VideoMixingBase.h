@@ -9,7 +9,7 @@ DESCRIPTION            : Video mixing base class for RGB24 and RGB32 media
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2017, CSIR
-All rights reserved.
+              2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,18 +28,14 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include "MultiIOBaseFilter.h"
 
-/**
- * \ingroup DirectShowLib
+/** \ingroup DirectShowLib
  * Base class for video mixing renderers. 
- * Implements common video mixing functionality for RGB24/32 mixers with two inputs and one output.
- */
+ * Implements common video mixing functionality for RGB24/32 mixers with two inputs and one output. */
 class VideoMixingBase: public CMultiIOBaseFilter
 {
 public:
@@ -114,7 +110,7 @@ public:
 	  CMultiIOBaseFilter::OnConnect(nIndex,eDirection);
 	  if(PINDIR_INPUT==eDirection && nIndex<=1)
 	  {
-            //ConnectionFormat[nIndex] = m_VideoInHeader[nIndex].pbF`ormat
+            //ConnectionFormat[nIndex] = m_VideoInHeader[nIndex].pbFormat
 	  }
 	}
 */

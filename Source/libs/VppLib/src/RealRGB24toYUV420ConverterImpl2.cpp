@@ -40,15 +40,8 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
+===========================================================================*/
 #include <stdio.h>
-#endif
-
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>

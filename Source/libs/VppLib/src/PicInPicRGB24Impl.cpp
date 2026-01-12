@@ -11,54 +11,54 @@ DESCRIPTION				: An RGB24 implementation derived from the general
 						into another packed RGB24 image.
 
 COPYRIGHT			: (c)CSIR 2007-2010 all rights resevered
-				(c)2025 Jaroslav Fojtik
+				(c)2025-2026 Jaroslav Fojtik
 
 LICENSE				: Software License Agreement (BSD License)
 
 RESTRICTIONS			: Redistribution and use in source and binary forms, with or without 
-										modification, are permitted provided that the following conditions 
-										are met:
+				modification, are permitted provided that the following conditions 
+				are met:
 
-										* Redistributions of source code must retain the above copyright notice, 
-										this list of conditions and the following disclaimer.
-										* Redistributions in binary form must reproduce the above copyright notice, 
-										this list of conditions and the following disclaimer in the documentation 
-										and/or other materials provided with the distribution.
-										* Neither the name of the CSIR nor the names of its contributors may be used 
-										to endorse or promote products derived from this software without specific 
-										prior written permission.
+				* Redistributions of source code must retain the above copyright notice, 
+				this list of conditions and the following disclaimer.
+				* Redistributions in binary form must reproduce the above copyright notice, 
+				this list of conditions and the following disclaimer in the documentation 
+				and/or other materials provided with the distribution.
+				* Neither the name of the CSIR nor the names of its contributors may be used 
+				to endorse or promote products derived from this software without specific 
+				prior written permission.
 
-										THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-										"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-										LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-										A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-										CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-										EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-										PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-										PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-										LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-										NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-										SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
+				THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+				"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+				LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+				A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+				CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+				EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+				PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+				PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+				LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+				NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+				SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+===========================================================================*/
 #include <stdio.h>
-#endif
-
 #include <string.h>
-#include <stdlib.h>
 
 #include "PicInPicRGB24Impl.h"
 
-/*
-===========================================================================
+#include <uuids.h>
+
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicInPicRGB24Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
+
 /** Insert the sub image into the main image.
 Write the sub image into the main image at the top-left location of
 (_xPos,_yPos). Only write _writeWidth and _writeHeight pixels of the
@@ -67,7 +67,7 @@ of the main image.
 @param pSubImg	: Packed RGB 888 format smaller sub image.
 @param pImg			: Packed RGB 888 format main base image.
 @return				: none. */
-void PicInPicRGB24Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
+void PicInPicRGB24Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip) const
 {
     const unsigned char *pSrc	= (const unsigned char*)pSubImg;
     unsigned char *pDst		= (unsigned char*)pImg;
@@ -92,7 +92,7 @@ void PicInPicRGB24Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip)
         pSrc += (3*_subWidth);
       }  //end for y...
    }
-}//end DoInsert.
+} //end DoInsert.
 
 
 /** Insert the sub image into the main image with a border.
@@ -103,7 +103,7 @@ of the main image.
 @param pSubImg	: Packed RGB 888 format smaller sub image.
 @param pImg			: Packed RGB 888 format main base image.
 @return					: none. */
-void PicInPicRGB24Impl::DoInsertWithBorder(const void* pSubImg, void* pImg)
+void PicInPicRGB24Impl::DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip) const
 {
     unsigned char*	pSrc		= (unsigned char*)pSubImg;
     unsigned char*	pDst		= (unsigned char*)pImg + 3*((_yPos*_width) + _xPos);

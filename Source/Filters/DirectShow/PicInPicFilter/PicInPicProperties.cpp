@@ -1,5 +1,6 @@
 #include "PicInPicProperties.h"
 
+
 CUnknown * WINAPI PicInPicProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   PicInPicProperties *pNewObject = new PicInPicProperties(pUnk);

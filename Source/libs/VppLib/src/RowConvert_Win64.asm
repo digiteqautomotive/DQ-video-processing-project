@@ -5,6 +5,11 @@
 .CODE             ;Indicates the start of a code segment.
 
 
+KOEF_U2B	EQU	520
+KOEF_U2G	EQU	101
+KOEF_V2R	EQU	292
+KOEF_V2G	EQU	149
+
 
 ;void ConvertRowAsmAYUV_ARGB24(void *pDst, void *pSrc, unsigned Pixels);
         public  ConvertRowAsmAYUV_ARGB24
@@ -30,7 +35,7 @@ LoopPx: movzx	ecx,byte ptr [rsi+3]	; V
 
 	mov	dh,byte ptr [rsi+1]
 
-	imul	eax,ecx,292		; 292*V	
+	imul	eax,ecx,KOEF_V2R	; 292*V	
 	movzx	R9d,byte ptr [rsi+2]	; U	
 	add	eax,edx
 	mov	ebx,eax
@@ -43,7 +48,7 @@ LoopPx: movzx	ecx,byte ptr [rsi+3]	; V
 	cmovnz	ax,bx
 	mov	[rdi+2],ah		;  STORE R ******
 
-	imul	eax,R9d,520		; 520*V	
+	imul	eax,R9d,KOEF_U2B	; 520*V	
 	add	eax,edx
 
 	mov	ebx,eax
@@ -54,9 +59,9 @@ LoopPx: movzx	ecx,byte ptr [rsi+3]	; V
 
 	mov	[rdi],ah		; STORE B ******
 
-	imul	eax,ecx,149		; 149*V
+	imul	eax,ecx,KOEF_V2G	; 149*V
 	sub	edx,eax	
-	imul	ecx,R9d,101		; 101*U		
+	imul	ecx,R9d,KOEF_U2G	; 101*U		
 	sub	edx,ecx			; 255*Y - 102*U - 148*V
 					;EDX = 255*Y	
 	mov	ebx,edx
@@ -102,9 +107,9 @@ LoopPx: mov	al,byte ptr [rsi]	; A
 	xor	edx,edx		
 	sub	ecx,128
 
-	mov	dh,byte ptr [rsi+1]
+	mov	dh,byte ptr [rsi+1]	; Y
 
-	imul	eax,ecx,359		; 359*V	
+	imul	eax,ecx,KOEF_V2R	; 292*V	
 	movzx	R9d,byte ptr [rsi+2]	; U	
 	add	eax,edx
 	mov	ebx,eax
@@ -117,7 +122,7 @@ LoopPx: mov	al,byte ptr [rsi]	; A
 	cmovnz	ax,bx
 	mov	[rdi+2],ah		;  STORE R ******
 
-	imul	eax,R9d,454		; 454*V	
+	imul	eax,R9d,KOEF_U2B	; 520*V	
 	add	eax,edx
 
 	mov	ebx,eax
@@ -128,9 +133,9 @@ LoopPx: mov	al,byte ptr [rsi]	; A
 
 	mov	[rdi],ah		; STORE B ******
 
-	imul	eax,ecx,183		; 183*V
+	imul	eax,ecx,KOEF_V2G	; 149*V
 	sub	edx,eax	
-	imul	ecx,R9d,88		; 88*U		
+	imul	ecx,R9d,KOEF_U2G	; 101*U		
 	sub	edx,ecx			; 255*Y - 102*U - 148*V
 					;EDX = 255*Y	
 	mov	ebx,edx
@@ -187,7 +192,7 @@ LoopPx:	xor	edx,edx
 	mov	al,[R9]			; V
 	sub	eax,128
 	mov	R10,rax	
-	imul	eax,292			; 292*V	
+	imul	eax,KOEF_V2R		; 292*V	
 	add	eax,edx
 	
 	test	eax,0FFFF0000h
@@ -199,7 +204,7 @@ NormR1:	mov	[rdi+2],ah		; R1
 	movzx	eax,byte ptr [R8]	; U
 	sub	eax,128
 	mov	R11d,eax
-	imul	eax,520			; 520*U
+	imul	eax,KOEF_U2B		; 520*U
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -209,11 +214,11 @@ NormR1:	mov	[rdi+2],ah		; R1
 NormB1:	mov	[rdi],ah		; B1
 				;EDX = 255*Y
 	mov	rax,R10			; V	
-	imul	eax,149
+	imul	eax,KOEF_V2G
 	sub	edx,eax
 	
 	mov	eax,R11d		; U
-	imul	eax,101			; 101*U
+	imul	eax,KOEF_U2G		; 101*U
 	sub	edx,eax			; 255*Y - 101*U - 149*V
 
 	test	edx,0FFFF0000h
@@ -229,7 +234,7 @@ NormG1:	mov	[rdi+1],dh	; G1
 	mov	dh,[rsi]		; 255*Y		
 
 	mov	rax,R10			; V	
-	imul	eax,292			; 292*V	
+	imul	eax,KOEF_V2R		; 292*V	
 	add	eax,edx
 	
 	test	eax,0FFFF0000h
@@ -239,7 +244,7 @@ NormG1:	mov	[rdi+1],dh	; G1
 NormR2:	mov	[rdi+5],ah	; R2
 
 	mov	eax,R11d		; U
-	imul	eax,520			; 520*U	
+	imul	eax,KOEF_U2B		; 520*U	
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -250,11 +255,11 @@ NormB2:	mov	[rdi+3],ah		; B2
 
 				;EDX = 255*Y
 	mov	rax,R10			; V	
-	imul	eax,149
+	imul	eax,KOEF_V2G
 	sub	edx,eax
 	
 	mov	eax,R11d		; U
-	imul	eax,101			; 101*U
+	imul	eax,KOEF_U2G		; 101*U
 	sub	edx,eax		; 255*Y - 101*U - 149*V
 
 	test	edx,0FFFF0000h

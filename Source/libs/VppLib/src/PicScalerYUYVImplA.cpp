@@ -23,15 +23,24 @@ All rights reserved.
 
 #include "PicScalerYUYVImpl.h"
 
+#include "uuids.h"
+
 
 extern "C" void ScaleRowAsmYp2(void *pDst, unsigned _widthOut, void * const* pSrcRows, unsigned _widthIn);
 extern "C" void ScaleRowAsmUVp4(void *pDst, unsigned _widthOut, void * const* pSrcRows, unsigned _widthIn);
 
-/*
-===========================================================================
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicScalerYUYVImpl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_YUYV || VideoFormat==MEDIASUBTYPE_YUY2 || VideoFormat==MEDIASUBTYPE_YVYU;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.

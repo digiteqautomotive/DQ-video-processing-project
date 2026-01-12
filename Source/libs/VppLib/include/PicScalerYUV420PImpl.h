@@ -12,8 +12,7 @@ DESCRIPTION			: A YUV420P planar implementation derived from the
 					  		  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008 - 2012, CSIR	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,9 +31,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICSCALERYUV420PIMPL_H
 #define _PICSCALERYUV420PIMPL_H
 
@@ -57,13 +54,14 @@ typedef char scaleType ;
 class PicScalerYUV420PImpl: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	PicScalerYUV420PImpl(void) { }
 	PicScalerYUV420PImpl(int widthOut, int heightOut, int widthIn, int heightIn): PicScalerBase(widthOut,heightOut,widthIn,heightIn) { }
-	virtual ~PicScalerYUV420PImpl(void) {}
-	virtual int GetVideoFormat(void) const {return 12;}
+	virtual ~PicScalerYUV420PImpl(void) {}	
 
-	// Interface.
+		// Interface.
+	virtual int GetVideoFormat(void) const {return 12;}
+        bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end PicScalerYUV420PImpl.

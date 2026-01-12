@@ -15,7 +15,7 @@ DESCRIPTION			: This class is the base class defining the minimum interface
 						implemented by derived classes.
 
 COPYRIGHT			: (c)CSIR 2007-2014 all rights resevered
-				Copyright (c) 2025, Jaroslav Fojtik
+				Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik
 
 LICENSE				: Software License Agreement (BSD License)
 
@@ -43,22 +43,21 @@ RESTRICTIONS			: Redistribution and use in source and binary forms, with or with
 				LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 				NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 				SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICINPICBASE_H
 #define _PICINPICBASE_H
 
-/**
- * \ingroup ImageLib
+#include <Guiddef.h>
+
+
+/** \ingroup ImageLib
  * This class is the base class defining the minimum interface	
  * and properties for all derived implementations to insert a
  * sub image within another image. The instantiation process 
  * must set the parameters and limits to the images such that
  * the Insert() implementation only requires source image data
  * pointers. The insertion method is pure virtual and must be 
- * implemented by derived classes.
- */
+ * implemented by derived classes. */
 class PicInPicBase
 {
 public:
@@ -93,7 +92,7 @@ public:
         void SetPos(int x, int y)		{ _xPos = x; _yPos = y; SetActualSubDimensions(); }    
         void SetBorderWidth(int val)		{ _borderWidth = val; }
 
-        virtual int GetVideoFormat(void) const = 0;
+        virtual bool isVideoFormatSupported(const GUID &VideoFormat) const = 0;
 
 	// Private methods.
 protected:
@@ -103,8 +102,8 @@ protected:
 		if((_yPos + _subHeight) > _height) _writeHeight = (_height - _yPos); else _writeHeight = _subHeight; 
         }
 
-        virtual void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) = 0;
-        virtual void DoInsertWithBorder(const void* pSubImg, void* pImg) = 0;
+        virtual void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) const = 0;
+        virtual void DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip=false) const = 0;
 
 protected:
 	// Members.

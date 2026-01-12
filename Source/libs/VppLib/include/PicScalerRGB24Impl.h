@@ -11,8 +11,7 @@ DESCRIPTION			: An RGB24 implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -51,14 +50,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class PicScalerRGB24Impl: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	PicScalerRGB24Impl(void) { }
 	PicScalerRGB24Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~PicScalerRGB24Impl(void) {}
 
+		// Interface.
         virtual int GetVideoFormat(void) const {return 24;}
-
-	// Interface.
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB24Impl.

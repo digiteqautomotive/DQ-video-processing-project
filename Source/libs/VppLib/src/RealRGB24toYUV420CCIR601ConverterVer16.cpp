@@ -41,15 +41,8 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
+===========================================================================*/
 #include <stdio.h>
-#endif
-
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -88,8 +81,7 @@ and the UV (CbCr) range is 16..240 centred on 128.
 @param pY		: Lum plane.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
-@return			: none.
-*/
+@return			: none. */
 void RealRGB24toYUV420CCIR601ConverterVer16::Convert(void* pRgb, void* pY, void* pU, void* pV)
 {
   if (_flip)
@@ -97,6 +89,7 @@ void RealRGB24toYUV420CCIR601ConverterVer16::Convert(void* pRgb, void* pY, void*
   else
     NonFlipConvert(pRgb, pY, pU, pV);
 }
+
 
 void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert( void* pRgb, void* pY, void* pU, void* pV )
 {

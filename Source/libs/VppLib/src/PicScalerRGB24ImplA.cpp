@@ -23,21 +23,27 @@ All rights reserved.
 
 #include "PicScalerRGB24Impl.h"
 
+#include <uuids.h>
+
 
 extern "C" void ScaleRowAsmRGB24(void *pDst, unsigned _widthOut, void * const* pSrcRows, unsigned _widthIn);
 
-/*
-===========================================================================
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+bool PicScalerRGB24Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.
 @param pOutImg	: Packed RGBA 8888 format main base image.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
-@return					: 0 = failed, 1 = success.
-*/
+@return					: 0 = failed, 1 = success. */
 int PicScalerRGB24Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)

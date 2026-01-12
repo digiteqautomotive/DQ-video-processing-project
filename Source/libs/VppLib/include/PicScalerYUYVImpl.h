@@ -11,8 +11,7 @@ DESCRIPTION			: An YUYV implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025 Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -41,12 +40,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicScalerBase.h"
 
-/**
- * \ingroup ImageLib
+
+/** \ingroup ImageLib
  * An YUYV implementation derived from the general
  * PicScalerBase() class. Scale a packed YUYV image
- * to the dimensions of another packed YUYV image.
- */
+ * to the dimensions of another packed YUYV image. */
 class PicScalerYUYVImpl: public PicScalerBase
 {
 public:
@@ -55,9 +53,9 @@ public:
 	PicScalerYUYVImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~PicScalerYUYVImpl(void) {}
 
-	virtual int GetVideoFormat(void) const {return 16;}
-
 	// Interface.
+	virtual int GetVideoFormat(void) const {return 16;}
+        bool isVideoFormatSupported(const GUID &VideoFormat) const;   
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerYUYVImpl.

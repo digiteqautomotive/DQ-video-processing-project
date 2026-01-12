@@ -17,11 +17,12 @@ LICENSE: Software License Agreement (BSD License)
 Copyright (c) 2025 Jaroslav Fojtik
 All rights reserved.
 
-===========================================================================
-*/
+===========================================================================*/
 #include <stdlib.h>
 
 #include "PicScalerARGB32MMX.h"
+
+#include <uuids.h>
 
 
 #ifdef USE_MMX
@@ -34,11 +35,18 @@ extern "C"
   void EmitFRSTOR(unsigned char *Statex87);
 }
 
-/*
-===========================================================================
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicScalerARGB32MMX::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_ARGB32;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.

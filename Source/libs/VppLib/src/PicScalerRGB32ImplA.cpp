@@ -23,14 +23,22 @@ All rights reserved.
 
 #include "PicScalerRGB32Impl.h"
 
+#include <uuids.h>
+
 
 extern "C" void ScaleRowAsmRGB32(void *pDst, unsigned _widthOut, void * const* pSrcRows, unsigned _widthIn);
 
-/*
-===========================================================================
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicScalerRGB32Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB32;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.

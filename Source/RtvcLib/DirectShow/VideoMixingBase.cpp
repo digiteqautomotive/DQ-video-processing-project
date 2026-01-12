@@ -69,36 +69,32 @@ HRESULT VideoMixingBase::Receive(IMediaSample *pSample, int nIndex)
   if(nIndex >= (int)m_vInputPins.size()) return E_INVALIDARG;
   if(pSample == NULL) return E_POINTER;
   if(m_vOutputPins[0] == NULL) return E_POINTER;
-  if(nIndex < 0) return E_INVALIDARG;
 
-  CAutoLock lck(&m_csReceive);
-	
-  if(nIndex == 0)
+  switch(nIndex)
   {
-    return ReceiveFirstSample(pSample);
+    case 0: return ReceiveFirstSample(pSample);
+    case 1: return ReceiveSecondSample(pSample);
   }
-  else
-  {
-    return ReceiveSecondSample(pSample);
-  }
+  return E_INVALIDARG;
 }
 
 
-void VideoMixingBase::InitialiseInputTypes()
+void VideoMixingBase::InitialiseInputTypes(void)
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);   
-
+/*
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo2);   
+*/
 }
 
 
-void VideoMixingBase::InitialiseOutputTypes()
+void VideoMixingBase::InitialiseOutputTypes(void)
 {
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);

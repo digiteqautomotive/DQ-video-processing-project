@@ -17,15 +17,8 @@ COPYRIGHT					: (c)VICS 2000-2006  all rights resevered - info@videocoding.com
 RESTRICTIONS			: The information/data/code contained within this file is 
 										the property of VICS limited and has been classified as 
 										CONFIDENTIAL.
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
+===========================================================================*/
 #include <stdio.h>
-#endif
-
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>

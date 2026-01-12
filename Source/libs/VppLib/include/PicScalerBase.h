@@ -36,16 +36,14 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICSCALERBASE_H
 #define _PICSCALERBASE_H
 
-#pragma once
+#include <Guiddef.h>
 
-/**
- * \ingroup ImageLib
+
+/** \ingroup ImageLib
  * This class is the base class defining the minimum interface	
  * and properties for all derived implementations to scale the
  * dimensions of an image either up or down. The instantiation 
@@ -53,8 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * that the Scale()implementation only requires source image 
  * data pointers. All memory new/delete must be handled outside 
  * of these objects. The scale method is pure virtual and must be 
- * implemented by derived classes.
- */
+ * implemented by derived classes. */
 class PicScalerBase
 {
 public:
@@ -77,6 +74,7 @@ public:
 	void SetInDimensions(int widthIn, int heightIn)		{_widthIn = labs(widthIn); _heightIn = labs(heightIn); }
 
 	virtual int GetVideoFormat(void) const = 0;
+        virtual bool isVideoFormatSupported(const GUID &VideoFormat) const = 0;
 
 		// Private methods.
 protected:

@@ -11,8 +11,7 @@ DESCRIPTION			: An RGB32 implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025 Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026 Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -50,14 +49,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class PicScalerARGB32MMX: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	PicScalerARGB32MMX(void) { }
 	PicScalerARGB32MMX(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
-	virtual ~PicScalerARGB32MMX(void) {}
+	virtual ~PicScalerARGB32MMX(void) {}	
 
+		// Interface.
 	virtual int GetVideoFormat(void) const {return 32;}
-
-	// Interface.
+        bool PicScalerARGB32MMX::isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerARGB32MMX.

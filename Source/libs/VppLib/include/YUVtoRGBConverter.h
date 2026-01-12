@@ -2,7 +2,7 @@
 
 MODULE				: YUVtoRGBConverter
 
-TAG						: YUVRGBC
+TAG				: YUVRGBC
 
 FILE NAME			: YUVtoRGBConverter.h
 
@@ -12,9 +12,9 @@ DESCRIPTION		: Colour convertions are required on the output of
 			This class is the base class defining the minimum interface
 			and properties for all derived classes. 
 
-COPYRIGHT		: (c) 2025 Digiteq Automotive, programmed by Jaroslav Fojtik
-			(c)CSIR 2007-2010 all rights resevered
-
+COPYRIGHT		: (c)CSIR 2007-2010
+			(c) 2025 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
+			
 LICENSE			: Software License Agreement (BSD License)
 
 RESTRICTIONS	: Redistribution and use in source and binary forms, with or without 
@@ -52,11 +52,11 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 	typedef signed char yuvType ;
 #endif
 
-/*
-===========================================================================
+/*===========================================================================
   Class definition.
-===========================================================================
-*/
+===========================================================================*/
+
+
 class YUVtoRGBConverter
 {
 public:

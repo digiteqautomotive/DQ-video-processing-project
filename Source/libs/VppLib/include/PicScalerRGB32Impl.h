@@ -11,8 +11,7 @@ DESCRIPTION			: An RGB32 implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025 Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026 Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -53,11 +52,11 @@ public:
 	// Construction and destruction.
 	PicScalerRGB32Impl(void) { }
 	PicScalerRGB32Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
-	virtual ~PicScalerRGB32Impl(void) {}
-
-	virtual int GetVideoFormat(void) const {return 32;}
+	virtual ~PicScalerRGB32Impl(void) {}	
 
 	// Interface.
+	virtual int GetVideoFormat(void) const {return 32;}
+	bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB32Impl.

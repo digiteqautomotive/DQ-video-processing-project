@@ -24,6 +24,8 @@ All rights reserved.
 
 #include "PicScalerARGB32SSE.h"
 
+#include <uuids.h>
+
 
 #ifdef USE_SSE
 
@@ -31,18 +33,23 @@ All rights reserved.
 extern "C" void ScaleRowAsmARGB32SSE(void *pDst, unsigned _widthOut, void *const*pSrcRows, unsigned _widthIn);
 
 
-/*
-===========================================================================
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
+bool PicScalerARGB32SSE::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_ARGB32;
+}
+
+
 /** Scale the size of the input image.
 Scale the input image from its dimensions to that of the output image. No
 memory size checking is done and is delegated to the calling process.
 @param pOutImg	: Packed RGBA 8888 format main base image.
 @param pInImg		: Packed RGBA 8888 format smaller sub image.
-@return					: 0 = failed, 1 = success.
-*/
+@return					: 0 = failed, 1 = success. */
 int PicScalerARGB32SSE::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
   if(pOutImg==NULL || pInImg==NULL || _widthIn==0 || _heightIn==0)

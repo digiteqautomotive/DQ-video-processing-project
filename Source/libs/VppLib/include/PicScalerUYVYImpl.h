@@ -11,8 +11,7 @@ DESCRIPTION			: An UYVY implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025 Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,8 +31,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICSCALERUYVYIMPL_H
 #define _PICSCALERUYVYIMPL_H
 
@@ -49,14 +47,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class PicScalerUYVYImpl: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	PicScalerUYVYImpl(void) { }
 	PicScalerUYVYImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
-	virtual ~PicScalerUYVYImpl(void) {}
+	virtual ~PicScalerUYVYImpl(void) {}	
 
-	virtual int GetVideoFormat(void) const {return 16;}
-
-	// Interface.
+		// Interface.
+        virtual int GetVideoFormat(void) const {return 16;}
+        bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end PicScalerUYVYImpl.

@@ -228,48 +228,46 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 
 HRESULT VideoMixingFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
+  ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
-  if(!pSample) return E_POINTER;  
   if(!m_vInputPins[1]->IsConnected())			// Do not modify anything  when input1 is not connected.
       return m_vOutputPins[0]->GetInputPin()->Receive(pSample);
 
 	// Copy the secondary sample into our buffer
+  BYTE *pBuffer = NULL;
+  HRESULT hr = pSample->GetPointer(&pBuffer);
+  if(FAILED(hr))
   {
-    BYTE *pBuffer = NULL;
-    HRESULT hr = pSample->GetPointer(&pBuffer);
-    if(FAILED(hr))
-    {
-	return hr;
-    }
-    if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
-
-		// Copy the buffer
-    memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
+    return hr;
   }
+  if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
+
+  CAutoLock lck(&m_csReceive);
+		// Copy the buffer
+  memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
   return GenerateOutputSample(pSample, 0, m_pSampleBuffers[0], m_pSampleBuffers[1]);
 }
 
 
 HRESULT VideoMixingFilter::ReceiveSecondSample(IMediaSample *pSample)
 {
+  ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
-  if(!pSample) return E_POINTER;  
   if(!m_vInputPins[0]->IsConnected())			// Do not modify anything  when input0 is not connected.
       return m_vOutputPins[0]->GetInputPin()->Receive(pSample);
 
 	// Copy the secondary sample into our buffer  
+  BYTE *pBuffer = NULL;
+  HRESULT hr = pSample->GetPointer(&pBuffer);
+  if(FAILED(hr))
   {
-    BYTE *pBuffer = NULL;
-    HRESULT hr = pSample->GetPointer(&pBuffer);
-    if(FAILED(hr))
-    {
-	return hr;
-    }
-    if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
-
-		// Copy the buffer
-    memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
+    return hr;
   }
+  if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
+
+  CAutoLock lck(&m_csReceive);
+		// Copy the buffer
+  memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);  
   return GenerateOutputSample(pSample, 1, m_pSampleBuffers[0], m_pSampleBuffers[1]);
 }
 
@@ -421,7 +419,7 @@ void VideoMixingFilter::OnDisconnect(int nIndex)
 }
 
 
-HRESULT VideoMixingFilter::SetOutputDimensions(BITMAPINFOHEADER* pBmih1, BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
+HRESULT VideoMixingFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
   m_FeedHeight = m_FeedWidth = m_Feed_xPos = m_Feed_yPos = 0;
   if(pBmih1 && pBmih2)

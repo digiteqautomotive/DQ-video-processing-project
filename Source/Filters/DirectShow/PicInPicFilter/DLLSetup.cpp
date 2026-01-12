@@ -38,6 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"DQ VPP Picture in Picture Filter";   /// A name for the filter 
 
+
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =
 {
@@ -68,8 +69,10 @@ CFactoryTemplate g_Templates[] =
 
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);   
 
+
 //////////////////////////////////////////////////////////////////////////
 // Functions needed by the DLL, for registration.
+
 
 STDAPI DllRegisterServer(void)
 {

@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2015, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -87,3 +87,162 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 {
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
+
+
+//////////////////////////////////////////////////////////////////////////
+
+HRESULT UtilityProperties::ReadSettings()
+{
+    initialiseControls();
+
+    int nLength = 0;
+    char szBuffer[BUFFER_SIZE];
+
+    // Mode of operation
+    HRESULT hr = m_pSettingsInterface->GetParameter("mode", sizeof(szBuffer), szBuffer, &nLength);
+    if (SUCCEEDED(hr))
+    {
+      unsigned uiMode = atoi(szBuffer);
+      switch (uiMode)
+      {
+      case 0:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_FPS_TS);
+          break;
+        }
+      case 1:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_FPS_ST);
+          break;
+        }
+      case 2:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_TIME);
+          break;
+        }
+      case 3:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_DATE_TIME);
+          break;
+        }
+      case 4:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_FPS_TS_DATE_TIME);
+          break;
+        }
+      case 5:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_FPS_ST_DATE_TIME);
+          break;
+        }
+      case 6:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING, 0, (LPARAM)UF_MEASURE_BITRATE);
+          break;
+      }
+      case 7:
+        {
+          SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING, 0, (LPARAM)UF_DETECT_UPSTREAM_SOURCE);
+        break;
+        }
+      case 8:
+        {
+        SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING, 0, (LPARAM)UF_NONE);
+        break;
+        }
+      }
+    }
+    else
+    {
+      return E_FAIL;
+    }
+
+  hr = m_pSettingsInterface->GetParameter(UF_PARAM_X, sizeof(szBuffer), szBuffer, &nLength);
+  if (SUCCEEDED(hr))
+  {
+	SetDlgItemText(m_Dlg, IDC_EDIT_X, szBuffer);
+	m_uiX = atoi(szBuffer);
+  }
+  else
+  {
+	return E_FAIL;
+  }
+  hr = m_pSettingsInterface->GetParameter(UF_PARAM_Y, sizeof(szBuffer), szBuffer, &nLength);
+  if (SUCCEEDED(hr))
+  {
+	SetDlgItemText(m_Dlg, IDC_EDIT_Y, szBuffer);
+	m_uiY = atoi(szBuffer);
+  }
+  else
+  {
+	return E_FAIL;
+  }
+		
+  return hr;
+}
+
+
+HRESULT UtilityProperties::OnApplyChanges(void)
+{
+  int nLength = 0;
+  char szBuffer[BUFFER_SIZE];
+
+    // mode of operation
+  int index = ComboBox_GetCurSel(GetDlgItem(m_Dlg, IDC_CMB_MODE));
+  ASSERT (index != CB_ERR);
+  _itoa(index, szBuffer, 10);
+  m_pSettingsInterface->SetParameter(UF_MODE, szBuffer);
+    //nLength = GetDlgItemText(m_Dlg, IDC_CMB_MODE, szBuffer, BUFFER_SIZE);
+    //if (strcmp(szBuffer, UF_FPS_TS_DATE_TIME) == 0)
+    //{
+
+    //}
+  m_pSettingsInterface->SetParameter(UF_MODE, szBuffer);
+
+  nLength = GetDlgItemText(m_Dlg, IDC_EDIT_X, szBuffer, BUFFER_SIZE);
+  m_uiX = atoi(szBuffer);
+  m_pSettingsInterface->SetParameter(UF_PARAM_X, szBuffer);
+  nLength = GetDlgItemText(m_Dlg, IDC_EDIT_Y, szBuffer, BUFFER_SIZE);
+  m_uiY = atoi(szBuffer);
+  m_pSettingsInterface->SetParameter(UF_PARAM_Y, szBuffer);
+  return S_OK;
+} 
+
+
+void UtilityProperties::initialiseControls()
+{
+  InitCommonControls();
+
+    // mode of operation
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_RESETCONTENT, 0, 0);
+    //Add default option
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_ADDSTRING,	 0, (LPARAM)UF_FPS_TS);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SELECTSTRING,  0, (LPARAM)UF_FPS_TS);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  1, (LPARAM)UF_FPS_ST);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  2, (LPARAM)UF_TIME);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  3, (LPARAM)UF_DATE_TIME);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  4, (LPARAM)UF_FPS_TS_DATE_TIME);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  5, (LPARAM)UF_FPS_ST_DATE_TIME);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  6, (LPARAM)UF_MEASURE_BITRATE);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  7, (LPARAM)UF_DETECT_UPSTREAM_SOURCE);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  8, (LPARAM)UF_NONE);
+  SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SETMINVISIBLE, 9, 0);
+
+  short lower = 0;
+  short upper = SHRT_MAX;
+
+    // Init UI
+  long lResult = SendMessage(			// returns LRESULT in lResult
+	GetDlgItem(m_Dlg, IDC_SPIN1),	// handle to destination control
+	(UINT) UDM_SETRANGE,			// message ID
+	(WPARAM) 0,						// = 0; not used, must be zero
+	(LPARAM) MAKELONG ( upper, lower)      // = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
+      );
+    lResult = SendMessage(			// returns LRESULT in lResult
+      GetDlgItem(m_Dlg, IDC_SPIN2),	// handle to destination control
+      (UINT) UDM_SETRANGE,			// message ID
+      (WPARAM) 0,						// = 0; not used, must be zero
+      (LPARAM) MAKELONG ( upper, lower)      // = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
+      );
+}
+

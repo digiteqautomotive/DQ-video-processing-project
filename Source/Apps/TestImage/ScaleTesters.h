@@ -4,13 +4,14 @@
 class OrigScalerRGB24Impl: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	OrigScalerRGB24Impl(void) { }
 	OrigScalerRGB24Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerRGB24Impl(void) {}
-	virtual int GetVideoFormat(void) const {return 24;}
 
-	// Interface.
+		// Interface.
+	virtual int GetVideoFormat(void) const {return 24;}
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};	
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB24Impl.
@@ -19,13 +20,14 @@ public:
 class OrigScalerARGB32Impl: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	OrigScalerARGB32Impl(void) { }
 	OrigScalerARGB32Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerARGB32Impl(void) {}
-	virtual int GetVideoFormat(void) const {return 32;}
 
-	// Interface.
+		// Interface.
+	virtual int GetVideoFormat(void) const {return 32;}
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};	
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end PicScalerRGB32Impl.
@@ -34,13 +36,14 @@ public:
 class OrigScalerRGB32Impl: public PicScalerBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	OrigScalerRGB32Impl(void) { }
 	OrigScalerRGB32Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
-	virtual ~OrigScalerRGB32Impl(void) {}
-	virtual int GetVideoFormat(void) const {return 32;}
+	virtual ~OrigScalerRGB32Impl(void) {}	
 
-	// Interface.
+		// Interface.
+	virtual int GetVideoFormat(void) const {return 32;}
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB32Impl.
@@ -53,9 +56,10 @@ public:
 	OrigScalerUYVYImpl(void) { }
 	OrigScalerUYVYImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerUYVYImpl(void) {}
-	virtual int GetVideoFormat(void) const {return 16;}
 
 	// Interface.
+	virtual int GetVideoFormat(void) const {return 16;}
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};	
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end OrigScalerUYVYImpl.
@@ -68,9 +72,10 @@ public:
 	OrigScalerYUYVImpl(void) { }
 	OrigScalerYUYVImpl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
 	virtual ~OrigScalerYUYVImpl(void) {}
-	virtual int GetVideoFormat(void) const {return 16;}
 
 	// Interface.
+	virtual int GetVideoFormat(void) const {return 16;}
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const {return true;};	
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 }; //end OrigScalerUYVYImpl.

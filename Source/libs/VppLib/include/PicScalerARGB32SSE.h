@@ -11,8 +11,7 @@ DESCRIPTION			: An RGB32 implementation derived from the general
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025 Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026 Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,9 +30,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PicScalerARGB32SSE_H
 #define _PicScalerARGB32SSE_H
 
@@ -41,26 +38,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicScalerBase.h"
 
-/**
- * \ingroup ImageLib
+
+/** \ingroup ImageLib
  * An RGB32 implementation derived from the general
  * PicScalerBase() class. Scale a packed RGB32 image
- * to the dimensions of another packed RGB32 image.
- */
+ * to the dimensions of another packed RGB32 image. */
 class PicScalerARGB32SSE: public PicScalerBase
 {
 public:
 	// Construction and destruction.
 	PicScalerARGB32SSE(void) { }
-	PicScalerARGB32SSE(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
-	virtual ~PicScalerARGB32SSE(void) {}
-
-	virtual int GetVideoFormat(void) const {return 32;}
+	PicScalerARGB32SSE(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) {}
+	virtual ~PicScalerARGB32SSE(void) {}	
 
 	// Interface.
+	virtual int GetVideoFormat(void) const {return 32;}
+        bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
-};//end PicScalerARGB32SSE.
+}; //end PicScalerARGB32SSE.
 
 
 #endif	// _PicScalerARGB32SSE_H

@@ -17,15 +17,8 @@ REVISION HISTORY	:
 COPYRIGHT					:
 
 RESTRICTIONS			: 
-===========================================================================
-*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#else
+===========================================================================*/
 #include <stdio.h>
-#endif
-
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>

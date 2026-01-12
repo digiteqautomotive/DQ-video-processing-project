@@ -9,7 +9,7 @@ DESCRIPTION			: Picture in picture Filter for RGB24 and RGB32 Media
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+              2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include "DirectShow/VideoMixingBase.h"
@@ -64,6 +62,16 @@ class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages,
                       public IPersistPropertyBag, public IPropertyBag, public IPersistStream
 {
 public:
+	typedef enum
+	{
+	  THREAD_NOT_INITIALISED =0,
+          THREAD_INITIALISING,
+          THREAD_RUNNING,
+          THREAD_STOPPING,
+          THREAD_STOPPED,
+          THREAD_ABORTED
+        } E_THR_STATUS;
+
 	DECLARE_IUNKNOWN;
 
 	/// Constructor
@@ -86,7 +94,7 @@ public:
 	/// Overridden from VideoMixingBase 
         virtual HRESULT SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
-	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
+	//HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
 	virtual void initParameters();
         virtual HRESULT StartStreaming(void);
@@ -98,14 +106,14 @@ public:
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
 	// TEMP Overriding to prevent RGB32
-	virtual void InitialiseInputTypes()
-	{
-		AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-	}
-	virtual void InitialiseOutputTypes()
-	{
-		AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-	}
+	//virtual void InitialiseInputTypes()
+	//{
+	//	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+	//}
+	//virtual void InitialiseOutputTypes()
+	//{
+	//	AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+	//}
 
 	STDMETHODIMP SetParameter( const char* type, const char* value);
 
@@ -129,8 +137,27 @@ private:
         void VFlipImg1(const BYTE* pSrc, BYTE* pDest);
 	bool parameterChangeAffectsOutput( const char* szParam );
 	void reconfigure();
+
+/*
+        volatile char ThreadStatus;
+#ifdef _WIN32
+	//HANDLE        StopEvent;	///< stop signal for log thread
+	HANDLE        MsgWakeUp;	///< new log entry signal for log thread
+	HANDLE        WriteThread;	///< log thread
+	static UINT WINAPI WorkerThread(void*);
+#else
+	volatile int StopEvent;
+	pthread_cond_t MsgWakeUp;
+	pthread_mutex_t mtx_MsgWakeUp;
+	pthread_t WriteThread;
+	static void *WorkerThread(void*);
+#endif
+        HRESULT InitializeOutputSample(IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex);
+        LONGLONG m_MediaStart,m_MediaEnd;
+*/
+
 	/// Pointers to our last received Media Sample
-	BYTE* m_pSampleBuffers[2];
+	//BYTE* m_pSampleBuffers[2];
 	/// Sizes
 	int m_nSampleSizes[2];
 
@@ -167,6 +194,7 @@ private:
   unsigned m_nBitsPerPixel;
   /// buffer to scale secondary image into if required
   BYTE* m_pBufferForScaledSecondaryImage;
+  unsigned m_szBufferForScaledSecondaryImage;
   bool m_Vflip;
   bool m_DirtyProps;
 };

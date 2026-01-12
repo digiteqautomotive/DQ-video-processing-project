@@ -9,7 +9,7 @@ DESCRIPTION		:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2015, CSIR
-Copyright (c) 2025, Jaroslav Fojtik, Digiteq Automotive All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -89,20 +89,13 @@ CUnknown * WINAPI UtilityFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 
 STDMETHODIMP UtilityFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
-  if(riid == IID_ISpecifyPropertyPages)
-      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  if(riid == (IID_ISettingsInterface))  
-      return GetInterface((ISettingsInterface*)this, ppv);
-  if(riid == (IID_IStatusInterface))
-      return GetInterface((IStatusInterface*)this, ppv);
-  if(riid == (IID_IFilterInfoSourceInterface))
-      return GetInterface((IFilterInfoSourceInterface*)this, ppv);
-  if(riid == IID_IPersistPropertyBag)
-      return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
-  if(riid == IID_IPropertyBag)
-      return GetInterface(static_cast<IPropertyBag*>(this), ppv);
-  if(riid == IID_IPersistStream)
-      return GetInterface((IPersistStream*)this, ppv);
+  if(riid == IID_ISpecifyPropertyPages)		return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == (IID_ISettingsInterface))		return GetInterface((ISettingsInterface*)this, ppv);
+  if(riid == (IID_IStatusInterface))		return GetInterface((IStatusInterface*)this, ppv);
+  if(riid == (IID_IFilterInfoSourceInterface))	return GetInterface((IFilterInfoSourceInterface*)this, ppv);
+  if(riid == IID_IPersistPropertyBag)		return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
+  if(riid == IID_IPropertyBag)			return GetInterface(static_cast<IPropertyBag*>(this), ppv);
+  if(riid == IID_IPersistStream)		return GetInterface((IPersistStream*)this, ppv);
 
   return CTransInPlaceFilter::NonDelegatingQueryInterface(riid, ppv);
 }
@@ -395,11 +388,14 @@ double UtilityFilter::calculateFramerate()
   {
     // calc avg framerate
     REFERENCE_TIME uiTotal = 0;
-    for (size_t i = 0; i < m_qDurations.size(); ++i)
+    if(m_qDurations.size() > 0)		// JFO: Prevent division by 0.
     {
-      uiTotal += m_qDurations[i].Diff;
+      for (size_t i = 0; i < m_qDurations.size(); ++i)
+      {
+        uiTotal += m_qDurations[i].Diff;
+      }
+      uiTotal /= m_qDurations.size();
     }
-    uiTotal /= m_qDurations.size();
 
     // Avoid div by zero in cases where the timestamps are invalid
     if (uiTotal > 0)

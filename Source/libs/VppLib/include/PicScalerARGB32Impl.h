@@ -32,8 +32,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICSCALERARGB32IMPL_H
 #define _PICSCALERARGB32IMPL_H
 
@@ -56,6 +55,7 @@ public:
 	virtual ~PicScalerARGB32Impl(void) {}
 
 	virtual int GetVideoFormat(void) const {return 32;}
+        virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 
 	// Interface.
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);

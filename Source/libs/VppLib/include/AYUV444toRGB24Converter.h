@@ -66,9 +66,13 @@ public:
   virtual ~AYUV444toARGB32Converter(void) {}
 
   // Interface.
+  //virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };//end AYUV444toARGB32Converter.
+
+
+//////////////////////////////////////////////////////////////
 
 
 class YV24toRGB24Converter: public YUVtoRGBConverter
@@ -80,8 +84,8 @@ public:
   virtual ~YV24toRGB24Converter(void) {}
 
   // Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
-
 };	//end YV24toRGB24Converter.
 
 
@@ -94,6 +98,7 @@ public:
   virtual ~YV24toRGB32Converter(void) {}
 
   // Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };	//end YV24toRGB24Converter.

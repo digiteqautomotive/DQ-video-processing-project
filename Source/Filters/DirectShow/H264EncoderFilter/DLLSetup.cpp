@@ -56,6 +56,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "../DirectShowFilterGuids.h"
 
+
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"CSIR H264 Encoder";   /// A name for the filter 

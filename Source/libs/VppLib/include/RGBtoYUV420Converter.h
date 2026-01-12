@@ -42,8 +42,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _RGBTOYUV420CONVERTER_H
 #define _RGBTOYUV420CONVERTER_H
 
@@ -74,12 +73,12 @@ public:
 	int	GetWidth(void)			{ return(_width); }
 	int	GetHeight(void)			{ return(_height); }
 	int GetChrominanceOffset() const { return _chrOff; }
-  bool GetFlip() const { return _flip; }
+	bool GetFlip() const { return _flip; }
 
-  void SetDimensions(int width, int height)	{_width = width; _height = height;}
-  void SetChrOffset(int chrOff){ _chrOff = chrOff; }
-  void SetFlip(bool flip) { _flip = flip; }
-  void SetChrominanceOffset(int val) { _chrOff = val; }
+	void SetDimensions(int width, int height)	{_width = width; _height = height;}
+	void SetChrOffset(int chrOff){ _chrOff = chrOff; }
+	void SetFlip(bool flip) { _flip = flip; }
+	void SetChrominanceOffset(int val) { _chrOff = val; }
 
 protected:
 	/// Members.

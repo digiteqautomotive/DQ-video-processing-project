@@ -45,26 +45,23 @@ RESTRICTIONS			: Redistribution and use in source and binary forms, with or with
 
 #include "PicInPicBase.h"
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * An RGB32 implementation derived from the general
  * PicInPicBase() class. Insert a packed RGB32 image
- * into another packed RGB32 image.
- */
+ * into another packed RGB32 image. */
 class PicInPicRGB32Impl: public PicInPicBase
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	PicInPicRGB32Impl(void) { }
 	PicInPicRGB32Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) { }
 	virtual ~PicInPicRGB32Impl(void) {}
 
-        virtual int GetVideoFormat(void) const {return 32;}
-
 protected:
-    // Interface.
-    void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false);
-    void DoInsertWithBorder(const void* pSubImg, void* pImg);
+		// Interface.
+	bool isVideoFormatSupported(const GUID &VideoFormat) const;
+	void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) const;
+	void DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip=false) const;
 }; //end _PICINPICRGB32IMPL_H.
 
 
