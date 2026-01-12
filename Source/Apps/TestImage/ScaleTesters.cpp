@@ -410,8 +410,14 @@ typedef char scaleType;
 
 int OrigScalerYUV420Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
-	if( (pOutImg == NULL) || (pInImg == NULL) )
-		return(0);
+  if(pOutImg == NULL || pInImg ==NULL)
+      return(0);
+  if(_heightIn==0 || _widthIn==0)
+  {
+    if(_heightOut==0 || _widthOut==0) return(1);
+    return(0);
+  }
+
 
 	scaleType*	pSrc		= (scaleType*)pInImg;
 	scaleType*	pDst		= (scaleType*)pOutImg;

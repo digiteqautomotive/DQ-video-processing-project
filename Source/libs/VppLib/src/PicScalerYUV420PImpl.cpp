@@ -65,81 +65,106 @@ No memory size checking is done and is delegated to the calling process.
 @return			: 0 = failed, 1 = success. */
 int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
-	if( (pOutImg == NULL) || (pInImg == NULL) )
-		return(0);
+  if((pOutImg == NULL) || (pInImg == NULL))  return(0);
+  if(_heightIn==0 || _widthIn==0)
+  {
+    if(_heightOut==0 || _widthOut==0) return(1);
+    return(0);
+  }
 
-	scaleType*	pSrc		= (scaleType*)pInImg;
-	scaleType*	pDst		= (scaleType*)pOutImg;
-	
-	//double scalex = ((double)_widthIn)/((double)_widthOut);
-	//double scaley = ((double)_heightIn)/((double)_heightOut);
+  scaleType *pSrc = (scaleType*)pInImg;
+  scaleType *pDst = (scaleType*)pOutImg;
 
-	int x,y,posx,posy,i,j;
-	int accuX, accuY;	
+  int x,y,posx,posy,i,j;
+  int accuX, accuY;	
 
 	/// Lum 1st.
-        accuY = posy = 0;
-	for(y = 0; y < _heightOut; y++)
+  accuY = posy = 0;
+  for(y=0; y<_heightOut; y++)
+  {
+    const int pRow[3] = {						// Calculate row starts only once per row
+			((posy==0) ? 0 : (_widthIn*(posy-1))),
+			_widthIn*posy,
+			((posy+1>=_heightIn) ? (_widthIn*(_heightIn-1)) : (_widthIn*(posy+1))) };
+
+    accuX = posx = 0;
+    for(x = 0; x < _widthOut; x++)
+    {
+      		/// Apply a weighted 3x3 FIR filter.
+/*
+      unsigned Y = 8;			// rounding offset +8
+      for(i=0; i<=2; i++)
+      {				
+        int aii = pRow[i] + 1 + ((posx==0) ? (0) : (posx - 1));
+	Y += (*(pSrc + aii));
+
+        if(posx>0) aii++;
+        if(i==1)
+        {
+          Y += 8 * (*(pSrc + aii));
+	}
+	else
 	{
-		//posy = (int)((scaley * (double)y) + 0.5);
-		//if(posy < 0)	posy = 0;
-		//else if(posy >= _heightIn) posy = _heightIn-1;
+          Y += (*(pSrc + aii));
+	}
+	if(posx+1 < _widthIn) aii++;
+	Y += (*(pSrc + aii));
+      } //end for i...
 
-		accuX = posx = 0;
-		for(x = 0; x < _widthOut; x++)
-		{
-			//posx = (int)((scalex * (double)x) + 0.5);
-			//if(posx < 0) posx = 0;
-			//else if(posx >= _widthIn) posx = _widthIn-1;
+      pDst[y*_widthOut + x] = (scaleType)(Y >> 4);
+*/
 
-			/// Apply a weighted 3x3 FIR filter.
-			int ai = (posy*_widthIn) + posx;
-			int lum = 7 * (int)(*(pSrc + ai));
-			for(i = -1; i <= 1; i++)
-			{
-				int row = posy + i;
-				if(row < 0)	row = 0;
-				else if(row >= _heightIn) row = _heightIn-1;
-				for(j = -1; j <= 1; j++)
-				{
-					int col = posx + j;
-					if(col < 0) col = 0;
-					else if(col >= _widthIn) col = _widthIn-1;
+      int ai = (posy*_widthIn) + posx;
+      int lum = 7 * (int)(*(pSrc + ai));
+      for(i = -1; i <= 1; i++)
+      {
+        int row = posy + i;
+        if(row < 0)	row = 0;
+        else if(row >= _heightIn) row = _heightIn-1;
+        for(j = -1; j <= 1; j++)
+        {
+          int col = posx + j;
+          if(col < 0) col = 0;
+          else if(col >= _widthIn) col = _widthIn-1;
 
-					int aii = (row*_widthIn) + col;
-					lum += (int)(*(pSrc + aii));
+          int aii = (row*_widthIn) + col;
+          lum += (int)(*(pSrc + aii));
+        } //end for j...
+      } //end for i...
 
-				}//end for j...
-			}//end for i...
+		/// Round before scaling.
+      int ao = (y*_widthOut) + x;
+      *(pDst + ao) = (scaleType)((lum + 8) >> 4);
 
-			/// Round before scaling.
-			int ao = (y*_widthOut) + x;
-			*(pDst + ao) = (scaleType)((lum + 8) >> 4);
+      //if(lum != Y)
+      //{
+      //  printf("[%u %u]",lum,Y);
+      //}
 
-			accuX += _widthIn;			// DAA integer only algorithm
-			posx += accuX / _widthOut;
-			accuX = accuX % _widthOut;
-		}//end for x...
+      accuX += _widthIn;			// DAA integer only algorithm
+      posx += accuX / _widthOut;
+      accuX = accuX % _widthOut;
+    } //end for x...
 
-		accuY += _heightIn;				// DAA integer only algorithm
-                posy += accuY / _heightOut;
-                accuY = accuY % _heightOut;		
-	}//end for y...
+    accuY += _heightIn;				// DAA integer only algorithm
+    posy += accuY / _heightOut;
+    accuY = accuY % _heightOut;		
+  } //end for y...
 
 	/// Chr U and V.
-	int chrWidthIn		= _widthIn/2;
-	int chrHeightIn		= _heightIn/2;
-	int chrWidthOut		= _widthOut/2;
-	int chrHeightOut	= _heightOut/2;
+  int chrWidthIn		= _widthIn/2;
+  int chrHeightIn		= _heightIn/2;
+  int chrWidthOut		= _widthOut/2;
+  int chrHeightOut	= _heightOut/2;
 
-	scaleType*	pSrcU		= (scaleType*)pInImg + (_widthIn * _heightIn);
-	scaleType*	pSrcV		= (scaleType*)pInImg + (_widthIn * _heightIn) + (chrWidthIn * chrHeightIn);
-	scaleType*	pDstU		= (scaleType*)pOutImg + (_widthOut * _heightOut);
-	scaleType*	pDstV		= (scaleType*)pOutImg + (_widthOut * _heightOut) + (chrWidthOut * chrHeightOut);
+  scaleType*	pSrcU		= (scaleType*)pInImg + (_widthIn * _heightIn);
+  scaleType*	pSrcV		= (scaleType*)pInImg + (_widthIn * _heightIn) + (chrWidthIn * chrHeightIn);
+  scaleType*	pDstU		= (scaleType*)pOutImg + (_widthOut * _heightOut);
+  scaleType*	pDstV		= (scaleType*)pOutImg + (_widthOut * _heightOut) + (chrWidthOut * chrHeightOut);
 
-	accuY = posy = 0;
-	for(y = 0; y < chrHeightOut; y++)
-	{
+  accuY = posy = 0;
+  for(y = 0; y < chrHeightOut; y++)
+  {
 		//posy = (int)((scaley * (double)y) + 0.5);
 		//if(posy < 0)	posy = 0;
 		//else if(posy >= chrHeightIn) posy = chrHeightIn-1;
