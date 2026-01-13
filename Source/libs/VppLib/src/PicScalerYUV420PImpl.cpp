@@ -65,9 +65,9 @@ No memory size checking is done and is delegated to the calling process.
 @return			: 0 = failed, 1 = success. */
 int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
+  if(_heightOut==0 || _widthOut==0) return(1);
   if(_heightIn==0 || _widthIn==0)
   {
-    if(_heightOut==0 || _widthOut==0) return(1);
     return(0);
   }
   if((pOutImg == NULL) || (pInImg == NULL))  return(0);
@@ -75,18 +75,16 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
   scaleType *pSrc = (scaleType*)pInImg;
   scaleType *pDst = (scaleType*)pOutImg;
 
-  int x,y,posx,posy,i,j;
+  int x,y,posx,posy,i;
   int accuX, accuY;	
 
 	/// Lum 1st.
-  accuY = posy = 0;
+  int pRow[3] = {0,						// Calculate row starts only once per row
+		0,
+		(_heightIn<=1) ? 0 : _widthIn};
+  accuY = posy = 0;  
   for(y=0; y<_heightOut; y++)
   {
-    const int pRow[3] = {						// Calculate row starts only once per row
-			((posy==0) ? 0 : (_widthIn*(posy-1))),
-			_widthIn*posy,
-			((posy+1>=_heightIn) ? (_widthIn*(_heightIn-1)) : (_widthIn*(posy+1))) };
-
     accuX = posx = 0;
     for(x=0; x<_widthOut; x++)
     {
@@ -114,70 +112,74 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
     } //end for x...
 
     accuY += _heightIn;				// DAA integer only algorithm
-    posy += accuY / _heightOut;
-    accuY = accuY % _heightOut;		
+    if(accuY >= _heightOut)
+    {
+      posy += accuY / _heightOut;		// increment
+      accuY %= _heightOut;
+      pRow[0] = _widthIn*(posy-1);		// Calculate row starts when source pos changes
+      pRow[1] = pRow[0] + _widthIn;
+      pRow[2] = ((posy+1>=_heightIn) ? (_widthIn*(_heightIn-1)) : (pRow[1]+_widthIn));
+    }
   } //end for y...
 
 	/// Chr U and V.
-  int chrWidthIn	= _widthIn/2;
-  int chrHeightIn	= _heightIn/2;
-  int chrWidthOut	= _widthOut/2;
-  int chrHeightOut	= _heightOut/2;
+  const int chrWidthIn	= _widthIn/2;
+  const int chrHeightIn	= _heightIn/2;
+  const int chrWidthOut	= _widthOut/2;
+  const int chrHeightOut= _heightOut/2;
 
-  scaleType*	pSrcU	= (scaleType*)pInImg + (_widthIn * _heightIn);
-  scaleType*	pSrcV	= (scaleType*)pInImg + (_widthIn * _heightIn) + (chrWidthIn * chrHeightIn);
-  scaleType*	pDstU	= (scaleType*)pOutImg + (_widthOut * _heightOut);
-  scaleType*	pDstV	= (scaleType*)pOutImg + (_widthOut * _heightOut) + (chrWidthOut * chrHeightOut);
+  const scaleType *pSrcU = (const scaleType *)pInImg + (_widthIn*_heightIn);
+  const scaleType *pSrcV = (const scaleType *)pInImg + (_widthIn*_heightIn) + (chrWidthIn*chrHeightIn);
+  scaleType *pDstU	= (scaleType*)pOutImg + (_widthOut*_heightOut);
+  scaleType *pDstV	= (scaleType*)pOutImg + (_widthOut*_heightOut) + (chrWidthOut*chrHeightOut);
 
   accuY = posy = 0;
-  for(y = 0; y < chrHeightOut; y++)
+  for(y=0; y<chrHeightOut; y++)
   {
-		//posy = (int)((scaley * (double)y) + 0.5);
-		//if(posy < 0)	posy = 0;
-		//else if(posy >= chrHeightIn) posy = chrHeightIn-1;
+    const int pRow[3] = {						// Calculate row starts only once per row
+			((posy==0) ? 0 : (chrWidthIn*(posy-1))),
+			chrWidthIn*posy,
+			((posy+1>=chrHeightIn) ? (chrWidthIn*(chrHeightIn-1)) : (chrWidthIn*(posy+1))) };
+    accuX = posx = 0;
+    for(x=0; x<chrWidthOut; x++)
+    {
+      unsigned U = 8;			// rounding offset +8
+      unsigned V = 8;			// rounding offset +8
+      for(i=0; i<=2; i++)
+      {				
+        int aii = pRow[i] + ((posx==0) ? (0) : (posx - 1));
+	U += pSrcU[aii];
+        V += pSrcV[aii];
 
-		accuX = posx = 0;
-		for(x = 0; x < chrWidthOut; x++)
-		{
-			//posx = (int)((scalex * (double)x) + 0.5);
-			//if(posx < 0) posx = 0;
-			//else if(posx >= chrWidthIn) posx = chrWidthIn-1;
+        if(posx>0) aii++;
+        if(i==1)
+        {
+            U += 8 * pSrcU[aii];
+            V += 8 * pSrcV[aii];
+        }
+        else
+        {
+            U += pSrcU[aii];
+            V += pSrcV[aii];
+        }
 
-			/// Apply a weighted 3x3 FIR filter.
-			int ai = (posy*chrWidthIn) + posx;
-			int chrU = 7 * (int)(*(pSrcU + ai));
-			int chrV = 7 * (int)(*(pSrcV + ai));
-			for(i = -1; i <= 1; i++)
-			{
-				int row = posy + i;
-				if(row < 0)	row = 0;
-				else if(row >= chrHeightIn) row = chrHeightIn-1;
-				for(j = -1; j <= 1; j++)
-				{
-					int col = posx + j;
-					if(col < 0) col = 0;
-					else if(col >= chrWidthIn) col = chrWidthIn-1;
+	if(posx+1 < chrWidthIn) aii++;
+	U += pSrcU[aii];
+	V += pSrcV[aii];
+      } //end for i...
 
-					int aii = (row*chrWidthIn) + col;
-					chrU += (int)(*(pSrcU + aii));
-					chrV += (int)(*(pSrcV + aii));
+      const int ao = (y*chrWidthOut) + x;
+      pDstU[ao] = (scaleType)(U >> 4);
+      pDstV[ao] = (scaleType)(V >> 4);
 
-				}//end for j...
-			}//end for i...
+      accuX += _widthIn;			// DDA integer only algorithm
+      posx += accuX / _widthOut;
+      accuX = accuX % _widthOut;
+    } //end for x...
 
-			/// Round before scaling.
-			int ao = (y*chrWidthOut) + x;
-			*(pDstU + ao) = (scaleType)((chrU + 8) >> 4);
-			*(pDstV + ao) = (scaleType)((chrV + 8) >> 4);
-
-			accuX += _widthIn;			// DDA integer only algorithm
-			posx += accuX / _widthOut;
-			accuX = accuX % _widthOut;
-		}//end for x...
-
-		accuY += _heightIn;				// DDA integer only algorithm
-                posy += accuY / _heightOut;
-                accuY = accuY % _heightOut;		
-	}//end for y...
-	return(1);
-}//end Scale.
+    accuY += _heightIn;				// DDA integer only algorithm
+    posy += accuY / _heightOut;
+    accuY = accuY % _heightOut;		
+  } //end for y...
+  return(1);
+} //end Scale.
