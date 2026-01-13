@@ -53,7 +53,6 @@ public:
 	virtual ~PicScalerUYVYImpl(void) {}	
 
 		// Interface.
-        virtual int GetVideoFormat(void) const {return 16;}
         bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 

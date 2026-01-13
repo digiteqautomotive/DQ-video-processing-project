@@ -43,6 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicScalerYUV420PImpl.h>
 #include <PicScalerYUYVImpl.h>
 #include <PicScalerUYVYImpl.h>
+#include <PicScalerYV24Impl.h>
 
 #ifdef USE_MMX
 #include <PicScalerARGB32MMX.h>
@@ -125,7 +126,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  //AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
 }
 
 
@@ -141,42 +142,45 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       //The scaler might already exist if the filter has been connected previously
       if(m_pScaler)
       {
-        delete m_pScaler;
-        m_pScaler = NULL;
+        if(!m_pScaler->isVideoFormatSupported(pmt->subtype))
+        {
+          delete m_pScaler;
+          m_pScaler = NULL;
+        }
       }
       if(pmt->subtype==MEDIASUBTYPE_RGB24)
       {
-	m_pScaler = new PicScalerRGB24Impl();
+        if(m_pScaler==NULL) m_pScaler = new PicScalerRGB24Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
       if(pmt->subtype==MEDIASUBTYPE_YV24)
       {
-	m_pScaler = new PicScalerRGB24Impl();
+	if(m_pScaler==NULL) m_pScaler = new PicScalerYV24Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32)
       {
-        m_pScaler = GetPicScallerRGB32();
+        if(m_pScaler==NULL) m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
       {
-        m_pScaler = GetPicScallerRGB32();
+        if(m_pScaler==NULL) m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_YUV420P_S || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12)
       {
-        m_pScaler = new PicScalerYUV420PImpl();
+        if(m_pScaler==NULL) m_pScaler = new PicScalerYUV420PImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
       } 
       else if(pmt->subtype==MEDIASUBTYPE_YUYV || pmt->subtype==MEDIASUBTYPE_YUY2 || pmt->subtype==MEDIASUBTYPE_YVYU)
       {
-        m_pScaler = new PicScalerYUYVImpl();		// YVYU and YUYV are different, but the can use a same scaller.
+        if(m_pScaler==NULL) m_pScaler = new PicScalerYUYVImpl();		// YVYU and YUYV are different, but the can use a same scaller.
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;
       }
       else if(pmt->subtype==MEDIASUBTYPE_UYVY)
       {
-        m_pScaler = new PicScalerUYVYImpl();
+        if(m_pScaler==NULL) m_pScaler = new PicScalerUYVYImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same bpp as UYVY
       }
     }
@@ -243,7 +247,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
           pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;			// Odd values cannot be used for YUYV encoding.
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
       }
-      else
+      else		// MEDIASUBTYPE_RGB24 or MEDIASUBTYPE_YV24
           pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
      pMediaType->lSampleSize = pBi->biSizeImage;
     }

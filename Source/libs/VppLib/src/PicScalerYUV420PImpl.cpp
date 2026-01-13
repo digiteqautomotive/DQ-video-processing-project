@@ -72,7 +72,7 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
   }
   if((pOutImg == NULL) || (pInImg == NULL))  return(0);
 
-  scaleType *pSrc = (scaleType*)pInImg;
+  const scaleType *pSrc = (const scaleType*)pInImg;
   scaleType *pDst = (scaleType*)pOutImg;
 
   int x,y,posx,posy,i;
@@ -134,12 +134,11 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
   scaleType *pDstV	= (scaleType*)pOutImg + (_widthOut*_heightOut) + (chrWidthOut*chrHeightOut);
 
   accuY = posy = 0;
+  pRow[0] = 0;						// Calculate row starts only once per row
+  pRow[1] = 0;
+  pRow[2] = (chrHeightIn<=1) ? 0 : chrWidthIn;
   for(y=0; y<chrHeightOut; y++)
   {
-    const int pRow[3] = {						// Calculate row starts only once per row
-			((posy==0) ? 0 : (chrWidthIn*(posy-1))),
-			chrWidthIn*posy,
-			((posy+1>=chrHeightIn) ? (chrWidthIn*(chrHeightIn-1)) : (chrWidthIn*(posy+1))) };
     accuX = posx = 0;
     for(x=0; x<chrWidthOut; x++)
     {
@@ -172,14 +171,20 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
       pDstU[ao] = (scaleType)(U >> 4);
       pDstV[ao] = (scaleType)(V >> 4);
 
-      accuX += _widthIn;			// DDA integer only algorithm
+      accuX += _widthIn;			// DDA integer only algorithm, no need to use reduced scale, ratio is the same.
       posx += accuX / _widthOut;
       accuX = accuX % _widthOut;
     } //end for x...
 
     accuY += _heightIn;				// DDA integer only algorithm
-    posy += accuY / _heightOut;
-    accuY = accuY % _heightOut;		
+    if(accuY >= _heightOut)
+    {
+      posy += accuY / _heightOut;
+      accuY %= _heightOut;
+      pRow[0] = chrWidthIn*(posy-1);		// Calculate row starts when source pos changes
+      pRow[1] = pRow[0] + chrWidthIn;
+      pRow[2] = (posy+1>=chrHeightIn) ? (chrWidthIn*(chrHeightIn-1)) : (pRow[1]+chrWidthIn);                
+    }
   } //end for y...
   return(1);
 } //end Scale.

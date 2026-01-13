@@ -31,8 +31,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICSCALERYUYVIMPL_H
 #define _PICSCALERYUYVIMPL_H
 
@@ -54,7 +53,6 @@ public:
 	virtual ~PicScalerYUYVImpl(void) {}
 
 	// Interface.
-	virtual int GetVideoFormat(void) const {return 16;}
         bool isVideoFormatSupported(const GUID &VideoFormat) const;   
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 

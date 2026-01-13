@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicInPicYV24Impl.h>
 #include <PicScalerRGB24Impl.h>
 #include <PicScalerRGB32Impl.h>
+#include <PicScalerYV24Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #ifdef USE_MMX
@@ -851,12 +852,17 @@ void PicInPicFilter::reconfigure(void)
     m_pBufferForScaledSecondaryImage = NULL;
   }
 
+  GUID VideoFormat;
+  if(m_vInputPins[0]->IsConnected()) VideoFormat=ConnectionFormat[0];
+  else if(m_vInputPins[1]->IsConnected()) VideoFormat=ConnectionFormat[1];
+  else memset(&VideoFormat,0,sizeof(GUID));
+
 	// target picture scaler
   if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
   {
     if(m_pTargetPicScaler)
     {
-      if(m_nBitsPerPixel!=m_pTargetPicScaler->GetVideoFormat())
+      if(!m_pTargetPicScaler->isVideoFormatSupported(VideoFormat))
       {
 	delete m_pTargetPicScaler;
 	m_pTargetPicScaler = NULL;
@@ -866,7 +872,10 @@ void PicInPicFilter::reconfigure(void)
     {
       switch(m_nBitsPerPixel)
       {
-        case BITS_PER_PIXEL_RGB24: m_pTargetPicScaler = new PicScalerRGB24Impl();
+        case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
+				     m_pTargetPicScaler = new PicScalerYV24Impl();
+				   else
+				     m_pTargetPicScaler = new PicScalerRGB24Impl();
 				   break;
         case BITS_PER_PIXEL_RGB32: m_pTargetPicScaler = GetPicScallerRGB32();
 				   break;
@@ -913,7 +922,7 @@ void PicInPicFilter::reconfigure(void)
     {
       if(m_pSubPicScaler)
       {
-        if(m_nBitsPerPixel != m_pSubPicScaler->GetVideoFormat())
+        if(!m_pSubPicScaler->isVideoFormatSupported(VideoFormat))
         {
 	  delete m_pSubPicScaler;
 	  m_pSubPicScaler = NULL;
@@ -923,7 +932,10 @@ void PicInPicFilter::reconfigure(void)
       {
         switch(m_nBitsPerPixel)
         {
-          case BITS_PER_PIXEL_RGB24: m_pSubPicScaler = new PicScalerRGB24Impl();
+          case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
+                                       m_pSubPicScaler = new PicScalerYV24Impl();
+                                     else
+                                       m_pSubPicScaler = new PicScalerRGB24Impl();
 				     break;
           case BITS_PER_PIXEL_RGB32: m_pSubPicScaler = GetPicScallerRGB32();
 				     break;

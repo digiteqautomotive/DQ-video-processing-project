@@ -73,7 +73,6 @@ public:
 	void SetOutDimensions(int widthOut, int heightOut)	{_widthOut = labs(widthOut); _heightOut = labs(heightOut); }
 	void SetInDimensions(int widthIn, int heightIn)		{_widthIn = labs(widthIn); _heightIn = labs(heightIn); }
 
-	virtual int GetVideoFormat(void) const = 0;
         virtual bool isVideoFormatSupported(const GUID &VideoFormat) const = 0;
 
 		// Private methods.

@@ -42,6 +42,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicScalerUYVYImpl.cpp
 ../libs/VppLib/src/PicScalerYUYVImpl.cpp
 ../libs/VppLib/src/PicScalerYUV420PImpl.cpp
+../libs/VppLib/src/PicScalerYV24Impl.cpp
 ../libs/VppLib/src/RealRGB24toYUV420CCIR601Converter.cpp
 ../libs/VppLib/src/RealRGB24toYUV420CCIR601ConverterVer16.cpp
 ../libs/VppLib/src/RealRGB24toYUV420Converter.cpp
