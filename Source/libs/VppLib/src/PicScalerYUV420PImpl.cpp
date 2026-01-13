@@ -65,12 +65,12 @@ No memory size checking is done and is delegated to the calling process.
 @return			: 0 = failed, 1 = success. */
 int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 {
-  if((pOutImg == NULL) || (pInImg == NULL))  return(0);
   if(_heightIn==0 || _widthIn==0)
   {
     if(_heightOut==0 || _widthOut==0) return(1);
     return(0);
   }
+  if((pOutImg == NULL) || (pInImg == NULL))  return(0);
 
   scaleType *pSrc = (scaleType*)pInImg;
   scaleType *pDst = (scaleType*)pOutImg;
@@ -88,58 +88,25 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
 			((posy+1>=_heightIn) ? (_widthIn*(_heightIn-1)) : (_widthIn*(posy+1))) };
 
     accuX = posx = 0;
-    for(x = 0; x < _widthOut; x++)
+    for(x=0; x<_widthOut; x++)
     {
       		/// Apply a weighted 3x3 FIR filter.
-/*
       unsigned Y = 8;			// rounding offset +8
       for(i=0; i<=2; i++)
       {				
-        int aii = pRow[i] + 1 + ((posx==0) ? (0) : (posx - 1));
-	Y += (*(pSrc + aii));
+        int aii = pRow[i] + ((posx==0) ? (0) : (posx - 1));
+	Y += pSrc[aii];
 
         if(posx>0) aii++;
         if(i==1)
-        {
-          Y += 8 * (*(pSrc + aii));
-	}
-	else
-	{
-          Y += (*(pSrc + aii));
-	}
+            Y += 8 * pSrc[aii];
+        else
+            Y += pSrc[aii];
+
 	if(posx+1 < _widthIn) aii++;
-	Y += (*(pSrc + aii));
+	Y += pSrc[aii];
       } //end for i...
-
       pDst[y*_widthOut + x] = (scaleType)(Y >> 4);
-*/
-
-      int ai = (posy*_widthIn) + posx;
-      int lum = 7 * (int)(*(pSrc + ai));
-      for(i = -1; i <= 1; i++)
-      {
-        int row = posy + i;
-        if(row < 0)	row = 0;
-        else if(row >= _heightIn) row = _heightIn-1;
-        for(j = -1; j <= 1; j++)
-        {
-          int col = posx + j;
-          if(col < 0) col = 0;
-          else if(col >= _widthIn) col = _widthIn-1;
-
-          int aii = (row*_widthIn) + col;
-          lum += (int)(*(pSrc + aii));
-        } //end for j...
-      } //end for i...
-
-		/// Round before scaling.
-      int ao = (y*_widthOut) + x;
-      *(pDst + ao) = (scaleType)((lum + 8) >> 4);
-
-      //if(lum != Y)
-      //{
-      //  printf("[%u %u]",lum,Y);
-      //}
 
       accuX += _widthIn;			// DAA integer only algorithm
       posx += accuX / _widthOut;
@@ -152,15 +119,15 @@ int PicScalerYUV420PImpl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
   } //end for y...
 
 	/// Chr U and V.
-  int chrWidthIn		= _widthIn/2;
-  int chrHeightIn		= _heightIn/2;
-  int chrWidthOut		= _widthOut/2;
+  int chrWidthIn	= _widthIn/2;
+  int chrHeightIn	= _heightIn/2;
+  int chrWidthOut	= _widthOut/2;
   int chrHeightOut	= _heightOut/2;
 
-  scaleType*	pSrcU		= (scaleType*)pInImg + (_widthIn * _heightIn);
-  scaleType*	pSrcV		= (scaleType*)pInImg + (_widthIn * _heightIn) + (chrWidthIn * chrHeightIn);
-  scaleType*	pDstU		= (scaleType*)pOutImg + (_widthOut * _heightOut);
-  scaleType*	pDstV		= (scaleType*)pOutImg + (_widthOut * _heightOut) + (chrWidthOut * chrHeightOut);
+  scaleType*	pSrcU	= (scaleType*)pInImg + (_widthIn * _heightIn);
+  scaleType*	pSrcV	= (scaleType*)pInImg + (_widthIn * _heightIn) + (chrWidthIn * chrHeightIn);
+  scaleType*	pDstU	= (scaleType*)pOutImg + (_widthOut * _heightOut);
+  scaleType*	pDstV	= (scaleType*)pOutImg + (_widthOut * _heightOut) + (chrWidthOut * chrHeightOut);
 
   accuY = posy = 0;
   for(y = 0; y < chrHeightOut; y++)
