@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "ScaleFilter.h"
 #include "ScaleProperties.h"
+
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"DQ VPP Scale Filter";   /// A name for the filter 
@@ -68,6 +69,7 @@ CFactoryTemplate g_Templates[] =
 
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);
 
+
 //////////////////////////////////////////////////////////////////////////
 // Functions needed by the DLL, for registration.
 
@@ -86,4 +88,52 @@ extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE, ULONG, LPVOID);
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 {
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+#include <climits>
+#include "resource.h"
+
+
+ScaleProperties::ScaleProperties(IUnknown *pUnk): FilterPropertiesBase(NAME("Scale Properties"), pUnk, IDD_SCALE_DIALOG, IDS_SCALE_CAPTION)
+{
+}
+
+
+ CUnknown * WINAPI ScaleProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
+{
+  ScaleProperties *pNewObject = new ScaleProperties(pUnk);
+  if (pNewObject == NULL)
+  {
+    *pHr = E_OUTOFMEMORY;
+  }
+  return pNewObject;
+}
+
+
+HRESULT ScaleProperties::ReadSettings()
+{
+  setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
+  setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
+    // width
+  HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
+  if (FAILED(hr)) return hr;
+    // height
+  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
+  if (FAILED(hr)) return hr;
+  return hr;
+}
+
+
+HRESULT ScaleProperties::OnApplyChanges(void)
+{
+    // width
+  HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
+  if (FAILED(hr)) return hr;
+    // height
+  hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
+  if (FAILED(hr)) return hr;
+  return S_OK;
 }

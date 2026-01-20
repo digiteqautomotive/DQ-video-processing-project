@@ -8,8 +8,8 @@ DESCRIPTION			: Properties for scale filter.
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2015, CSIR
-All rights reserved.
+Copyright (c) 2008-2015, CSIR
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,64 +28,23 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include <DirectShow/FilterPropertiesBase.h>
 
-#include <climits>
-#include "resource.h"
 
-#define BUFFER_SIZE 256
-
-/**
- * \ingroup DirectShowFilters
- * Scale Filter Property Dialog
- */
-class ScaleProperties : public FilterPropertiesBase
+/** \ingroup DirectShowFilters
+ * Scale Filter Property Dialog */
+class ScaleProperties: public FilterPropertiesBase
 {
 public:
 
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
-  {
-    ScaleProperties *pNewObject = new ScaleProperties(pUnk);
-    if (pNewObject == NULL)
-    {
-      *pHr = E_OUTOFMEMORY;
-    }
-    return pNewObject;
-  }
+  static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr);
 
-  ScaleProperties::ScaleProperties(IUnknown *pUnk) :
-    FilterPropertiesBase(NAME("Scale Properties"), pUnk, IDD_SCALE_DIALOG, IDS_SCALE_CAPTION)
-  {
-    ;
-  }
+  ScaleProperties(IUnknown *pUnk);
 
-  HRESULT ReadSettings()
-  {
-    setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
-    setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
-    // width
-    HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
-    if (FAILED(hr)) return hr;
-    // height
-    hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
-    if (FAILED(hr)) return hr;
-    return hr;
-  }
-
-  HRESULT OnApplyChanges(void)
-  {
-    // width
-    HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
-    if (FAILED(hr)) return hr;
-    // height
-    hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
-    if (FAILED(hr)) return hr;
-    return S_OK;
-  }
+  HRESULT ReadSettings(void);
+  HRESULT OnApplyChanges(void);
 };
 

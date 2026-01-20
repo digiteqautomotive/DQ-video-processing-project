@@ -37,7 +37,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
-
 #include <PicScalerRGB24Impl.h>
 #include <PicScalerRGB32Impl.h>
 #include <PicScalerARGB32Impl.h>
@@ -45,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicScalerYUYVImpl.h>
 #include <PicScalerUYVYImpl.h>
 #include <PicScalerYV24Impl.h>
+
 #ifdef USE_MMX
 #include <PicScalerARGB32MMX.h>
 #endif
@@ -136,7 +136,6 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
   if (direction == PINDIR_INPUT)
   {
     //Set defaults
-    //Determine whether we are connected to a RGB24 or 32 source
     if (pmt->majortype == MEDIATYPE_Video)
     {
       //The scaler might already exist if the filter has been connected previously
@@ -148,6 +147,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
           m_pScaler = NULL;
         }
       }
+	// Determine video source type
       if(pmt->subtype==MEDIASUBTYPE_RGB24)
       {
         if(m_pScaler==NULL) m_pScaler = new PicScalerRGB24Impl();
@@ -219,14 +219,14 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pBi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
     //Now we need to calculate the size of the output image
-    if(m_nOutHeight!=0 && m_nOutWidth!=0)
+    if(m_nReqOutHeight!=0 && m_nReqOutWidth!=0)
     {
 	// Set height
-      pBi->biHeight = (pBi->biHeight<0) ? -m_nOutHeight : m_nOutHeight;	// Propagate negative height to output.
+      pBi->biHeight = (pBi->biHeight<0) ? -m_nReqOutHeight : m_nReqOutHeight;	// Propagate negative height to output.
       if(pBi->biHeight == 0) return E_INVALIDARG;
 
 	// Set width
-      pBi->biWidth = m_nOutWidth;
+      pBi->biWidth = m_nReqOutWidth;
       if(pBi->biWidth <= 0) return E_INVALIDARG;
 
 	// Set size
@@ -234,17 +234,17 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
           pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
       else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
       {
-        if((m_nOutWidth & 1)==1)
-            pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;		// Odd values cannot be used for YUYV encoding.
-        if((m_nOutHeight & 1)==1)
-            pBi->biHeight = m_nOutHeight = m_nOutHeight & ~1;		// Nor odd height can be accepted.
+        if((pBi->biWidth & 1)==1)
+            pBi->biWidth &= ~1;			// Odd values cannot be used for I420 encoding.
+        if((pBi->biHeight & 1)==1)
+            pBi->biHeight &= ~1;		// Nor odd height can be accepted.
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
       }
       else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
              pMediaType->subtype==MEDIASUBTYPE_UYVY)
       {
-        if((m_nOutWidth & 1)==1)
-          pBi->biWidth = m_nOutWidth = m_nOutWidth & ~1;			// Odd values cannot be used for YUYV encoding.
+        if((pBi->biWidth & 1)==1)
+            pBi->biWidth &= ~1;			// Odd values cannot be used for YUYV encoding.
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
       }
       else		// MEDIASUBTYPE_RGB24 or MEDIASUBTYPE_YV24
@@ -443,8 +443,8 @@ STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
 
 void ScaleFilter::initParameters()
 {
-  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, 0);
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, 0);
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nReqOutWidth, 0);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nReqOutHeight, 0);
   // addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
 }
 
@@ -457,13 +457,13 @@ HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, l
   lOutActualDataLength = labs(m_nInWidth * m_nInHeight * m_nBitsPerPixel) / 8;		// Calculate input data length
   if(labs(lOutActualDataLength) > lInBufferSize) return E_INVALIDARG;			// Input buffer is too small
 
-  if(m_nOutWidth==0 || m_nOutHeight==0 || (m_nOutWidth==m_nInWidth && m_nOutHeight==m_nInHeight))
+  if(m_nReqOutWidth==0 || m_nReqOutHeight==0 || (m_nReqOutWidth==m_nInWidth && m_nReqOutHeight==m_nInHeight))
   {
     memcpy(pBufferOut,pBufferIn,lOutActualDataLength);
   }
   else
   {
-    lOutActualDataLength = labs(m_nOutWidth * m_nOutHeight * m_nBitsPerPixel) / 8;	// Calculate output data length
+    lOutActualDataLength = labs(m_nReqOutWidth * m_nReqOutHeight * m_nBitsPerPixel) / 8;	// Calculate output data length
     if(m_pScaler==NULL)
     {
       DbgLog((LOG_TRACE, 0, TEXT("Scaller is not initialised - unable to scale")));
@@ -471,7 +471,7 @@ HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, l
     }
 	//Call scaling conversion code
     m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
-    m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
+    m_pScaler->SetOutDimensions(m_nReqOutWidth, m_nReqOutHeight);
     int res = m_pScaler->Scale(pBufferOut, pBufferIn, m_Vflip);
     ASSERT(res == 1);
   }
@@ -482,7 +482,7 @@ HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, l
 HRESULT ScaleFilter::RecalculateFilterParameters(void)
 {
   // Update the number of out pixels
-  m_nOutPixels = labs(m_nOutWidth * m_nOutHeight);
+  m_nOutPixels = labs(m_nReqOutWidth * m_nReqOutHeight);
   return S_OK;
 }
 
@@ -526,7 +526,7 @@ HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
 
 HRESULT ScaleFilter::InitNew(void)
 {
-  m_nOutWidth = m_nOutHeight = 0;
+  m_nReqOutWidth = m_nReqOutHeight = 0;
   return S_OK;
 }
 
@@ -549,7 +549,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nOutWidth,&var);
+      IntFromVariant(m_nReqOutWidth,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -561,7 +561,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nOutHeight,&var);
+      IntFromVariant(m_nReqOutHeight,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -582,7 +582,7 @@ VARIANT var;
   {
     memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(FILTER_PARAM_TARGET_WIDTH));
     var.vt = VT_INT;
-    var.intVal = m_nOutWidth;
+    var.intVal = m_nReqOutWidth;
     pPropBag->Write(PropName,&var);
     CoTaskMemFree((void*)PropName);
   }
@@ -592,7 +592,7 @@ VARIANT var;
   {
     memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
     var.vt = VT_INT;
-    var.intVal = m_nOutHeight;
+    var.intVal = m_nReqOutHeight;
     pPropBag->Write(PropName,&var);
     CoTaskMemFree((void*)PropName);
   }
@@ -614,13 +614,13 @@ HRESULT ScaleFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErro
   if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
   {   
     pVar->vt = VT_INT;
-    pVar->intVal = m_nOutWidth;
+    pVar->intVal = m_nReqOutWidth;
     return S_OK;
   }
   if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
   {   
     pVar->vt = VT_INT;
-    pVar->intVal = m_nOutHeight;
+    pVar->intVal = m_nReqOutHeight;
     return S_OK;
   }
 
@@ -634,11 +634,11 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
   {   
-    if(IntFromVariant(m_nOutWidth,pVar)) return S_OK;
+    if(IntFromVariant(m_nReqOutWidth,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
   {
-    if(IntFromVariant(m_nOutHeight,pVar)) return S_OK;    
+    if(IntFromVariant(m_nReqOutHeight,pVar)) return S_OK;    
   }
   return E_INVALIDARG;
 }
@@ -650,7 +650,7 @@ CheckPointer(pVar, E_INVALIDARG);
 HRESULT ScaleFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
 {
 CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_nOutWidth) + sizeof(m_nOutHeight);
+  pcbSize->QuadPart = sizeof(m_nReqOutWidth) + sizeof(m_nReqOutHeight);
   return S_OK;
 }
 
@@ -666,16 +666,16 @@ HRESULT ScaleFilter::Load(IStream *pStm)
 ULONG pcbRead;
 int nOutWidth, nOutHeight;
 HRESULT hr;
-  ASSERT(sizeof(nOutWidth)==sizeof(m_nOutWidth));
-  ASSERT(sizeof(nOutHeight)==sizeof(m_nOutHeight));
+  ASSERT(sizeof(nOutWidth)==sizeof(m_nReqOutWidth));
+  ASSERT(sizeof(nOutHeight)==sizeof(m_nReqOutHeight));
   CheckPointer(pStm, E_INVALIDARG);
 
   if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), &pcbRead))) return hr;
-  if(m_nOutWidth!=nOutWidth || m_nOutHeight!=nOutHeight)
+  if(m_nReqOutWidth!=nOutWidth || m_nReqOutHeight!=nOutHeight)
   {
-    m_nOutWidth = nOutWidth;
-    m_nOutHeight = nOutHeight;
+    m_nReqOutWidth = nOutWidth;
+    m_nReqOutHeight = nOutHeight;
     m_DirtyProps = true;
   }
 return S_OK;
@@ -686,8 +686,8 @@ HRESULT ScaleFilter::Save(IStream *pStm, BOOL fClearDirty)
 {
 HRESULT hr;
 CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_nOutWidth, sizeof(m_nOutWidth), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nOutHeight, sizeof(m_nOutHeight), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nReqOutWidth, sizeof(m_nReqOutWidth), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_nReqOutHeight, sizeof(m_nReqOutHeight), NULL))) return hr;
   if(fClearDirty) m_DirtyProps=false;
 return S_OK;
 }
