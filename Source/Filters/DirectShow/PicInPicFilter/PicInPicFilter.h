@@ -59,7 +59,7 @@ public:
   void AddFrame(IMediaSample*pFrame);
   void Erase(void);
   IMediaSample *PeekFrame(void) const;
-  IMediaSample *PeekFrame(LONGLONG tStart, LONGLONG tStop);
+  IMediaSample *PeekFrame(REFERENCE_TIME &tStart, REFERENCE_TIME &tStop);
   void PopFrame(void);
 };
 
@@ -204,6 +204,7 @@ private:
   unsigned m_nBitsPerPixel;
   /// buffer to scale secondary image into if required
   BYTE* m_pBufferForScaledSecondaryImage;
+  REFERENCE_TIME TimeStart2, TimeEnd2;
   unsigned m_szBufferForScaledSecondaryImage;
   bool m_Vflip;
   bool m_DirtyProps;

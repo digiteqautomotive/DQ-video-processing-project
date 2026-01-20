@@ -107,9 +107,10 @@ return IS;
 }
 
 
-IMediaSample *FrameQueue::PeekFrame(LONGLONG tStart, LONGLONG tStop)
+IMediaSample *FrameQueue::PeekFrame(REFERENCE_TIME &tStart, REFERENCE_TIME &tStop)
 {
-LONGLONG tStart2, tStop2;
+//LONGLONG tStart2, tStop2;
+REFERENCE_TIME TimeStart2, TimeEnd2;
 IMediaSample *IS = NULL;
 CAutoLock lck(&m_csFrame2Queue);
 
@@ -120,9 +121,18 @@ CAutoLock lck(&m_csFrame2Queue);
     if(IS!=NULL)
     {
       it++;
-      if(it==q.end()) break;		// IS is the last element in queue.
-      IS->GetMediaTime(&tStart2,&tStop2);
-      if(tStart2>=tStart || tStop2>=tStart) break;
+      if(it==q.end()) 
+      {
+        q.pop_front();
+        return(IS);		// IS is the last element in queue.
+      }
+      //IS->GetMediaTime(&tStart2,&tStop2);
+      IS->GetTime(&TimeStart2,&TimeEnd2);
+      if(TimeStart2>=tStart || TimeEnd2>=tStart)
+      {
+        q.pop_front();
+        return(IS);
+      }
     }
     q.pop_front();
   }
@@ -248,7 +258,7 @@ CUnknown * WINAPI PicInPicFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 }
 
 
-void PicInPicFilter::initParameters()
+void PicInPicFilter::initParameters(void)
 {
   addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);		// width output picture is scaled to
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);	// height output picture is scaled to
@@ -403,35 +413,44 @@ const int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
 
 HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
+
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
+
+  if(!m_vOutputPins[0]->IsConnected())
+  {
+    FQ.Erase();
+    return S_FALSE;	// Do nothing when no output is connected.
+  }
 
   if(m_bThrottling)
   {
-    LONGLONG tStart, tStop;
-    pSample->GetMediaTime(&tStart,&tStop);
-    IMediaSample *pSample2 = FQ.PeekFrame(tStart,tStop);
-    if(pSample2)
+    REFERENCE_TIME TimeStart1, TimeEnd1;
+    pSample->GetTime(&TimeStart1,&TimeEnd1);
+    if(TimeStart1 > TimeEnd2)
     {
-      BYTE *pBuffer = NULL;
-      if(SUCCEEDED(pSample2->GetPointer(&pBuffer)))
+      IMediaSample *pSample2 = FQ.PeekFrame(TimeStart1,TimeEnd1);
+      if(pSample2)
       {
-        if(m_pBufferForScaledSecondaryImage!=NULL)
-        {
-          if(m_pSubPicScaler)
+        pSample2->GetTime(&TimeStart2,&TimeEnd2);
+        BYTE *pBuffer = NULL;
+        if(SUCCEEDED(pSample2->GetPointer(&pBuffer)))
+        {        
+          if(pBuffer!=NULL && m_pBufferForScaledSecondaryImage!=NULL)
           {
-            m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
-          }
-          else		// copy direct from buffer
-          {
-            memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
+            if(m_pSubPicScaler)
+            {
+              m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
+            }
+            else		// copy direct from buffer
+            {
+              memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
+            }
           }
         }
         pSample2->Release();
       }
     }
   }
-
-  if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
 
   BYTE *pBufferIn1 = NULL;
   HRESULT hr = pSample->GetPointer(&pBufferIn1);
@@ -719,6 +738,7 @@ HRESULT PicInPicFilter::StartStreaming(void)
   if(m_pBufferForScaledSecondaryImage!=NULL && m_szBufferForScaledSecondaryImage>0)
       memset(m_pBufferForScaledSecondaryImage, 0, m_szBufferForScaledSecondaryImage);
   FQ.Erase();
+  TimeStart2 = TimeEnd2 = 0;
   return VideoMixingBase::StartStreaming();
 }
 

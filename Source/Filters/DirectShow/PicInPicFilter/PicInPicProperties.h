@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2014, Meraka Institute
-All rights reserved.
+              2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -55,12 +55,5 @@ public:
 private:
   void initialiseControls();
 
-/*
-  unsigned m_targetWidth;
-  unsigned m_targetHeight;
-  unsigned m_uiSubpicWidth;
-  unsigned m_uiSubpicHeight;
-  unsigned m_uiOffsetX;
-  unsigned m_uiOffsetY; */
 };
 
