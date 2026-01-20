@@ -35,6 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CSettingsInterface.h>
 #include "../FilterParameterStringConstants.h"
 
+#include <list>
+
 
 // {17E57D6D-C6F2-4084-9165-A0A6CBA099FB}
 static const GUID CLSID_VPP_PicInPicFilter = 
@@ -43,6 +45,23 @@ static const GUID CLSID_VPP_PicInPicFilter =
 // {44B81B95-38B1-49CC-8851-73CC3471DEA5}
 static const GUID CLSID_PicInPicProperties = 
 { 0x44b81b95, 0x38b1, 0x49cc, { 0x88, 0x51, 0x73, 0xcc, 0x34, 0x71, 0xde, 0xa5 } };
+
+
+class FrameQueue
+{
+public:
+  FrameQueue(void) {}
+  ~FrameQueue();
+
+  mutable CCritSec m_csFrame2Queue;
+  std::list<IMediaSample*> q;
+
+  void AddFrame(IMediaSample*pFrame);
+  void Erase(void);
+  IMediaSample *PeekFrame(void) const;
+  IMediaSample *PeekFrame(LONGLONG tStart, LONGLONG tStop);
+  void PopFrame(void);
+};
 
 
 #ifdef _BUILD_FOR_SHORT
@@ -98,6 +117,7 @@ public:
 
 	virtual void initParameters();
         virtual HRESULT StartStreaming(void);
+        virtual HRESULT StopStreaming(void);
 
 	/// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages);
@@ -187,4 +207,6 @@ private:
   unsigned m_szBufferForScaledSecondaryImage;
   bool m_Vflip;
   bool m_DirtyProps;
+  bool m_bThrottling;
+  FrameQueue FQ;
 };

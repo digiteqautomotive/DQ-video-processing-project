@@ -37,6 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
+
 #include <PicScalerRGB24Impl.h>
 #include <PicScalerRGB32Impl.h>
 #include <PicScalerARGB32Impl.h>
@@ -44,7 +45,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicScalerYUYVImpl.h>
 #include <PicScalerUYVYImpl.h>
 #include <PicScalerYV24Impl.h>
-
 #ifdef USE_MMX
 #include <PicScalerARGB32MMX.h>
 #endif

@@ -87,6 +87,7 @@ BEGIN
     CONTROL         "",IDC_SPIN7,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,136,11,14
     LTEXT           "Use 0 for populating input2 video size.",IDC_STATIC,139,60,66,25
     LTEXT           "Use 0 for populating input video size.",IDC_STATIC,137,22,66,25
+    CONTROL         "Throttle output 2",IDC_CHECK_THROTTLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,157,109,10
 END
 
 

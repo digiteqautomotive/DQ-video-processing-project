@@ -18,7 +18,7 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 #include <DirectShow/CustomBaseFilter.h>
 
 // Parameters
-#define CHROMINANCE_OFFSET "chrominanceoffset"
+//#define CHROMINANCE_OFFSET "chrominanceoffset"
 #define INVERT "invert"
 
 

@@ -25,20 +25,23 @@ HRESULT PicInPicProperties::ReadSettings()
   if (FAILED(hr)) return hr; 
   
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_SUB_PIC_WIDTH, IDC_EDIT_SUBPICTURE_WIDTH);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_SUB_PIC_HEIGHT, IDC_EDIT_SUBPICTURE_HEIGHT);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_OFFSET_X, IDC_EDIT_SUBPICTURE_OFFSET_X);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
+  hr = setCheckBoxFromBoolFilterParameter(FILTER_THROTTLE, IDC_CHECK_THROTTLE);  
+  if(FAILED(hr)) return hr;
+  
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
   return hr;
 }
@@ -65,10 +68,14 @@ HRESULT PicInPicProperties::OnApplyChanges(void)
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
   if (FAILED(hr)) return hr;
 
-  hr = setIntFilterParameterFromEditText(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
+  hr = setBoolFilterParameterFromCheckBox(FILTER_THROTTLE, IDC_CHECK_THROTTLE);
+  if (FAILED(hr)) return hr;
 
+  hr = setIntFilterParameterFromEditText(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
+  
   return hr;
 }
+
 
 void PicInPicProperties::initialiseControls()
 {

@@ -58,6 +58,96 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 #include <process.h>
 
 
+///////////////////////////////////////////////////////////
+
+
+FrameQueue::~FrameQueue()
+{
+  while(!q.empty())
+  {
+    IMediaSample *pFrame = q.front();
+    q.pop_front();
+    if(pFrame) pFrame->Release();
+  }
+}
+
+
+void FrameQueue::Erase(void)
+{
+IMediaSample *pFrame;
+  while(!q.empty())
+  {
+    {		// locked scope
+      CAutoLock lck(&m_csFrame2Queue);
+      pFrame = q.front();
+      q.pop_front();
+    }
+    if(pFrame) pFrame->Release();
+  }
+}
+
+void FrameQueue::AddFrame(IMediaSample*pFrame)
+{
+  if(pFrame)
+  {
+    pFrame->AddRef();
+    CAutoLock lck(&m_csFrame2Queue);
+    q.push_back(pFrame);
+  }
+}
+
+
+IMediaSample *FrameQueue::PeekFrame(void) const
+{
+CAutoLock lck(&m_csFrame2Queue);
+  if(q.empty()) return NULL;
+  IMediaSample *IS = q.front();
+  if(IS) IS->AddRef();
+return IS;
+}
+
+
+IMediaSample *FrameQueue::PeekFrame(LONGLONG tStart, LONGLONG tStop)
+{
+LONGLONG tStart2, tStop2;
+IMediaSample *IS = NULL;
+CAutoLock lck(&m_csFrame2Queue);
+
+  while(!q.empty())
+  {
+    std::list<IMediaSample*>::iterator it = q.begin();
+    IS = *it;
+    if(IS!=NULL)
+    {
+      it++;
+      if(it==q.end()) break;		// IS is the last element in queue.
+      IS->GetMediaTime(&tStart2,&tStop2);
+      if(tStart2>=tStart || tStop2>=tStart) break;
+    }
+    q.pop_front();
+  }
+
+  if(IS) IS->AddRef();
+return IS;
+}
+
+
+void FrameQueue::PopFrame(void)
+{
+  IMediaSample *pFrame;
+  {
+    CAutoLock lck(&m_csFrame2Queue);
+    if(q.empty()) return;
+    pFrame = q.front();
+    q.pop_front();
+  }
+  if(pFrame) pFrame->Release();		// It is better to unlock queue here.
+}
+
+
+//////////////////////////////////////////////////////////
+
+
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 
@@ -88,13 +178,11 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
   m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL),
   m_Vflip(false),
-  m_DirtyProps(true)
+  m_DirtyProps(true),
+  m_bThrottling(false)
   //ThreadStatus(THREAD_NOT_INITIALISED),
   //m_MediaStart(-1), m_MediaEnd(-1)
 {
-  //m_pSampleBuffers[0] = NULL;
-  //m_pSampleBuffers[1] = NULL;
-
   m_nSampleSizes[0] = 0;
   m_nSampleSizes[1] = 0;
 
@@ -150,17 +238,6 @@ PicInPicFilter::~PicInPicFilter()
     free(m_pBufferForScaledSecondaryImage);
     m_pBufferForScaledSecondaryImage = NULL;
   }
-
-/*
-  for(int i=0; i<2; i++)
-  {
-    if (m_pSampleBuffers[i])
-    {
-      delete[] m_pSampleBuffers[i];
-      m_pSampleBuffers[i] = NULL;
-    }
-  }
-*/
 }
 
 
@@ -184,6 +261,8 @@ void PicInPicFilter::initParameters()
   // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
   addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
   addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
+
+  addParameter(FILTER_THROTTLE, &m_bThrottling, m_bThrottling);
 }
 
 
@@ -325,6 +404,33 @@ const int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
 HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
+
+  if(m_bThrottling)
+  {
+    LONGLONG tStart, tStop;
+    pSample->GetMediaTime(&tStart,&tStop);
+    IMediaSample *pSample2 = FQ.PeekFrame(tStart,tStop);
+    if(pSample2)
+    {
+      BYTE *pBuffer = NULL;
+      if(SUCCEEDED(pSample2->GetPointer(&pBuffer)))
+      {
+        if(m_pBufferForScaledSecondaryImage!=NULL)
+        {
+          if(m_pSubPicScaler)
+          {
+            m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
+          }
+          else		// copy direct from buffer
+          {
+            memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
+          }
+        }
+        pSample2->Release();
+      }
+    }
+  }
+
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
 
   BYTE *pBufferIn1 = NULL;
@@ -433,8 +539,7 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
 {
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
-  if(m_pBufferForScaledSecondaryImage==NULL) return E_UNEXPECTED;	// This should not occur, buffer should be allocated when 2nd video is attached.
-
+ 
 	// Copy the secondary sample into our buffer  
   BYTE *pBuffer = NULL;
   HRESULT hr = pSample->GetPointer(&pBuffer);
@@ -447,16 +552,22 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
   //{
   //}
 
-  // CAutoLock lck(&m_csReceive); no need
-  if(m_pSubPicScaler)
+  if(m_bThrottling)
   {
-    m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
+    FQ.AddFrame(pSample);
   }
-  else		// copy direct from buffer
-  {
-    memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
+  else
+  {  
+    if(m_pBufferForScaledSecondaryImage==NULL) return E_UNEXPECTED;	// This should not occur, buffer should be allocated when 2nd video is attached.
+    if(m_pSubPicScaler)
+    {
+      m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
+    }
+    else		// copy direct from buffer
+    {
+      memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
+    }    
   }
- 
   return S_OK;
 }
 
@@ -605,12 +716,17 @@ return 0;
 
 HRESULT PicInPicFilter::StartStreaming(void)
 {
-  //if(m_pSampleBuffers[0]!=NULL) memset(m_pSampleBuffers[0], 0, m_nSampleSizes[0]);
-  //if(m_pSampleBuffers[1]!=NULL) memset(m_pSampleBuffers[1], 0, m_nSampleSizes[1]);
-  //m_MediaStart = m_MediaEnd = -1;
   if(m_pBufferForScaledSecondaryImage!=NULL && m_szBufferForScaledSecondaryImage>0)
       memset(m_pBufferForScaledSecondaryImage, 0, m_szBufferForScaledSecondaryImage);
+  FQ.Erase();
   return VideoMixingBase::StartStreaming();
+}
+
+
+HRESULT PicInPicFilter::StopStreaming(void)
+{
+  FQ.Erase();
+  return VideoMixingBase::StopStreaming();
 }
 
 
@@ -825,7 +941,7 @@ HRESULT hr;
   }
 
   hr = CSettingsInterface::SetParameter(type,value);
-  if(SUCCEEDED(hr)) reconfigure();
+  if(SUCCEEDED(hr)) reconfigure();			///!!!!!!!!!!!!Pozor na bezici video!!!!!!!!!!!!
   return hr;
 }
 
@@ -845,11 +961,12 @@ void PicInPicFilter::reconfigure(void)
 {
   const BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
   const BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;
-
-  if(m_pBufferForScaledSecondaryImage != NULL)
+								///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if(m_pBufferForScaledSecondaryImage != NULL)			// tohle je uplnì blbe, nesmi se to spustit na bezicim videu od SetParameter()
   {
-    free(m_pBufferForScaledSecondaryImage);
+    void *Buf2Delete = m_pBufferForScaledSecondaryImage;
     m_pBufferForScaledSecondaryImage = NULL;
+    free(Buf2Delete);    
   }
 
   GUID VideoFormat;
@@ -887,10 +1004,11 @@ void PicInPicFilter::reconfigure(void)
   }
   else
   {
-    if (m_pTargetPicScaler)
+    if(m_pTargetPicScaler)
     {
-      delete m_pTargetPicScaler;
+      PicScalerBase *PSB = m_pTargetPicScaler;
       m_pTargetPicScaler = NULL;
+      delete PSB;
     }
   }
 
@@ -924,8 +1042,9 @@ void PicInPicFilter::reconfigure(void)
       {
         if(!m_pSubPicScaler->isVideoFormatSupported(VideoFormat))
         {
-	  delete m_pSubPicScaler;
-	  m_pSubPicScaler = NULL;
+          PicScalerBase *PSB = m_pSubPicScaler;
+          m_pSubPicScaler = NULL;
+	  delete PSB;
         }
       }
       if(!m_pSubPicScaler)
@@ -1292,7 +1411,7 @@ HRESULT PicInPicFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
 {
 CheckPointer(pcbSize, E_INVALIDARG);
   pcbSize->QuadPart = sizeof(m_nTargetWidth) + sizeof(m_nTargetHeight) + sizeof(m_nSubPictureWidth) + sizeof(m_nSubPictureHeight) +
-		      sizeof(m_nCustomOffsetX) + sizeof(m_nCustomOffsetY);
+		      sizeof(m_nCustomOffsetX) + sizeof(m_nCustomOffsetY) + 1;
   return S_OK;
 }
 
@@ -1307,6 +1426,7 @@ HRESULT PicInPicFilter::Load(IStream *pStm)
 {
 ULONG pcbRead;
 int nOutWidth, nOutHeight, nSubPicWidth, nSubPicHeight, nCustomOffsetX, nCustomOffsetY;
+bool throttling;
 HRESULT hr;
   ASSERT(sizeof(nOutWidth)==sizeof(m_nTargetWidth));
   ASSERT(sizeof(nOutHeight)==sizeof(m_nTargetHeight));
@@ -1318,6 +1438,7 @@ HRESULT hr;
   if(FAILED(hr=pStm->Read(&nSubPicHeight, sizeof(nSubPicHeight), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&nCustomOffsetX, sizeof(nCustomOffsetX), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&nCustomOffsetY, sizeof(nCustomOffsetY), &pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&throttling,1,&pcbRead))) return hr;
   if(m_nTargetWidth!=nOutWidth || m_nTargetHeight!=nOutHeight || m_nSubPictureWidth!=nSubPicWidth || m_nSubPictureHeight!=nSubPicHeight ||
      m_nCustomOffsetX!=nCustomOffsetX || m_nCustomOffsetY!=nCustomOffsetY)
   {
@@ -1327,6 +1448,7 @@ HRESULT hr;
     m_nSubPictureHeight = nSubPicHeight;
     m_nCustomOffsetX = nCustomOffsetX;
     m_nCustomOffsetY = nCustomOffsetY;
+    m_bThrottling = throttling;
     m_DirtyProps = true;
   }
 return S_OK;
@@ -1343,6 +1465,7 @@ CheckPointer(pStm, E_INVALIDARG);
   if(FAILED(hr=pStm->Write(&m_nSubPictureHeight, sizeof(m_nSubPictureHeight), NULL))) return hr;
   if(FAILED(hr=pStm->Write(&m_nCustomOffsetX, sizeof(m_nCustomOffsetX), NULL))) return hr;
   if(FAILED(hr=pStm->Write(&m_nCustomOffsetY, sizeof(m_nCustomOffsetY), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_bThrottling, 1, NULL))) return hr;
   if(fClearDirty) m_DirtyProps=false;
 return S_OK;
 }

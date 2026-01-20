@@ -43,15 +43,6 @@ static const GUID CLSID_VPP_ScaleFilter = { 0x757fc317, 0x228c, 0x4340, { 0x80, 
 // {0090FB5F-CE11-4ECF-91A3-4BFAD0EAD962}
 static const GUID CLSID_ScaleProperties = { 0x90fb5f, 0xce11, 0x4ecf, { 0x91, 0xa3, 0x4b, 0xfa, 0xd0, 0xea, 0xd9, 0x62 } };
 
-
-/*
-#ifdef _BUILD_FOR_SHORT
-typedef short yuvType;
-#else
-typedef signed char yuvType;
-#endif
-*/
-
 // Forward declarations
 class PicScalerBase;
 
