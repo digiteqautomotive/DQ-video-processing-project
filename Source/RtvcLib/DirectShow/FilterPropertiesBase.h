@@ -78,7 +78,7 @@ protected:
 	FilterPropertiesBase::FilterPropertiesBase(char* szName, IUnknown *pUnk, int nDialogId, int nTitleId): 
 		CBasePropertyPage(szName, pUnk, nDialogId, nTitleId),
 		m_pSettingsInterface(NULL)
-	{;}
+	{}
 
 	virtual HRESULT ReadSettings() = 0;
 
@@ -99,6 +99,6 @@ protected:
 
 	/// Pointer to the filter's custom interface.
 	/// This pointer allows subclasses access to the filter for setting configuration.
-	ISettingsInterface* m_pSettingsInterface;
+	ISettingsInterface *m_pSettingsInterface;
 };
 

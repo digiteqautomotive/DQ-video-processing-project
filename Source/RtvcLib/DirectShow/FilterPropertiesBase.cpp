@@ -11,8 +11,6 @@ LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008, Meraka Institute
 All rights reserved.
-
-
 ===========================================================================*/
 #include <Windows.h>
 #include <assert.h>
@@ -34,8 +32,7 @@ HRESULT FilterPropertiesBase::OnConnect(IUnknown *pUnk)
   }
   ASSERT(m_pSettingsInterface == NULL);
 
-  return pUnk->QueryInterface(IID_ISettingsInterface, 
-  reinterpret_cast<void**>(&m_pSettingsInterface));
+  return pUnk->QueryInterface(IID_ISettingsInterface, reinterpret_cast<void**>(&m_pSettingsInterface));
 }
 
 
