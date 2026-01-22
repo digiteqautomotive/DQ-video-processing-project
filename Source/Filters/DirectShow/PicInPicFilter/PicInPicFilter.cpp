@@ -191,44 +191,17 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
   m_DirtyProps(true),
   m_bThrottling(false),
   m_DuplicateFrame(false)
-  //ThreadStatus(THREAD_NOT_INITIALISED),
-  //m_MediaStart(-1), m_MediaEnd(-1)
 {
   m_nSampleSizes[0] = 0;
   m_nSampleSizes[1] = 0;
 
 	// Init parameters
   initParameters();
-
-  //unsigned int ThreadID;
-  //MsgWakeUp = CreateEvent(NULL, TRUE, FALSE, NULL);
-  //WriteThread = (HANDLE)_beginthreadex(NULL, 0, WorkerThread, this, 0, &ThreadID);
 }
 
 
 PicInPicFilter::~PicInPicFilter()
 {
-/*
-  #ifdef _WIN32
-  ThreadStatus = THREAD_STOPPING;
-  //if(StopEvent) SetEvent(StopEvent);
-  if(MsgWakeUp) SetEvent(MsgWakeUp);
-  if(WriteThread)
-  {
-    if(WAIT_TIMEOUT==WaitForSingleObject(WriteThread,1000)) // Wait for thread to be finished WIN.
-    {     
-      TerminateThread(WriteThread,-1);		// Kill thread, that gets locked.
-    }
-  }
-  if(WriteThread) CloseHandle(WriteThread);
-  if(MsgWakeUp) CloseHandle(MsgWakeUp);
-  //if(StopEvent) CloseHandle(StopEvent);
- #else
-  StopEvent = 1;
-  pthread_cond_signal(&MsgWakeUp);
-  pthread_join(WriteThread, NULL);	// Wait for thread to be finished LNX.
- #endif
-*/
   if(m_pPicInPic)
   {
     delete m_pPicInPic;
@@ -276,126 +249,6 @@ void PicInPicFilter::initParameters(void)
   addParameter(FILTER_THROTTLE, &m_bThrottling, m_bThrottling);
   addParameter(FILTER_DUPLICATE_FRAMES, &m_DuplicateFrame, m_DuplicateFrame);
 }
-
-
-/*
-HRESULT PicInPicFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
-{
-	// Prepare output sample
-  AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
-  DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
-  if(pProps->dwStreamId != AM_STREAM_MEDIA) 
-  {
-    return m_vInputPins[nIndex]->Receive(pSample);
-  }
-
-	// Provide frame rate limitation.
-  if(m_iRepeatTime > 0)
-  {
-    const unsigned CurrentTick = GetTickCount_us();
-    if(m_LastFrame_us+m_iRepeatTime - CurrentTick < (unsigned)0x8000000) return S_OK;
-  }
-
-  IMediaSample * pOutSample;
-	// Set up the output sample
-  HRESULT hr = CMultiIOBaseFilter::InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
-  if(FAILED(hr)) return hr;
-  hr = pOutSample->SetActualDataLength(m_nOutputSize);
-  if(FAILED(hr)) return hr;
-
-  BYTE *pBufferOut = NULL;
-  hr = pOutSample->GetPointer(&pBufferOut);
-  if (FAILED(hr))
-  {
-    return hr;
-  }
-
-	// Prepare canvas
-  if(m_pSampleBuffers[0])
-  {
-    if(m_pTargetPicScaler)	// the target scaler is only created if the input dimensions of the primary picture don't match the target dimensions
-    {
-      m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)m_pSampleBuffers[0], m_Vflip);
-    }
-    else
-    {
-      if(m_Vflip)	// Code to flip image vertically
-        VFlipImg1(m_pSampleBuffers[0],pBufferOut);
-      else
-        memcpy(pBufferOut, m_pSampleBuffers[0], (labs(m_pPicInPic->GetWidth()*m_pPicInPic->GetHeight())*(size_t)m_nBitsPerPixel)/8);
-    }
-  }
-  else
-  {		// TODO: is zeros the right filler
-    memset(pBufferOut, 0, labs(m_nOutputWidth * m_nOutputHeight* m_nBitsPerPixel)/8);
-  }
-
-	// do pic in pic transform
-  if(m_pSampleBuffers[0] && m_pSampleBuffers[1])
-  {    
-    if(m_pSubPicScaler)
-    {
-      m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
-      m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut, m_Vflip);
-    }
-    else	// copy direct from buffer
-    {
-      m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut,m_Vflip);
-    }
-  }
-  else if(m_pSampleBuffers[1])
-  {
-    if(m_pSubPicScaler)
-    {
-      m_pSubPicScaler->Scale((void*)m_pBufferForScaledSecondaryImage, (void*)m_pSampleBuffers[1]);
-      m_pPicInPic->Insert((void*)m_pBufferForScaledSecondaryImage, pBufferOut,m_Vflip);
-    }
-    else
-    {		// copy direct from buffer
-      m_pPicInPic->Insert((void*)m_pSampleBuffers[1], pBufferOut,m_Vflip);
-    }
-  }
-
-  pOutSample->SetSyncPoint(TRUE);
-
-	// Stop the clock and log it (if PERF is defined)
-  MSR_STOP(m_idTransform);
-
-  if (FAILED(hr)) {
-		DbgLog((LOG_TRACE,1,TEXT("Error from transform")));
-  } 
-  else 
-  {
-	// the Transform() function can return S_FALSE to indicate that the
-	// sample should not be delivered; we only deliver the sample if it's
-	// really S_OK (same as NOERROR, of course.)
-    if (hr == NOERROR) 
-    {
-      hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
-      m_LastFrame_us += m_iRepeatTime;
-    } 
-    else 
-    {
-	// S_FALSE returned from Transform is a PRIVATE agreement
-	// We should return NOERROR from Receive() in this cause because returning S_FALSE
-	// from Receive() means that this is the end of the stream and no more data should
-	// be sent.
-      if (S_FALSE == hr) 
-      {
-	//  Release the sample before calling notify to avoid
-	//  deadlocks if the sample holds a lock on the system
-	//  such as DirectDraw buffers do
-        pOutSample->Release();
-        return NOERROR;
-      }
-    }
-  }
-	// release the output buffer. If the connected pin still needs it,
-	// it will have addrefed it itself.
-  pOutSample->Release();
-  return hr;
-}
-*/
 
 
 void PicInPicFilter::VFlipImg1(const BYTE* pSrc, BYTE* pDest)
@@ -533,25 +386,6 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
     pOutSample->Release();
   }
   return hr;
-
-
-	// Copy the primary sample into our buffer
-//  if(m_pSampleBuffers[0]==NULL) return E_POINTER;
-//  memcpy(m_pSampleBuffers[0], pBufferIn1, m_nSampleSizes[0]);		// Copy the buffer
-
-/*
- if(pSample->GetMediaTime(&m_MediaStart,&m_MediaEnd) != NOERROR) 
-  {
-    m_MediaStart = m_MediaEnd = -1;
-  }
-#ifdef _WIN32
-    SetEvent(MsgWakeUp);
-#else
-    pthread_cond_signal(&MsgWakeUp);
-#endif
-  return S_OK;
-*/
- //return GenerateOutputSample(pSample, 0);
 }
 
 
@@ -591,148 +425,6 @@ HRESULT PicInPicFilter::ReceiveSecondSample(IMediaSample *pSample)
   }
   return S_OK;
 }
-
-
-
-/** 
-#ifdef _WIN32
-unsigned WINAPI
-#else
-void *
-#endif
-        PicInPicFilter::WorkerThread(void* arg)
-{
-DWORD waitobj;
-  PicInPicFilter *Filter = (PicInPicFilter*)arg;
-  //HANDLE Events[] = {Filter->StopEvent, Filter->MsgWakeUp};
-  HRESULT hr;
-
-  hr = CoInitializeEx(0, COINIT_MULTITHREADED|COINIT_DISABLE_OLE1DDE);
-
-  Filter->ThreadStatus = THREAD_RUNNING;
-
-  //while((waitobj=WaitForMultipleObjects(sizeof(Events)/sizeof(HANDLE), Events, FALSE, INFINITE)) != WAIT_OBJECT_0)
-
-  while(1)
-  {
-    DWORD waitobj  = WaitForSingleObject(Filter->MsgWakeUp,INFINITE);
-    if(Filter->ThreadStatus != THREAD_RUNNING) break;
-    //if(waitobj != WAIT_OBJECT_0)
-    //{
-    //    ResetEvent(Filter->MsgWakeUp);
-    //    continue;
-    //}
-    ResetEvent(Filter->MsgWakeUp);
-
-    IMediaSample *pOutSample = NULL;
-	// Set up the output sample
-    hr = Filter->InitializeOutputSample(&pOutSample, 0, 0);
-    if(FAILED(hr)) 
-    {
-      if(pOutSample) pOutSample->Release();
-      continue;
-    }
-    hr = pOutSample->SetActualDataLength(Filter->m_nOutputSize);
-    if(FAILED(hr)) {pOutSample->Release();continue;}
-
-    BYTE *pBufferOut = NULL;
-    hr = pOutSample->GetPointer(&pBufferOut);
-    if(FAILED(hr))
-    {
-      pOutSample->Release();
-      continue;
-    }
-
-	// Prepare canvas
-  if(Filter->m_pSampleBuffers[0])
-  {
-    if(Filter->m_pTargetPicScaler)	// the target scaler is only created if the input dimensions of the primary picture don't match the target dimensions
-    {
-      Filter->m_pTargetPicScaler->Scale((void*)pBufferOut, (void*)Filter->m_pSampleBuffers[0], Filter->m_Vflip);
-    }
-    else
-    {
-      if(Filter->m_Vflip)	// Code to flip image vertically
-        Filter->VFlipImg1(Filter->m_pSampleBuffers[0],pBufferOut);
-      else
-        memcpy(pBufferOut, Filter->m_pSampleBuffers[0], (labs(Filter->m_pPicInPic->GetWidth()*Filter->m_pPicInPic->GetHeight())*(size_t)Filter->m_nBitsPerPixel)/8);
-    }
-  }
-  else
-  {		// TODO: is zeros the right filler
-    memset(pBufferOut, 0, labs(Filter->m_nOutputWidth * Filter->m_nOutputHeight* Filter->m_nBitsPerPixel)/8);
-  }
-
-	// do pic in pic transform
-  if(Filter->m_pSampleBuffers[0] && Filter->m_pSampleBuffers[1])
-  {    
-    if(Filter->m_pSubPicScaler)
-    {
-      Filter->m_pSubPicScaler->Scale((void*)Filter->m_pBufferForScaledSecondaryImage, (void*)Filter->m_pSampleBuffers[1]);
-      Filter->m_pPicInPic->Insert((void*)Filter->m_pBufferForScaledSecondaryImage, pBufferOut, Filter->m_Vflip);
-    }
-    else	// copy direct from buffer
-    {
-      Filter->m_pPicInPic->Insert((void*)Filter->m_pSampleBuffers[1], pBufferOut,Filter->m_Vflip);
-    }
-  }
-    else if(Filter->m_pSampleBuffers[1])
-    {
-      if(Filter->m_pSubPicScaler)
-      {
-        Filter->m_pSubPicScaler->Scale((void*)Filter->m_pBufferForScaledSecondaryImage, (void*)Filter->m_pSampleBuffers[1]);
-        Filter->m_pPicInPic->Insert((void*)Filter->m_pBufferForScaledSecondaryImage, pBufferOut,Filter->m_Vflip);
-      }
-      else
-      {		// copy direct from buffer
-        Filter->m_pPicInPic->Insert((void*)Filter->m_pSampleBuffers[1], pBufferOut, Filter->m_Vflip);
-      }
-    }
-
-    pOutSample->SetSyncPoint(TRUE);
-
-	// Stop the clock and log it (if PERF is defined)
-    MSR_STOP(m_idTransform);
-
-    if (FAILED(hr)) {
-		DbgLog((LOG_TRACE,1,TEXT("Error from transform")));
-    } 
-    else 
-    {
-	// the Transform() function can return S_FALSE to indicate that the
-	// sample should not be delivered; we only deliver the sample if it's
-	// really S_OK (same as NOERROR, of course.)
-      if(hr == NOERROR) 
-      {
-        hr = Filter->m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
-        Filter->m_LastFrame_us += Filter->m_iRepeatTime;
-      } 
-      else 
-      {
-	  // S_FALSE returned from Transform is a PRIVATE agreement
-	  // We should return NOERROR from Receive() in this cause because returning S_FALSE
-	  // from Receive() means that this is the end of the stream and no more data should
-	  // be sent.
-        if(S_FALSE == hr) 
-        {
-	  //  Release the sample before calling notify to avoid
-	  //  deadlocks if the sample holds a lock on the system
-	  //  such as DirectDraw buffers do
-          pOutSample->Release();
-          continue;
-        }
-      }
-    }
-	// release the output buffer. If the connected pin still needs it,
-	// it will have addrefed it itself.
-    pOutSample->Release();
-  }
-
-  CoUninitialize();
-  Filter->ThreadStatus = THREAD_STOPPED;
-return 0;
-}
-*/
 
 
 HRESULT PicInPicFilter::StartStreaming(void)
@@ -778,13 +470,6 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
 
   if(nIndex>=2) return E_INVALIDARG;
   m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
-/*
-  if(m_pSampleBuffers[nIndex])
-  {		// Recreate in case dimensions have changed
-    delete[] m_pSampleBuffers[nIndex];
-  }
-  m_pSampleBuffers[nIndex] = new BYTE[m_nSampleSizes[nIndex]];
-*/
 
   if(m_pPicInPic!=NULL)
   {
