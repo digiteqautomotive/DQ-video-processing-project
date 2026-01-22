@@ -95,10 +95,10 @@ public:
     AddOutputType(&MEDIATYPE_Audio, &MEDIASUBTYPE_PCM, &FORMAT_WaveFormatEx);
   }
 
-  virtual int InitialNumberOfInputPins()	{ return 2; }
-  virtual int InitialNumberOfOutputPins() { return 1; }
-  virtual bool OnFullCreateMoreInputs()	{ return false; }
-  virtual bool OnFullCreateMoreOutputs()	{ return false; }
+  virtual int InitialNumberOfInputPins()  const	{return 2;}
+  virtual int InitialNumberOfOutputPins() const {return 1;}
+  virtual bool OnFullCreateMoreInputs() const	{return false;}
+  virtual bool OnFullCreateMoreOutputs() const	{return false;}
 
   // you can also override these if you want to know about streaming
   virtual HRESULT StartStreaming();

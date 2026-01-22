@@ -366,32 +366,33 @@ void CMultiIOBaseFilter::OnDisconnect(int nIndex, RTVC_DIRECTION eDirection)
 }
 
 
-int CMultiIOBaseFilter::InitialNumberOfInputPins()
+int CMultiIOBaseFilter::InitialNumberOfInputPins() const
 {
-	return 1;
+  return 1;
 }
 
-int CMultiIOBaseFilter::InitialNumberOfOutputPins()
+int CMultiIOBaseFilter::InitialNumberOfOutputPins() const
 {
-	return 1;
+  return 1;
 }
 
-bool CMultiIOBaseFilter::OnFullCreateMoreInputs()
+bool CMultiIOBaseFilter::OnFullCreateMoreInputs() const
 {
-	return false;
+  return false;
 }
 
-bool CMultiIOBaseFilter::OnFullCreateMoreOutputs()
+bool CMultiIOBaseFilter::OnFullCreateMoreOutputs() const
 {
-	return false;
+  return false;
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 // Output pin stuff
 
 HRESULT CMultiIOBaseFilter::CheckOutputType( const CMediaType* pMediaType )
 {
-	return FindMediaTypeInLists(pMediaType, &m_vOutputTypes, m_mOutputTypeMap);
+  return FindMediaTypeInLists(pMediaType, &m_vOutputTypes, m_mOutputTypeMap);
 }
 
 

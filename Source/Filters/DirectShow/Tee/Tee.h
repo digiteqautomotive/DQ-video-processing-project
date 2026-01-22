@@ -62,12 +62,13 @@ public:
 
 	virtual HRESULT Receive(IMediaSample *pSample, int nIndex );
 	
-	virtual int InitialNumberOfInputPins() {return 1;}
-	virtual int InitialNumberOfOutputPins() { return 1;}
-	virtual bool OnFullCreateMoreInputs() { return false;}
-	virtual bool OnFullCreateMoreOutputs() { return true; }
+	virtual int InitialNumberOfInputPins() const {return 1;}
+	virtual int InitialNumberOfOutputPins() const {return 1;}
+	virtual bool OnFullCreateMoreInputs() const {return false;}
+	virtual bool OnFullCreateMoreOutputs() const {return true;}
 	virtual void InitialiseInputTypes();
 	virtual void InitialiseOutputTypes();
+        virtual void initParameters(void) {};
 
 	///  From CBasePin
 	virtual HRESULT CheckOutputType(const CMediaType* pMediaType);

@@ -101,16 +101,16 @@ public:
 	virtual HRESULT Receive(IMediaSample *pSample, int nIndex ) PURE;
 	/// Standard setup for output sample
 	virtual HRESULT InitializeOutputSample(IMediaSample *pSample, IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex);
-  /// override this to publicize our interfaces
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
+	/// override this to publicize our interfaces
+	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 	/// Input input pin creation management methods
-	virtual int InitialNumberOfInputPins();
+	virtual int InitialNumberOfInputPins() const;
 	/// Input output pin creation management methods
-	virtual int InitialNumberOfOutputPins();
+	virtual int InitialNumberOfOutputPins() const;
 	/// Determines whether the filter creates more inputs once all inputs have been used up
-	virtual bool OnFullCreateMoreInputs();
+	virtual bool OnFullCreateMoreInputs() const;
 	/// Determines whether the filter creates more outputs once all inputs have been used up
-	virtual bool OnFullCreateMoreOutputs();
+	virtual bool OnFullCreateMoreOutputs() const;
 	/// The allowed media types for the input must be added in the overridden method in the subclass
 	virtual void InitialiseInputTypes() = 0;
 	/// The allowed media types for the output must be added in the overridden method in the subclass

@@ -594,7 +594,6 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   else
       return VFW_E_TYPE_NOT_ACCEPTED;
 
-
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
   {
     if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
