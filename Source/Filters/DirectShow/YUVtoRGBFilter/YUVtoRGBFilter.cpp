@@ -490,7 +490,7 @@ VARIANT var;
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
       int Val;
-      IntFromVariant(Val,&var);
+      getFromVariant(Val,&var);
       m_bInvert = Val;
     }
     CoTaskMemFree((void*)PropName);
@@ -550,7 +550,7 @@ HRESULT  YUVtoRGBFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
   if(oleicmp(pszPropName, OLE_PARAM_FLIP) == 0)
   { 
     int val;
-    if(IntFromVariant(val,pVar))
+    if(getFromVariant(val,pVar))
     {
       m_bInvert = val;
       return S_OK;

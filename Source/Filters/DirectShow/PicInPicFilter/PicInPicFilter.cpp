@@ -189,7 +189,8 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
   m_pBufferForScaledSecondaryImage(NULL),
   m_Vflip(false),
   m_DirtyProps(true),
-  m_bThrottling(false)
+  m_bThrottling(false),
+  m_DuplicateFrame(false)
   //ThreadStatus(THREAD_NOT_INITIALISED),
   //m_MediaStart(-1), m_MediaEnd(-1)
 {
@@ -273,6 +274,7 @@ void PicInPicFilter::initParameters(void)
   addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
 
   addParameter(FILTER_THROTTLE, &m_bThrottling, m_bThrottling);
+  addParameter(FILTER_DUPLICATE_FRAMES, &m_DuplicateFrame, m_DuplicateFrame);
 }
 
 
@@ -492,7 +494,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
     return hr;   
   }
 
-  if(m_pTargetPicScaler==NULL && !m_Vflip)
+  if(m_pTargetPicScaler==NULL && !m_Vflip && !m_DuplicateFrame)
   {
     m_pPicInPic->Insert(m_pBufferForScaledSecondaryImage, pBufferIn1, m_Vflip);
     //pOutSample->SetSyncPoint(TRUE);
@@ -1183,16 +1185,19 @@ HRESULT PicInPicFilter::GetClassID(CLSID *pClassID)
 HRESULT PicInPicFilter::InitNew(void)
 {
   m_nTargetWidth = m_nTargetHeight = 0;
+  m_bThrottling = m_DuplicateFrame = false;
   return S_OK;
 }
 
 
 OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
-OLECHAR OLE_PARAM_SUB_PIC_WIDTH[] =  olestr(FILTER_PARAM_SUB_PIC_WIDTH);
+OLECHAR OLE_PARAM_SUB_PIC_WIDTH[] = olestr(FILTER_PARAM_SUB_PIC_WIDTH);
 OLECHAR OLE_PARAM_SUB_PIC_HEIGHT[] = olestr(FILTER_PARAM_SUB_PIC_HEIGHT);
-OLECHAR OLE_PARAM_OFFSET_X[] =  olestr(FILTER_PARAM_OFFSET_X);
+OLECHAR OLE_PARAM_OFFSET_X[] = olestr(FILTER_PARAM_OFFSET_X);
 OLECHAR OLE_PARAM_OFFSET_Y[] = olestr(FILTER_PARAM_OFFSET_Y);
+OLECHAR OLE_PARAM_THROTTLE[] = olestr(FILTER_THROTTLE);
+OLECHAR OLE_PARAM_DUPLICATE_FRAMES[] = olestr(FILTER_DUPLICATE_FRAMES);
 
 
 HRESULT PicInPicFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
@@ -1209,7 +1214,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nTargetWidth,&var);
+      getFromVariant(m_nTargetWidth,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -1221,7 +1226,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nTargetHeight,&var);
+      getFromVariant(m_nTargetHeight,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -1232,7 +1237,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_SUB_PIC_WIDTH,sizeof(OLE_PARAM_SUB_PIC_WIDTH));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nSubPictureWidth,&var);
+      getFromVariant(m_nSubPictureWidth,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -1244,7 +1249,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nSubPictureHeight,&var);
+      getFromVariant(m_nSubPictureHeight,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -1256,7 +1261,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nCustomOffsetX,&var);
+      getFromVariant(m_nCustomOffsetX,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -1268,7 +1273,31 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nCustomOffsetY,&var);
+      getFromVariant(m_nCustomOffsetY,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_THROTTLE));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_THROTTLE,sizeof(OLE_PARAM_THROTTLE));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      getFromVariant(m_bThrottling,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_DUPLICATE_FRAMES));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_DUPLICATE_FRAMES,sizeof(OLE_PARAM_DUPLICATE_FRAMES));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      getFromVariant(m_DuplicateFrame,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -1338,6 +1367,24 @@ VARIANT var;
     pPropBag->Write(PropName,&var);
     CoTaskMemFree((void*)PropName);
   }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_THROTTLE));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_THROTTLE,sizeof(OLE_PARAM_THROTTLE));
+    var.vt = VT_BOOL;
+    var.boolVal = m_bThrottling;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_DUPLICATE_FRAMES));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_PARAM_DUPLICATE_FRAMES,sizeof(OLE_PARAM_DUPLICATE_FRAMES));
+    var.vt = VT_BOOL;
+    var.boolVal = m_DuplicateFrame;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
 
 return S_OK;
 }
@@ -1388,6 +1435,18 @@ HRESULT PicInPicFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pE
     pVar->intVal = m_nCustomOffsetY;
     return S_OK;
   }
+  if(oleicmp(pszPropName, OLE_PARAM_THROTTLE) == 0)
+  {   
+    pVar->vt = VT_BOOL;
+    pVar->boolVal = m_bThrottling;
+    return S_OK;
+  }
+  if(oleicmp(pszPropName, OLE_PARAM_DUPLICATE_FRAMES) == 0)
+  {   
+    pVar->vt = VT_BOOL;
+    pVar->boolVal = m_DuplicateFrame;
+    return S_OK;
+  }
   return E_INVALIDARG;
 }
 
@@ -1398,27 +1457,35 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
   {   
-    if(IntFromVariant(m_nTargetWidth,pVar)) return S_OK;
+    if(getFromVariant(m_nTargetWidth,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
   {
-    if(IntFromVariant(m_nTargetHeight,pVar)) return S_OK;    
+    if(getFromVariant(m_nTargetHeight,pVar)) return S_OK;    
   }
   if(oleicmp(pszPropName, OLE_PARAM_SUB_PIC_WIDTH) == 0)
   {   
-    if(IntFromVariant(m_nSubPictureWidth,pVar)) return S_OK;
+    if(getFromVariant(m_nSubPictureWidth,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_PARAM_SUB_PIC_HEIGHT) == 0)
   {
-    if(IntFromVariant(m_nSubPictureHeight,pVar)) return S_OK;    
+    if(getFromVariant(m_nSubPictureHeight,pVar)) return S_OK;    
   }
   if(oleicmp(pszPropName, OLE_PARAM_OFFSET_X) == 0)
   {   
-    if(IntFromVariant(m_nCustomOffsetX,pVar)) return S_OK;
+    if(getFromVariant(m_nCustomOffsetX,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_PARAM_OFFSET_Y) == 0)
   {
-    if(IntFromVariant(m_nCustomOffsetY,pVar)) return S_OK;    
+    if(getFromVariant(m_nCustomOffsetY,pVar)) return S_OK;    
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_THROTTLE) == 0)
+  {
+    if(getFromVariant(m_bThrottling,pVar)) return S_OK;    
+  }
+  else if(oleicmp(pszPropName, OLE_PARAM_DUPLICATE_FRAMES) == 0)
+  {
+    if(getFromVariant(m_DuplicateFrame,pVar)) return S_OK;    
   }
   return E_INVALIDARG;
 }
@@ -1431,7 +1498,7 @@ HRESULT PicInPicFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
 {
 CheckPointer(pcbSize, E_INVALIDARG);
   pcbSize->QuadPart = sizeof(m_nTargetWidth) + sizeof(m_nTargetHeight) + sizeof(m_nSubPictureWidth) + sizeof(m_nSubPictureHeight) +
-		      sizeof(m_nCustomOffsetX) + sizeof(m_nCustomOffsetY) + 1;
+		      sizeof(m_nCustomOffsetX) + sizeof(m_nCustomOffsetY) + 1+1;
   return S_OK;
 }
 
@@ -1446,7 +1513,7 @@ HRESULT PicInPicFilter::Load(IStream *pStm)
 {
 ULONG pcbRead;
 int nOutWidth, nOutHeight, nSubPicWidth, nSubPicHeight, nCustomOffsetX, nCustomOffsetY;
-bool throttling;
+bool throttling, DuplicateFrame;
 HRESULT hr;
   ASSERT(sizeof(nOutWidth)==sizeof(m_nTargetWidth));
   ASSERT(sizeof(nOutHeight)==sizeof(m_nTargetHeight));
@@ -1459,8 +1526,9 @@ HRESULT hr;
   if(FAILED(hr=pStm->Read(&nCustomOffsetX, sizeof(nCustomOffsetX), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&nCustomOffsetY, sizeof(nCustomOffsetY), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&throttling,1,&pcbRead))) return hr;
+  if(FAILED(hr=pStm->Read(&DuplicateFrame,1,&pcbRead))) return hr;
   if(m_nTargetWidth!=nOutWidth || m_nTargetHeight!=nOutHeight || m_nSubPictureWidth!=nSubPicWidth || m_nSubPictureHeight!=nSubPicHeight ||
-     m_nCustomOffsetX!=nCustomOffsetX || m_nCustomOffsetY!=nCustomOffsetY)
+     m_nCustomOffsetX!=nCustomOffsetX || m_nCustomOffsetY!=nCustomOffsetY || m_DuplicateFrame!=DuplicateFrame)
   {
     m_nTargetWidth = nOutWidth;
     m_nTargetHeight = nOutHeight;
@@ -1469,6 +1537,7 @@ HRESULT hr;
     m_nCustomOffsetX = nCustomOffsetX;
     m_nCustomOffsetY = nCustomOffsetY;
     m_bThrottling = throttling;
+    m_DuplicateFrame = DuplicateFrame;
     m_DirtyProps = true;
   }
 return S_OK;
@@ -1486,6 +1555,7 @@ CheckPointer(pStm, E_INVALIDARG);
   if(FAILED(hr=pStm->Write(&m_nCustomOffsetX, sizeof(m_nCustomOffsetX), NULL))) return hr;
   if(FAILED(hr=pStm->Write(&m_nCustomOffsetY, sizeof(m_nCustomOffsetY), NULL))) return hr;
   if(FAILED(hr=pStm->Write(&m_bThrottling, 1, NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_DuplicateFrame, 1, NULL))) return hr;
   if(fClearDirty) m_DirtyProps=false;
 return S_OK;
 }

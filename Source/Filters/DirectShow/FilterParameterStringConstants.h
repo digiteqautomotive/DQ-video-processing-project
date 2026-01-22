@@ -48,6 +48,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FILTER_PARAM_MEDIA_ID                 "media_id"
 #define FILTER_PARAM_GROUP_ID                 "group_id"
 #define FILTER_THROTTLE			      "throttle"
+#define FILTER_DUPLICATE_FRAMES		      "duplicate frames"
 
 #define FILTER_PARAM_ORIENTATION	      "orientation"
 #define FILTER_PARAM_ROTATION_MODE	      "rotationmode"

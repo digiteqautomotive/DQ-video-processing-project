@@ -202,7 +202,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_TIME_SKEW,sizeof(OLE_PARAM_TIME_SKEW));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(add_time,&var);
+      getFromVariant(add_time,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -259,7 +259,7 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_TIME_SKEW) == 0)
   {   
-    if(IntFromVariant(add_time,pVar)) return S_OK;
+    if(getFromVariant(add_time,pVar)) return S_OK;
   }
   return E_INVALIDARG;
 }

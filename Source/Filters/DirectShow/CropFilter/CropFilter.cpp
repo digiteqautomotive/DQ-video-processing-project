@@ -491,7 +491,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_LEFT_CROP,sizeof(OLE_PARAM_LEFT_CROP));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nLeftCrop,&var);
+      getFromVariant(m_nLeftCrop,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -503,7 +503,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nRightCrop,&var);
+      getFromVariant(m_nRightCrop,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -514,7 +514,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_TOP_CROP,sizeof(OLE_PARAM_TOP_CROP));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nTopCrop,&var);
+      getFromVariant(m_nTopCrop,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -526,7 +526,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nBottomCrop,&var);
+      getFromVariant(m_nBottomCrop,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -630,19 +630,19 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_LEFT_CROP) == 0)
   {   
-    if(IntFromVariant(m_nLeftCrop,pVar)) return S_OK;
+    if(getFromVariant(m_nLeftCrop,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_PARAM_RIGHT_CROP) == 0)
   {
-    if(IntFromVariant(m_nRightCrop,pVar)) return S_OK;    
+    if(getFromVariant(m_nRightCrop,pVar)) return S_OK;    
   }
   else if(oleicmp(pszPropName, OLE_PARAM_TOP_CROP) == 0)
   {
-    if(IntFromVariant(m_nTopCrop,pVar)) return S_OK;    
+    if(getFromVariant(m_nTopCrop,pVar)) return S_OK;    
   }
   else if(oleicmp(pszPropName, OLE_PARAM_BOTTOM_CROP) == 0)
   {
-    if(IntFromVariant(m_nBottomCrop,pVar)) return S_OK;    
+    if(getFromVariant(m_nBottomCrop,pVar)) return S_OK;    
   }
   return E_INVALIDARG;
 }

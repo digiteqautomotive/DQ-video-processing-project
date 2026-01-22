@@ -661,7 +661,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_ORIENTATION,sizeof(OLE_PARAM_ORIENTATION));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nOrientation,&var);
+      getFromVariant(m_nOrientation,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -718,7 +718,7 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_ORIENTATION) == 0)
   {   
-    if(IntFromVariant(m_nOrientation,pVar)) return S_OK;
+    if(getFromVariant(m_nOrientation,pVar)) return S_OK;
   }
   return E_INVALIDARG;
 }

@@ -442,7 +442,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_ROTATION,sizeof(OLE_PARAM_ROTATION));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nRotation,&var);
+      getFromVariant(m_nRotation,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -498,7 +498,7 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_ROTATION) == 0)
   {   
-    if(IntFromVariant(m_nRotation,pVar)) return S_OK;
+    if(getFromVariant(m_nRotation,pVar)) return S_OK;
   }
   return E_INVALIDARG;
 }

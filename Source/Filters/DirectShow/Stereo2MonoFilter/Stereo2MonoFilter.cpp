@@ -346,7 +346,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_CHANNEL_PARAM,sizeof(OLE_CHANNEL_PARAM));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_channel,&var);
+      getFromVariant(m_channel,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -401,7 +401,7 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_CHANNEL_PARAM) == 0)
   {   
-    if(IntFromVariant(m_channel,pVar)) return S_OK;
+    if(getFromVariant(m_channel,pVar)) return S_OK;
   }
   return E_INVALIDARG;
 }

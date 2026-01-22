@@ -548,7 +548,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nReqOutWidth,&var);
+      getFromVariant(m_nReqOutWidth,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -560,7 +560,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      IntFromVariant(m_nReqOutHeight,&var);
+      getFromVariant(m_nReqOutHeight,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -633,11 +633,11 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
   {   
-    if(IntFromVariant(m_nReqOutWidth,pVar)) return S_OK;
+    if(getFromVariant(m_nReqOutWidth,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
   {
-    if(IntFromVariant(m_nReqOutHeight,pVar)) return S_OK;    
+    if(getFromVariant(m_nReqOutHeight,pVar)) return S_OK;    
   }
   return E_INVALIDARG;
 }

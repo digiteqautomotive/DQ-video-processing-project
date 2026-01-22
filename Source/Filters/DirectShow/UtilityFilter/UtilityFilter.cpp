@@ -551,7 +551,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_UF_PARAM_X,sizeof(OLE_UF_PARAM_X));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      UnsignedFromVariant(m_uiX,&var);
+      getFromVariant(m_uiX,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -562,7 +562,7 @@ VARIANT var;
     memcpy((void*)PropName,OLE_UF_PARAM_Y,sizeof(OLE_UF_PARAM_Y));
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      UnsignedFromVariant(m_uiY,&var);
+      getFromVariant(m_uiY,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -574,7 +574,7 @@ VARIANT var;
     VariantClear(&var);
     if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
     {
-      UnsignedFromVariant(m_uiFramerateEstimationMode,&var);
+      getFromVariant(m_uiFramerateEstimationMode,&var);
     }
     CoTaskMemFree((void*)PropName);
   }
@@ -661,15 +661,15 @@ CheckPointer(pszPropName, E_INVALIDARG);
 CheckPointer(pVar, E_INVALIDARG);
   if(oleicmp(pszPropName, OLE_UF_PARAM_X) == 0)
   {   
-    if(UnsignedFromVariant(m_uiX,pVar)) return S_OK;
+    if(getFromVariant(m_uiX,pVar)) return S_OK;
   }
   else if(oleicmp(pszPropName, OLE_UF_PARAM_Y) == 0)
   {
-    if(UnsignedFromVariant(m_uiY,pVar)) return S_OK;    
+    if(getFromVariant(m_uiY,pVar)) return S_OK;    
   }
   else if(oleicmp(pszPropName, OLE_UF_MODE) == 0)
   {
-    if(UnsignedFromVariant(m_uiFramerateEstimationMode,pVar)) return S_OK;    
+    if(getFromVariant(m_uiFramerateEstimationMode,pVar)) return S_OK;    
   }
   return E_INVALIDARG;
 }

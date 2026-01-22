@@ -209,5 +209,6 @@ private:
   bool m_Vflip;
   bool m_DirtyProps;
   bool m_bThrottling;
+  bool m_DuplicateFrame;
   FrameQueue FQ;
 };

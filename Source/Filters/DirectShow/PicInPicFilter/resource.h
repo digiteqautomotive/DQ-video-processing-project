@@ -19,6 +19,7 @@
 #define IDC_EDIT_BORDER_WIDTH           1013
 #define IDC_SPIN7                       1014
 #define IDC_CHECK_THROTTLE		1015
+#define IDC_CHECK_DUPLICATE_FRAMES	1016
 
 
 // Next default values for new objects
