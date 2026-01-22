@@ -96,7 +96,7 @@ public:
 	/// Overridden to create more input pins on connection
 	virtual void OnConnect(int nIndex, RTVC_DIRECTION eDirection );
 	/// Overridden to remove unused input pins on disconnect
-	virtual void OnDisconnect(int nIndex);
+	virtual void OnDisconnect(int nIndex, RTVC_DIRECTION eDirection);
 	/// chance to customize the transform process
 	virtual HRESULT Receive(IMediaSample *pSample, int nIndex ) PURE;
 	/// Standard setup for output sample

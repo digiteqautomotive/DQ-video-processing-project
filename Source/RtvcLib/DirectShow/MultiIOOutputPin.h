@@ -65,6 +65,7 @@ public:
 	}
 
 	HRESULT CompleteConnect(IPin *pReceivePin);
+	HRESULT BreakConnect(void);
 
 	// From CBaseOutputPin
 	virtual HRESULT DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties);

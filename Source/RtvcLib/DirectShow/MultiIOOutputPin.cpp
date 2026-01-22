@@ -8,8 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-	Copyright (c) 2008 - 2012, CSIR 
-	Copyright (c) 2025, Jaroslav Fojtik
+	Copyright (c) 2008-2012, CSIR 
+	Copyright (c) 2025-2026, Jaroslav Fojtik
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,13 +51,23 @@ CMultiIOOutputPin::~CMultiIOOutputPin(void)
 
 HRESULT CMultiIOOutputPin::CompleteConnect( IPin *pReceivePin )
 {
-	HRESULT hr = CBaseOutputPin::CompleteConnect(pReceivePin);
-	if (SUCCEEDED(hr))
-	{
-		m_pFilter->OnConnect(m_nIndex, RTVC_OUT);
-	}
-	return hr;
+  HRESULT hr = CBaseOutputPin::CompleteConnect(pReceivePin);
+  if(SUCCEEDED(hr) && m_pFilter!=NULL)
+  {
+    m_pFilter->OnConnect(m_nIndex, RTVC_OUT);
+  }
+  return hr;
 }
+
+
+HRESULT CMultiIOOutputPin::BreakConnect(void)
+{
+  if(m_pFilter!=NULL)
+    m_pFilter->OnDisconnect(m_nIndex, RTVC_OUT);
+  return CBaseOutputPin::BreakConnect();
+}
+
+
 
 HRESULT CMultiIOOutputPin::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties )
 {

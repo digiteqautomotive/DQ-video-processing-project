@@ -552,7 +552,7 @@ HRESULT VideoMixingBase::StopStreaming()
 
 void VideoMixingBase::OnDisconnect(int nIndex)
 {
-  CMultiIOBaseFilter::OnDisconnect(nIndex);
+  CMultiIOBaseFilter::OnDisconnect(nIndex,RTVC_IN);
   if(nIndex<=1)
   {
     memset(&m_VideoInHeader[nIndex],0,sizeof(VIDEOINFOHEADER));

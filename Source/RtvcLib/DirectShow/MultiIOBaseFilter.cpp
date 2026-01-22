@@ -8,8 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2017, CSIR
-All rights reserved.
+Copyright (c) 2008-2017, CSIR
+              2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "MultiIOBaseFilter.h"
 #include "MultiIOInputPin.h"
@@ -215,6 +213,7 @@ STDMETHODIMP CMultiIOBaseFilter::FindPin( LPCWSTR Id, IPin **ppPin )
 	return hr;
 }
 
+
 STDMETHODIMP CMultiIOBaseFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
   if (riid == (IID_ISettingsInterface))
@@ -231,10 +230,11 @@ STDMETHODIMP CMultiIOBaseFilter::NonDelegatingQueryInterface(REFIID riid, void *
   }
 }
 
-unsigned CMultiIOBaseFilter::GetConnectedInputCount() const
+
+unsigned CMultiIOBaseFilter::GetConnectedInputCount(void) const
 {
   unsigned uiConnected = 0;
-  for (size_t i = 0; i < m_vInputPins.size(); ++i)
+  for(size_t i = 0; i < m_vInputPins.size(); ++i)
   {
     if (m_vInputPins[i]->IsConnected())
     {
@@ -244,38 +244,40 @@ unsigned CMultiIOBaseFilter::GetConnectedInputCount() const
   return uiConnected;
 }
 
-void CMultiIOBaseFilter::CreateInputPin()
+
+void CMultiIOBaseFilter::CreateInputPin(void)
 {
-	HRESULT hr;
-  std::ostringstream ostr;
-  ostr << "Input " << m_vInputPins.size();
-  std::wstring wsId = StringUtil::stringToWideString(ostr.str());
-	CMultiIOInputPin* pInputPin = new CMultiIOInputPin(this, &m_csFilter, &hr, wsId.c_str(), (int)m_vInputPins.size());
-	pInputPin->AddRef();
-	m_vInputPins.push_back(pInputPin);
+HRESULT hr;
+  std::wstringstream wstr;
+  wstr << L"Input " << m_vInputPins.size();
+  CMultiIOInputPin* pInputPin = new CMultiIOInputPin(this, &m_csFilter, &hr, wstr.str().c_str(), (int)m_vInputPins.size());
+  pInputPin->AddRef();
+  m_vInputPins.push_back(pInputPin);
 	// ensure enumerator is refreshed
-	IncrementPinVersion();	
+  IncrementPinVersion();	
 }
 
-void CMultiIOBaseFilter::CreateOutputPin()
+
+void CMultiIOBaseFilter::CreateOutputPin(void)
 {
-	HRESULT hr;
-  std::ostringstream ostr;
-  ostr << "Output " << m_vInputPins.size();
-  std::wstring wsId = StringUtil::stringToWideString(ostr.str());
-	CMultiIOOutputPin* pOutputPin = new CMultiIOOutputPin(this, &m_csFilter, &hr, wsId.c_str(), (int)m_vOutputPins.size());
+HRESULT hr;
+  std::wstringstream wstr;
+  wstr << L"Output " << m_vOutputPins.size();
+  CMultiIOOutputPin* pOutputPin = new CMultiIOOutputPin(this, &m_csFilter, &hr, wstr.str().c_str(), (int)m_vOutputPins.size());
   pOutputPin->AddRef();
-	m_vOutputPins.push_back(pOutputPin);
+  m_vOutputPins.push_back(pOutputPin);
 	// ensure enumerator is refreshed
-	IncrementPinVersion();	
+  IncrementPinVersion();	
 }
+
 
 HRESULT CMultiIOBaseFilter::CheckInputType( const CMediaType *pMediaType )
 {
 	//RG 8/01/2008
 	//Changing this to check all input types
-	return FindMediaTypeInLists(pMediaType, &m_vInputTypes, m_mInputTypeMap);
+  return FindMediaTypeInLists(pMediaType, &m_vInputTypes, m_mInputTypeMap);
 }
+
 
 HRESULT CMultiIOBaseFilter::FindMediaTypeInLists(const CMediaType* pMediaType, MEDIA_TYPE_LIST* pTypeList, MEDIA_TYPE_MAP& typeMap)
 {
@@ -301,58 +303,66 @@ HRESULT CMultiIOBaseFilter::FindMediaTypeInLists(const CMediaType* pMediaType, M
 	return VFW_E_TYPE_NOT_ACCEPTED;
 }
 
-void CMultiIOBaseFilter::OnConnect( int nIndex, RTVC_DIRECTION eDirection )
+
+void CMultiIOBaseFilter::OnConnect(int nIndex, RTVC_DIRECTION eDirection)
 {
-	switch (eDirection)
-	{
-	case RTVC_IN:
-		{
-			// if this is the last one, make a new one: taken from Geraint's Mpeg Parser
-			if (OnFullCreateMoreInputs())
-			{
-				if (nIndex == (int)(m_vInputPins.size()-1))
-				{
-					CreateInputPin();
-				}
-			}
-			break;
-		}
-	case RTVC_OUT:
-		{
-			// if this is the last one, make a new one: taken from Geraint's Mpeg Parser
-			if (OnFullCreateMoreOutputs())
-			{
-				if (nIndex == (int)(m_vOutputPins.size()-1))
-				{
-					CreateOutputPin();
-				}
-			}
-			break;
-		}
-	}
+  switch (eDirection)
+  {
+    case RTVC_IN:	// if this is the last one, make a new one: taken from Geraint's Mpeg Parser
+		  if(OnFullCreateMoreInputs())
+		  {
+		    if(nIndex==(int)(m_vInputPins.size()-1))
+		    {
+		      CreateInputPin();
+		    }
+                  }
+		  break;
+
+    case RTVC_OUT:		// if this is the last one, make a new one: taken from Geraint's Mpeg Parser
+		  if(OnFullCreateMoreOutputs())
+		  {
+		    if (nIndex == (int)(m_vOutputPins.size()-1))
+		    {
+		      CreateOutputPin();
+		    }
+		  }
+		  break;
+  }
 }
 
-void CMultiIOBaseFilter::OnDisconnect( int nIndex )
+void CMultiIOBaseFilter::OnDisconnect(int nIndex, RTVC_DIRECTION eDirection)
 {
-	if (OnFullCreateMoreInputs())
-	{
+  if(eDirection==RTVC_IN && OnFullCreateMoreInputs())
+  {
 		// if index is the last but one, and
 		// the last one is still unconnected, then
 		// remove the last one
-		if ((nIndex == (int)(m_vInputPins.size() - 2)) &&
-			(!m_vInputPins[m_vInputPins.size()-1]->IsConnected()))
-		{
+    if((nIndex == (int)(m_vInputPins.size() - 2)) &&
+       (!m_vInputPins[m_vInputPins.size()-1]->IsConnected()))
+    {
 			// Now make sure that we can't disconnect more than the initial number of inputs
 			// You cannot remove a pin to have less pins than you started with
-			if (m_vInputPins.size() > (size_t)InitialNumberOfInputPins())
-			{
-				m_vInputPins[m_vInputPins.size()-1]->Release();
-				m_vInputPins.pop_back();
-				// refresh enumerator
-				IncrementPinVersion();
-			}
-		}
-	}
+      if(m_vInputPins.size() > (size_t)InitialNumberOfInputPins())
+      {
+	m_vInputPins[m_vInputPins.size()-1]->Release();
+	m_vInputPins.pop_back();
+	IncrementPinVersion();				// refresh enumerator
+      }
+    }
+  }
+  else if(eDirection==RTVC_OUT && OnFullCreateMoreOutputs())
+  {
+    if((nIndex == (int)(m_vOutputPins.size() - 2)) &&
+       (!m_vOutputPins[m_vOutputPins.size()-1]->IsConnected()))
+    {
+      if(m_vOutputPins.size() > (size_t)InitialNumberOfOutputPins())
+      {
+	m_vOutputPins[m_vOutputPins.size()-1]->Release();
+	m_vOutputPins.pop_back();
+	IncrementPinVersion();				// refresh enumerator
+      }
+    }
+  }
 }
 
 
@@ -378,15 +388,14 @@ bool CMultiIOBaseFilter::OnFullCreateMoreOutputs()
 
 //////////////////////////////////////////////////////////////////////////
 // Output pin stuff
+
 HRESULT CMultiIOBaseFilter::CheckOutputType( const CMediaType* pMediaType )
 {
 	return FindMediaTypeInLists(pMediaType, &m_vOutputTypes, m_mOutputTypeMap);
 }
 
-/**
-* 
-* 
-* Method:    InitializeOutputSample
+
+/** Method:    InitializeOutputSample
 * FullName:  CMultiIOBaseFilter::InitializeOutputSample
 * Access:    virtual public 
 * Qualifier:
@@ -394,8 +403,7 @@ HRESULT CMultiIOBaseFilter::CheckOutputType( const CMediaType* pMediaType )
 * @param: 	 IMediaSample *pSample
 * @param: 	 IMediaSample **ppOutSample
 * @param: 	 int nInputIndex: this is required when initialising an out sample so that we can get the properties such as sample start time of the specified input and use this for the specified out sample
-* @param: 	 int nOutputIndex: this needs to be specified so that we can get the correct allocator
-*/
+* @param: 	 int nOutputIndex: this needs to be specified so that we can get the correct allocator */
 HRESULT CMultiIOBaseFilter::InitializeOutputSample( IMediaSample *pSample, IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex )
 {
 	AM_SAMPLE2_PROPERTIES * const pProperties = m_vInputPins[nInputIndex]->SampleProps();

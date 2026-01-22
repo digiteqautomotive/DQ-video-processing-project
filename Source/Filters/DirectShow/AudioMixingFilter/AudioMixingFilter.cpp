@@ -173,12 +173,12 @@ HRESULT AudioMixingFilter::CheckOutputType( const CMediaType* pMediaType )
 
 HRESULT AudioMixingFilter::Receive( IMediaSample *pSample, int nIndex )
 {
-  CAutoLock lck(&m_csReceive);
   ASSERT(nIndex >= 0);
   ASSERT (nIndex < m_vInputPins.size());
   ASSERT(pSample);
   ASSERT (m_vOutputPins[0] != NULL);
 
+  CAutoLock lck(&m_csReceive);
   if (nIndex == 0)
   {
     pSample->AddRef();

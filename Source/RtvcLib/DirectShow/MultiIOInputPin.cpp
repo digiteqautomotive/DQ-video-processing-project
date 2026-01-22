@@ -54,7 +54,7 @@ HRESULT CMultiIOInputPin::CheckMediaType( const CMediaType* mtIn )
 HRESULT CMultiIOInputPin::BreakConnect()
 {
 	HRESULT hr = CBaseInputPin::BreakConnect();
-	m_pFilter->OnDisconnect(m_nIndex);
+	m_pFilter->OnDisconnect(m_nIndex,RTVC_IN);
 	return hr;
 }
 
