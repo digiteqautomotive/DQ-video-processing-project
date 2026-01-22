@@ -129,9 +129,9 @@ HRESULT ScaleProperties::OnApplyChanges(void)
 {
     // width
   HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
     // height
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
   return S_OK;
 }

@@ -1,5 +1,5 @@
 ;***************************************************************************************
-;*                       (c)2025 Digiteq Automotive - Jaroslav Fojtik
+;*                    (c)2025-2026 Digiteq Automotive - Jaroslav Fojtik
 ;****************************************************************************************/
 
 .CODE             ;Indicates the start of a code segment.

@@ -8,6 +8,12 @@
 .CODE             ;Indicates the start of a code segment.
 
 
+KOEF_U2B	EQU	520
+KOEF_U2G	EQU	101
+KOEF_V2R	EQU	292
+KOEF_V2G	EQU	149
+
+
 ;void ConvertRowAsmAYUV_ARGB24(void *pDst, void *pSrc, unsigned Pixels);
         public  ConvertRowAsmAYUV_ARGB24
 ConvertRowAsmAYUV_ARGB24 proc \
@@ -30,7 +36,7 @@ LoopPx: xor	edx,edx
 
 	movzx	ebx,byte ptr [esi+3]	; V
 	sub	ebx,128	
-	imul	eax,ebx,292		; 292*V	
+	imul	eax,ebx,KOEF_V2R	; 292*V	
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -41,7 +47,7 @@ NormR1:	mov	[edi+2],ah		; R
 
 	movzx	ebp,byte ptr [esi+2]	; U
 	sub	ebp,128
-	imul	eax,ebp,520		; 520*V	
+	imul	eax,ebp,KOEF_U2B	; 520*U
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -51,11 +57,11 @@ NormR1:	mov	[edi+2],ah		; R
 NormB1:	mov	[edi],ah		; B
 
 				;EDX = 255*Y
-	imul	eax,ebx,149		; 149*V
+	imul	eax,ebx,KOEF_V2G	; 149*V
 	sub	edx,eax
 
-	imul	eax,ebp,101		; 101*U
-	sub	edx,eax		; 255*Y - 101*U - 149*V
+	imul	eax,ebp,KOEF_U2G	; 101*U
+	sub	edx,eax			; 255*Y - 101*U - 149*V
 	
 	test	edx,0FFFF0000h
 	jz	NormG1
@@ -98,7 +104,7 @@ LoopPx: mov	al,byte ptr [esi]	; A
 
 	movzx	ebx,byte ptr [esi+3]	; V
 	sub	ebx,128	
-	imul	eax,ebx,359		; 359*V	
+	imul	eax,ebx,KOEF_V2R	; 359*V	
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -109,7 +115,7 @@ NormR1:	mov	[edi+2],ah	; R1
 
 	movzx	ebp,byte ptr [esi+2]	; U
 	sub	ebp,128
-	imul	eax,ebp,454		; 454*V	
+	imul	eax,ebp,KOEF_U2B	; 454*U	
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -118,12 +124,12 @@ NormR1:	mov	[edi+2],ah	; R1
 	not	eax	
 NormB1:	mov	[edi],ah	; B1
 
-				;EDX = 255*Y
-	imul	eax,ebx,183			; 183*V
+					;EDX = 255*Y
+	imul	eax,ebx,KOEF_V2G	; 183*V
 	sub	edx,eax
 
-	imul	eax,ebp,88		; 88*U
-	sub	edx,eax		; 255*Y - 102*U - 148*V
+	imul	eax,ebp,KOEF_U2G	; 88*U
+	sub	edx,eax			; 255*Y - 101*U - 148*V
 	
 	test	edx,0FFFF0000h
 	jz	NormG1
@@ -177,7 +183,7 @@ NormR1:	mov	[edi+2],ah		; R1
 
 	movzx	eax,byte ptr [ebx]	; U
 	sub	eax,128
-	imul	eax,520			; 520*U
+	imul	eax,KOEF_U2B		; 520*U
 	add	eax,edx
 
 	test	eax,0FFFF0000h
@@ -194,7 +200,7 @@ NormB1:	mov	[edi],ah	; B1
 
 	movzx	eax,byte ptr [ebx]	; U
 	sub	eax,128
-	imul	eax,101			; 101*U
+	imul	eax,KOEF_U2G			; 101*U
 	sub	edx,eax			; 255*Y - 101*U - 149*V
 	
 	test	edx,0FFFF0000h
@@ -239,7 +245,7 @@ NormB2:	mov	[edi+3],ah	; B2
 
 	movzx	eax,byte ptr [ebx]	; U
 	sub	eax,128
-	imul	eax,101			; 101*U
+	imul	eax,KOEF_U2G			; 101*U
 	sub	edx,eax		; 255*Y - 101*U - 149*V
 
 	test	edx,0FFFF0000h
