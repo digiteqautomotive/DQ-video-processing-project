@@ -84,7 +84,8 @@ PicScalerBase *GetPicScallerRGB32(void)
 ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("DQ VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
-  m_DirtyProps(true)
+  m_DirtyProps(true),
+  m_nReqOutWidth(0), m_nReqOutHeight(0)
 {
   //Call the initialize input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -419,18 +420,18 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
 STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
 {
   // For now, one cannot set any parameters once the output has been connected -> this will affect the buffersize
-  if (m_pOutput)
+  /* if (m_pOutput)
   {
     if (m_pOutput->IsConnected())
     {
       return E_FAIL;
     }
-  }
+  } */
 
   // TODO: get rid of enum or get rid of string!!!!
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
-    RecalculateFilterParameters();
+    //RecalculateFilterParameters();
     return S_OK;
   }
   else
@@ -444,6 +445,8 @@ void ScaleFilter::initParameters()
 {
   addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nReqOutWidth, 0);
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nReqOutHeight, 0);
+  addParameter(FILTER_PARAM_ACT_WIDTH, &m_nOutWidth, m_nOutWidth, true);
+  addParameter(FILTER_PARAM_ACT_HEIGHT, &m_nOutHeight, m_nOutHeight, true);
   // addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
 }
 
@@ -471,17 +474,10 @@ HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, l
 	//Call scaling conversion code
     m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
     m_pScaler->SetOutDimensions(m_nReqOutWidth, m_nReqOutHeight);
+    m_nOutPixels = labs(m_pScaler->GetOutHeight() * m_pScaler->GetOutWidth());		// Update the number of out pixels
     int res = m_pScaler->Scale(pBufferOut, pBufferIn, m_Vflip);
     ASSERT(res == 1);
   }
-  return S_OK;
-}
-
-
-HRESULT ScaleFilter::RecalculateFilterParameters(void)
-{
-  // Update the number of out pixels
-  m_nOutPixels = labs(m_nReqOutWidth * m_nReqOutHeight);
   return S_OK;
 }
 

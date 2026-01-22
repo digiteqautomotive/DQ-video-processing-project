@@ -153,7 +153,7 @@ int CMultiIOBaseFilter::GetPinCount()
 	return (int)(m_vInputPins.size() + m_vOutputPins.size());
 }
 
-CBasePin * CMultiIOBaseFilter::GetPin( int n )
+CBasePin * CMultiIOBaseFilter::GetPin(int n)
 {
 	if ((n >= GetPinCount()) || (n < 0))
 		return NULL;
@@ -216,25 +216,16 @@ STDMETHODIMP CMultiIOBaseFilter::FindPin( LPCWSTR Id, IPin **ppPin )
 
 STDMETHODIMP CMultiIOBaseFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-  if (riid == (IID_ISettingsInterface))
-  {
-    return GetInterface((ISettingsInterface*) this, ppv);
-  }
-  else if (riid == IID_IStatusInterface)
-  {
-    return GetInterface((IStatusInterface*) this, ppv);
-  }
-  else
-  {
-    return CBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-  }
+  if(riid == (IID_ISettingsInterface)) return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IStatusInterface) return GetInterface((IStatusInterface*) this, ppv);
+  return CBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
 
 unsigned CMultiIOBaseFilter::GetConnectedInputCount(void) const
 {
   unsigned uiConnected = 0;
-  for(size_t i = 0; i < m_vInputPins.size(); ++i)
+  for(size_t i=0; i<m_vInputPins.size(); ++i)
   {
     if (m_vInputPins[i]->IsConnected())
     {
@@ -390,7 +381,7 @@ bool CMultiIOBaseFilter::OnFullCreateMoreOutputs() const
 //////////////////////////////////////////////////////////////////////////
 // Output pin stuff
 
-HRESULT CMultiIOBaseFilter::CheckOutputType( const CMediaType* pMediaType )
+HRESULT CMultiIOBaseFilter::CheckOutputType(const CMediaType* pMediaType)
 {
   return FindMediaTypeInLists(pMediaType, &m_vOutputTypes, m_mOutputTypeMap);
 }
@@ -407,24 +398,24 @@ HRESULT CMultiIOBaseFilter::CheckOutputType( const CMediaType* pMediaType )
 * @param: 	 int nOutputIndex: this needs to be specified so that we can get the correct allocator */
 HRESULT CMultiIOBaseFilter::InitializeOutputSample( IMediaSample *pSample, IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex )
 {
-	AM_SAMPLE2_PROPERTIES * const pProperties = m_vInputPins[nInputIndex]->SampleProps();
+  AM_SAMPLE2_PROPERTIES * const pProperties = m_vInputPins[nInputIndex]->SampleProps();
 
-	IMediaSample *pOutSample;
+  IMediaSample *pOutSample;
 	//Let's get rid of the const
 
-	AM_SAMPLE2_PROPERTIES* pProps = (AM_SAMPLE2_PROPERTIES*)pProperties;
+  AM_SAMPLE2_PROPERTIES* pProps = (AM_SAMPLE2_PROPERTIES*)pProperties;
 	// default - times are the same
-	DWORD dwFlags = 0;
+  DWORD dwFlags = 0;
 	// This will prevent the image renderer from switching us to DirectDraw
 	// when we can't do it without skipping frames because we're not on a
 	// keyframe.  If it really has to switch us, it still will, but then we
 	// will have to wait for the next keyframe
-	if (!(pProps->dwSampleFlags & AM_SAMPLE_SPLICEPOINT)) {
+  if(!(pProps->dwSampleFlags & AM_SAMPLE_SPLICEPOINT)) {
 		dwFlags |= AM_GBF_NOTASYNCPOINT;
 	}
 
-	ASSERT(m_vOutputPins[nOutputIndex]->GetAllocator() != NULL);
-	HRESULT hr = m_vOutputPins[nOutputIndex]->GetAllocator()->GetBuffer(
+  ASSERT(m_vOutputPins[nOutputIndex]->GetAllocator() != NULL);
+  HRESULT hr = m_vOutputPins[nOutputIndex]->GetAllocator()->GetBuffer(
 		&pOutSample
 		, pProps->dwSampleFlags & AM_SAMPLE_TIMEVALID ?
 		&pProps->tStart : NULL
@@ -432,14 +423,14 @@ HRESULT CMultiIOBaseFilter::InitializeOutputSample( IMediaSample *pSample, IMedi
 		&pProps->tStop : NULL
 		, dwFlags
 		);
-	*ppOutSample = pOutSample;
-	if (FAILED(hr)) {
+  *ppOutSample = pOutSample;
+  if (FAILED(hr)) {
 		return hr;
-	}
+  }
 
-	ASSERT(pOutSample);
-	IMediaSample2 *pOutSample2;
-	if (SUCCEEDED(pOutSample->QueryInterface(IID_IMediaSample2,
+  ASSERT(pOutSample);
+  IMediaSample2 *pOutSample2;
+  if (SUCCEEDED(pOutSample->QueryInterface(IID_IMediaSample2,
 		(void **)&pOutSample2))) {
 			/*  Modify it */
 			AM_SAMPLE2_PROPERTIES OutProps;
@@ -475,8 +466,8 @@ HRESULT CMultiIOBaseFilter::InitializeOutputSample( IMediaSample *pSample, IMedi
 		if (pSample->GetMediaTime(&MediaStart,&MediaEnd) == NOERROR) {
 			pOutSample->SetMediaTime(&MediaStart,&MediaEnd);
 		}
-	}
-	return S_OK;
+  }
+  return S_OK;
 }
 
 HRESULT CMultiIOBaseFilter::SetMediaType( PIN_DIRECTION direction,const CMediaType *pmt, int nIndex )
@@ -539,20 +530,20 @@ HRESULT CMultiIOBaseFilter::FindMediaType(const CMediaType* pmt, MEDIA_TYPE_LIST
 // Basic implementation -> Just here for override purposes
 STDMETHODIMP CMultiIOBaseFilter::EndOfStream( int nIndex )
 {
-	return S_OK;
+  return S_OK;
 }
 
 STDMETHODIMP CMultiIOBaseFilter::BeginFlush( int nIndex )
 {
-	return S_OK;
+  return S_OK;
 }
 
 STDMETHODIMP CMultiIOBaseFilter::EndFlush( int nIndex )
 {
-	return S_OK;
+  return S_OK;
 }
 
 STDMETHODIMP CMultiIOBaseFilter::NewSegment( REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate, int nIndex )
 {
-	return S_OK;
+  return S_OK;
 }

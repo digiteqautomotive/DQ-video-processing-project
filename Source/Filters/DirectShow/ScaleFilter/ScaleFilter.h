@@ -43,13 +43,9 @@ static const GUID CLSID_VPP_ScaleFilter = { 0x757fc317, 0x228c, 0x4340, { 0x80, 
 static const GUID CLSID_ScaleProperties = { 0x90fb5f, 0xce11, 0x4ecf, { 0x91, 0xa3, 0x4b, 0xfa, 0xd0, 0xea, 0xd9, 0x62 } };
 
 
-/*
-#ifdef _BUILD_FOR_SHORT
-typedef short yuvType;
-#else
-typedef signed char yuvType;
-#endif
-*/
+#define FILTER_PARAM_ACT_WIDTH		"Actual width"
+#define FILTER_PARAM_ACT_HEIGHT		"Actual height"
+
 
 // Forward declarations
 class PicScalerBase;
@@ -127,8 +123,6 @@ private:
    * @param pDest The destination buffer
    */
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
-
-  HRESULT RecalculateFilterParameters();
 
   /// Pointer to our picture scaler
   PicScalerBase* m_pScaler;

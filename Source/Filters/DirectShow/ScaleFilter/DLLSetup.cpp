@@ -115,6 +115,10 @@ HRESULT ScaleProperties::ReadSettings()
 {
   setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
   setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
+
+  setEditTextFromIntFilterParameter(FILTER_PARAM_ACT_WIDTH, IDC_EDIT_ACT_WIDTH);
+  setEditTextFromIntFilterParameter(FILTER_PARAM_ACT_HEIGHT, IDC_EDIT_ACT_HEIGHT);
+
     // width
   HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
   if (FAILED(hr)) return hr;

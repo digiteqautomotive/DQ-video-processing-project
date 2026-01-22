@@ -7,12 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "Windows.h"
-
-#ifdef IDC_STATIC
-#undef IDC_STATIC
-#endif
-#define IDC_STATIC              (-1)     // all static controls
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -21,10 +16,8 @@
 // English (South Africa) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENS)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SOUTH_AFRICA
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -57,16 +50,20 @@ END
 // Dialog
 //
 
-IDD_SCALE_DIALOG DIALOGEX 0, 0, 170, 102
+IDD_SCALE_DIALOG DIALOGEX 0, 0, 210, 120
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "Target Width:",IDC_STATIC,22,19,46,8
-    LTEXT           "Target Height:",IDC_STATIC,22,40,48,8
-    EDITTEXT        IDC_EDIT_TARGET_WIDTH,78,18,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,17,10,14
-    EDITTEXT        IDC_EDIT_TARGET_HEIGHT,78,38,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,38,10,14
+    LTEXT           "Target Width:",IDC_STATIC,17,30,46,8
+    LTEXT           "Target Height:",IDC_STATIC,17,51,48,8
+    EDITTEXT        IDC_EDIT_TARGET_WIDTH,73,29,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,112,28,10,14
+    EDITTEXT        IDC_EDIT_TARGET_HEIGHT,73,49,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,112,49,10,14
+    LTEXT           "Request:",IDC_STATIC,80,16,44,8
+    EDITTEXT        IDC_EDIT_ACT_HEIGHT,136,29,40,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT_ACT_WIDTH,135,49,40,14,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Actual output:",IDC_STATIC,137,16,58,8
 END
 
 
@@ -76,14 +73,14 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_SCALE_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 163
+        RIGHTMARGIN, 203
         TOPMARGIN, 7
-        BOTTOMMARGIN, 95
+        BOTTOMMARGIN, 113
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -103,7 +100,7 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_SCALE_CAPTION       "DQ Scale Filter Properties"
 END
