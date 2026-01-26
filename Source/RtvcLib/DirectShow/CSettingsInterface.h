@@ -140,7 +140,6 @@ private:
 
 	typedef std::map<std::string, CSettingsInterface::RTVC_PARAM_TYPES> PARAM_TYPE_MAP;
 
-
 	std::vector<std::string> m_vParameters;
 	
 	/// Templated helper class to store string - parameter mappings, access attributes and allowed values
@@ -149,10 +148,10 @@ private:
 	{
 	public:
 		RtvcParameterValue()
-		{;}
+		{}
 
 		~RtvcParameterValue()
-		{;}
+		{}
 
 		bool contains(const std::string& sName)
 		{

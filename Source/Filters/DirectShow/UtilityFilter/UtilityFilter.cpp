@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "UtilityFilter.h"
 #include "DirectShow/DirectShowHelper.h"
@@ -63,7 +61,8 @@ UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr):
   m_gdiplusStartupInput(new Gdiplus::GdiplusStartupInput()),
   m_pGdiToken(NULL),
   m_hrInterfaceAquired(S_OK),
-  m_DirtyProps(true)
+  m_DirtyProps(true),
+  m_FontSize(16)
 {
   GdiplusStartup(&m_pGdiToken, m_gdiplusStartupInput, NULL); //gdi+ init
   QueryPerformanceFrequency((LARGE_INTEGER*)&m_iPerformanceFrequency);
@@ -77,6 +76,7 @@ UtilityFilter::~UtilityFilter()
   delete m_gdiplusStartupInput;
 }
 
+
 CUnknown * WINAPI UtilityFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
   UtilityFilter *pFilter = new UtilityFilter(pUnk, pHr);
@@ -86,6 +86,7 @@ CUnknown * WINAPI UtilityFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
   }
   return pFilter;
 }
+
 
 STDMETHODIMP UtilityFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
@@ -142,7 +143,7 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
   Graphics* pGraphics = Graphics::FromImage(&bm);
 
   // Initialize font
-  Gdiplus::Font myFont(L"Arial", 16);
+  Gdiplus::Font myFont(L"Arial", m_FontSize);
   //RectF layoutRect(0.0f, 0.0f, 200.0f, 50.0f);
   RectF layoutRect((float)m_uiX, (float)m_uiY, 350.0f, 50.0f);
   StringFormat format;
@@ -505,12 +506,14 @@ void UtilityFilter::initParameters(void)
 {
   addParameter(UF_PARAM_X, &m_uiX, 0);
   addParameter(UF_PARAM_Y, &m_uiY, 0);
-  addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0);
-  addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0);
   addParameter(UF_MODE, &m_uiFramerateEstimationMode, 1);
-  addParameter("writeonframe", &m_bWriteOnFrame, true);
-  addParameter(UF_PRECISION, &m_uiPrecision, 1);
+  addParameter(UF_FONT_SIZE, &m_FontSize, 16);
+  addParameter(UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
   addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
+
+  addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0, true);
+  addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0, true);  
+  addParameter(UF_PRECISION, &m_uiPrecision, 1);    
 }
 
 
@@ -535,6 +538,7 @@ HRESULT UtilityFilter::InitNew(void)
 OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);
 OLECHAR OLE_UF_PARAM_Y[] = olestr(UF_PARAM_Y);
 OLECHAR OLE_UF_MODE[] = olestr(UF_MODE);
+OLECHAR OLE_UF_FONT_SIZE[] = olestr(UF_FONT_SIZE);
 
 
 HRESULT UtilityFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
@@ -579,6 +583,18 @@ VARIANT var;
     CoTaskMemFree((void*)PropName);
   }
 
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_UF_FONT_SIZE));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_UF_FONT_SIZE,sizeof(OLE_UF_FONT_SIZE));
+    VariantClear(&var);
+    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
+    {
+      getFromVariant(m_FontSize,&var);
+    }
+    CoTaskMemFree((void*)PropName);
+  }
+
   VariantClear(&var);
 return S_OK;
 }
@@ -617,6 +633,15 @@ VARIANT var;
     pPropBag->Write(PropName,&var);
     CoTaskMemFree((void*)PropName);
   }
+  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_UF_FONT_SIZE));
+  if(PropName)
+  {
+    memcpy((void*)PropName,OLE_UF_MODE,sizeof(OLE_UF_FONT_SIZE));
+    var.vt = VT_INT;
+    var.intVal = m_FontSize;
+    pPropBag->Write(PropName,&var);
+    CoTaskMemFree((void*)PropName);
+  }
 
 return S_OK;
 }
@@ -650,7 +675,12 @@ HRESULT UtilityFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pEr
     pVar->uintVal = m_uiFramerateEstimationMode;
     return S_OK;
   }
-
+  if(oleicmp(pszPropName, OLE_UF_FONT_SIZE) == 0)
+  {   
+    pVar->vt = VT_INT;
+    pVar->intVal = m_FontSize;
+    return S_OK;
+  }
   return E_INVALIDARG;
 }
 
@@ -671,6 +701,10 @@ CheckPointer(pVar, E_INVALIDARG);
   {
     if(getFromVariant(m_uiFramerateEstimationMode,pVar)) return S_OK;    
   }
+  else if(oleicmp(pszPropName, OLE_UF_FONT_SIZE) == 0)
+  {
+    if(getFromVariant(m_FontSize,pVar)) return S_OK;    
+  }
   return E_INVALIDARG;
 }
 
@@ -681,7 +715,7 @@ CheckPointer(pVar, E_INVALIDARG);
 HRESULT UtilityFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
 {
 CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_uiX) + sizeof(m_uiY) + sizeof(m_uiFramerateEstimationMode);
+  pcbSize->QuadPart = sizeof(m_uiX) + sizeof(m_uiY) + sizeof(m_uiFramerateEstimationMode) + sizeof(m_FontSize);
   return S_OK;
 }
 
@@ -696,6 +730,7 @@ HRESULT UtilityFilter::Load(IStream *pStm)
 {
 ULONG pcbRead;
 unsigned uiX, uiY, uiFramerateEstimationMode;
+int FontSize;
 HRESULT hr;
   ASSERT(sizeof(uiX)==sizeof(m_uiX));
   ASSERT(sizeof(uiY)==sizeof(m_uiY));
@@ -705,11 +740,13 @@ HRESULT hr;
   if(FAILED(hr=pStm->Read(&uiX, sizeof(uiX), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&uiY, sizeof(uiY), &pcbRead))) return hr;
   if(FAILED(hr=pStm->Read(&uiFramerateEstimationMode, sizeof(uiFramerateEstimationMode), &pcbRead))) return hr;
-  if(m_uiX!=uiX || m_uiY!=uiY || m_uiFramerateEstimationMode!=uiFramerateEstimationMode)
+  if(FAILED(hr=pStm->Read(&FontSize, sizeof(FontSize), &pcbRead))) return hr;
+  if(m_uiX!=uiX || m_uiY!=uiY || m_uiFramerateEstimationMode!=uiFramerateEstimationMode || FontSize!=m_FontSize)
   {
     m_uiX = uiX;
     m_uiY = uiY;
     m_uiFramerateEstimationMode = uiFramerateEstimationMode;
+    m_FontSize = FontSize;
     m_DirtyProps = true;
   }
 return S_OK;
@@ -723,6 +760,7 @@ CheckPointer(pStm, E_INVALIDARG);
   if(FAILED(hr=pStm->Write(&m_uiX, sizeof(m_uiX), NULL))) return hr;
   if(FAILED(hr=pStm->Write(&m_uiY, sizeof(m_uiY), NULL))) return hr;
   if(FAILED(hr=pStm->Write(&m_uiFramerateEstimationMode, sizeof(m_uiFramerateEstimationMode), NULL))) return hr;
+  if(FAILED(hr=pStm->Write(&m_FontSize, sizeof(m_FontSize), NULL))) return hr;
   if(fClearDirty) m_DirtyProps=false;
 return S_OK;
 }

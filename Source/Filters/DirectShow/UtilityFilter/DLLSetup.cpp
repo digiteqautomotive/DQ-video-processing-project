@@ -157,27 +157,15 @@ HRESULT UtilityProperties::ReadSettings()
       return E_FAIL;
     }
 
-  hr = m_pSettingsInterface->GetParameter(UF_PARAM_X, sizeof(szBuffer), szBuffer, &nLength);
-  if (SUCCEEDED(hr))
-  {
-	SetDlgItemText(m_Dlg, IDC_EDIT_X, szBuffer);
-	m_uiX = atoi(szBuffer);
-  }
-  else
-  {
-	return E_FAIL;
-  }
-  hr = m_pSettingsInterface->GetParameter(UF_PARAM_Y, sizeof(szBuffer), szBuffer, &nLength);
-  if (SUCCEEDED(hr))
-  {
-	SetDlgItemText(m_Dlg, IDC_EDIT_Y, szBuffer);
-	m_uiY = atoi(szBuffer);
-  }
-  else
-  {
-	return E_FAIL;
-  }
-		
+  hr = setEditTextFromIntFilterParameter(UF_PARAM_X,IDC_EDIT_X);
+  if(FAILED(hr)) return hr;
+  hr = setEditTextFromIntFilterParameter(UF_PARAM_Y,IDC_EDIT_Y);
+  if(FAILED(hr)) return hr;
+  hr = setEditTextFromIntFilterParameter(UF_FONT_SIZE,IDC_FONT_SIZE);
+  if(FAILED(hr)) return hr;
+  hr = setCheckBoxFromBoolFilterParameter(UF_WRITE_ON_FRAME,IDC_WRITE_ON_FRAME);
+  if(FAILED(hr)) return hr;
+  hr = setEditTextFromIntFilterParameter(UF_HISTORY_SIZE,IDC_HISTORY_SIZE);
   return hr;
 }
 
@@ -199,13 +187,16 @@ HRESULT UtilityProperties::OnApplyChanges(void)
     //}
   m_pSettingsInterface->SetParameter(UF_MODE, szBuffer);
 
-  nLength = GetDlgItemText(m_Dlg, IDC_EDIT_X, szBuffer, BUFFER_SIZE);
-  m_uiX = atoi(szBuffer);
-  m_pSettingsInterface->SetParameter(UF_PARAM_X, szBuffer);
-  nLength = GetDlgItemText(m_Dlg, IDC_EDIT_Y, szBuffer, BUFFER_SIZE);
-  m_uiY = atoi(szBuffer);
-  m_pSettingsInterface->SetParameter(UF_PARAM_Y, szBuffer);
-  return S_OK;
+  HRESULT hr = setIntFilterParameterFromEditText(UF_PARAM_X,IDC_EDIT_X);
+  if(FAILED(hr)) return hr;
+  hr = setIntFilterParameterFromEditText(UF_PARAM_Y,IDC_EDIT_Y);
+  if(FAILED(hr)) return hr;
+  hr = setIntFilterParameterFromEditText(UF_FONT_SIZE,IDC_FONT_SIZE);
+  if(FAILED(hr)) return hr;
+  hr = setBoolFilterParameterFromCheckBox(UF_WRITE_ON_FRAME,IDC_WRITE_ON_FRAME);
+  if(FAILED(hr)) return hr;
+  hr = setIntFilterParameterFromEditText(UF_HISTORY_SIZE,IDC_HISTORY_SIZE);
+  return hr;
 } 
 
 
@@ -228,21 +219,10 @@ void UtilityProperties::initialiseControls()
   SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING,  8, (LPARAM)UF_NONE);
   SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SETMINVISIBLE, 9, 0);
 
-  short lower = 0;
-  short upper = SHRT_MAX;
-
     // Init UI
-  long lResult = SendMessage(			// returns LRESULT in lResult
-	GetDlgItem(m_Dlg, IDC_SPIN1),	// handle to destination control
-	(UINT) UDM_SETRANGE,			// message ID
-	(WPARAM) 0,						// = 0; not used, must be zero
-	(LPARAM) MAKELONG ( upper, lower)      // = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-      );
-    lResult = SendMessage(			// returns LRESULT in lResult
-      GetDlgItem(m_Dlg, IDC_SPIN2),	// handle to destination control
-      (UINT) UDM_SETRANGE,			// message ID
-      (WPARAM) 0,						// = 0; not used, must be zero
-      (LPARAM) MAKELONG ( upper, lower)      // = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-      );
+  setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
+  setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
+  setSpinBoxRange(IDC_SPIN3, 0, SHRT_MAX);
+  setSpinBoxRange(IDC_SPIN3, 0, SHRT_MAX);
 }
 

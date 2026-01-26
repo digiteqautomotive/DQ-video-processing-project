@@ -229,6 +229,7 @@
     <None Include="UtilityFilter.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\UtilityFilter\resource.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\UtilityFilter\stdafx.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\UtilityFilter\UtilityFilter.h" />
   </ItemGroup>

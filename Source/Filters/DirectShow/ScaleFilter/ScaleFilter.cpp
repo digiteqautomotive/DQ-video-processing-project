@@ -419,25 +419,8 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
 
 STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
 {
-  // For now, one cannot set any parameters once the output has been connected -> this will affect the buffersize
-  /* if (m_pOutput)
-  {
-    if (m_pOutput->IsConnected())
-    {
-      return E_FAIL;
-    }
-  } */
-
-  // TODO: get rid of enum or get rid of string!!!!
-  if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
-  {
-    //RecalculateFilterParameters();
-    return S_OK;
-  }
-  else
-  {
-    return E_FAIL;
-  }
+			  // TODO: get rid of enum or get rid of string!!!!
+  return CSettingsInterface::SetParameter(type, value);
 }
 
 

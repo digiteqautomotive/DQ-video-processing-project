@@ -56,6 +56,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define UF_MEASURE_BITRATE "Measure bitrate"
 #define UF_DETECT_UPSTREAM_SOURCE "Detect upstream source"
 #define UF_NONE "None"
+#define UF_FONT_SIZE "Font Size"
+#define UF_WRITE_ON_FRAME "Write on frame"
 
 
 class UtilityProperties: public FilterPropertiesBase

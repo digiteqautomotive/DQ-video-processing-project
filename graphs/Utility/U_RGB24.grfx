@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph">
+    <filter name="Sample Video Renderer" index="0" clsid="{4D4B1600-33AC-11CF-BF30-00AA0055595A}"/>
+    <filter name="DQ VPP Utility Filter" index="1" clsid="{E91B3538-2239-47B0-A8EE-AF60278A67F2}">
+        <ipersiststream encoding="base64" data="CgAAAA8AAAACAAAADwAAAA=="/>
+    </filter>
+    <filter name="AVObjects Video Generator" index="2" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}" clock="1">
+        <ipersiststream encoding="base64" data="kMxvlnocw0Ki3/kfC+rdoQEAAAAAAAAAZAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAAaJwAAAAAAAAAAAAAAAAAAAAAAAICfWAVWw84RvwEAqgBVWVrUAgAAQAIAAAAAAAAAADlApQAAAIC7AAAoAAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    </filter>
+    <connect out="AVObjects Video Generator/Video" in="DQ VPP Utility Filter/Input" outFilterIndex="2" outPinId="Video" outPinName="Video" outPinIndex="0" inFilterIndex="1" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="DQ VPP Utility Filter/Output" in="Sample Video Renderer/Input" outFilterIndex="1" outPinId="Out" outPinName="Output" outPinIndex="0" inFilterIndex="0" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+</graph>

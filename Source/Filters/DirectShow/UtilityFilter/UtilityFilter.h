@@ -27,9 +27,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 #pragma warning(push)     // disable for this header only
 #pragma warning(disable:4312) 
@@ -92,17 +90,16 @@ static bool isFramerateEstimationMode(UtilityMode eMode )
   }
 }
 
+
 #define BUFFER_SIZE 256
 
-/**
- * @brief The utility filter can be used to overlay estimated frame rates, the current date/time
+/** @brief The utility filter can be used to overlay estimated frame rates, the current date/time
  * estimate bit rates and overlay info from an upstream IFilterInfoSourceInterface.
  * The functionality is configured by setting the "mode" parameter of the filter using the
  * CSettingInterface COM interface.
  * 
  * Estimate framerate based on timestamps
- * \ingroup DirectShowFilters
- */
+ * \ingroup DirectShowFilters */
 class UtilityFilter: public CTransInPlaceFilter,
                      public CStatusInterface,
                      public CSettingsInterface,
@@ -188,19 +185,18 @@ private:
   {
 public:
     SampleInfo(): TimeStamp(0),  Diff(0), Size(0)
-    {
-    }
+    {}
 
     SampleInfo(REFERENCE_TIME ts, REFERENCE_TIME diff, unsigned size): TimeStamp(ts),
       Diff(diff),
       Size(size)
-    {
+    {}
 
-    }
     REFERENCE_TIME TimeStamp;
     REFERENCE_TIME Diff;
     unsigned Size;
   };
+
   std::deque<SampleInfo> m_qDurations;
   unsigned m_uiHistorySize;
   std::string m_sLastValue;
@@ -208,9 +204,10 @@ public:
   Gdiplus::GdiplusStartupInput* m_gdiplusStartupInput;
   ULONG_PTR m_pGdiToken;
 
-  // for upstream mode
+	// for upstream mode
   IFilterInfoSourceInterfacePtr m_pFilterInfoSourceInterface;
   HRESULT m_hrInterfaceAquired;
   bool m_DirtyProps;
+  int m_FontSize;
   char m_pBuffer[BUFFER_SIZE];
 };

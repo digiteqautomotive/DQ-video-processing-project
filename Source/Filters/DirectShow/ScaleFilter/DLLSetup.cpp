@@ -118,12 +118,10 @@ HRESULT ScaleProperties::ReadSettings()
 
   setEditTextFromIntFilterParameter(FILTER_PARAM_ACT_WIDTH, IDC_EDIT_ACT_WIDTH);
   setEditTextFromIntFilterParameter(FILTER_PARAM_ACT_HEIGHT, IDC_EDIT_ACT_HEIGHT);
-
-    // width
-  HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
+    
+  HRESULT hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT); // height
   if (FAILED(hr)) return hr;
-    // height
-  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
+  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);	// width
   if (FAILED(hr)) return hr;
   return hr;
 }

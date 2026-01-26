@@ -2,6 +2,9 @@
 // Microsoft Visual C++ generated include file.
 // Used by UtilityFilter.rc
 //
+#define MAJOR_VERSION                   1
+#define MINOR_VERSION                   6
+#define BUILD_VERSION                   21
 #define IDS_UTILITY_CAPTION             101
 #define IDD_DIALOG1                     102
 #define IDD_FRAMERATE_DIALOG            102
@@ -11,13 +14,19 @@
 #define IDC_EDIT_BOTTOM                 1003
 #define IDC_EDIT_Y                      1003
 #define IDC_SPIN1                       1004
+#define IDC_EDIT_Y2                     1005
+#define IDC_FONT_SIZE                   1005
 #define IDC_SPIN2                       1006
 #define IDC_EDIT_LEFT                   1007
+#define IDC_FONT_SIZE2                  1007
+#define IDC_HISTORY_SIZE                1007
 #define IDC_SPIN3                       1008
 #define IDC_EDIT3                       1009
 #define IDC_EDIT_RIGHT                  1009
+#define IDC_SPIN5                       1009
 #define IDC_SPIN4                       1010
 #define IDC_CMB_MODE                    1011
+#define IDC_WRITE_ON_FRAME              1012
 
 // Next default values for new objects
 // 
@@ -25,7 +34,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

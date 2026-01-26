@@ -7,12 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "Windows.h"
-
-#ifdef IDC_STATIC
-#undef IDC_STATIC
-#endif
-#define IDC_STATIC              (-1)     // all static controls
+#include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -61,13 +56,20 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "Offset X:",IDC_STATIC,19,26,30,8
-    EDITTEXT        IDC_EDIT_X,53,23,35,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
-    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,82,23,11,14
+    EDITTEXT        IDC_EDIT_X,55,23,35,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,84,23,11,14
     LTEXT           "Offset Y:",IDC_STATIC,19,42,30,8
-    EDITTEXT        IDC_EDIT_Y,53,40,36,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
-    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,82,40,11,14
+    EDITTEXT        IDC_EDIT_Y,55,40,36,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,84,40,11,14
     LTEXT           "Mode:",IDC_STATIC,19,10,21,8
     COMBOBOX        IDC_CMB_MODE,53,7,149,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Font size:",IDC_STATIC,18,63,45,8
+    EDITTEXT        IDC_FONT_SIZE,62,60,36,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,98,60,12,14
+    CONTROL         "Write on frame",IDC_WRITE_ON_FRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,61,97,92,10
+    LTEXT           "History size:",IDC_STATIC,16,81,45,8
+    EDITTEXT        IDC_HISTORY_SIZE,60,78,36,14,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    CONTROL         "",IDC_SPIN5,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,96,78,12,14
 END
 
 
@@ -84,16 +86,6 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-#define ORIGINAL_FILENAME	"UtilityFilter.dll"
-
-#include "../VersionResInfo.h"
-
 
 
 /////////////////////////////////////////////////////////////////////////////
