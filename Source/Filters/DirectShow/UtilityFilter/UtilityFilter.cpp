@@ -445,24 +445,25 @@ STDMETHODIMP UtilityFilter::GetMeasurement(char* value, int* buffersize)
 
 const std::string UtilityFilter::getString( double dAverageFramerate )
 {
+  if(m_uiPrecision>32) m_uiPrecision=32;	// Prevent precision too high.
   switch (m_uiFramerateEstimationMode)
   {
   case UTIL_EST_FRAMERATE_TIMESTAMP:
   case UTIL_EST_FRAMERATE_SYSTEM_TIME:
     {
-      m_sLastValue = StringUtil::doubleToString(dAverageFramerate, m_uiPrecision) + " fps";
+      m_sLastValue = StringUtil::doubleToString(dAverageFramerate,m_uiPrecision) + " fps";
       return m_sLastValue;
     }
   case UTIL_DATE_TIME_STAMP_AND_EST_FPS_TS:
   case UTIL_DATE_TIME_STAMP_AND_EST_FPS_ST:
     {
-      std::string sFramerate = StringUtil::doubleToString(dAverageFramerate, m_uiPrecision) + " fps";
+      std::string sFramerate = StringUtil::doubleToString(dAverageFramerate,m_uiPrecision) + " fps";
       std::string m_sLastValue = StringUtil::GetTimeString("%d/%m/%Y %X") + " " + sFramerate;
       return m_sLastValue;
     }
   case UTIL_MEASURE_BITRATE:
     {
-      m_sLastValue = StringUtil::doubleToString(dAverageFramerate, m_uiPrecision) + " kbps";
+      m_sLastValue = StringUtil::doubleToString(dAverageFramerate,m_uiPrecision) + " kbps";
       return m_sLastValue;
   }
   default:
@@ -509,10 +510,10 @@ void UtilityFilter::initParameters(void)
   addParameter(UF_FONT_SIZE, &m_FontSize, 16);
   addParameter(UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
   addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
+  addParameter(UF_PRECISION, &m_uiPrecision, 1);
 
   addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0, true);
   addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0, true);  
-  addParameter(UF_PRECISION, &m_uiPrecision, 1);    
 }
 
 
