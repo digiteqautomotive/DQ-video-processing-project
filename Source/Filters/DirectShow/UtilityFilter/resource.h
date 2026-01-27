@@ -22,8 +22,11 @@
 #define IDC_EDIT_RIGHT                  1009
 #define IDC_SPIN5                       1009
 #define IDC_SPIN4                       1010
+#define IDC_HISTORY_SIZE2               1010
+#define IDC_PRECISION                   1010
 #define IDC_CMB_MODE                    1011
 #define IDC_WRITE_ON_FRAME              1012
+#define IDC_SPIN6                       1013
 
 // Next default values for new objects
 // 

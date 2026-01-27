@@ -162,6 +162,7 @@ STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYP
   if ( m_in1.is_open() )
   {
     m_in1.seekg( 0, std::ios::end );
+
     m_iFileSize = m_in1.tellg();
     m_in1.seekg( 0 , std::ios::beg );
 

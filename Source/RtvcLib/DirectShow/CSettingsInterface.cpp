@@ -279,7 +279,7 @@ ParameterInt::ParameterInt(const char *NewName, OLECHAR *NewOleName, int *ValueA
   if(pValue==NULL)
     pValue = &PreviousValue;
   else
-    PreviousValue = *pValue;
+    *pValue = IniDefaultValue;
 }
 
 
@@ -306,12 +306,13 @@ return true;
 ParameterUnsigned::ParameterUnsigned(const char *NewName, OLECHAR *NewOleName, unsigned *ValueAddr, unsigned IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
-	DefaultValue(IniDefaultValue)
+	DefaultValue(IniDefaultValue),
+        PreviousValue(IniDefaultValue)
 {
   if(pValue==NULL)
     pValue = &PreviousValue;
   else
-    PreviousValue = *pValue;
+    *pValue = IniDefaultValue;
 }
 
 
@@ -338,12 +339,13 @@ return true;
 ParameterBool::ParameterBool(const char *NewName, OLECHAR *NewOleName, bool *ValueAddr, bool IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
-	DefaultValue(IniDefaultValue)
+	DefaultValue(IniDefaultValue),
+        PreviousValue(IniDefaultValue)
 {
   if(pValue==NULL)
     pValue = &PreviousValue;
   else
-    PreviousValue = *pValue;
+    *pValue = IniDefaultValue;
 }
 
 
@@ -383,12 +385,13 @@ HRESULT hr;
 ParameterDouble::ParameterDouble(const char *NewName, OLECHAR *NewOleName, double *ValueAddr, double IniDefaultValue, double NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
-	DefaultValue(IniDefaultValue)
+	DefaultValue(IniDefaultValue),
+        PreviousValue(IniDefaultValue)
 {
   if(pValue==NULL)
     pValue = &PreviousValue;
   else
-    PreviousValue = *pValue;
+    *pValue = IniDefaultValue;
 }
 
 
@@ -415,12 +418,13 @@ return true;
 ParameterString::ParameterString(const char *NewName, OLECHAR *NewOleName, std::string *ValueAddr, std::string IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
-	DefaultValue(IniDefaultValue)
+	DefaultValue(IniDefaultValue),
+        PreviousValue(IniDefaultValue)
 {
   if(pValue==NULL)
     pValue = &PreviousValue;
   else
-    PreviousValue = *pValue;
+    *pValue = IniDefaultValue;
 }
 
 

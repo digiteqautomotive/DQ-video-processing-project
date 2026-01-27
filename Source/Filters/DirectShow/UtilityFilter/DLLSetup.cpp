@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "UtilityFilter.h"
 #include "UtilityProperties.h"
@@ -166,6 +164,8 @@ HRESULT UtilityProperties::ReadSettings()
   hr = setCheckBoxFromBoolFilterParameter(UF_WRITE_ON_FRAME,IDC_WRITE_ON_FRAME);
   if(FAILED(hr)) return hr;
   hr = setEditTextFromIntFilterParameter(UF_HISTORY_SIZE,IDC_HISTORY_SIZE);
+  if(FAILED(hr)) return hr;
+  hr = setEditTextFromIntFilterParameter(UF_PRECISION,IDC_PRECISION);
   return hr;
 }
 
@@ -196,6 +196,8 @@ HRESULT UtilityProperties::OnApplyChanges(void)
   hr = setBoolFilterParameterFromCheckBox(UF_WRITE_ON_FRAME,IDC_WRITE_ON_FRAME);
   if(FAILED(hr)) return hr;
   hr = setIntFilterParameterFromEditText(UF_HISTORY_SIZE,IDC_HISTORY_SIZE);
+  if(FAILED(hr)) return hr;
+  hr = setIntFilterParameterFromEditText(UF_PRECISION,IDC_PRECISION);
   return hr;
 } 
 
@@ -223,6 +225,7 @@ void UtilityProperties::initialiseControls()
   setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
   setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
   setSpinBoxRange(IDC_SPIN3, 0, SHRT_MAX);
-  setSpinBoxRange(IDC_SPIN3, 0, SHRT_MAX);
+  setSpinBoxRange(IDC_SPIN4, 0, SHRT_MAX);
+  setSpinBoxRange(IDC_SPIN5, 0, SHRT_MAX);
 }
 

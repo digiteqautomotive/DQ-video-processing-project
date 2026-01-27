@@ -2,9 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by ScaleFilter.rc
 //
-#define MAJOR_VERSION                   1
-#define MINOR_VERSION                   6
-#define BUILD_VERSION                   20
 #define IDD_SCALE_DIALOG                101
 #define IDS_STRING102                   102
 #define IDS_SCALE_CAPTION               102
