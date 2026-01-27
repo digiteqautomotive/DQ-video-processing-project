@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include <DirectShow/VideoMixingBase.h>
@@ -102,7 +100,7 @@ public:
 
 	// IPersistPropertyBag
         virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-        virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+        virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return VideoMixingBase::InitNew();}
         virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
         virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 

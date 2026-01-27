@@ -50,7 +50,7 @@ static const GUID CLSID_Stereo2MonoProperties =
 
 class Stereo2MonoFilter: public CCustomBaseFilter,
                          public ISpecifyPropertyPages,
-                         public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                         public IPersistPropertyBag, public IPropertyBag
 {
 public:
     DECLARE_IUNKNOWN
@@ -79,19 +79,13 @@ public:
 
 	// IPersistPropertyBag
   virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-  virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+  virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CCustomBaseFilter::InitNew();}
   virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
   virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 
 	// IPropertyBag
   STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
   STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
-
-	// IPersistStream
-  virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-  virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-  virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-  virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
   	/// Overridden from CCustomBaseFilter

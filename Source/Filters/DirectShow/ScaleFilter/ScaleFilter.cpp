@@ -501,13 +501,6 @@ HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT ScaleFilter::InitNew(void)
-{
-  m_nReqOutWidth = m_nReqOutHeight = 0;
-  return S_OK;
-}
-
-
 OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
 

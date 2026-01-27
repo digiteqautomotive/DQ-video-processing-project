@@ -321,13 +321,6 @@ HRESULT Stereo2MonoFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT Stereo2MonoFilter::InitNew(void)
-{
-  m_channel = 0;  
-  return S_OK;
-}
-
-
 OLECHAR OLE_CHANNEL_PARAM[] = olestr("CHANNEL");
 
 
@@ -405,47 +398,3 @@ CheckPointer(pVar, E_INVALIDARG);
   return E_INVALIDARG;
 }
 
-
-//----------------- IPersistStream------------------
-
-
-HRESULT Stereo2MonoFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_channel);
-  return S_OK;
-}
-
-
-HRESULT Stereo2MonoFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT Stereo2MonoFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-int channel;
-HRESULT hr;
-  ASSERT(sizeof(channel)==sizeof(m_channel));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&channel, sizeof(channel), &pcbRead))) return hr;
-  if(m_channel != channel)
-  {
-    m_channel = channel;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT Stereo2MonoFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_channel, sizeof(m_channel), NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
-}

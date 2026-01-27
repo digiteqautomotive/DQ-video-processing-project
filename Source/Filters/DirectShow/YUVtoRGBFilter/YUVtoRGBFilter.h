@@ -106,7 +106,7 @@ protected:
 
 	// IPersistPropertyBag
   virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-  virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+  virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CSettingsInterface::InitNew();}
   virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
   virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 

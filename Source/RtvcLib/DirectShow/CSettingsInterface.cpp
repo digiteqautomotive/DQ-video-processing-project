@@ -233,6 +233,18 @@ CheckPointer(pStm, E_INVALIDARG);
 }
 
 
+HRESULT CSettingsInterface::InitNew(void)
+{
+  for(std::list<ParameterBase*>::iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if(*it==NULL) continue;
+    if((*it)->ReadOnly) continue;
+    (*it)->RevertToDefaultValue();    
+  }
+  return S_OK;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 

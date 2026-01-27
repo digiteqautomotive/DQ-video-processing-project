@@ -78,7 +78,7 @@ class PicScalerBase;
  * @brief PicInPicFilter that accepts two RGB24 inputs.
  * The filter should only be confgured after the inputs have been connected. */
 class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages,
-                      public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                      public IPersistPropertyBag, public IPropertyBag
 {
 public:
 	typedef enum
@@ -129,19 +129,13 @@ public:
 
 		// IPersistPropertyBag
 	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-	virtual HRESULT STDMETHODCALLTYPE InitNew(void);        
+	virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return VideoMixingBase::InitNew();}    
 	virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
 	virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 
 		// IPropertyBag
 	STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
 	STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
-
-		// IPersistStream
-	virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-	virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-	virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-	virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
         void VFlipImg1(const BYTE* pSrc, BYTE* pDest);

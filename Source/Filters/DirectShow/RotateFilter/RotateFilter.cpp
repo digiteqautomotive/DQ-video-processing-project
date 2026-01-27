@@ -381,7 +381,7 @@ void RotateFilter::RecalculateFilterParameters()
 
 HRESULT RotateFilter::GetPages(CAUUID *pPages)
 {
-  if (pPages == NULL) return E_POINTER;
+  if(pPages == NULL) return E_POINTER;
   pPages->cElems = 1;
   pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
   if(pPages->pElems == NULL) 
@@ -407,6 +407,7 @@ HRESULT RotateFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
+
 //----------------- IPersistPropertyBag------------------
 
 
@@ -414,13 +415,6 @@ HRESULT RotateFilter::GetClassID(CLSID *pClassID)
 {
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_RotateFilter;
-  return S_OK;
-}
-
-
-HRESULT RotateFilter::InitNew(void)
-{
-  m_nOutWidth = m_nOutHeight = 0;
   return S_OK;
 }
 

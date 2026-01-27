@@ -636,13 +636,6 @@ HRESULT VideoMixingFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT VideoMixingFilter::InitNew(void)
-{
-  m_nOrientation = 0;  
-  return S_OK;
-}
-
-
 OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
 
 

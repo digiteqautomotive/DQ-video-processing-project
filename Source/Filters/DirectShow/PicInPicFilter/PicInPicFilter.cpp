@@ -864,14 +864,6 @@ HRESULT PicInPicFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT PicInPicFilter::InitNew(void)
-{
-  m_nTargetWidth = m_nTargetHeight = 0;
-  m_bThrottling = m_DuplicateFrame = false;
-  return S_OK;
-}
-
-
 OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
 OLECHAR OLE_PARAM_SUB_PIC_WIDTH[] = olestr(FILTER_PARAM_SUB_PIC_WIDTH);
@@ -1171,74 +1163,3 @@ CheckPointer(pVar, E_INVALIDARG);
   }
   return E_INVALIDARG;
 }
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT PicInPicFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_nTargetWidth) + sizeof(m_nTargetHeight) + sizeof(m_nSubPictureWidth) + sizeof(m_nSubPictureHeight) +
-		      sizeof(m_nCustomOffsetX) + sizeof(m_nCustomOffsetY) + 1+1;
-  return S_OK;
-}
-
-
-HRESULT PicInPicFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT PicInPicFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-int nOutWidth, nOutHeight, nSubPicWidth, nSubPicHeight, nCustomOffsetX, nCustomOffsetY;
-bool throttling, DuplicateFrame;
-HRESULT hr;
-  ASSERT(sizeof(nOutWidth)==sizeof(m_nTargetWidth));
-  ASSERT(sizeof(nOutHeight)==sizeof(m_nTargetHeight));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&nSubPicWidth, sizeof(nSubPicWidth), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&nSubPicHeight, sizeof(nSubPicHeight), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&nCustomOffsetX, sizeof(nCustomOffsetX), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&nCustomOffsetY, sizeof(nCustomOffsetY), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&throttling,1,&pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&DuplicateFrame,1,&pcbRead))) return hr;
-  if(m_nTargetWidth!=nOutWidth || m_nTargetHeight!=nOutHeight || m_nSubPictureWidth!=nSubPicWidth || m_nSubPictureHeight!=nSubPicHeight ||
-     m_nCustomOffsetX!=nCustomOffsetX || m_nCustomOffsetY!=nCustomOffsetY || m_DuplicateFrame!=DuplicateFrame)
-  {
-    m_nTargetWidth = nOutWidth;
-    m_nTargetHeight = nOutHeight;
-    m_nSubPictureWidth = nSubPicWidth;
-    m_nSubPictureHeight = nSubPicHeight;
-    m_nCustomOffsetX = nCustomOffsetX;
-    m_nCustomOffsetY = nCustomOffsetY;
-    m_bThrottling = throttling;
-    m_DuplicateFrame = DuplicateFrame;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT PicInPicFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_nTargetWidth, sizeof(m_nTargetWidth), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nTargetHeight, sizeof(m_nTargetHeight), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nSubPictureWidth, sizeof(m_nSubPictureWidth), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nSubPictureHeight, sizeof(m_nSubPictureHeight), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nCustomOffsetX, sizeof(m_nCustomOffsetX), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nCustomOffsetY, sizeof(m_nCustomOffsetY), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_bThrottling, 1, NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_DuplicateFrame, 1, NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
-}
-

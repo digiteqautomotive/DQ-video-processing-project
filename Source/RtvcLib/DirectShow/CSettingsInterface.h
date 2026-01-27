@@ -222,6 +222,9 @@ public:
 	virtual STDMETHODIMP IsDirty(void);
 	virtual STDMETHODIMP Load(IStream *pStm);
 
+		//----------------- IPersistPropertyBag------------------
+	virtual STDMETHODIMP InitNew(void);
+
 protected:
 	/// This method needs to be overridden by child classes and called in the child class constructor
 	/// It takes care of mapping the parameters to member variables

@@ -527,13 +527,6 @@ HRESULT UtilityFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT UtilityFilter::InitNew(void)
-{
-  m_uiX = m_uiY = 0;  
-  return S_OK;
-}
-
-
 OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);
 OLECHAR OLE_UF_PARAM_Y[] = olestr(UF_PARAM_Y);
 OLECHAR OLE_UF_MODE[] = olestr(UF_MODE);

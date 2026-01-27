@@ -464,13 +464,6 @@ HRESULT  YUVtoRGBFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT  YUVtoRGBFilter::InitNew(void)
-{
-  m_nOutWidth = m_nOutHeight = 0;
-  return S_OK;
-}
-
-
 OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
 
 

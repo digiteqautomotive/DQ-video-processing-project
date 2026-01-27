@@ -464,11 +464,11 @@ HRESULT CropFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT CropFilter::InitNew(void)
-{
-  m_nLeftCrop = m_nRightCrop = m_nTopCrop = m_nBottomCrop = 0;
-  return S_OK;
-}
+//HRESULT CropFilter::InitNew(void)
+//{
+//  m_nLeftCrop = m_nRightCrop = m_nTopCrop = m_nBottomCrop = 0;
+//  return S_OK;
+//}
 
 
 OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);

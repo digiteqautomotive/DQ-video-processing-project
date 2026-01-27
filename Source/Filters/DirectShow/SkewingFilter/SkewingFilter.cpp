@@ -177,13 +177,6 @@ HRESULT SkewingFilter::GetClassID(CLSID *pClassID)
 }
 
 
-HRESULT SkewingFilter::InitNew(void)
-{
-  add_time = 0;
-  return S_OK;
-}
-
-
 OLECHAR OLE_PARAM_TIME_SKEW[] = olestr("TIME SKEW");
 
 
