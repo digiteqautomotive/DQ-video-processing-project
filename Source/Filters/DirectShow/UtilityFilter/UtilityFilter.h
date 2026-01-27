@@ -105,7 +105,7 @@ class UtilityFilter: public CTransInPlaceFilter,
                      public CSettingsInterface,
                      public ISpecifyPropertyPages,
                      public IFilterInfoSourceInterface,
-		     public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+		     public IPersistPropertyBag, public IPropertyBag
 {
 public:
     DECLARE_IUNKNOWN
@@ -147,12 +147,6 @@ public:
 	// IPropertyBag
     STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
     STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
-
-	// IPersistStream
-    virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-    virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-    virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-    virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
 
@@ -207,7 +201,6 @@ public:
 	// for upstream mode
   IFilterInfoSourceInterfacePtr m_pFilterInfoSourceInterface;
   HRESULT m_hrInterfaceAquired;
-  bool m_DirtyProps;
   int m_FontSize;
   char m_pBuffer[BUFFER_SIZE];
 };

@@ -33,8 +33,7 @@ YUVtoRGBFilter::YUVtoRGBFilter():
   CCustomBaseFilter(NAME("DQ VPP YUV to RGB converter"), 0, CLSID_VPP_YUVtoRGBColorConverter),
   m_pConverter(NULL),
   m_nSizeUV(0),
-  m_bInvert(false),
-  m_DirtyProps(true)
+  m_bInvert(false)
 {
   out_MediaType = GUID_NULL;
   in_MediaType = GUID_NULL;
@@ -557,48 +556,4 @@ HRESULT  YUVtoRGBFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
     }
   } 
   return E_INVALIDARG;
-}
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT  YUVtoRGBFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = 1;
-  return S_OK;
-}
-
-
-HRESULT  YUVtoRGBFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT YUVtoRGBFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-char flip;
-HRESULT hr;
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&flip,1,&pcbRead))) return hr;
-  if(flip!=m_bInvert)
-  {
-    m_bInvert = flip;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT  YUVtoRGBFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_bInvert, 1, NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
 }

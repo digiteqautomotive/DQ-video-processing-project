@@ -43,8 +43,7 @@ Stereo2MonoFilter::Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr):
   CCustomBaseFilter(NAME("CSIR RTVC Stereo2Mono Filter"), pUnk, CLSID_VPP_Stereo2MonoFilter),
   m_channel(0),
   m_nBitsPerSample(8),
-  m_nSamplesPerSecond(0),
-  m_DirtyProps(true)
+  m_nSamplesPerSecond(0)
 {
   // Init parameters
   initParameters();

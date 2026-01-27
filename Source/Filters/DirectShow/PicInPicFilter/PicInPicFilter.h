@@ -207,7 +207,6 @@ private:
   REFERENCE_TIME TimeStart2, TimeEnd2;
   unsigned m_szBufferForScaledSecondaryImage;
   bool m_Vflip;
-  bool m_DirtyProps;
   bool m_bThrottling;
   bool m_DuplicateFrame;
   FrameQueue FQ;

@@ -78,7 +78,14 @@ public:
 	virtual HRESULT DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex);
 
 	/// To Check media type
-	virtual HRESULT GetMediaType(int iPosition, CMediaType* pmt, int nOutputPinIndex) ;
+	virtual HRESULT GetMediaType(int iPosition, CMediaType* pmt, int nOutputPinIndex);
+
+	STDMETHODIMP GetClassID(CLSID *pClassID)
+	{
+	  if(pClassID==NULL) return E_POINTER;
+	  *pClassID = CLSID_VPP_Tee;
+	  return S_OK;
+	}
 
 protected:
 

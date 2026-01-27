@@ -141,6 +141,14 @@ public:
 		pPages->pElems[0] = CLSID_RtspProperties;
 		return S_OK;
 	}
+
+	STDMETHODIMP GetClassID(CLSID *pClassID)
+	{
+	  if(pClassID==NULL) return E_POINTER;
+	  *pClassID = CLSID_VPP_RtspSourceFilter;
+	  return S_OK;
+	}
+
 private:
 
 	///Private Constructor

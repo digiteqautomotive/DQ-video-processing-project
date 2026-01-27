@@ -65,9 +65,9 @@ static const GUID CLSID_FramerateDisplayProperties =
 /**
 * \ingroup DirectShowFilters
 */
-class FramerateDisplayFilter :  public CTransInPlaceFilter,
-                                public CSettingsInterface,
-					                      public ISpecifyPropertyPages
+class FramerateDisplayFilter: public CTransInPlaceFilter,
+                              public CSettingsInterface,
+			      public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN
@@ -113,6 +113,14 @@ public:
     addParameter("estimatedframerate", &m_dEstimatedFramerate, 0);
     addParameter("mode", &m_uiFramerateEstimationMode, 1);
   }
+
+  STDMETHODIMP GetClassID(CLSID *pClassID)
+  {
+    if(pClassID==NULL) return E_POINTER;
+    *pClassID = CLSID_RTVCFramerateDisplayFilter;
+    return S_OK;
+  }
+
 private:
 
   unsigned m_uiX;

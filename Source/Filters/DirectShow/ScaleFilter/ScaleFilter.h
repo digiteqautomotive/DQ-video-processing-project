@@ -56,7 +56,7 @@ class PicScalerBase;
  * Scale Filter for RGB24 and YUV420P Media
  * Scale parameters are settable via the ISettingsInterface COM interface. */
 class ScaleFilter: public CCustomBaseFilter, public ISpecifyPropertyPages, 
-                   public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                   public IPersistPropertyBag, public IPropertyBag
 {
 public:
   DECLARE_IUNKNOWN;
@@ -110,12 +110,6 @@ public:
   STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
   STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
-	// IPersistStream
-  virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-  virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-  virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-  virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
-
 private:
   /**
    * This method converts the input buffer from RGB24 | 32 to YUV420P
@@ -128,7 +122,6 @@ private:
   PicScalerBase* m_pScaler;
   /// Stores bytes per needed to store pixel according to media type
   int m_nBitsPerPixel;
-  bool m_DirtyProps;
   int m_nReqOutHeight;			///< Requested Height of output image
   int m_nReqOutWidth;			///< Requested Width of output image
 };

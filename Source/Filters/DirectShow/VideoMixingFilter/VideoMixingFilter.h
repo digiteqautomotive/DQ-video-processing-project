@@ -59,7 +59,7 @@ class PicConcatBase;
 /**\ingroup DirectShowFilters
  * Video Mixing Filter for RGB24 and RGB32 Media */
 class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages,
-                         public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                         public IPersistPropertyBag, public IPropertyBag
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -110,12 +110,6 @@ public:
        STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
        STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
-	// IPersistStream
-       virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-       virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-       virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-       virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
-
 protected:		
 	BYTE* m_pSampleBuffers[2];	///< Pointers to our last received Media Sample.
 	int m_nSampleSizes[2];		///< Sizes
@@ -129,5 +123,4 @@ protected:
 	bool m_Vflip;			///< Negative height sometimes enforces internal neccesity of flip.
 	unsigned m_FeedHeight, m_FeedWidth;
 	unsigned m_Feed_xPos, m_Feed_yPos;
-        bool m_DirtyProps;
 };

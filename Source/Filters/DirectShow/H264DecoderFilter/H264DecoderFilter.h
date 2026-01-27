@@ -53,7 +53,7 @@ static const GUID MEDIASUBTYPE_VPP_H264 =
 // Forward
 class ICodecv2;
 
-class H264DecoderFilter : public CCustomBaseFilter
+class H264DecoderFilter: public CCustomBaseFilter
 {
 public:
   /// Constructor
@@ -94,7 +94,7 @@ public:
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
   ///Overridden from CSettingsInterface
-  virtual void initParameters(){;}
+  virtual void initParameters() {}
   ///Overridden from CSettingsInterface
   STDMETHODIMP GetParameter( const char* type, int* length, void* value );
   ///Overridden from CSettingsInterface
@@ -102,6 +102,8 @@ public:
 
   /// Overridden from CCustomBaseFilter
   virtual void InitialiseInputTypes();
+
+  STDMETHODIMP GetClassID(CLSID *pClassID);
 
 private:
   /**

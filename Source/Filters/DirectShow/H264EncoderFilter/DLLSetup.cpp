@@ -163,3 +163,12 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 #ifdef _MANAGED
 #pragma managed(pop)
 #endif
+
+
+STDMETHODIMP H264EncoderFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_RTVC_H264Encoder;
+  return S_OK;
+}
+

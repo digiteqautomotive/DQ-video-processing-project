@@ -42,7 +42,7 @@ class YUVtoRGBConverter;
 * This Filter converts the YUV444 Interleaved media back into RGB24 media.
 */
 class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages,
-		      public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+		      public IPersistPropertyBag, public IPropertyBag
 {
 public:
   DECLARE_IUNKNOWN
@@ -114,12 +114,6 @@ protected:
   STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
   STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
-	// IPersistStream
-  virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-  virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-  virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-  virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
-
 private:
 
   /// Pointer to our YUV444 to RGB24 converter
@@ -131,7 +125,6 @@ private:
   // YUV is always top down: the invert flag determines whether the image
   // is flipped during conversion, or whether the sign is simply set
   bool m_bInvert;
-  bool m_DirtyProps;
 
   GUID in_MediaType;
   GUID out_MediaType;

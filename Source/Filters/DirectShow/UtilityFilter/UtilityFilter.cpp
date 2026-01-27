@@ -61,7 +61,6 @@ UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr):
   m_gdiplusStartupInput(new Gdiplus::GdiplusStartupInput()),
   m_pGdiToken(NULL),
   m_hrInterfaceAquired(S_OK),
-  m_DirtyProps(true),
   m_FontSize(16)
 {
   GdiplusStartup(&m_pGdiToken, m_gdiplusStartupInput, NULL); //gdi+ init
@@ -707,61 +706,3 @@ CheckPointer(pVar, E_INVALIDARG);
   }
   return E_INVALIDARG;
 }
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT UtilityFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_uiX) + sizeof(m_uiY) + sizeof(m_uiFramerateEstimationMode) + sizeof(m_FontSize);
-  return S_OK;
-}
-
-
-HRESULT UtilityFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT UtilityFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-unsigned uiX, uiY, uiFramerateEstimationMode;
-int FontSize;
-HRESULT hr;
-  ASSERT(sizeof(uiX)==sizeof(m_uiX));
-  ASSERT(sizeof(uiY)==sizeof(m_uiY));
-  ASSERT(sizeof(uiFramerateEstimationMode)==sizeof(m_uiFramerateEstimationMode));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&uiX, sizeof(uiX), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&uiY, sizeof(uiY), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&uiFramerateEstimationMode, sizeof(uiFramerateEstimationMode), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&FontSize, sizeof(FontSize), &pcbRead))) return hr;
-  if(m_uiX!=uiX || m_uiY!=uiY || m_uiFramerateEstimationMode!=uiFramerateEstimationMode || FontSize!=m_FontSize)
-  {
-    m_uiX = uiX;
-    m_uiY = uiY;
-    m_uiFramerateEstimationMode = uiFramerateEstimationMode;
-    m_FontSize = FontSize;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT UtilityFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_uiX, sizeof(m_uiX), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_uiY, sizeof(m_uiY), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_uiFramerateEstimationMode, sizeof(m_uiFramerateEstimationMode), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_FontSize, sizeof(m_FontSize), NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
-}
-

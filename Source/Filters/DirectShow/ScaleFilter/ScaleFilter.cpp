@@ -84,7 +84,6 @@ PicScalerBase *GetPicScallerRGB32(void)
 ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("DQ VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
-  m_DirtyProps(true),
   m_nReqOutWidth(0), m_nReqOutHeight(0)
 {
   //Call the initialize input method to load all acceptable input types for this filter
@@ -619,53 +618,4 @@ CheckPointer(pVar, E_INVALIDARG);
     if(getFromVariant(m_nReqOutHeight,pVar)) return S_OK;    
   }
   return E_INVALIDARG;
-}
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT ScaleFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_nReqOutWidth) + sizeof(m_nReqOutHeight);
-  return S_OK;
-}
-
-
-HRESULT ScaleFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT ScaleFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-int nOutWidth, nOutHeight;
-HRESULT hr;
-  ASSERT(sizeof(nOutWidth)==sizeof(m_nReqOutWidth));
-  ASSERT(sizeof(nOutHeight)==sizeof(m_nReqOutHeight));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&nOutWidth, sizeof(nOutWidth), &pcbRead))) return hr;
-  if(FAILED(hr=pStm->Read(&nOutHeight, sizeof(nOutHeight), &pcbRead))) return hr;
-  if(m_nReqOutWidth!=nOutWidth || m_nReqOutHeight!=nOutHeight)
-  {
-    m_nReqOutWidth = nOutWidth;
-    m_nReqOutHeight = nOutHeight;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT ScaleFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_nReqOutWidth, sizeof(m_nReqOutWidth), NULL))) return hr;
-  if(FAILED(hr=pStm->Write(&m_nReqOutHeight, sizeof(m_nReqOutHeight), NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
 }

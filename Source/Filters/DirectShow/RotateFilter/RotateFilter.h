@@ -57,7 +57,7 @@ class PicRotateBase;
  * Rotation parameters can be set using the COM SettingsInterface SetParameter method.
  */
 class RotateFilter: public CCustomBaseFilter, public ISpecifyPropertyPages,
-                    public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                    public IPersistPropertyBag, public IPropertyBag
 {
 public:
 	DECLARE_IUNKNOWN
@@ -100,10 +100,7 @@ public:
 	HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
 	/// Overridden from CSettingsInterface
-	virtual void initParameters()
-	{
-		addParameter(FILTER_PARAM_ROTATION_MODE, &m_nRotation, 0);
-	}
+	virtual void initParameters();
 
 	STDMETHODIMP SetParameter( const char* type, const char* value);
 
@@ -123,12 +120,6 @@ public:
 		// IPropertyBag
 	STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
 	STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
-
-		// IPersistStream
-	virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-	virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-	virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-	virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 
 private:
@@ -159,5 +150,4 @@ private:
 
 	int m_nStride;
 	int m_nPadding;
-	bool m_DirtyProps;
 };

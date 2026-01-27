@@ -139,7 +139,7 @@ HRESULT FilterPropertiesBase::setCheckBoxFromBoolFilterParameter(const char* szP
   HRESULT hr = m_pSettingsInterface->GetParameter(szParam, sizeof(szBuffer), szBuffer, &nLength);
   if(SUCCEEDED(hr))
   {
-    WPARAM wParam = (szBuffer[0]=='0') ? 0 : 1;
+    WPARAM wParam = (szBuffer[0]=='0' || toupper(szBuffer[0])=='F') ? 0 : 1;			// accepts 0 or false
     long lResult = SendMessage(				      // returns LRESULT in lResult
 				GetDlgItem(m_Dlg, iCheckBoxId),	// handle to destination control
 				(UINT) BM_SETCHECK,		// message ID

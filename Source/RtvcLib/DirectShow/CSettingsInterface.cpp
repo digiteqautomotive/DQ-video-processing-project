@@ -8,8 +8,8 @@ DESCRIPTION			:
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2017, CSIR
-All rights reserved.
+Copyright (c) 2008-2017, CSIR
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,342 +28,133 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "CSettingsInterface.h"
-#include "GeneralUtils/StringUtil.h"
-#include "GeneralUtils/Conversion.h"
+#include <sstream>
 
+#include "../../Filters/DirectShow/VariantTools.h"
 #include "wxdebug.h"
 
 
-#ifdef ARTIST
-using namespace artist;
-#endif
-
-
-CSettingsInterface::CSettingsInterface(void)
+CSettingsInterface::CSettingsInterface(void): m_DirtyProps(false)
 {
 }
 
 
 CSettingsInterface::~CSettingsInterface(void)
 {
+  for(std::list<ParameterBase*>::iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if(*it==NULL) continue;
+    delete(*it);
+    *it = NULL;
+  }
+  m_vParams.clear();
 }
 
 
-void CSettingsInterface::addParameter(const std::string& sParamName, int* pAddr, int nDefaultValue, bool bReadOnly, std::vector<int> vAllowedValues)
-{
-  // Add the param to the map
-  m_mParamTypes[sParamName] = RTVC_INT;
-  m_intParams.addParam(sParamName, pAddr, nDefaultValue, bReadOnly, vAllowedValues);
+void CSettingsInterface::addParameter(const char *sParamName, int* pAddr, int nDefaultValue, bool bReadOnly) //, std::vector<int> vAllowedValues)
+{	  // Add the param to the map
+  m_vParams.push_back(new ParameterInt(sParamName,NULL,pAddr,nDefaultValue,bReadOnly));
 }
 
-void CSettingsInterface::addParameter(const std::string& sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly, std::vector<unsigned> vAllowedValues)
-{
-  // Add the param to the map
-  m_mParamTypes[sParamName] = RTVC_UINT;
-  m_uintParams.addParam(sParamName, pAddr, uiDefaultValue, bReadOnly, vAllowedValues);
+void CSettingsInterface::addParameter(const char *sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly) //, std::vector<unsigned> vAllowedValues)
+{	  // Add the param to the map
+  m_vParams.push_back(new ParameterUnsigned(sParamName,NULL,pAddr,uiDefaultValue,bReadOnly));
 }
 
-void CSettingsInterface::addParameter(const std::string& sParamName, std::string* pAddr, std::string sDefaultValue, bool bReadOnly, std::vector<std::string> vAllowedValues)
-{
-  // Add the param to the map
-  m_mParamTypes[sParamName] = RTVC_STRING;
-  m_stringParams.addParam(sParamName, pAddr, sDefaultValue, bReadOnly, vAllowedValues);
+void CSettingsInterface::addParameter(const char *sParamName, std::string* pAddr, std::string sDefaultValue, bool bReadOnly) //, std::vector<std::string> vAllowedValues)
+{  // Add the param to the map
+  m_vParams.push_back(new ParameterString(sParamName,NULL,pAddr,sDefaultValue,bReadOnly));
 }
 
-void CSettingsInterface::addParameter(const std::string& sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly, std::vector<bool> vAllowedValues)
-{
-  // Add the param to the map
-  m_mParamTypes[sParamName] = RTVC_BOOL;
-  m_boolParams.addParam(sParamName, pAddr, bDefaultValue, bReadOnly, vAllowedValues);
+void CSettingsInterface::addParameter(const char *sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly) //, std::vector<bool> vAllowedValues)
+{  // Add the param to the map
+  m_vParams.push_back(new ParameterBool(sParamName,NULL,pAddr,bDefaultValue,bReadOnly));
 }
 
-void CSettingsInterface::addParameter(const std::string& sParamName, double* pAddr, double dDefaultValue, bool bReadOnly, std::vector<double> vAllowedValues)
-{
-  // Add the param to the map
-  m_mParamTypes[sParamName] = RTVC_DOUBLE;
-  m_doubleParams.addParam(sParamName, pAddr, dDefaultValue, bReadOnly, vAllowedValues);
+void CSettingsInterface::addParameter(const char *sParamName, double* pAddr, double dDefaultValue, bool bReadOnly) //, std::vector<double> vAllowedValues)
+{	  // Add the param to the map
+  m_vParams.push_back(new ParameterDouble(sParamName,NULL,pAddr,dDefaultValue,bReadOnly));
 }
+
 
 STDMETHODIMP CSettingsInterface::GetParameter(const char* type, int nBufferSize, char* value, int* length)
 {
-  // Look up if the parameter exists
-
-  PARAM_TYPE_MAP::iterator it = m_mParamTypes.find(std::string(type));
-  if (it == m_mParamTypes.end())
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
   {
-    return E_FAIL;
-  }
-  else
-  {
-    std::string sParamName = std::string(type);
-    RTVC_PARAM_TYPES eType = it->second;
-    switch (eType)
+    if(*it==NULL) continue;
+    if(!strcmp(type,(*it)->Name.c_str()))
     {
-      case RTVC_STRING:
+      const std::string valS = (*it)->ToStr();
+      if(valS.empty())
       {
-        std::string* pValue = m_stringParams.getParamAddress(sParamName);
-        if (pValue)
-        {
-          if (pValue->length() < (size_t)nBufferSize)
-          {
-            memcpy(value, (void*)pValue->c_str(), pValue->length());
-            *length = pValue->length();
-            value[*length] = 0;
-            return S_OK;
-          }
-          else
-          {
-            return E_OUTOFMEMORY;
-          }
-        }
-        return E_FAIL;
-        break;
+        if(nBufferSize>0) *value=0;
+        *length = 0;
       }
-      case RTVC_INT:
+      else
       {
-        // Check the int map
-        int* pValue = m_intParams.getParamAddress(sParamName);
-        if (pValue)
-        {
-          std::string sValue = std::to_string(*pValue);
-          if (sValue.length() < (size_t)nBufferSize)
-          {
-            memcpy(value, (void*)sValue.c_str(), sValue.length());
-            *length = sValue.length();
-            value[*length] = 0;
-            return S_OK;
-          }
-          else
-          {
-            return E_OUTOFMEMORY;
-          }
-        }
-        return E_FAIL;
-        break;
+        *length = valS.length();
+        if(*length>nBufferSize) *length=nBufferSize;
+        strncpy(value,valS.c_str(),nBufferSize);
       }
-      case RTVC_UINT:
-      {
-        // Check the int map
-        unsigned* pValue = m_uintParams.getParamAddress(sParamName);
-        if (pValue)
-        {
-          std::string sValue = std::to_string(*pValue);
-          if (sValue.length() < (unsigned)nBufferSize)
-          {
-            memcpy(value, (void*)sValue.c_str(), sValue.length());
-            *length = sValue.length();
-            value[*length] = 0;
-            return S_OK;
-          }
-          else
-          {
-            return E_OUTOFMEMORY;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
-      case RTVC_BOOL:
-      {
-        // Check the int map
-        bool* pValue = m_boolParams.getParamAddress(sParamName);
-        if (pValue)
-        {
-          std::string sValue = StringUtil::boolToString(*pValue);
-          if (sValue.length() < (size_t)nBufferSize)
-          {
-            memcpy(value, (void*)sValue.c_str(), sValue.length());
-            *length = sValue.length();
-            value[*length] = 0;
-            return S_OK;
-          }
-          else
-          {
-            return E_OUTOFMEMORY;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
-      case RTVC_DOUBLE:
-      {
-        // Check the int map
-        double* pValue = m_doubleParams.getParamAddress(sParamName);
-        if (pValue)
-        {
-          std::string sValue = StringUtil::doubleToString(*pValue);
-          if (sValue.length() < (size_t)nBufferSize)
-          {
-            memcpy(value, (void*)sValue.c_str(), sValue.length());
-            *length = sValue.length();
-            value[*length] = 0;
-            return S_OK;
-          }
-          else
-          {
-            return E_OUTOFMEMORY;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
+      return S_OK;
     }
   }
-
-  // if so, look up the type:
-  return S_OK;
+ return E_FAIL;
 }
+
+
+std::string CSettingsInterface::GetParameter(const char* szParamName, bool *Ok)
+{
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if(*it==NULL) continue;
+    if(!strcmp(szParamName,(*it)->Name.c_str()))
+    {
+      if(Ok) *Ok = true;
+      if((*it)->Type()==RTVC_STRING) return (*it)->ToStr();	// Legal string could be empty.
+
+      const std::string valS = (*it)->ToStr();
+      if(valS.empty()) break;			// This causes to fail due to empty string.
+      return valS;
+    }
+  }
+  if(Ok) *Ok=false;
+  return std::string();
+}
+
 
 STDMETHODIMP CSettingsInterface::SetParameter(const char* type, const char* value)
 {
-  // Find out which group it's in
-  PARAM_TYPE_MAP::iterator it = m_mParamTypes.find(std::string(type));
-  if (it == m_mParamTypes.end())
+  for(std::list<ParameterBase*>::iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
   {
-    return E_FAIL;
-  }
-  else
-  {
-    RTVC_PARAM_TYPES eType = it->second;
-    std::string sParamName = type;
-
-    switch (eType)
+    if(*it==NULL) continue;
+    if(!strcmp(type,(*it)->Name.c_str()))
     {
-      case RTVC_STRING:
-      {
-        // Check if the parameter exists
-        if (m_stringParams.contains(sParamName))
-        {
-          std::string sValue(value);
-          if (m_stringParams.setParameterValue(sParamName, sValue))
-          {
-            return S_OK;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
-      case RTVC_INT:
-      {
-        // Check if the parameter exists
-        if (m_intParams.contains(sParamName))
-        {
-          // Get int value
-          int nNewValue = atoi(value);
-          if (m_intParams.setParameterValue(sParamName, nNewValue))
-          {
-            return S_OK;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
-      case RTVC_UINT:
-      {
-        // Check if the parameter exists
-        if (m_uintParams.contains(sParamName))
-        {
-          // Get int value
-          bool bDummy;
-          unsigned uiNewValue = convert<unsigned>(value, bDummy);
-          ASSERT(bDummy);
-          if (m_uintParams.setParameterValue(sParamName, uiNewValue))
-          {
-            return S_OK;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
-      case RTVC_BOOL:
-      {
-        // Allow 0, 1, TRUE, true, FALSE and false
-        // Check if the parameter exists
-        if (m_boolParams.contains(sParamName))
-        {
-          bool bValid = false;
-          bool bValue = StringUtil::stringToBool(std::string(value), bValid);
-          if (bValid && m_boolParams.setParameterValue(sParamName, bValue))
-          {
-            return S_OK;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
-      case RTVC_DOUBLE:
-      {
-        // Allow 0, 1, TRUE, true, FALSE and false
-        // Check if the parameter exists
-        if (m_doubleParams.contains(sParamName))
-        {
-          double dValue = StringUtil::stringToDouble(std::string(value));
-          if (m_doubleParams.setParameterValue(sParamName, dValue))
-          {
-            return S_OK;
-          }
-        }
-        return E_FAIL;
-        break;
-      }
+      if((*it)->FromStr(value)) return S_OK;
+      return E_FAIL;
     }
   }
-  return S_OK;
+
+  return E_FAIL;
 }
 
 
 STDMETHODIMP CSettingsInterface::GetParameterSettings(char* szResult, int nSize)
 {
+  std::stringstream sstream;
+
   // Iterate over all the different params and display their current values
-  std::string sResult;
+  
+ for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+ {
+    if(*it==NULL) continue;
+    sstream << "Parameter name: " << (*it)->Name << " Value: " << (*it)->ToStr() << "\r\n";
+ }
 
-  // Iterate over ints
-  std::vector<std::string> vParams = m_intParams.getParameterNames();
-  for (size_t i = 0; i < vParams.size(); i++)
-  {
-    int nValue = *(m_intParams.getParamAddress(vParams[i]));
-    sResult += "Parameter name: " + vParams[i] + " Value: " + toString(nValue) + "\r\n";
-  }
-
-  // Iterate over uints
-  vParams = m_uintParams.getParameterNames();
-  for (size_t i = 0; i < vParams.size(); i++)
-  {
-    unsigned uiValue = *(m_uintParams.getParamAddress(vParams[i]));
-    sResult += "Parameter name: " + vParams[i] + " Value: " + toString(uiValue) + "\r\n";
-  }
-
-  // Iterate over chars
-  vParams = m_stringParams.getParameterNames();
-  for (size_t i = 0; i < vParams.size(); i++)
-  {
-    std::string sValue = *(m_stringParams.getParamAddress(vParams[i]));
-    sResult += "Parameter name: " + vParams[i] + " Value: " + sValue + "\r\n";
-  }
-
-  // Iterate over bool
-  vParams = m_boolParams.getParameterNames();
-  for (size_t i = 0; i < vParams.size(); i++)
-  {
-    bool bValue = *(m_boolParams.getParamAddress(vParams[i]));
-    std::string sValue = (bValue) ? "true" : "false";
-    sResult += "Parameter name: " + vParams[i] + " Value: " + sValue + "\r\n";
-  }
-
-  // Iterate over double
-  vParams = m_doubleParams.getParameterNames();
-  for (size_t i = 0; i < vParams.size(); i++)
-  {
-    double dValue = *(m_doubleParams.getParamAddress(vParams[i]));
-    sResult += "Parameter name: " + vParams[i] + " Value: " + StringUtil::doubleToString(dValue) + "\r\n";
-  }
-
-  // TODO: bools and doubles
+  std::string sResult(sstream.str());
 
   if (sResult.length() < (size_t)nSize)
   {
@@ -371,83 +162,104 @@ STDMETHODIMP CSettingsInterface::GetParameterSettings(char* szResult, int nSize)
     szResult[sResult.length()] = 0;
     return S_OK;
   }
-  // Buffer is too small
+	// Buffer is too small
   return E_FAIL;
 }
 
 
 bool CSettingsInterface::revertParameter(const char* type)
 {
-  // Find out which group it's in
-  PARAM_TYPE_MAP::iterator it = m_mParamTypes.find(std::string(type));
-  if (it != m_mParamTypes.end())
+  for(std::list<ParameterBase*>::iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
   {
-    RTVC_PARAM_TYPES eType = it->second;
-    std::string sParamName = type;
-
-    switch (eType)
+    if(*it==NULL) continue;
+    if(!strcmp(type,(*it)->Name.c_str()))
     {
-      case RTVC_STRING:
-      {
-        // Check if the parameter exists
-        if (m_stringParams.contains(sParamName))
-        {
-          return m_stringParams.revertToPreviousValue(sParamName);
-        }
-        return false;
-      }
-      case RTVC_INT:
-      {
-        // Check if the parameter exists
-        if (m_intParams.contains(sParamName))
-        {
-          return m_intParams.revertToPreviousValue(sParamName);
-        }
-        return false;
-      }
-      case RTVC_UINT:
-      {
-        // Check if the parameter exists
-        if (m_uintParams.contains(sParamName))
-        {
-          return m_uintParams.revertToPreviousValue(sParamName);
-        }
-        return false;
-      }
-      case RTVC_BOOL:
-      {
-        if (m_boolParams.contains(sParamName))
-        {
-          return m_boolParams.revertToPreviousValue(sParamName);
-        }
-        return false;
-      }
-      case RTVC_DOUBLE:
-      {
-        if (m_doubleParams.contains(sParamName))
-        {
-          return m_doubleParams.revertToPreviousValue(sParamName);
-        }
-        return false;
-      }
+      (*it)->RevertToPreviousValue();
+      return true;
     }
   }
+
   return false;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////
 
-ParameterBase::ParameterBase(const char *NewName, bool NewReadOnly): Name(NewName), ReadOnly(NewReadOnly)
+
+HRESULT CSettingsInterface::GetSizeMax(ULARGE_INTEGER *pcbSize)
 {
+  if(pcbSize==NULL) return E_POINTER;
+  pcbSize->QuadPart = 0;
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if(*it==NULL) continue;
+    if((*it)->ReadOnly) continue;
+    pcbSize->QuadPart += (*it)->Size();
+  }
+  return S_OK;
+}
+
+
+HRESULT CSettingsInterface::Save(IStream *pStm, BOOL fClearDirty)
+{
+CheckPointer(pStm, E_INVALIDARG);
+ for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if(*it==NULL) continue;
+    if((*it)->ReadOnly) continue;
+    HRESULT hr = (*it)->Save(pStm);
+    if(FAILED(hr)) return hr;
+  }
+  return S_OK;
+}
+
+
+HRESULT CSettingsInterface::IsDirty(void)
+{
+  return m_DirtyProps ? S_OK : S_FALSE;
+}
+
+
+HRESULT CSettingsInterface::Load(IStream *pStm)
+{
+CheckPointer(pStm, E_INVALIDARG);
+ for(std::list<ParameterBase*>::iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if(*it==NULL) continue;
+    if((*it)->ReadOnly) continue;
+    HRESULT hr = (*it)->Load(pStm);
+    if(FAILED(hr)) return hr;
+  }
+  return S_OK;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterInt::ParameterInt(const char *NewName, int *ValueAddr, int IniDefaultValue, bool NewReadOnly):
-        ParameterBase(NewName,NewReadOnly),
+ParameterBase::ParameterBase(const char *NewName, OLECHAR *NewOleName, bool NewReadOnly): Name(NewName), ReadOnly(NewReadOnly)
+{
+  if(NewOleName==NULL || *NewOleName==0)
+      OleName = NULL;
+  else 
+      OleName = (OLECHAR*)CoTaskMemAlloc(sizeof(OLECHAR)*(olelen(NewOleName)+1));
+}
+
+
+ParameterBase::~ParameterBase()
+{
+  if(OleName)
+  {
+    CoTaskMemFree(OleName);
+    OleName = NULL;
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterInt::ParameterInt(const char *NewName, OLECHAR *NewOleName, int *ValueAddr, int IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue),
         PreviousValue(IniDefaultValue)
@@ -461,15 +273,17 @@ ParameterInt::ParameterInt(const char *NewName, int *ValueAddr, int IniDefaultVa
 
 std::string ParameterInt::ToStr(void) const
 {
+ASSERT(pValue!=NULL);
   return std::to_string(*pValue);
 }
 
 
 bool ParameterInt::FromStr(const char *str)
 {
+ASSERT(pValue!=NULL);
   if(str==NULL) return false; 
   PreviousValue = *pValue;
-  if(str) *pValue = atoi(str);
+  *pValue = atoi(str);
 return true;
 }
 
@@ -477,8 +291,8 @@ return true;
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterUnsigned::ParameterUnsigned(const char *NewName, unsigned *ValueAddr, unsigned IniDefaultValue, bool NewReadOnly):
-        ParameterBase(NewName,NewReadOnly),
+ParameterUnsigned::ParameterUnsigned(const char *NewName, OLECHAR *NewOleName, unsigned *ValueAddr, unsigned IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue)
 {
@@ -491,15 +305,17 @@ ParameterUnsigned::ParameterUnsigned(const char *NewName, unsigned *ValueAddr, u
 
 std::string ParameterUnsigned::ToStr(void) const
 {
+ASSERT(pValue!=NULL);
   return std::to_string(*pValue);
 }
 
 
 bool ParameterUnsigned::FromStr(const char *str)
 {
+ASSERT(pValue!=NULL);
   if(str==NULL) return false; 
   PreviousValue = *pValue;
-  if(str) *pValue = atoi(str);
+  *pValue = atoi(str);
 return true;
 }
 
@@ -507,8 +323,8 @@ return true;
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterBool::ParameterBool(const char *NewName, bool *ValueAddr, bool IniDefaultValue, bool NewReadOnly):
-        ParameterBase(NewName,NewReadOnly),
+ParameterBool::ParameterBool(const char *NewName, OLECHAR *NewOleName, bool *ValueAddr, bool IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue)
 {
@@ -516,14 +332,44 @@ ParameterBool::ParameterBool(const char *NewName, bool *ValueAddr, bool IniDefau
     pValue = &PreviousValue;
   else
     PreviousValue = *pValue;
+}
+
+
+std::string ParameterBool::ToStr(void) const
+{
+ASSERT(pValue!=NULL);
+  return std::to_string(*pValue);
+}
+
+
+bool ParameterBool::FromStr(const char *str)
+{
+ASSERT(pValue!=NULL);
+  if(str==NULL) return false; 
+  PreviousValue = *pValue;
+  if(!strcmp(str,"true")) *pValue=true;
+  else if(!strcmp(str,"false")) *pValue=false;
+  else *pValue = atoi(str);
+return true;
+}
+
+
+HRESULT ParameterBool::Load(IStream *pStm)
+{
+char b;
+HRESULT hr;
+  ASSERT(pValue!=NULL);
+  hr = pStm->Read(&b,1,NULL);
+  if(SUCCEEDED(hr)) *pValue=b;
+  return hr;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterDouble::ParameterDouble(const char *NewName, double *ValueAddr, double IniDefaultValue, double NewReadOnly):
-        ParameterBase(NewName,NewReadOnly),
+ParameterDouble::ParameterDouble(const char *NewName, OLECHAR *NewOleName, double *ValueAddr, double IniDefaultValue, double NewReadOnly):
+        ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue)
 {
@@ -532,3 +378,87 @@ ParameterDouble::ParameterDouble(const char *NewName, double *ValueAddr, double 
   else
     PreviousValue = *pValue;
 }
+
+
+std::string ParameterDouble::ToStr(void) const
+{
+ASSERT(pValue!=NULL);
+  return std::to_string(*pValue);
+}
+
+
+bool ParameterDouble::FromStr(const char *str)
+{
+ASSERT(pValue!=NULL);
+  if(str==NULL) return false; 
+  PreviousValue = *pValue;
+  *pValue = atof(str);
+return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterString::ParameterString(const char *NewName, OLECHAR *NewOleName, std::string *ValueAddr, std::string IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewOleName,NewReadOnly),
+	pValue(ValueAddr),
+	DefaultValue(IniDefaultValue)
+{
+  if(pValue==NULL)
+    pValue = &PreviousValue;
+  else
+    PreviousValue = *pValue;
+}
+
+
+std::string ParameterString::ToStr(void) const
+{
+ASSERT(pValue!=NULL);
+  return *pValue;
+}
+
+
+bool ParameterString::FromStr(const char *str)
+{
+ASSERT(pValue!=NULL);
+  if(str==NULL) return false; 
+  PreviousValue = *pValue;
+  *pValue = str;
+return true;
+}
+
+
+HRESULT ParameterString::Save(IStream *pStm) const
+{
+ASSERT(pValue!=NULL);
+  if(pValue->empty())
+  {
+    static const OLECHAR olec = 0;
+    return pStm->Write(&olec, sizeof(olec), NULL);    
+  }
+  return pStm->Write(pValue->c_str(), pValue->length()+1, NULL);
+}
+
+
+HRESULT ParameterString::Load(IStream *pStm)
+{
+char c=0;
+HRESULT hr;
+  ASSERT(pValue!=NULL);
+  hr = pStm->Read(&c,1,NULL);
+  if(FAILED(hr)) return hr;
+  if(c==0)
+  {
+    pValue->clear();
+    return hr;
+  }
+  while(c!=0)
+  {
+    *pValue += c;
+    hr = pStm->Read(&c,1,NULL);
+    if(FAILED(hr)) return hr;
+  }
+  return hr;
+}
+

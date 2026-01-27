@@ -188,7 +188,6 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
   m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL),
   m_Vflip(false),
-  m_DirtyProps(true),
   m_bThrottling(false),
   m_DuplicateFrame(false)
 {
@@ -637,11 +636,10 @@ HRESULT hr;
   {
     if(parameterChangeAffectsOutput(type))
     {
-      char Buffer[80];
-      int pLength;
-      hr = CSettingsInterface::GetParameter(type,sizeof(Buffer),Buffer,&pLength);
-      if(FAILED(hr)) return hr;
-      if(strcmp(Buffer,value)) return E_FAIL;
+      bool Ok;
+      std::string Str(CSettingsInterface::GetParameter(type,&Ok));
+      if(!Ok) return E_FAIL;
+      if(Str != value) return E_FAIL;
       return S_FALSE;			// Nothing to change, parameter is identical.
     }
   }

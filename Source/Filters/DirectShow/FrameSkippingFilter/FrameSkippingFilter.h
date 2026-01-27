@@ -118,6 +118,12 @@ public:
   }
   STDMETHODIMP SetParameter(const char* type, const char* value);
 
+  STDMETHODIMP GetClassID(CLSID *pClassID)
+  {
+    if(pClassID==NULL) return E_POINTER;
+    *pClassID = CLSID_VPP_FrameSkippingFilter;
+    return S_OK;
+  }
 
 private:
 

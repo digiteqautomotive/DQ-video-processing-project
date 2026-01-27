@@ -52,7 +52,7 @@ static const GUID CLSID_SkewingProperties =
 class SkewingFilter: public CTransInPlaceFilter,
                      public CSettingsInterface,
                      public ISpecifyPropertyPages,
-                     public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                     public IPersistPropertyBag, public IPropertyBag
 {
 public:
     DECLARE_IUNKNOWN
@@ -89,12 +89,6 @@ public:
     STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
     STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
-	// IPersistStream
-    virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-    virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-    virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-    virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
-
 	/// Overridden from CSettingsInterface
     virtual void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
 
@@ -103,5 +97,4 @@ private:
     REFERENCE_TIME previousTimestamp;  
 
     int add_time;		///< For adding time to the timestamp filter.
-    bool m_DirtyProps;
 };

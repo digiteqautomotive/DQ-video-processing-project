@@ -108,6 +108,13 @@ public:
     return S_OK;
   }
 
+  STDMETHODIMP GetClassID(CLSID *pClassID)
+  {
+    if(pClassID==NULL) return E_POINTER;
+    *pClassID = CLSID_VPP_YUVSource;
+    return S_OK;
+  }
+
 private:
   // Constructor is private because you have to use CreateInstance
   YuvSourceFilter(IUnknown *pUnk, HRESULT *phr);

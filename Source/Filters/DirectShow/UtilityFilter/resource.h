@@ -2,9 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by UtilityFilter.rc
 //
-#define MAJOR_VERSION                   1
-#define MINOR_VERSION                   6
-#define BUILD_VERSION                   21
 #define IDS_UTILITY_CAPTION             101
 #define IDD_DIALOG1                     102
 #define IDD_FRAMERATE_DIALOG            102

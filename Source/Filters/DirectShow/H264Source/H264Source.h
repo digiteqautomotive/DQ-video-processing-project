@@ -132,6 +132,13 @@ public:
   STDMETHODIMP SetRate( double dRate );
   STDMETHODIMP SetTimeFormat( const GUID *pFormat );
 
+  STDMETHODIMP GetClassID(CLSID *pClassID)
+  {
+    if(pClassID==NULL) return E_POINTER;
+    *pClassID = CLSID_VPP_H264Source;
+    return S_OK;
+  }
+
 private:
   // Constructor is private because you have to use CreateInstance
   H264SourceFilter(IUnknown *pUnk, HRESULT *phr);

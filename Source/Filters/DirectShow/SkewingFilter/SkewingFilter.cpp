@@ -43,8 +43,7 @@ SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr):
     CTransInPlaceFilter(NAME("DQ RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
     seenFirstFrame(false),
     previousTimestamp(0),
-    add_time(0),
-    m_DirtyProps(true)
+    add_time(0)
 {
   // Init parameters
 	initParameters();
@@ -262,49 +261,4 @@ CheckPointer(pVar, E_INVALIDARG);
     if(getFromVariant(add_time,pVar)) return S_OK;
   }
   return E_INVALIDARG;
-}
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT SkewingFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(add_time);
-  return S_OK;
-}
-
-
-HRESULT SkewingFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT SkewingFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-int iadd_time;
-HRESULT hr;
-  ASSERT(sizeof(iadd_time)==sizeof(add_time));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&iadd_time, sizeof(iadd_time), &pcbRead))) return hr;
-  if(add_time!=iadd_time)
-  {
-    add_time = iadd_time;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT SkewingFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&add_time, sizeof(add_time), NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
 }

@@ -101,5 +101,4 @@ private:
   int m_channel;
   int m_nBitsPerSample;
   int m_nSamplesPerSecond;
-  bool m_DirtyProps;
 };

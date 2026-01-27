@@ -56,7 +56,7 @@ class PicCropperBase;
  * Crop parameters can be set using the COM SettingsInterface SetParameter method.
  */
 class CropFilter: public CCustomBaseFilter, public ISpecifyPropertyPages, 
-                  public IPersistPropertyBag, public IPropertyBag, public IPersistStream
+                  public IPersistPropertyBag, public IPropertyBag
 {
 public:
     DECLARE_IUNKNOWN
@@ -111,12 +111,6 @@ public:
 	// IPropertyBag
   STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
   STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
-
-	// IPersistStream
-  virtual HRESULT STDMETHODCALLTYPE GetSizeMax(ULARGE_INTEGER *pcbSize);
-  virtual HRESULT STDMETHODCALLTYPE IsDirty(void);
-  virtual HRESULT STDMETHODCALLTYPE Load(IStream *pStm);
-  virtual HRESULT STDMETHODCALLTYPE Save(IStream *pStm, BOOL fClearDirty);
 
 private:
   /** This method applies the crop transform

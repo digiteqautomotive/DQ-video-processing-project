@@ -132,6 +132,13 @@ public:
     pPages->pElems[0] = CLSID_RGBtoYUV420Properties;
     return S_OK;
   }
+
+  STDMETHODIMP GetClassID(CLSID *pClassID)
+  {
+    if(pClassID==NULL) return E_POINTER;
+    *pClassID = CLSID_VPP_RGBtoYUV420ColorConverter;
+    return S_OK;
+  }
   /**
    * @brief required for COM
    */

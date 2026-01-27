@@ -46,7 +46,7 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	m_nOutHeight(0),
 	m_nStride(0),
 	m_nPadding(0),
-        m_DirtyProps(true)
+        m_nRotation(0)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
 	InitialiseInputTypes();
@@ -428,6 +428,13 @@ HRESULT RotateFilter::InitNew(void)
 OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
 
 
+void RotateFilter::initParameters()
+{
+  addParameter(FILTER_PARAM_ROTATION_MODE, &m_nRotation, 0);
+}
+
+
+
 HRESULT RotateFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
 {
 LPCOLESTR PropName;
@@ -501,49 +508,4 @@ CheckPointer(pVar, E_INVALIDARG);
     if(getFromVariant(m_nRotation,pVar)) return S_OK;
   }
   return E_INVALIDARG;
-}
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT RotateFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_nRotation);
-  return S_OK;
-}
-
-
-HRESULT RotateFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT RotateFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-int nRotation;
-HRESULT hr;
-  ASSERT(sizeof(m_nRotation)==sizeof(nRotation));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&nRotation, sizeof(nRotation), &pcbRead))) return hr;
-  if(m_nRotation!=nRotation)
-  {
-    m_nRotation = nRotation;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT RotateFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_nRotation, sizeof(m_nRotation), NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
 }

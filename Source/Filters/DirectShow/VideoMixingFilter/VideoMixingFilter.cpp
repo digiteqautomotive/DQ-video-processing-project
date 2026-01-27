@@ -48,8 +48,7 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer
 	m_pPicConcat(NULL),
         m_Vflip(false),
         m_FeedHeight(0), m_FeedWidth(0),
-	m_Feed_xPos(0), m_Feed_yPos(0),
-        m_DirtyProps(true)
+	m_Feed_xPos(0), m_Feed_yPos(0)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
@@ -721,49 +720,4 @@ CheckPointer(pVar, E_INVALIDARG);
     if(getFromVariant(m_nOrientation,pVar)) return S_OK;
   }
   return E_INVALIDARG;
-}
-
-
-//----------------- IPersistStream------------------
-
-
-HRESULT VideoMixingFilter::GetSizeMax(ULARGE_INTEGER *pcbSize)
-{
-CheckPointer(pcbSize, E_INVALIDARG);
-  pcbSize->QuadPart = sizeof(m_nOrientation);
-  return S_OK;
-}
-
-
-HRESULT VideoMixingFilter::IsDirty(void)
-{
-  return m_DirtyProps ? S_OK : S_FALSE;
-}
-
-
-HRESULT VideoMixingFilter::Load(IStream *pStm)
-{
-ULONG pcbRead;
-int nOrientation;
-HRESULT hr;
-  ASSERT(sizeof(nOrientation)==sizeof(m_nOrientation));
-  CheckPointer(pStm, E_INVALIDARG);
-
-  if(FAILED(hr=pStm->Read(&nOrientation, sizeof(nOrientation), &pcbRead))) return hr;
-  if(m_nOrientation!=nOrientation)
-  {
-    m_nOrientation = nOrientation;
-    m_DirtyProps = true;
-  }
-return S_OK;
-}
-
-
-HRESULT VideoMixingFilter::Save(IStream *pStm, BOOL fClearDirty)
-{
-HRESULT hr;
-CheckPointer(pStm, E_INVALIDARG);
-  if(FAILED(hr=pStm->Write(&m_nOrientation, sizeof(m_nOrientation), NULL))) return hr;
-  if(fClearDirty) m_DirtyProps=false;
-return S_OK;
 }

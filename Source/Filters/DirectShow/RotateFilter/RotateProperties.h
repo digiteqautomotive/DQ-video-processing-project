@@ -42,7 +42,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define BUFFER_SIZE 256
 
-const int RADIO_BUTTON_IDS[] = {IDC_RADIO1, IDC_RADIO2, IDC_RADIO3, IDC_RADIO4, IDC_RADIO5, IDC_RADIO6, IDC_RADIO7, IDC_RADIO8};
 
 /**
  * \ingroup DirectShowFilters
@@ -66,43 +65,9 @@ public:
 		: FilterPropertiesBase(NAME("Rotate Properties"), pUnk, IDD_ROTATE_DIALOG, IDS_ROTATE_CAPTION)
 	{;}
 
-	HRESULT ReadSettings()
-	{
-		int nLength = 0;
-		char szBuffer[BUFFER_SIZE];
-		HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ROTATION_MODE, sizeof(szBuffer), szBuffer, &nLength);
-		if (SUCCEEDED(hr))
-		{
-			int nRotationMode = atoi(szBuffer);
-			int nRadioID = RADIO_BUTTON_IDS[nRotationMode];
-			long lResult = SendMessage(			// returns LRESULT in lResult
-				GetDlgItem(m_Dlg, nRadioID),		// handle to destination control
-				(UINT) BM_SETCHECK,			// message ID
-				(WPARAM) 1,				// = 0; not used, must be zero
-				(LPARAM) 0);				// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-			return S_OK;
-		}
-		else
-		{
-			return E_FAIL;
-		}
-	}
+	HRESULT ReadSettings();
+	HRESULT OnApplyChanges(void);
 
-	HRESULT OnApplyChanges(void)
-	{
-		for(int i=0; i <sizeof(RADIO_BUTTON_IDS)/sizeof(int); ++i)
-		{
-			int nRadioID = RADIO_BUTTON_IDS[i];
-			int iCheck = SendMessage( GetDlgItem(m_Dlg, nRadioID),	(UINT) BM_GETCHECK,	0, 0);
-			if (iCheck != 0)
-			{
-				std::string sID = toString(i);
-				HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_ROTATION_MODE, sID.c_str());
-				break;
-			}
-		}
-		return S_OK;
-	} 
 
 private:
 

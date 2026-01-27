@@ -40,6 +40,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma managed(push, off)
 #endif
 
+
+static const int RADIO_BUTTON_IDS[] = {IDC_RADIO1, IDC_RADIO2, IDC_RADIO3, IDC_RADIO4, IDC_RADIO5, IDC_RADIO6, IDC_RADIO7, IDC_RADIO8};
+
+
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"DQ VPP Rotate Filter";   /// A name for the filter 
@@ -98,3 +102,46 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 #ifdef _MANAGED
 #pragma managed(pop)
 #endif
+
+
+
+HRESULT RotateProperties::ReadSettings()
+{
+  int nLength = 0;
+  char szBuffer[BUFFER_SIZE];
+  HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ROTATION_MODE, sizeof(szBuffer), szBuffer, &nLength);
+  if(SUCCEEDED(hr))
+  {
+    int nRotationMode = atoi(szBuffer);
+    if(nRotationMode >= sizeof(RADIO_BUTTON_IDS)/sizeof(int) || nRotationMode<0)
+        nRotationMode=0;
+    int nRadioID = RADIO_BUTTON_IDS[nRotationMode];
+    long lResult = SendMessage(			// returns LRESULT in lResult
+				GetDlgItem(m_Dlg, nRadioID),		// handle to destination control
+				(UINT) BM_SETCHECK,			// message ID
+				(WPARAM) 1,				// = 0; not used, must be zero
+				(LPARAM) 0);				// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
+			return S_OK;
+  }
+  else
+  {
+	return E_FAIL;
+  }
+}
+
+
+HRESULT RotateProperties::OnApplyChanges(void)
+{
+  for(int i=0; i <sizeof(RADIO_BUTTON_IDS)/sizeof(int); ++i)
+  {
+    int nRadioID = RADIO_BUTTON_IDS[i];
+    int iCheck = SendMessage( GetDlgItem(m_Dlg, nRadioID), (UINT) BM_GETCHECK, 0, 0);
+    if(iCheck != 0)
+    {
+	std::string sID = toString(i);
+	HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_ROTATION_MODE, sID.c_str());
+	break;
+    }
+  }
+  return S_OK;
+} 

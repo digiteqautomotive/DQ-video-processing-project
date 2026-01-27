@@ -51,9 +51,9 @@ static const GUID CLSID_AudioMixingProperties =
  * \ingroup DirectShowFilters
  * Audio Mixing Filter for PCM Mono Media
  */
-class AudioMixingFilter	:	public CMultiIOBaseFilter,
-							            //public CSettingsInterface,
-							            public ISpecifyPropertyPages
+class AudioMixingFilter: public CMultiIOBaseFilter,
+			 //public CSettingsInterface,
+			 public ISpecifyPropertyPages
 {
   typedef std::deque<IMediaSample*> MediaSampleQueue_t; 
 public:
@@ -125,6 +125,13 @@ public:
 		}
 		pPages->pElems[0] = CLSID_AudioMixingProperties;
 		return S_OK;
+	}
+
+	STDMETHODIMP GetClassID(CLSID *pClassID)
+	{
+	  if(pClassID==NULL) return E_POINTER;
+	  *pClassID = CLSID_VPP_AudioMixingFilter;
+	  return S_OK;
 	}
 
 	/// For configuration dialog

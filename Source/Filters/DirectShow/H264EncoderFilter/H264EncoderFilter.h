@@ -39,9 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Forward
 class ICodecv2;
 
-//DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00,
-//  0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71); 
-
 
 // {8A8F26CA-10E2-4043-8843-E4FA78E0AAB9}
 static const GUID CLSID_H264Properties = 
@@ -49,9 +46,9 @@ static const GUID CLSID_H264Properties =
 
 
 
-class H264EncoderFilter : public CCustomBaseFilter,
-                          public ISpecifyPropertyPages,
-                          public ICodecControlInterface
+class H264EncoderFilter: public CCustomBaseFilter,
+                         public ISpecifyPropertyPages,
+                         public ICodecControlInterface
 {
 public:
   DECLARE_IUNKNOWN
@@ -92,13 +89,15 @@ public:
 	///Overridden from CSettingsInterface
 	virtual void initParameters()
 	{
-		addParameter(CODEC_PARAM_FRAME_BIT_LIMIT, &m_nFrameBitLimit, 0);
-    addParameter(CODEC_PARAM_NOTIFYONIFRAME, &m_bNotifyOnIFrame, false);
-    addParameter(CODEC_PARAM_IFRAME_PERIOD, &m_uiIFramePeriod, 0);
-    addParameter(FILTER_PARAM_SPS, &m_sSeqParamSet, "", true);
-    addParameter(FILTER_PARAM_PPS, &m_sPicParamSet, "", true);
-    addParameter(FILTER_PARAM_H264_OUTPUT_TYPE, &m_nH264Type, H264_AVC1);
-  }
+	  addParameter(CODEC_PARAM_FRAME_BIT_LIMIT, &m_nFrameBitLimit, 0);
+	  addParameter(CODEC_PARAM_NOTIFYONIFRAME, &m_bNotifyOnIFrame, false);
+	  addParameter(CODEC_PARAM_IFRAME_PERIOD, &m_uiIFramePeriod, 0);
+	  addParameter(FILTER_PARAM_SPS, &m_sSeqParamSet, "", true);
+	  addParameter(FILTER_PARAM_PPS, &m_sPicParamSet, "", true);
+	  addParameter(FILTER_PARAM_H264_OUTPUT_TYPE, &m_nH264Type, H264_AVC1);
+	}
+
+	STDMETHODIMP GetClassID(CLSID *pClassID);
 	/// Overridden from SettingsInterface
 	STDMETHODIMP GetParameter( const char* szParamName, int nBufferSize, char* szValue, int* pLength );
 	STDMETHODIMP SetParameter( const char* type, const char* value);
