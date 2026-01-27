@@ -434,3 +434,101 @@ bool CSettingsInterface::revertParameter(const char* type)
   }
   return false;
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+ParameterBase::ParameterBase(const char *NewName, bool NewReadOnly): Name(NewName), ReadOnly(NewReadOnly)
+{
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterInt::ParameterInt(const char *NewName, int *ValueAddr, int IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewReadOnly),
+	pValue(ValueAddr),
+	DefaultValue(IniDefaultValue),
+        PreviousValue(IniDefaultValue)
+{
+  if(pValue==NULL)
+    pValue = &PreviousValue;
+  else
+    PreviousValue = *pValue;
+}
+
+
+std::string ParameterInt::ToStr(void) const
+{
+  return std::to_string(*pValue);
+}
+
+
+bool ParameterInt::FromStr(const char *str)
+{
+  if(str==NULL) return false; 
+  PreviousValue = *pValue;
+  if(str) *pValue = atoi(str);
+return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterUnsigned::ParameterUnsigned(const char *NewName, unsigned *ValueAddr, unsigned IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewReadOnly),
+	pValue(ValueAddr),
+	DefaultValue(IniDefaultValue)
+{
+  if(pValue==NULL)
+    pValue = &PreviousValue;
+  else
+    PreviousValue = *pValue;
+}
+
+
+std::string ParameterUnsigned::ToStr(void) const
+{
+  return std::to_string(*pValue);
+}
+
+
+bool ParameterUnsigned::FromStr(const char *str)
+{
+  if(str==NULL) return false; 
+  PreviousValue = *pValue;
+  if(str) *pValue = atoi(str);
+return true;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterBool::ParameterBool(const char *NewName, bool *ValueAddr, bool IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewReadOnly),
+	pValue(ValueAddr),
+	DefaultValue(IniDefaultValue)
+{
+  if(pValue==NULL)
+    pValue = &PreviousValue;
+  else
+    PreviousValue = *pValue;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterDouble::ParameterDouble(const char *NewName, double *ValueAddr, double IniDefaultValue, double NewReadOnly):
+        ParameterBase(NewName,NewReadOnly),
+	pValue(ValueAddr),
+	DefaultValue(IniDefaultValue)
+{
+  if(pValue==NULL)
+    pValue = &PreviousValue;
+  else
+    PreviousValue = *pValue;
+}

@@ -44,10 +44,105 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <vector>
 
-/**
- * \ingroup DirectShowLib
- * ISettingsInterface implementation.
- */
+
+enum RTVC_PARAM_TYPES
+{
+	RTVC_STRING,
+	RTVC_INT,
+	RTVC_UINT,
+	RTVC_BOOL,
+	RTVC_DOUBLE
+};
+
+
+class ParameterBase
+{
+public:
+	ParameterBase(const char *NewName, bool NewReadOnly=false);
+
+	std::string	Name;
+	unsigned	Hash;
+	bool		ReadOnly;
+
+	virtual bool	Validate(void) = 0;
+	virtual std::string ToStr(void) const = 0;
+        virtual bool FromStr(const char *str) = 0;
+	virtual RTVC_PARAM_TYPES Type(void) const = 0;
+};
+
+
+class ParameterInt: public ParameterBase
+{
+public:
+	ParameterInt(const char *NewName, int *ValueAddr, int IniDefaultValue, bool ReadOnly=false);
+	int	*pValue;
+	int	DefaultValue;
+	int	PreviousValue;
+
+	virtual bool Validate(void)	{return true;}
+	virtual std::string ToStr(void) const;
+        virtual bool FromStr(const char *str);
+
+	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_INT;}
+	virtual int Size(void) {return sizeof(int);}
+};
+
+
+class ParameterUnsigned: public ParameterBase
+{
+public:
+	ParameterUnsigned(const char *Name, unsigned *ValueAddr, unsigned IniDefaultValue, bool ReadOnly=false);
+	unsigned *pValue;
+	unsigned DefaultValue;
+	unsigned PreviousValue;
+
+	virtual std::string ToStr(void) const = 0;
+        virtual bool FromStr(const char *str) = 0;
+	
+	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_UINT;}
+        virtual int Size(void) const {return sizeof(unsigned);}
+};
+
+
+class ParameterDouble: public ParameterBase
+{
+public:
+	ParameterDouble(const char *NewName, double *ValueAddr, double IniDefaultValue, double NewReadOnly=false);
+	double *pValue;
+	double DefaultValue;
+	double PreviousValue;
+
+	virtual std::string ToStr(void) const = 0;
+        virtual bool FromStr(const char *str) = 0;
+
+	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_DOUBLE;}
+        virtual int Size(void) const {return sizeof(double);}
+};
+
+
+class ParameterBool: public ParameterBase
+{
+public:
+	ParameterBool(const char *Name, bool *ValueAddr, bool IniDefaultValue, bool ReadOnly=false);
+	bool *pValue;
+	bool DefaultValue;
+	bool PreviousValue;
+
+	virtual std::string ToStr(void) const = 0;
+        virtual bool FromStr(const char *str) = 0;
+
+	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_BOOL;}
+        virtual int Size(void) const {return 1;}
+};
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+/** \ingroup DirectShowLib
+ * ISettingsInterface implementation. */
 class CSettingsInterface: public ISettingsInterface
 {
 public:
@@ -128,16 +223,6 @@ protected:
 	virtual void addParameter(const std::string& sParamName, double* pAddr, double dDefaultValue, bool bReadOnly=false, std::vector<double> vAllowedValues = std::vector<double>());
 
 private:
-
-	enum RTVC_PARAM_TYPES
-	{
-		RTVC_STRING,
-		RTVC_INT,
-		RTVC_UINT,
-		RTVC_BOOL,
-		RTVC_DOUBLE
-	};
-
 	typedef std::map<std::string, CSettingsInterface::RTVC_PARAM_TYPES> PARAM_TYPE_MAP;
 
 	std::vector<std::string> m_vParameters;
