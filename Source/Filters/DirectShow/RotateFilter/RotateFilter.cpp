@@ -47,7 +47,7 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	m_nOutWidth(0),
 	m_nOutHeight(0),
 	m_nStride(0),
-	m_nPadding(0),
+	m_nPadding(0)
         //m_nRotation(0)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
