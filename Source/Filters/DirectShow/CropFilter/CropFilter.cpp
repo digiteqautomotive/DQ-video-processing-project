@@ -9,8 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2017, CSIR
-Copyright (c) 2025-2026, Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026, Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,7 +28,6 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ==========================================================================*/
 #include "CropFilter.h"
 #include <DirectShow/CommonDefs.h>
@@ -158,12 +156,23 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     // Get the bitmap info header and adapt the cropped 
     //make sure that it's a video info header
-    if(pMediaType->formattype!=FORMAT_VideoInfo && pMediaType->formattype!=FORMAT_VideoInfo2)
-        return VFW_E_TYPE_NOT_ACCEPTED;
-    VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-    //Now we need to calculate the size of the output image
-    BITMAPINFOHEADER* pBi = &(pVih->bmiHeader);
-
+    BITMAPINFOHEADER *pBi = NULL;
+    RECT *rcSource = NULL;
+    RECT *rcTarget = NULL;
+    if(pMediaType->formattype==FORMAT_VideoInfo)
+    {
+      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+      if(pVih) 
+        {pBi=&(pVih->bmiHeader);rcSource=&pVih->rcSource;rcTarget=&pVih->rcTarget;}
+    } else if(pMediaType->formattype==FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
+      if(pVih2)
+        {pBi=&(pVih2->bmiHeader);rcSource=&pVih2->rcSource;rcTarget=&pVih2->rcTarget;}
+    }
+    if(pBi==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+    
+	    //Now we need to calculate the size of the output image
     pBi->biHeight = m_nOutHeight;
     if(pBi->biHeight == 0) return E_INVALIDARG;
 
@@ -172,15 +181,15 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * m_nBitsPerPixel)/8;
 
-    pVih->rcSource.top = 0;
-    pVih->rcSource.left = 0;
-    pVih->rcSource.right = pBi->biWidth;
-    pVih->rcSource.bottom = pBi->biHeight;
+    rcSource->top = 0;
+    rcSource->left = 0;
+    rcSource->right = pBi->biWidth;
+    rcSource->bottom = pBi->biHeight;
 
-    pVih->rcTarget.top = 0;
-    pVih->rcTarget.left = 0;
-    pVih->rcTarget.right = pBi->biWidth;
-    pVih->rcTarget.bottom = pBi->biHeight;
+    rcTarget->top = 0;
+    rcTarget->left = 0;
+    rcTarget->right = pBi->biWidth;
+    rcTarget->bottom = pBi->biHeight;
 
     pMediaType->lSampleSize = pBi->biSizeImage;
 
