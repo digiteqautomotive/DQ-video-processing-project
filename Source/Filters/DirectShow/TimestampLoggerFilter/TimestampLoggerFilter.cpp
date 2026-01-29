@@ -9,7 +9,7 @@ DESCRIPTION           :
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 
 //**** Adding the TimingFilter
@@ -44,12 +42,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctime>
 
 
-TimestampLoggerFilter::TimestampLoggerFilter(LPUNKNOWN pUnk, HRESULT *pHr)
-: CTransInPlaceFilter(NAME("DQ VPP Timestamp Logger"), pUnk, CLSID_VPP_TimeStampLoggerFilter, pHr, false)
-{;}
+TimestampLoggerFilter::TimestampLoggerFilter(LPUNKNOWN pUnk, HRESULT *pHr):
+		CTransInPlaceFilter(NAME("DQ VPP Timestamp Logger"), pUnk, CLSID_VPP_TimeStampLoggerFilter, pHr, false)
+{}
+
 
 TimestampLoggerFilter::~TimestampLoggerFilter()
-{;}
+{}
+
 
 CUnknown * WINAPI TimestampLoggerFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
@@ -109,7 +109,7 @@ STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDI
   {
     std::wstring wsFileName = StringUtil::stringToWideString(m_sFileName);
     DWORD n = sizeof(WCHAR)*(1 + wsFileName.length());
-    *ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
+    *ppszFileName = (LPOLESTR) CoTaskMemAlloc(n);
     if(*ppszFileName!=NULL) {
       memcpy(*ppszFileName, wsFileName.c_str(), n);
     }
@@ -121,28 +121,30 @@ STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDI
   }
 }
 
+
 HRESULT TimestampLoggerFilter::Run( REFERENCE_TIME tStart )
 {
 	return CTransInPlaceFilter::Run(tStart);
 }
 
+
 HRESULT TimestampLoggerFilter::Stop( void )
 {
 	// Write time info to file
-	m_outStream.open(m_sFileName.c_str(), std::ios_base::out);
-	if (m_outStream.is_open())
-	{
-		for (std::vector<TimeInfo>::iterator it = m_vTimeInfo.begin(); it != m_vTimeInfo.end(); ++it)
-		{
+  m_outStream.open(m_sFileName.c_str(), std::ios_base::out);
+  if(m_outStream.is_open())
+  {
+    for(std::vector<TimeInfo>::iterator it = m_vTimeInfo.begin(); it != m_vTimeInfo.end(); ++it)
+    {
       m_outStream << (*it).StartTime << " " << (*it).StopTime <<  " " << (*it).StopTime - (*it).StartTime << " " <<  (*it).Size <<  std::endl;
-		}
-		m_outStream.flush();
-		m_outStream.close();
-	}
+    }
+    m_outStream.flush();
+    m_outStream.close();
+  }
 
   // Reset vector
   m_vTimeInfo.clear();
 
-	return CTransInPlaceFilter::Stop();
+  return CTransInPlaceFilter::Stop();
 }
 

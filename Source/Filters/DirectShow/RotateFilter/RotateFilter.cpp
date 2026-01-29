@@ -9,8 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2017, CSIR
-Copyright (c) 2025-2026, Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -39,6 +38,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/VariantTools.cpp"
 
 
+OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
+
+
 RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
 	m_pRotate(NULL),
 	m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
@@ -46,7 +48,7 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	m_nOutHeight(0),
 	m_nStride(0),
 	m_nPadding(0),
-        m_nRotation(0)
+        //m_nRotation(0)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
 	InitialiseInputTypes();
@@ -54,32 +56,39 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	initParameters();
 }
 
+
+void RotateFilter::initParameters()
+{
+  addParameter(FILTER_PARAM_ROTATION_MODE, OLE_PARAM_ROTATION, &m_nRotation, ROTATE_NONE);
+}
+
+
 RotateFilter::~RotateFilter()
 {
-	if (m_pRotate)
-	{
-		delete m_pRotate;
-		m_pRotate = NULL;
-	}
+  if(m_pRotate)
+  {
+    delete m_pRotate;
+    m_pRotate = NULL;
+  }
 }
 
 CUnknown * WINAPI RotateFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
-	RotateFilter *pFilter = new RotateFilter();
-	if (pFilter== NULL) 
-	{
-		*pHr = E_OUTOFMEMORY;
-	}
-	return pFilter;
+  RotateFilter *pFilter = new RotateFilter();
+  if(pFilter== NULL) 
+  {
+    *pHr = E_OUTOFMEMORY;
+  }
+  return pFilter;
 }
 
 
 void RotateFilter::InitialiseInputTypes()
 {
-	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-        AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-        AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
 }
 
 
@@ -147,26 +156,22 @@ HRESULT RotateFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
                 if(pBi==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
 				  //Now we need to calculate the size of the output image		
-		switch (m_nRotation)
+		switch(m_nRotation)
 		{
-		case ROTATE_NONE:
-		case ROTATE_180_DEGREES_CLOCKWISE:
-		case ROTATE_FLIP_HORIZONTAL:
-		case ROTATE_FLIP_VERTICAL:
-			{
-				m_nOutWidth = m_nInWidth;
-				m_nOutHeight = m_nInHeight;
-				break;
-			}
-		case ROTATE_90_DEGREES_CLOCKWISE:
-		case ROTATE_270_DEGREES_CLOCKWISE:
-		case ROTATE_90_DEGS_CCK_VFLIP:
-		case ROTATE_FLIP_DIAGONALLY:
-			{
-				m_nOutWidth = m_nInHeight;
-				m_nOutHeight = m_nInWidth;
-				break;
-			}
+		  default:				m_nRotation = ROTATE_NONE;	// Fix invalid value in Rotation mode.
+		  case ROTATE_NONE:
+		  case ROTATE_180_DEGREES_CLOCKWISE:
+		  case ROTATE_FLIP_HORIZONTAL:
+		  case ROTATE_FLIP_VERTICAL:
+							m_nOutWidth = m_nInWidth;
+							m_nOutHeight = m_nInHeight;
+							break;
+		  case ROTATE_90_DEGREES_CLOCKWISE:
+		  case ROTATE_270_DEGREES_CLOCKWISE:
+		  case ROTATE_90_DEGS_CCK_VFLIP:
+		  case ROTATE_FLIP_DIAGONALLY:		m_nOutWidth = m_nInHeight;
+							m_nOutHeight = m_nInWidth;
+							break;
 		}
 		pBi->biHeight = m_nOutHeight;
 		if(pBi->biHeight <= 0) return E_INVALIDARG;
@@ -417,16 +422,6 @@ HRESULT RotateFilter::GetClassID(CLSID *pClassID)
   *pClassID = CLSID_VPP_RotateFilter;
   return S_OK;
 }
-
-
-OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
-
-
-void RotateFilter::initParameters()
-{
-  addParameter(FILTER_PARAM_ROTATION_MODE, &m_nRotation, 0);
-}
-
 
 
 HRESULT RotateFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
