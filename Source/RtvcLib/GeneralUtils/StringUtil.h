@@ -110,11 +110,15 @@ public:
 
   static std::wstring stringToWideString(const std::string& sString)
   {
+    if(sString.empty()) return std::wstring();
+    return std::wstring(sString.c_str(), sString.c_str()+sString.length());
+/*
     std::wstring wideString(sString.size() + 1, 0);
     size_t converted = 0;
     errno_t err = mbstowcs_s(&converted, &wideString[0], sString.length() + 1, sString.c_str(), _TRUNCATE);
     assert(err == 0);
     return std::wstring(wideString.c_str()); // removes null terminator inserted by mbstowcs_s
+*/
   }
 
 //#endif
