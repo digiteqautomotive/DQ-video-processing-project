@@ -31,12 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicScalerBase.h"
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * An RGB565 implementation derived from the general
  * PicScalerBase() class. Scale a packed RGB565 image
- * to the dimensions of another packed RGB565 image.
- */
+ * to the dimensions of another packed RGB565 image. */
 class PicScalerRGB565Impl: public PicScalerBase
 {
 public:
@@ -52,6 +50,27 @@ public:
 	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
 
 };//end PicScalerRGB565Impl.
+
+
+/** \ingroup ImageLib
+ * An RGB555 implementation derived from the general
+ * PicScalerBase() class. Scale a packed RGB555 image
+ * to the dimensions of another packed RGB555 image. */
+class PicScalerRGB555Impl: public PicScalerBase
+{
+public:
+	// Construction and destruction.
+	PicScalerRGB555Impl(void) { }
+	PicScalerRGB555Impl(int width, int height, int subWidth, int subHeight): PicScalerBase(width,height,subWidth,subHeight) { }
+	virtual ~PicScalerRGB555Impl(void) {}
+
+	virtual int GetVideoFormat(void) const {return 32;}
+        virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
+
+	// Interface.
+	int Scale(void* pOutImg, const void* pInImg, bool VFlip=false);
+
+};//end PicScalerRGB555Impl.
 
 
 #endif	// _PICSCALERRGB565IMPL_H

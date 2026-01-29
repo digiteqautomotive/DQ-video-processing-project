@@ -144,6 +144,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
 }
 
 
@@ -203,6 +204,11 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       else if(pmt->subtype==MEDIASUBTYPE_RGB565)
       {
         if(m_pScaler==NULL) m_pScaler = new PicScalerRGB565Impl();
+        m_nBitsPerPixel = 16;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_RGB555)
+      {
+        if(m_pScaler==NULL) m_pScaler = new PicScalerRGB555Impl();
         m_nBitsPerPixel = 16;
       }
     }
@@ -269,7 +275,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
             pBi->biWidth &= ~1;			// Odd values cannot be used for YUYV encoding.
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
       }
-      else if(pMediaType->subtype==MEDIASUBTYPE_RGB565)
+      else if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
       {
         pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * 2;
       }
@@ -441,6 +447,14 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
   if (mtIn->subtype == MEDIASUBTYPE_RGB565)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB565)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_RGB555)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_RGB555)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
