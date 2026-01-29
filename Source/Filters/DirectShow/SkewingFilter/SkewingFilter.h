@@ -90,7 +90,7 @@ public:
     STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 	/// Overridden from CSettingsInterface
-    virtual void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
+    void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
 
 private:
     bool seenFirstFrame;

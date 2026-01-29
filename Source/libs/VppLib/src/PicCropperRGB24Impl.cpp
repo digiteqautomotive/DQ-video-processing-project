@@ -38,11 +38,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicCropperRGB24Impl.h"
 
+#include <uuids.h>
+
 /*
 ===========================================================================
 	Interface Methods.
 ===========================================================================
 */
+
+
+bool PicCropperRGB24Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
+
 /** Crop the input image into the output image.
 Crop the input image by {_byX1, _byX2, _byY1, _byY2} from the {left, right,
 bottom, top} and write it into the output image. Memory management is the

@@ -46,6 +46,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../VariantTools.cpp"
 
 
+OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);
+OLECHAR OLE_UF_PARAM_Y[] = olestr(UF_PARAM_Y);
+OLECHAR OLE_UF_MODE[] = olestr(UF_MODE);
+OLECHAR OLE_UF_FONT_SIZE[] = olestr(UF_FONT_SIZE);
+
+
 using namespace Gdiplus;
 //using namespace artist;
 
@@ -60,14 +66,31 @@ UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr):
   m_iPerformanceFrequency(0),
   m_gdiplusStartupInput(new Gdiplus::GdiplusStartupInput()),
   m_pGdiToken(NULL),
-  m_hrInterfaceAquired(S_OK),
-  m_FontSize(16)
+  m_hrInterfaceAquired(S_OK)
+  //m_FontSize(16)
 {
   GdiplusStartup(&m_pGdiToken, m_gdiplusStartupInput, NULL); //gdi+ init
   QueryPerformanceFrequency((LARGE_INTEGER*)&m_iPerformanceFrequency);
   // Init parameters
   initParameters();
 }
+
+
+void UtilityFilter::initParameters(void) 
+{
+  addParameter(UF_PARAM_X, OLE_UF_PARAM_X, &m_uiX, 0);
+  addParameter(UF_PARAM_Y, OLE_UF_PARAM_Y, &m_uiY, 0);
+  addParameter(UF_MODE, OLE_UF_MODE, &m_uiFramerateEstimationMode, 1);
+  addParameter(UF_FONT_SIZE, OLE_UF_FONT_SIZE, &m_FontSize, 16);
+  addParameter(UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
+  addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
+  addParameter(UF_PRECISION, &m_uiPrecision, 1);
+
+  addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0, true);
+  addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0, true);    
+}
+
+
 
 UtilityFilter::~UtilityFilter()
 {
@@ -113,15 +136,15 @@ HRESULT UtilityFilter::drawTextOntoFrame(const std::string& sText, IMediaSample 
   const BITMAPINFOHEADER *pbmi = NULL;
   if(mt.formattype==FORMAT_VideoInfo)
   {
-    pbmi = HEADER(mt.pbFormat);
+    if(mt.pbFormat)
+        pbmi = HEADER(mt.pbFormat);
   }
   else if(mt.formattype==FORMAT_VideoInfo2)
   {
     VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)mt.pbFormat;
     if(pVih2) pbmi=&(pVih2->bmiHeader);
   }
-  else
-      return VFW_E_TYPE_NOT_ACCEPTED;
+  if(pbmi==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
   // Get image buffer
   BYTE *pBuffer(NULL);
@@ -502,21 +525,6 @@ STDMETHODIMP UtilityFilter::GetPages(CAUUID *pPages)
 }
 
 
-void UtilityFilter::initParameters(void) 
-{
-  addParameter(UF_PARAM_X, &m_uiX, 0);
-  addParameter(UF_PARAM_Y, &m_uiY, 0);
-  addParameter(UF_MODE, &m_uiFramerateEstimationMode, 1);
-  addParameter(UF_FONT_SIZE, &m_FontSize, 16);
-  addParameter(UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
-  addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
-  addParameter(UF_PRECISION, &m_uiPrecision, 1);
-
-  addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0, true);
-  addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0, true);  
-}
-
-
 //----------------- IPersistPropertyBag------------------
 
 
@@ -526,12 +534,6 @@ HRESULT UtilityFilter::GetClassID(CLSID *pClassID)
   *pClassID = CLSID_VPP_UtilityFilter;
   return S_OK;
 }
-
-
-OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);
-OLECHAR OLE_UF_PARAM_Y[] = olestr(UF_PARAM_Y);
-OLECHAR OLE_UF_MODE[] = olestr(UF_MODE);
-OLECHAR OLE_UF_FONT_SIZE[] = olestr(UF_FONT_SIZE);
 
 
 HRESULT UtilityFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)

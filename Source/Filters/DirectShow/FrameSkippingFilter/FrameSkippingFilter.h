@@ -107,7 +107,7 @@ public:
   STDMETHODIMP Stop(void);
 
   /// Overridden from CSettingsInterface
-  virtual void initParameters()
+  void initParameters()
   {
     addParameter(FILTER_PARAM_SKIP_FRAME, &m_uiSkipFrameNumber, 0);
     addParameter(FILTER_PARAM_TOTAL_FRAMES, &m_uiTotalFrames, 0);

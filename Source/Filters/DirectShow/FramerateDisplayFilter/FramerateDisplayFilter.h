@@ -106,7 +106,7 @@ public:
 	}
 
   /// Overridden from CSettingsInterface
-  virtual void initParameters() 
+  void initParameters() 
   { 
     addParameter("X", &m_uiX, 0);
     addParameter("Y", &m_uiY, 0);

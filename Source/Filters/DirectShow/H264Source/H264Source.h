@@ -97,7 +97,7 @@ public:
   STDMETHODIMP Stop();
 
   /// From CSettingsInterface
-  virtual void initParameters()
+  void initParameters()
   {
     addParameter( SOURCE_FPS, &m_iFramesPerSecond, 30);
     addParameter( USE_RTVC_H264, &m_bUseRtvcH264, false);

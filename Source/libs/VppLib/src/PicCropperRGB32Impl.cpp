@@ -30,7 +30,6 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
 #include <stdio.h>
 #include <string.h>
@@ -38,11 +37,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicCropperRGB32Impl.h"
 
+#include <uuids.h>
+
 /*
 ===========================================================================
 	Interface Methods.
 ===========================================================================
 */
+
+
+bool PicCropperRGB32Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_ARGB32;
+}
+
+
 /** Crop the input image into the output image.
 Crop the input image by {_byX1, _byX2, _byY1, _byY2} from the {left, right,
 bottom, top} and write it into the output image. Memory management is the

@@ -91,7 +91,7 @@ public:
   virtual HRESULT BreakConnect(PIN_DIRECTION dir);
 
   /// Overridden from CSettingsInterface
-  virtual void initParameters(void);
+  void initParameters(void);
 
   STDMETHODIMP GetPages(CAUUID *pPages);
 

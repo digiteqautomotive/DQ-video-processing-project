@@ -132,7 +132,7 @@ public:
     STDMETHODIMP GetPages(CAUUID *pPages);
 
 	// Overridden from CSettingsInterface
-    virtual void initParameters(void);
+    void initParameters(void);
 
     STDMETHODIMP SetParameter( const char* type, const char* value);
 

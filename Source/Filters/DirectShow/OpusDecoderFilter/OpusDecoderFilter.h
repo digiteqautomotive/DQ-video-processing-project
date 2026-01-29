@@ -99,7 +99,7 @@ public:
 
 	/// Interface methods
 	///Overridden from CSettingsInterface
-	virtual void initParameters()
+	void initParameters()
 	{
 	}
 

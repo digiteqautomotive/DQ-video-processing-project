@@ -75,24 +75,24 @@ public:
     STDMETHODIMP GetPages(CAUUID *pPages); // For the Property Page
 
 	// Overridden from CSettingsInterface
-  virtual void initParameters() { addParameter("channel", &m_channel, 0); }
+    void initParameters() { addParameter("channel", &m_channel, 0); }
 
 	// IPersistPropertyBag
-  virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-  virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CCustomBaseFilter::InitNew();}
-  virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-  virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+    virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
+    virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CCustomBaseFilter::InitNew();}
+    virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+    virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 
 	// IPropertyBag
-  STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-  STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+    STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+    STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 private:
   	/// Overridden from CCustomBaseFilter
-	  virtual void InitialiseInputTypes();
+    virtual void InitialiseInputTypes();
     virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
-  int m_channel;
-  int m_nBitsPerSample;
-  int m_nSamplesPerSecond;
+    int m_channel;
+    int m_nBitsPerSample;
+    int m_nSamplesPerSecond;
 };

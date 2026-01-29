@@ -9,7 +9,8 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2017, CSIR
-Copyright (c) 2025-2026, Jaroslav Fojtik	All rights reserved.
+Copyright (c) 2025-2026, Jaroslav Fojtik
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,14 +32,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==========================================================================*/
 #include "CropFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <PicCropperRGB24Impl.h>
-#include <PicCropperRGB32Impl.h>
+#include "PicCropperRGB24Impl.h"
+#include "PicCropperRGB32Impl.h"
+#include "PicCropperRGB565Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "../VariantTools.cpp"
 
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
+OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);
+OLECHAR OLE_PARAM_RIGHT_CROP[] = olestr(FILTER_PARAM_RIGHT_CROP);
+OLECHAR OLE_PARAM_TOP_CROP[] =  olestr(FILTER_PARAM_TOP_CROP);
+OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
+
 
 
  CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
@@ -80,11 +88,25 @@ CUnknown * WINAPI CropFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 }
 
 
-void CropFilter::InitialiseInputTypes()
+void CropFilter::initParameters(void)
+{  
+  addParameter(FILTER_PARAM_LEFT_CROP, OLE_PARAM_LEFT_CROP, &m_nLeftCrop, 0);
+  addParameter(FILTER_PARAM_RIGHT_CROP, OLE_PARAM_RIGHT_CROP, &m_nRightCrop, 0);
+  addParameter(FILTER_PARAM_TOP_CROP, OLE_PARAM_TOP_CROP, &m_nTopCrop, 0);
+  addParameter(FILTER_PARAM_BOTTOM_CROP, OLE_PARAM_BOTTOM_CROP, &m_nBottomCrop, 0);
+  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, -1, true);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, -1, true);
+  RecalculateFilterParameters();
+}
+
+
+void CropFilter::InitialiseInputTypes(void)
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   //AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
 }
@@ -108,26 +130,40 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
     if (pmt->majortype == MEDIATYPE_Video)
     {
       //The converter might already exist if the filter has been connected previously
-      if (m_pCropper)
+      if(m_pCropper)
       {
-        delete m_pCropper;
-        m_pCropper = NULL;
+        if(m_pCropper!=NULL) 
+        {
+	  if(!m_pCropper->isVideoFormatSupported(pmt->subtype))
+          {
+            delete m_pCropper;
+            m_pCropper = NULL;
+          }
+        }
       }
-      if (m_pCropBuffer)
+      if(m_pCropBuffer)
       {
         delete m_pCropBuffer;
         m_pCropBuffer = NULL;
       }
+
       if(pmt->subtype==MEDIASUBTYPE_RGB24 || pmt->subtype==MEDIASUBTYPE_YV24)
       {
-        m_pCropper = new PicCropperRGB24Impl();
+        if(m_pCropper==NULL) m_pCropper = new PicCropperRGB24Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+        // Create temp buffer for crop
+        m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8];
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_RGB555)
+      {
+        if(m_pCropper==NULL) m_pCropper = new PicCropperRGB565Impl();
+        m_nBitsPerPixel = 16;
         // Create temp buffer for crop
         m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8];
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
       {
-        m_pCropper = new PicCropperRGB32Impl();
+        if(m_pCropper==NULL) m_pCropper = new PicCropperRGB32Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
         // Create temp buffer for crop
         m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8];
@@ -156,23 +192,22 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     // Get the bitmap info header and adapt the cropped 
     //make sure that it's a video info header
-    BITMAPINFOHEADER *pBi = NULL;
-    RECT *rcSource = NULL;
-    RECT *rcTarget = NULL;
+    BITMAPINFOHEADER* pBi = NULL;
+    RECT *prcSource = NULL;
+    RECT *prcTarget = NULL;
     if(pMediaType->formattype==FORMAT_VideoInfo)
     {
       VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
-      if(pVih) 
-        {pBi=&(pVih->bmiHeader);rcSource=&pVih->rcSource;rcTarget=&pVih->rcTarget;}
-    } else if(pMediaType->formattype==FORMAT_VideoInfo2)
+      if(pVih) {pBi=&(pVih->bmiHeader); prcSource=&pVih->rcSource; prcTarget=&pVih->rcTarget;}
+    }
+    else if(pMediaType->formattype!=FORMAT_VideoInfo2)
     {
       VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
-      if(pVih2)
-        {pBi=&(pVih2->bmiHeader);rcSource=&pVih2->rcSource;rcTarget=&pVih2->rcTarget;}
+      if(pVih2) {pBi=&(pVih2->bmiHeader); prcSource=&pVih2->rcSource; prcTarget=&pVih2->rcTarget;}
     }
-    if(pBi==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+    if(pBi==NULL)  return VFW_E_TYPE_NOT_ACCEPTED;
     
-	    //Now we need to calculate the size of the output image
+	//Now we need to calculate the size of the output image
     pBi->biHeight = m_nOutHeight;
     if(pBi->biHeight == 0) return E_INVALIDARG;
 
@@ -181,15 +216,15 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * m_nBitsPerPixel)/8;
 
-    rcSource->top = 0;
-    rcSource->left = 0;
-    rcSource->right = pBi->biWidth;
-    rcSource->bottom = pBi->biHeight;
+    prcSource->top = 0;
+    prcSource->left = 0;
+    prcSource->right = pBi->biWidth;
+    prcSource->bottom = pBi->biHeight;
 
-    rcTarget->top = 0;
-    rcTarget->left = 0;
-    rcTarget->right = pBi->biWidth;
-    rcTarget->bottom = pBi->biHeight;
+    prcTarget->top = 0;
+    prcTarget->left = 0;
+    prcTarget->right = pBi->biWidth;
+    prcTarget->bottom = pBi->biHeight;
 
     pMediaType->lSampleSize = pBi->biSizeImage;
 
@@ -239,53 +274,55 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
 
   	// Video format
   m_Vflip = false;
+  const BITMAPINFOHEADER* pBiOut = NULL;
   if(mtOut->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)mtOut->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutHeight)
-    {
-      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
-        m_Vflip = true;
-      else
-      {
-        DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted height at last negoitation stage")));
-        return VFW_E_TYPE_NOT_ACCEPTED;
-      }        
-    }
-    if(pBiOut->biWidth != m_nOutWidth)
-    {
-      DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted width at last negoitation stage")));
-      return VFW_E_TYPE_NOT_ACCEPTED;
-    }
+    pBiOut = &(pVihOut->bmiHeader);
   }
   else if(mtOut->formattype==FORMAT_VideoInfo2)
   {
     const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)mtOut->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutHeight)
-    {
-      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+    pBiOut = &(pVihOut->bmiHeader);
+  }
+  if(pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(pBiOut->biHeight != m_nOutHeight)
+  {
+    if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
         m_Vflip = true;
-      else
-      {
+    else
+    {
         DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted height at last negoitation stage")));
         return VFW_E_TYPE_NOT_ACCEPTED;
-      } 
-    }
-    if(pBiOut->biWidth != m_nOutWidth)
-    {
-      DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted width at last negoitation stage")));
-      return VFW_E_TYPE_NOT_ACCEPTED;
     }
   }
-  else
-      return VFW_E_TYPE_NOT_ACCEPTED;
+  if(pBiOut->biWidth != m_nOutWidth)
+  {
+    DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted width at last negoitation stage")));
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
 
 	//Subtypes
   if(mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
     if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_RGB565)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_RGB565)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_RGB555)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_RGB555)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -317,18 +354,6 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   } 
 
   return VFW_E_TYPE_NOT_ACCEPTED;
-}
-
-
-void CropFilter::initParameters()
-{
-  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, -1, true);
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, -1, true);
-  addParameter(FILTER_PARAM_LEFT_CROP, &m_nLeftCrop, 0);
-  addParameter(FILTER_PARAM_RIGHT_CROP, &m_nRightCrop, 0);
-  addParameter(FILTER_PARAM_TOP_CROP, &m_nTopCrop, 0);
-  addParameter(FILTER_PARAM_BOTTOM_CROP, &m_nBottomCrop, 0);
-  RecalculateFilterParameters();
 }
 
 
@@ -478,12 +503,6 @@ HRESULT CropFilter::GetClassID(CLSID *pClassID)
 //  m_nLeftCrop = m_nRightCrop = m_nTopCrop = m_nBottomCrop = 0;
 //  return S_OK;
 //}
-
-
-OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);
-OLECHAR OLE_PARAM_RIGHT_CROP[] = olestr(FILTER_PARAM_RIGHT_CROP);
-OLECHAR OLE_PARAM_TOP_CROP[] =  olestr(FILTER_PARAM_TOP_CROP);
-OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
 
 
 HRESULT CropFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)

@@ -68,7 +68,7 @@ public:
 	virtual bool OnFullCreateMoreOutputs() const {return true;}
 	virtual void InitialiseInputTypes();
 	virtual void InitialiseOutputTypes();
-        virtual void initParameters(void) {};
+	void initParameters(void) {};
 
 	///  From CBasePin
 	virtual HRESULT CheckOutputType(const CMediaType* pMediaType);

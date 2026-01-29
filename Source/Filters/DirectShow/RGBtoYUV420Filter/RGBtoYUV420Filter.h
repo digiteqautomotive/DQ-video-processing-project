@@ -104,7 +104,7 @@ public:
   /**
    * @brief Overridden from CSettingsInterface to intialise filter parameters
    */
-  virtual void initParameters()
+  void initParameters()
   {
     addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
 #ifdef RTVC_INVERT_OPTIONAL

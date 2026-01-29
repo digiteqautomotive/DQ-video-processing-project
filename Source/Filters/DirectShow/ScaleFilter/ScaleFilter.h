@@ -95,7 +95,7 @@ public:
   virtual void InitialiseInputTypes();
 
 	///Overridden from CSettingsInterface
-  virtual void initParameters();  
+  void initParameters();
   STDMETHODIMP SetParameter(const char* type, const char* value);
   STDMETHODIMP GetPages(CAUUID *pPages);
   STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);

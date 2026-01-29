@@ -84,7 +84,7 @@ public:
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex, const BYTE *pSampleBuffer0, const BYTE *pSampleBuffer1);
 
-	virtual void initParameters();
+	void initParameters();
 
         virtual void OnDisconnect(int nIndex);
 

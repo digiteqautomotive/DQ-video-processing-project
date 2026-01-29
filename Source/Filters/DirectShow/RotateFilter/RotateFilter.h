@@ -100,7 +100,7 @@ public:
 	HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
 	/// Overridden from CSettingsInterface
-	virtual void initParameters();
+	void initParameters();
 
 	STDMETHODIMP SetParameter( const char* type, const char* value);
 

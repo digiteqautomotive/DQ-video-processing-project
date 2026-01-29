@@ -82,7 +82,7 @@ public:
   STDMETHODIMP Stop();
 
   /// From CSettingsInterface
-  virtual void initParameters()
+  void initParameters()
   {
     addParameter( YUV_FORMAT, &m_nYuvFormat, YUV420P);
     addParameter( SOURCE_DIMENSIONS, &m_sDimensions, "352x288");

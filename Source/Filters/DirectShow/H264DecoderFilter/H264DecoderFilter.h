@@ -94,7 +94,7 @@ public:
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
   ///Overridden from CSettingsInterface
-  virtual void initParameters() {}
+  void initParameters() {}
   ///Overridden from CSettingsInterface
   STDMETHODIMP GetParameter( const char* type, int* length, void* value );
   ///Overridden from CSettingsInterface

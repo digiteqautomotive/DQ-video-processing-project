@@ -87,7 +87,7 @@ public:
 
 	/// Interface methods
 	///Overridden from CSettingsInterface
-	virtual void initParameters()
+	void initParameters()
 	{
 	  addParameter(CODEC_PARAM_FRAME_BIT_LIMIT, &m_nFrameBitLimit, 0);
 	  addParameter(CODEC_PARAM_NOTIFYONIFRAME, &m_bNotifyOnIFrame, false);

@@ -37,13 +37,13 @@ public:
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 	
 	/// From CSettingsInterface
-	virtual void initParameters()
+	void initParameters()
 	{
-    // reuse connection of RTSP register
-    addParameter(RTSP_PORT, &m_uiRtspPort, 554);
-    addParameter(FRAME_BIT_LIMITS, &m_sFrameBitLimits, "");
-    addParameter(STARTING_INDEX, &m_uiStartingIndex, 0);
-  }
+	    // reuse connection of RTSP register
+          addParameter(RTSP_PORT, &m_uiRtspPort, 554);
+          addParameter(FRAME_BIT_LIMITS, &m_sFrameBitLimits, "");
+          addParameter(STARTING_INDEX, &m_uiStartingIndex, 0);
+        }
 
 	/// CBase Filter methods - Overridden since we don't just have one input and output pin as the standard transform filter does
 	virtual int GetPinCount();

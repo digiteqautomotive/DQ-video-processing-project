@@ -30,13 +30,9 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICCROPPERRGB24IMPL_H
 #define _PICCROPPERRGB24IMPL_H
-
-#pragma once
 
 #include "PicCropperBase.h"
 
@@ -54,6 +50,7 @@ public:
 	virtual ~PicCropperRGB24Impl(void) {}
 
 	// Interface.
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Crop(const void* pInImg, void* pImg, bool VFlip=false);
 
 }; //end PicCropperRGB24Impl.

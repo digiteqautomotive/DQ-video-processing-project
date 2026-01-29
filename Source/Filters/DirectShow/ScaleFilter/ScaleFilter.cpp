@@ -36,9 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include "DirectShow/DirectShowMediaFormats.h"
+
 #include <PicScalerRGB24Impl.h>
 #include <PicScalerRGB32Impl.h>
 #include <PicScalerARGB32Impl.h>
+#include <PicScalerRGB565Impl.h>
 #include <PicScalerYUV420PImpl.h>
 #include <PicScalerYUYVImpl.h>
 #include <PicScalerUYVYImpl.h>
@@ -65,6 +67,10 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
+OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
+OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+
+
 
 PicScalerBase *GetPicScallerRGB32(void)
 {
@@ -83,14 +89,25 @@ PicScalerBase *GetPicScallerRGB32(void)
 
 ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("DQ VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
   m_pScaler(NULL),
-  m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
-  m_nReqOutWidth(0), m_nReqOutHeight(0)
+  m_nBitsPerPixel(0)
+  //m_nReqOutWidth(0), m_nReqOutHeight(0)  
 {
   //Call the initialize input method to load all acceptable input types for this filter
   InitialiseInputTypes();
   // Init parameters
   initParameters();
 }
+
+
+void ScaleFilter::initParameters()
+{
+  addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nReqOutWidth, 0);
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nReqOutHeight, 0);
+  addParameter(FILTER_PARAM_ACT_WIDTH, &m_nOutWidth, m_nOutWidth, true);
+  addParameter(FILTER_PARAM_ACT_HEIGHT, &m_nOutHeight, m_nOutHeight, true);
+  // addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
+}
+
 
 ScaleFilter::~ScaleFilter()
 {
@@ -126,6 +143,7 @@ void ScaleFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 }
 
 
@@ -181,6 +199,11 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
       {
         if(m_pScaler==NULL) m_pScaler = new PicScalerUYVYImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same bpp as UYVY
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_RGB565)
+      {
+        if(m_pScaler==NULL) m_pScaler = new PicScalerRGB565Impl();
+        m_nBitsPerPixel = 16;
       }
     }
   }
@@ -245,6 +268,10 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
         if((pBi->biWidth & 1)==1)
             pBi->biWidth &= ~1;			// Odd values cannot be used for YUYV encoding.
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUYV) / 8;
+      }
+      else if(pMediaType->subtype==MEDIASUBTYPE_RGB565)
+      {
+        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * 2;
       }
       else		// MEDIASUBTYPE_RGB24 or MEDIASUBTYPE_YV24
           pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
@@ -411,6 +438,14 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     }
     return S_OK;
   }
+  if (mtIn->subtype == MEDIASUBTYPE_RGB565)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_RGB565)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  } 
 	// No known subtype match.
   return VFW_E_TYPE_NOT_ACCEPTED;
 }
@@ -420,16 +455,6 @@ STDMETHODIMP ScaleFilter::SetParameter(const char* type, const char* value)
 {
 			  // TODO: get rid of enum or get rid of string!!!!
   return CSettingsInterface::SetParameter(type, value);
-}
-
-
-void ScaleFilter::initParameters()
-{
-  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nReqOutWidth, 0);
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nReqOutHeight, 0);
-  addParameter(FILTER_PARAM_ACT_WIDTH, &m_nOutWidth, m_nOutWidth, true);
-  addParameter(FILTER_PARAM_ACT_HEIGHT, &m_nOutHeight, m_nOutHeight, true);
-  // addParameter(FILTER_PARAM_MODE, &m_eMode, MODE_ASPECT_RATIO_CORRECT_SCALING1); - J.F. removed
 }
 
 
@@ -499,10 +524,6 @@ HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
   *pClassID = CLSID_VPP_ScaleFilter;
   return S_OK;
 }
-
-
-OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
-OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
 
 
 HRESULT ScaleFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)

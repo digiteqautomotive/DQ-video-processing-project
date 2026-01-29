@@ -53,7 +53,10 @@ CSettingsInterface::~CSettingsInterface(void)
   m_vParams.clear();
 }
 
-
+void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly) //, std::vector<int> vAllowedValues)
+{	  // Add the param to the map
+  m_vParams.push_back(new ParameterInt(sParamName,oleName,pAddr,nDefaultValue,bReadOnly));
+}
 void CSettingsInterface::addParameter(const char *sParamName, int* pAddr, int nDefaultValue, bool bReadOnly) //, std::vector<int> vAllowedValues)
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterInt(sParamName,NULL,pAddr,nDefaultValue,bReadOnly));
@@ -63,20 +66,36 @@ void CSettingsInterface::addParameter(const char *sParamName, unsigned* pAddr, u
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterUnsigned(sParamName,NULL,pAddr,uiDefaultValue,bReadOnly));
 }
+void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly) //, std::vector<unsigned> vAllowedValues)
+{	  // Add the param to the map
+  m_vParams.push_back(new ParameterUnsigned(sParamName,oleName,pAddr,uiDefaultValue,bReadOnly));
+}
 
 void CSettingsInterface::addParameter(const char *sParamName, std::string* pAddr, std::string sDefaultValue, bool bReadOnly) //, std::vector<std::string> vAllowedValues)
 {  // Add the param to the map
   m_vParams.push_back(new ParameterString(sParamName,NULL,pAddr,sDefaultValue,bReadOnly));
+}
+void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, std::string* pAddr, std::string sDefaultValue, bool bReadOnly) //, std::vector<std::string> vAllowedValues)
+{  // Add the param to the map
+  m_vParams.push_back(new ParameterString(sParamName,oleName,pAddr,sDefaultValue,bReadOnly));
 }
 
 void CSettingsInterface::addParameter(const char *sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly) //, std::vector<bool> vAllowedValues)
 {  // Add the param to the map
   m_vParams.push_back(new ParameterBool(sParamName,NULL,pAddr,bDefaultValue,bReadOnly));
 }
+void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly) //, std::vector<bool> vAllowedValues)
+{  // Add the param to the map
+  m_vParams.push_back(new ParameterBool(sParamName,oleName,pAddr,bDefaultValue,bReadOnly));
+}
 
 void CSettingsInterface::addParameter(const char *sParamName, double* pAddr, double dDefaultValue, bool bReadOnly) //, std::vector<double> vAllowedValues)
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterDouble(sParamName,NULL,pAddr,dDefaultValue,bReadOnly));
+}
+void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly) //, std::vector<double> vAllowedValues)
+{	  // Add the param to the map
+  m_vParams.push_back(new ParameterDouble(sParamName,oleName,pAddr,dDefaultValue,bReadOnly));
 }
 
 
@@ -279,7 +298,7 @@ ParameterInt::ParameterInt(const char *NewName, OLECHAR *NewOleName, int *ValueA
   if(pValue==NULL)
     pValue = &PreviousValue;
   else
-    *pValue = IniDefaultValue;
+   *pValue = IniDefaultValue;
 }
 
 

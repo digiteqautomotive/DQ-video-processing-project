@@ -35,13 +35,12 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _PICCROPPERBASE_H
 #define _PICCROPPERBASE_H
 
-#pragma once
+#include <Guiddef.h>
+
 
 /**
  * \ingroup ImageLib
@@ -79,6 +78,8 @@ public:
 	void SetOutDimensions(int widthOut, int heightOut)	{_widthOut = labs(widthOut); _heightOut = labs(heightOut);}
 	void SetInDimensions(int widthIn, int heightIn)		{_widthIn = labs(widthIn); _heightIn = labs(heightIn);}
 	void SetCrop(int left, int right, int top, int bottom)	{_byX1 = left; _byX2 = right; _byY2 = top; _byY1 = bottom;}
+
+        virtual bool isVideoFormatSupported(const GUID &VideoFormat) const = 0;
 
 protected:
 	// Members.

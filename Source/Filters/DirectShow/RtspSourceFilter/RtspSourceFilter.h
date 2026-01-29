@@ -94,7 +94,7 @@ public:
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 	
 	/// From CSettingsInterface
-	virtual void initParameters()
+	void initParameters()
 	{
 		addParameter(STREAM_USING_TCP, &m_bStreamUsingTCP, true);
 	}

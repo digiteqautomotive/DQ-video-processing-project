@@ -226,14 +226,14 @@ public:
 	virtual STDMETHODIMP InitNew(void);
 
 protected:
-	/// This method needs to be overridden by child classes and called in the child class constructor
-	/// It takes care of mapping the parameters to member variables
-	/// Call the addParameter method from this method where <br>
-	/// szParamName: is the name of the parameter<br>
-	/// pAddr is a pointer to the member variable which will store the value<br>
-	/// bReadOnly will ensure that the param value cannot be changed<br>
-	/// vAllowedValues: If there are any items in this vector, only those will be deemed as valid values
-	virtual void initParameters() = 0; 
+	// This method needs to be implemented by child classes and called in the child class constructor
+	// It takes care of mapping the parameters to member variables
+	// Call the addParameter method from this method where <br>
+	// szParamName: is the name of the parameter<br>
+	// pAddr is a pointer to the member variable which will store the value<br>
+	// bReadOnly will ensure that the param value cannot be changed<br>
+	// vAllowedValues: If there are any items in this vector, only those will be deemed as valid values
+	// virtual void initParameters() = 0; 
 
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
@@ -241,35 +241,40 @@ protected:
 	/// @param[in] nDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char *sParamName, int* pAddr, int nDefaultValue, bool bReadOnly=false);  //, std::vector<int> vAllowedValues = std::vector<int>());
+	void addParameter(const char *sParamName, int* pAddr, int nDefaultValue, bool bReadOnly=false);  //, std::vector<int> vAllowedValues = std::vector<int>());
+        void addParameter(const char *sParamName, OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly=false); //, std::vector<int> vAllowedValues)
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] uiDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char *sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false); //, std::vector<unsigned> vAllowedValues = std::vector<unsigned>());
+	void addParameter(const char *sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false); //, std::vector<unsigned> vAllowedValues = std::vector<unsigned>());
+	void addParameter(const char *sParamName, OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] szDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char *sParamName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false); //, std::vector<std::string> vAllowedValues = std::vector<std::string>());
+	void addParameter(const char *sParamName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false); //, std::vector<std::string> vAllowedValues = std::vector<std::string>());
+        void addParameter(const char *sParamName, OLECHAR *oleName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] bDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char *sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false); //, std::vector<bool> vAllowedValues = std::vector<bool>());
+	void addParameter(const char *sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false); //, std::vector<bool> vAllowedValues = std::vector<bool>());
+        void addParameter(const char *sParamName, OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
 	/// @param[in] dDefaultValue An optional default value for the member variable
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
-	virtual void addParameter(const char *sParamName, double* pAddr, double dDefaultValue, bool bReadOnly=false); //, std::vector<double> vAllowedValues = std::vector<double>());
+	void addParameter(const char *sParamName, double* pAddr, double dDefaultValue, bool bReadOnly=false); //, std::vector<double> vAllowedValues = std::vector<double>());
+        void addParameter(const char *sParamName, OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly=false);
 
 	bool m_DirtyProps;
 

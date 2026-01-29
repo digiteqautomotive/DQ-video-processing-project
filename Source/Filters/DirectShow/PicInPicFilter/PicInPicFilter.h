@@ -115,7 +115,7 @@ public:
 
 	//HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
-	virtual void initParameters();
+	void initParameters();
         virtual HRESULT StartStreaming(void);
         virtual HRESULT StopStreaming(void);
 

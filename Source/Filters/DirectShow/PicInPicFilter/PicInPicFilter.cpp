@@ -32,12 +32,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "PicInPicFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <PicInPicRGB24Impl.h>
-#include <PicInPicRGB32Impl.h>
-#include <PicInPicYV24Impl.h>
-#include <PicScalerRGB24Impl.h>
-#include <PicScalerRGB32Impl.h>
-#include <PicScalerYV24Impl.h>
+
+#include "PicInPicRGB24Impl.h"
+#include "PicInPicRGB32Impl.h"
+#include "PicInPicYV24Impl.h"
+#include "PicInPicRGB565Impl.h"
+#include "PicScalerRGB24Impl.h"
+#include "PicScalerRGB32Impl.h"
+#include "PicScalerYV24Impl.h"
+#include "PicScalerRGB565Impl.h"
+
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #ifdef USE_MMX
@@ -160,6 +164,15 @@ void FrameQueue::PopFrame(void)
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
+OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
+OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+OLECHAR OLE_PARAM_SUB_PIC_WIDTH[] = olestr(FILTER_PARAM_SUB_PIC_WIDTH);
+OLECHAR OLE_PARAM_SUB_PIC_HEIGHT[] = olestr(FILTER_PARAM_SUB_PIC_HEIGHT);
+OLECHAR OLE_PARAM_OFFSET_X[] = olestr(FILTER_PARAM_OFFSET_X);
+OLECHAR OLE_PARAM_OFFSET_Y[] = olestr(FILTER_PARAM_OFFSET_Y);
+OLECHAR OLE_PARAM_THROTTLE[] = olestr(FILTER_THROTTLE);
+OLECHAR OLE_PARAM_DUPLICATE_FRAMES[] = olestr(FILTER_DUPLICATE_FRAMES);
+
 
 PicScalerBase *GetPicScallerRGB32(void)
 {
@@ -176,26 +189,45 @@ PicScalerBase *GetPicScallerRGB32(void)
 
 
 PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
-  m_nTargetWidth(0),
-  m_nTargetHeight(0),
-  m_nSubPictureWidth(0),
-  m_nSubPictureHeight(0),
-  m_nCustomOffsetX(0),
-  m_nCustomOffsetY(0),
+  //m_nTargetWidth(0),		// Initialised in initParameters(), no need to initialise twice.
+  //m_nTargetHeight(0),
+  //m_nSubPictureWidth(0),
+  //m_nSubPictureHeight(0),
+  //m_nCustomOffsetX(0),
+  //m_nCustomOffsetY(0),
+  //m_bThrottling(false),
+  //m_DuplicateFrame(false),
   m_pPicInPic(NULL),
   m_pTargetPicScaler(NULL),
   m_pSubPicScaler(NULL),
   m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL),
-  m_Vflip(false),
-  m_bThrottling(false),
-  m_DuplicateFrame(false)
+  m_Vflip(false)
 {
   m_nSampleSizes[0] = 0;
   m_nSampleSizes[1] = 0;
 
 	// Init parameters
   initParameters();
+}
+
+
+void PicInPicFilter::initParameters(void)
+{
+  addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);		// width output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);	// height output picture is scaled to
+
+  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, OLE_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);	// width inner picture is scaled to
+  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, OLE_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);	// height inner picture is scaled to
+
+  // currently unused: supposed to be one of the standard positions to insert 
+  // the picture i.e. top left or top right corner.
+  // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
+  addParameter(FILTER_PARAM_OFFSET_X, OLE_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
+  addParameter(FILTER_PARAM_OFFSET_Y, OLE_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
+
+  addParameter(FILTER_THROTTLE, OLE_PARAM_THROTTLE, &m_bThrottling, false);
+  addParameter(FILTER_DUPLICATE_FRAMES, OLE_PARAM_DUPLICATE_FRAMES, &m_DuplicateFrame, false);
 }
 
 
@@ -228,25 +260,6 @@ CUnknown * WINAPI PicInPicFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
   PicInPicFilter* pFilter = new PicInPicFilter();
   return pFilter;
-}
-
-
-void PicInPicFilter::initParameters(void)
-{
-  addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);		// width output picture is scaled to
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);	// height output picture is scaled to
-
-  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);	// width inner picture is scaled to
-  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);	// height inner picture is scaled to
-
-  // currently unused: supposed to be one of the standard positions to insert 
-  // the picture i.e. top left or top right corner.
-  // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
-  addParameter(FILTER_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
-  addParameter(FILTER_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
-
-  addParameter(FILTER_THROTTLE, &m_bThrottling, m_bThrottling);
-  addParameter(FILTER_DUPLICATE_FRAMES, &m_DuplicateFrame, m_DuplicateFrame);
 }
 
 
@@ -506,6 +519,15 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
     }
     return S_OK;
   }
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB565)
+  {    
+    if(m_pPicInPic==NULL)
+    {
+      m_pPicInPic = new PicInPicRGB565Impl();
+      m_nBitsPerPixel = 16;
+    }
+    return S_OK;
+  }
   else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
   {
     if(m_pPicInPic==NULL)
@@ -593,35 +615,46 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   else
       return VFW_E_TYPE_NOT_ACCEPTED;
 
-  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
+  switch(m_nBitsPerPixel)
   {
-    if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
-    {
-      if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
-         (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
-          return S_OK;
-    }
-    else if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
-    {
-      if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vInputPins[0]->IsConnected()) ||
-         (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vInputPins[1]->IsConnected()))
-          return S_OK;
-    }
-  }
-  else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
-  {
-    if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
-    {
-      if((ConnectionFormat[0]==MEDIASUBTYPE_AYUV && m_vInputPins[0]->IsConnected()) ||
-         (ConnectionFormat[1]==MEDIASUBTYPE_AYUV && m_vInputPins[1]->IsConnected()))
-          return S_OK;
-    }
-    else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
-    {
-      if(((ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32) && m_vInputPins[0]->IsConnected()) ||
-         ((ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32) && m_vInputPins[1]->IsConnected()))
-          return S_OK;
-    }
+    case 16:
+          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB565 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB565 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
+          break;
+
+    case BITS_PER_PIXEL_RGB24:
+	  if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
+	  {
+	    if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+	  }
+          else if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
+          break;
+
+    case BITS_PER_PIXEL_RGB32:
+         if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
+         {
+           if((ConnectionFormat[0]==MEDIASUBTYPE_AYUV && m_vInputPins[0]->IsConnected()) ||
+              (ConnectionFormat[1]==MEDIASUBTYPE_AYUV && m_vInputPins[1]->IsConnected()))
+               return S_OK;
+         }
+         else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+         {
+           if(((ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32) && m_vInputPins[0]->IsConnected()) ||
+              ((ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32) && m_vInputPins[1]->IsConnected()))
+               return S_OK;
+         }
+         break;
   }
   return S_FALSE;
 }
@@ -693,6 +726,8 @@ void PicInPicFilter::reconfigure(void)
     {
       switch(m_nBitsPerPixel)
       {
+        case 16:                   m_pTargetPicScaler = new PicScalerRGB565Impl();
+				   break;
         case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
 				     m_pTargetPicScaler = new PicScalerYV24Impl();
 				   else
@@ -755,6 +790,8 @@ void PicInPicFilter::reconfigure(void)
       {
         switch(m_nBitsPerPixel)
         {
+          case 16:		     m_pSubPicScaler = new PicScalerRGB565Impl();
+				     break;	
           case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
                                        m_pSubPicScaler = new PicScalerYV24Impl();
                                      else
@@ -862,16 +899,6 @@ HRESULT PicInPicFilter::GetClassID(CLSID *pClassID)
   *pClassID = CLSID_VPP_PicInPicFilter;
   return S_OK;
 }
-
-
-OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
-OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
-OLECHAR OLE_PARAM_SUB_PIC_WIDTH[] = olestr(FILTER_PARAM_SUB_PIC_WIDTH);
-OLECHAR OLE_PARAM_SUB_PIC_HEIGHT[] = olestr(FILTER_PARAM_SUB_PIC_HEIGHT);
-OLECHAR OLE_PARAM_OFFSET_X[] = olestr(FILTER_PARAM_OFFSET_X);
-OLECHAR OLE_PARAM_OFFSET_Y[] = olestr(FILTER_PARAM_OFFSET_Y);
-OLECHAR OLE_PARAM_THROTTLE[] = olestr(FILTER_THROTTLE);
-OLECHAR OLE_PARAM_DUPLICATE_FRAMES[] = olestr(FILTER_DUPLICATE_FRAMES);
 
 
 HRESULT PicInPicFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)

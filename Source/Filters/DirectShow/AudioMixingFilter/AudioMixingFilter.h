@@ -111,7 +111,7 @@ public:
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
-	virtual void initParameters();
+	void initParameters();
 
 	/// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages)
