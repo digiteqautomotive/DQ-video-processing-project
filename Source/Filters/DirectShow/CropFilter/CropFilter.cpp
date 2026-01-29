@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PicCropperRGB565Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);

@@ -57,7 +57,7 @@ extern "C" unsigned GetFeaturesCPU(void);
 const unsigned FeaturesCPU = GetFeaturesCPU();
 #endif
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 #include <process.h>
 

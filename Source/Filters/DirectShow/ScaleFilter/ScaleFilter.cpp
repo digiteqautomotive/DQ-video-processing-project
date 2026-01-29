@@ -62,7 +62,7 @@ extern "C" unsigned GetFeaturesCPU(void);
 const unsigned FeaturesCPU = GetFeaturesCPU();
 #endif
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
@@ -263,7 +263,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
       else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
       {
         if((pBi->biWidth & 1)==1)
-            pBi->biWidth &= ~1;			// Odd values cannot be used for I420 encoding.
+            pBi->biWidth &= ~1;			// Odd width values cannot be used for I420 encoding.
         if((pBi->biHeight & 1)==1)
             pBi->biHeight &= ~1;		// Nor odd height can be accepted.
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
@@ -303,15 +303,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 HRESULT ScaleFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
   // Leaving this var so that we can cater for RGB32 at a later stage
-  pProp->cbBuffer = (m_nOutPixels * m_nBitsPerPixel)/8;
-
-/*
-  if (m_nBitsPerPixel == BITS_PER_PIXEL_YUV420P)
-  {
-    //Adjust the buffer requirements for our custom format
-    pProp->cbBuffer *= sizeof(yuvType);			// TODO: remove this!
-  }
-*/
+  pProp->cbBuffer = (m_nOutPixels * m_nBitsPerPixel) / 8;
 
   if (pProp->cbAlign == 0)
   {

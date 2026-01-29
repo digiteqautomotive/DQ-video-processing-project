@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralUtils/StringUtil.h"
 #include "DirectShow/StatusInterface.h"
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr): 

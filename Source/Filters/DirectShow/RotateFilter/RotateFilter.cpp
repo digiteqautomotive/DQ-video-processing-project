@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicRotateRGB32Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),

@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "CSettingsInterface.h"
 #include <sstream>
 
-#include "../../Filters/DirectShow/VariantTools.h"
+#include "VariantTools.h"
 #include "wxdebug.h"
 
 

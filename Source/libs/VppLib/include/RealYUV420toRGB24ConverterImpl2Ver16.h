@@ -44,7 +44,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _RealYUV420toRGB24ConverterImpl2Ver16_H
 #define _RealYUV420toRGB24ConverterImpl2Ver16_H
 
-#include "YUV420toRGBConverter.h"
+#include "YUVtoRGBConverter.h"
 
 /*
 ===========================================================================

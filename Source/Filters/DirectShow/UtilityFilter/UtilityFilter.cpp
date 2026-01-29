@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);

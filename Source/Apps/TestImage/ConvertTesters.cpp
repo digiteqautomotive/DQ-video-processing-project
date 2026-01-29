@@ -1,4 +1,4 @@
-#include "YUV444toRGBConverter.h"
+#include "YUVtoRGBConverter.h"
 #include "ConvertTesters.h"
 
 
@@ -89,13 +89,13 @@ void OrigRealYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRg
 
 void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
 {
-  unsigned char* 	optr	=	(unsigned char *)pRgb;
-  const yuvType*	py	= (yuvType *)pY;
-  const yuvType*	pu	= (yuvType *)pU;
-  const yuvType*	pv	= (yuvType *)pV;
+  unsigned char *optr	=	(unsigned char *)pRgb;
+  const yuvType *py	= (yuvType *)pY;
+  const yuvType *pu	= (yuvType *)pU;
+  const yuvType *pv	= (yuvType *)pV;
   int		lumX	= _width;
   int		lumY	= _height;
-  int		uvX		= _width >> 1;
+  int		uvX	= _width >> 1;
 
   int x,y;
   int lumposy;
@@ -108,7 +108,7 @@ void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU,
   int rgb2rows = (_width * 3) << 1;
   int lastrow = _width * (_height - 1) * 3;
 
-  for(y=0,lumposy=0,uvposy=0,rgbposy=lastrow;	y<lumY;	y+=2,lumposy+=tworows,uvposy+=uvX,rgbposy-=rgb2rows)
+  for(y=0,lumposy=0,uvposy=0,rgbposy=lastrow; y<lumY; y+=2,lumposy+=tworows,uvposy+=uvX,rgbposy-=rgb2rows)
   {
 	int lumpos0 = lumposy;					// Reset to start of rows.
 	int lumpos1 = lumposy + lumX;
@@ -121,12 +121,12 @@ void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU,
 	{
 		const double dlum00 = (double)((int)(py[lumpos0++]));
 
-		const double du		 = (double)(((int)(pu[uvpos])) );
-		const double dv		 = (double)(((int)(pv[uvpos++])) );
+		const double du	 = (double)(((int)(pu[uvpos])) );
+		const double dv	 = (double)(((int)(pv[uvpos++])) );
 
 		const unsigned char lum00 = dlum00;
-		const signed char u		 = (double)(du + _chrOff);
-		const signed char v		 = (double)(dv + _chrOff);
+		const signed char u = (double)(du + _chrOff);
+		const signed char v = (double)(dv + _chrOff);
 
 			// Lum00, u and v.
   		// Fast calculation intermediate variables. 

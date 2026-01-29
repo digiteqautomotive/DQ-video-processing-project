@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <PicConcatRGB32Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 #ifndef MAX

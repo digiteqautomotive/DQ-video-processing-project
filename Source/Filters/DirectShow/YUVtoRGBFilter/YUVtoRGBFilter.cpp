@@ -22,7 +22,7 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 #include <wmcodecdsp.h>			// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
-#include "../VariantTools.cpp"
+#include "DirectShow/VariantTools.cpp"
 
 
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
