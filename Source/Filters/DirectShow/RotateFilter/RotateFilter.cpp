@@ -31,8 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "RotateFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <PicRotateRGB24Impl.h>
-#include <PicRotateRGB32Impl.h>
+#include "PicRotateRGB24Impl.h"
+#include "PicRotateRGB32Impl.h"
+#include "PicRotateBPP16Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.cpp"
@@ -89,6 +90,8 @@ void RotateFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 }
 
 
@@ -98,25 +101,31 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
   if(direction == PINDIR_INPUT)
   {
 		//Determine whether we are connected to a RGB24 or 32 source
-		if (pmt->majortype == MEDIATYPE_Video)
-		{
+    if(pmt->majortype == MEDIATYPE_Video)
+    {
 			//The converter might already exist if the filter has been connected previously
-			if (m_pRotate)
-			{
-				delete m_pRotate;
-				m_pRotate = NULL;
-			}
-			if (pmt->subtype == MEDIASUBTYPE_RGB24)
-			{
-				m_pRotate = new PicRotateRGB24Impl();
-				m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-			}
-			else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
-			{
-				m_pRotate = new PicRotateRGB32Impl();
-				m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
-			}
-		}
+      if(m_pRotate)
+      {
+        delete m_pRotate;
+	m_pRotate = NULL;
+      }
+
+      if(pmt->subtype == MEDIASUBTYPE_RGB24)
+      {
+	m_pRotate = new PicRotateRGB24Impl();
+	m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
+      {
+        m_pRotate = new PicRotateRGB32Impl();
+	m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565)
+      {
+        m_pRotate = new PicRotateBPP16Impl();
+	m_nBitsPerPixel = 16;
+      }
+    }
   }
   return hr;
 }
@@ -238,42 +247,35 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
   }
   	// Video format
   m_Vflip = false;
+  const BITMAPINFOHEADER *pBiOut = NULL;
   if(mtOut->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)mtOut->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutHeight)
-    {
-      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
-        m_Vflip = true;
-      else
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
-    }
-    if(pBiOut->biWidth != m_nOutWidth)
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+    if(pVihOut) pBiOut = &(pVihOut->bmiHeader);
+
   }
   else if(mtOut->formattype==FORMAT_VideoInfo2)
   {
     const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)mtOut->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutHeight)
-    {
-      if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
+    if(pVihOut) pBiOut = &(pVihOut->bmiHeader);
+  }
+  if(pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(pBiOut->biHeight != m_nOutHeight)
+  {
+    if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
         m_Vflip = true;
-      else
-      {
-        DbgLog((LOG_TRACE, 0, TEXT("Rotator - Unaccepted height at last negoitation stage")));
-        return VFW_E_TYPE_NOT_ACCEPTED;
-      }
-    }
-    if(pBiOut->biWidth != m_nOutWidth)
+    else
     {
-      DbgLog((LOG_TRACE, 0, TEXT("Rotator - Unaccepted width at last negoitation stage")));
+      DbgLog((LOG_TRACE, 0, TEXT("Rotator - Unaccepted height at last negoitation stage")));
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
   }
-  else
-      return VFW_E_TYPE_NOT_ACCEPTED;
+  if(pBiOut->biWidth != m_nOutWidth)
+  {
+    DbgLog((LOG_TRACE, 0, TEXT("Rotator - Unaccepted width at last negoitation stage")));
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
 
 	// Setup rotator parameters.
   if(m_pRotate)
@@ -295,7 +297,7 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
         case ROTATE_270_DEGREES_CLOCKWISE: m_pRotate->SetRotateMode(ROTATE_FLIP_DIAGONALLY); break;
         case ROTATE_FLIP_DIAGONALLY: m_pRotate->SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE); break;
      
-        default: m_pRotate->SetRotateMode((ROTATE_MODE)m_nRotation);  // TODO: dopsat ROTATE_FLIP_DIAGONALLY!!!!
+        default: m_pRotate->SetRotateMode((ROTATE_MODE)m_nRotation);
      }
     }
     else
@@ -308,13 +310,21 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
     if(mtOut->subtype == MEDIASUBTYPE_RGB24) return S_OK;
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
-
   if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32) return S_OK;
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
-
+  if(mtIn->subtype==MEDIASUBTYPE_RGB555)
+  {
+    if(mtOut->subtype==MEDIASUBTYPE_RGB555) return S_OK;
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+  if(mtIn->subtype==MEDIASUBTYPE_RGB565)
+  {
+    if(mtOut->subtype==MEDIASUBTYPE_RGB565) return S_OK;
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
   if(mtIn->subtype == MEDIASUBTYPE_AYUV)
   {
     if(mtOut->subtype == MEDIASUBTYPE_AYUV) return S_OK;
