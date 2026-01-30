@@ -119,11 +119,13 @@ private:
 		TimeInfo(REFERENCE_TIME tStart, REFERENCE_TIME tStop, unsigned uiSize):
 			StartTime(tStart), StopTime(tStop), Size(uiSize)
 		{}
+		TimeInfo(unsigned uiSize): Size(uiSize) {}
 		REFERENCE_TIME StartTime;
 		REFERENCE_TIME StopTime;
+		HRESULT hrTIME;
                 unsigned Size;
 
-		void log(std::ofstream &outStream);
+		void log(std::ofstream &outStream) const;
 	};
 
         CCritSec m_vTimeInfoLock;

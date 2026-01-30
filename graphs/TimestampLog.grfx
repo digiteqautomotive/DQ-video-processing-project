@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<graph name="Unnamed Graph">
-    <filter name="Video Renderer" index="0" clsid="{B87BEB7B-8D29-423F-AE4D-6582C10175AC}">
-        <ipersiststream encoding="base64" data="MAAwADAAMAAwADAAMAAwADAAMAAwACAAiAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="/>
-    </filter>
+<graph name="Unnamed Graph" clock="none">
+    <filter name="Sample Video Renderer" index="0" clsid="{4D4B1600-33AC-11CF-BF30-00AA0055595A}"/>
     <filter name="DQ VPP Timestamp Logger" index="1" clsid="{D04C9742-E0E8-43FB-967F-260EAA156F7E}">
-        <ifilesourcefilter relativesource="..\log.txt" source="D:\temp\log.txt"/>
+        <ifilesourcefilter source="D:\temp\log.txt"/>
     </filter>
-    <filter name="AVObjects Video Generator" index="2" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}" clock="1">
+    <filter name="AVObjects Video Generator" index="2" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}">
         <ipersiststream encoding="base64" data="kMxvlnocw0Ki3/kfC+rdoQEAAAAAAAAAZAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAAaJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADQAgAAQAIAAAAAAAAAADlApQAAAIC7AAAoAAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     </filter>
     <connect out="AVObjects Video Generator/Video" in="DQ VPP Timestamp Logger/Input" outFilterIndex="2" outPinId="Video" outPinName="Video" outPinIndex="0" inFilterIndex="1" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
-        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_YUY2" sampleSize="829440" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{32595559-0000-0010-8000-00AA00389B71}"/>
-        <format type="FORMAT_VIDEOINFO2" formatType="{F72A76A0-EB0A-11D0-ACE4-0000C0CC16BA}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQOMJAAAAAIAaBgAAAAAApQAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAKAAAANACAADA/f//AQAQAFlVWTIAqAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26DfCtug3wrboN8K26"/>
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB32" sampleSize="1658880" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7E-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgMYTAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAgAAAAAAAAUBkAAAAAAAAAAAAAAAAAAAAAAA=="/>
     </connect>
-    <connect out="DQ VPP Timestamp Logger/Output" in="Video Renderer/VMR Input0" outFilterIndex="1" outPinId="Out" outPinName="Output" outPinIndex="0" inFilterIndex="0" inPinId="VMR Input0" inPinName="VMR Input0" inPinIndex="0" direct="true">
-        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_YUY2" sampleSize="829440" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{32595559-0000-0010-8000-00AA00389B71}"/>
-        <format type="FORMAT_VIDEOINFO2" formatType="{F72A76A0-EB0A-11D0-ACE4-0000C0CC16BA}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQOMJAAAAAIAaBgAAAAAApQAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAKAAAANACAABAAgAAAQAQAFlVWTIAqAwAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    <connect out="DQ VPP Timestamp Logger/Output" in="Sample Video Renderer/Input" outFilterIndex="1" outPinId="Out" outPinName="Output" outPinIndex="0" inFilterIndex="0" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB32" sampleSize="1658880" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7E-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgMYTAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAgAAAAAAAAUBkAAAAAAAAAAAAAAAAAAAAAAA=="/>
     </connect>
 </graph>

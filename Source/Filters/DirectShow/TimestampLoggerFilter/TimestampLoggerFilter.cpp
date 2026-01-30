@@ -158,22 +158,19 @@ STDMETHODIMP TimestampLoggerFilter::NonDelegatingQueryInterface(REFIID riid, voi
 
 HRESULT TimestampLoggerFilter::Transform(IMediaSample *pSample) // Overrriding the receive method. This method receives a media sample, processes it, and delivers it to the downstream filter.
 {
-	// Output time to file
-  REFERENCE_TIME tStart;
-  REFERENCE_TIME tStop;
-
-  HRESULT hr = pSample->GetTime(&tStart,&tStop);
-  if (FAILED(hr))
-  {
-    return S_OK;		// hr	do not break stream
+  if(pSample)
+  {	// Output time to file
+    TimeInfo *pTI = new TimeInfo(pSample->GetActualDataLength());
+    if(pTI)
+    {
+      pTI->hrTIME = pSample->GetTime(&pTI->StartTime,&pTI->StopTime);
+      {		// locked scope
+        CAutoLock cAutoLock(&m_vTimeInfoLock);
+        m_vTimeInfo.push_back(pTI);
+      }
+      SetEvent(MsgWakeUp);		// Write time info to file
+    }
   }
- 
-  TimeInfo *pTI = new TimeInfo(tStart, tStop, pSample->GetActualDataLength());
-  {
-    CAutoLock cAutoLock(&m_vTimeInfoLock);
-    m_vTimeInfo.push_back(pTI);
-  }
-  SetEvent(MsgWakeUp);		// Write time info to file
   return S_OK;
 }
 
@@ -233,8 +230,11 @@ HRESULT TimestampLoggerFilter::Stop(void)
 }
 
 
-void TimestampLoggerFilter::TimeInfo::log(std::ofstream &outStream)
+void TimestampLoggerFilter::TimeInfo::log(std::ofstream &outStream) const
 {
-  outStream << StartTime << " " << StopTime <<  " " << StopTime-StartTime << " " <<  Size <<  std::endl;
+  if(FAILED(hrTIME))
+    outStream << "GetTime hr=0x" << std::hex << hrTIME << " " << std::dec <<  Size <<  std::endl;
+  else
+    outStream << StartTime << " " << StopTime <<  " " << StopTime-StartTime << " " <<  Size <<  std::endl;
 }
 
