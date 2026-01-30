@@ -115,7 +115,7 @@ void CropFilter::InitialiseInputTypes(void)
 HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 {
   HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
-  if (direction == PINDIR_INPUT)
+  if(direction == PINDIR_INPUT)
   {
     //Set defaults and make sure that the target dimensions are valid
     if ((m_nOutWidth == 0) || (labs(m_nOutWidth) > labs(m_nInWidth)))
@@ -171,6 +171,10 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
     }
     RecalculateFilterParameters();
   }
+  else
+  {
+    m_Vflip = ((m_nInHeight>=0) ^ (m_nOutHeight>=0));
+  }
   return hr;
 }
 
@@ -208,13 +212,24 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pBi==NULL)  return VFW_E_TYPE_NOT_ACCEPTED;
     
 	//Now we need to calculate the size of the output image
-    pBi->biHeight = m_nOutHeight;
+    if(labs(m_nInHeight) > m_nLeftCrop+m_nRightCrop &&
+         labs(m_nInWidth) > m_nTopCrop+m_nBottomCrop)
+    {
+        pBi->biHeight = labs(m_nInHeight) - m_nLeftCrop - m_nRightCrop;
+        pBi->biWidth = labs(m_nInWidth) - m_nTopCrop - m_nBottomCrop;
+    }
+    
     if(pBi->biHeight == 0) return E_INVALIDARG;
-
-    pBi->biWidth = m_nOutWidth;
     if(pBi->biWidth <= 0) return E_INVALIDARG;
 
-    pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * m_nBitsPerPixel)/8;
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
+       pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
+    else if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
+      pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
+    else if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
+      pBi->biSizeImage = 2 * labs(pBi->biWidth*pBi->biHeight);
+
+    pMediaType->lSampleSize = pBi->biSizeImage;
 
     prcSource->top = 0;
     prcSource->left = 0;
@@ -273,7 +288,7 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   }
 
   	// Video format
-  m_Vflip = false;
+  //m_Vflip = false;
   const BITMAPINFOHEADER* pBiOut = NULL;
   if(mtOut->formattype==FORMAT_VideoInfo)
   {
@@ -287,17 +302,15 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   }
   if(pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
-  if(pBiOut->biHeight != m_nOutHeight)
+  if(pBiOut->biHeight!=m_nOutHeight && m_nOutHeight!=0)
   {
-    if(labs(pBiOut->biHeight) == labs(m_nOutHeight))
-        m_Vflip = true;
-    else
+    if(labs(pBiOut->biHeight) != labs(m_nOutHeight))
     {
         DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted height at last negoitation stage")));
         return VFW_E_TYPE_NOT_ACCEPTED;
     }
   }
-  if(pBiOut->biWidth != m_nOutWidth)
+  if(pBiOut->biWidth!=m_nOutWidth && m_nOutWidth!=0)
   {
     DbgLog((LOG_TRACE, 0, TEXT("Crop - Unaccepted width at last negoitation stage")));
     return VFW_E_TYPE_NOT_ACCEPTED;
@@ -362,7 +375,7 @@ STDMETHODIMP CropFilter::SetParameter(const char* type, const char* value)
   // For now, one cannot set any parameters once the output has been connected -> this will affect the buffer size
   if (m_pOutput)
   {
-    if (m_pOutput->IsConnected())
+    if(m_pOutput->IsConnected())
     {
       return E_FAIL;
     }

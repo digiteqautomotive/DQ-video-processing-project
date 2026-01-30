@@ -148,13 +148,13 @@ HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     const BITMAPINFOHEADER *pBmi = NULL;
     if(pmt->formattype == FORMAT_VideoInfo)
     {			// Store a copy of the video header info
-      VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
+      const VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
       memcpy(&m_videoOutHeader, pVih, sizeof(VIDEOINFOHEADER));
       pBmi = &pVih->bmiHeader;
     }
     if(pmt->formattype == FORMAT_VideoInfo2)
     {			// Store a copy of the video header info
-      VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
+      const VIDEOINFOHEADER2 *pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
       m_videoOutHeader.AvgTimePerFrame = pVih2->AvgTimePerFrame;
       m_videoOutHeader.dwBitErrorRate = pVih2->dwBitErrorRate;
       m_videoOutHeader.dwBitRate = pVih2->dwBitRate;
