@@ -8,8 +8,8 @@ DESCRIPTION           : Filter that logs media sample timestamps and durations t
                      
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -35,12 +35,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <streams.h>
 
 #include <fstream>
-#include <vector>
+#include <list>
 
 
 // {D04C9742-E0E8-43FB-967F-260EAA156F7E}
 static const GUID CLSID_VPP_TimeStampLoggerFilter = 
 { 0xd04c9742, 0xe0e8, 0x43fb, { 0x96, 0x7f, 0x26, 0xe, 0xaa, 0x15, 0x6f, 0x7e } };
+
+
+#ifdef _WIN32
+ #define THREAD_DECL	unsigned WINAPI
+#else
+ #define THREAD_DECL	void *
+#endif
 
 
 // Forward declarations
@@ -52,6 +59,16 @@ class TimestampLoggerFilter: public CTransInPlaceFilter,
 			     public IFileSourceFilter
 {
 public:
+	typedef enum
+	{
+	  THREAD_NOT_INITIALISED =0,
+          THREAD_INITIALISING,
+          THREAD_RUNNING,
+          THREAD_STOPPING,
+          THREAD_STOPPED,
+          THREAD_ABORTED
+        } E_THR_STATUS;
+
 	DECLARE_IUNKNOWN
 
 	/// Constructor
@@ -76,22 +93,39 @@ public:
 
 	HRESULT CheckInputType(const CMediaType* mtIn);
 
-	STDMETHODIMP Run( REFERENCE_TIME tStart );
+	STDMETHODIMP Run(REFERENCE_TIME tStart);
 	STDMETHODIMP Stop(void);
 
 private:
 	std::string m_sFileName;	
 	std::ofstream m_outStream;
 
-	struct TimeInfo
+        volatile char ThreadStatus;
+	static THREAD_DECL WorkerThread(void*);
+#ifdef _WIN32
+	//HANDLE        StopEvent;	///< stop signal for log thread
+	HANDLE        MsgWakeUp;	///< new log entry signal for log thread
+	HANDLE        WriteThread;	///< log thread
+#else
+	volatile int StopEvent;
+	pthread_cond_t MsgWakeUp;
+	pthread_mutex_t mtx_MsgWakeUp;
+	pthread_t WriteThread;
+#endif
+
+	class TimeInfo
 	{
-		TimeInfo(REFERENCE_TIME tStart, REFERENCE_TIME tStop, unsigned uiSize)
-			:StartTime(tStart), StopTime(tStop), Size(uiSize)
-		{;}
+        public:
+		TimeInfo(REFERENCE_TIME tStart, REFERENCE_TIME tStop, unsigned uiSize):
+			StartTime(tStart), StopTime(tStop), Size(uiSize)
+		{}
 		REFERENCE_TIME StartTime;
 		REFERENCE_TIME StopTime;
-    unsigned Size;
+                unsigned Size;
+
+		void log(std::ofstream &outStream);
 	};
 
-	std::vector<TimeInfo> m_vTimeInfo;
+        CCritSec m_vTimeInfoLock;
+	std::list<TimeInfo*> m_vTimeInfo;
 };

@@ -1,14 +1,14 @@
 /** @file
 
-MODULE                : TimestampLoggerFilter
+MODULE:		TimestampLoggerFilter
 
-FILE NAME			  : TimestampLoggerFilter.cpp
+FILE NAME:	TimestampLoggerFilter.cpp
 
-DESCRIPTION           :
+DESCRIPTION:
                      
-LICENSE: Software License Agreement (BSD License)
+LICENSE:	Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
+Copyright (c) 2008-2012, CSIR
 Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,68 +40,160 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <time.h>
 #include <ctime>
+#include <process.h>
 
 
 TimestampLoggerFilter::TimestampLoggerFilter(LPUNKNOWN pUnk, HRESULT *pHr):
-		CTransInPlaceFilter(NAME("DQ VPP Timestamp Logger"), pUnk, CLSID_VPP_TimeStampLoggerFilter, pHr, false)
-{}
+		CTransInPlaceFilter(NAME("DQ VPP Timestamp Logger"), pUnk, CLSID_VPP_TimeStampLoggerFilter, pHr, false),
+                ThreadStatus(THREAD_NOT_INITIALISED),
+		WriteThread(0)
+{
+  MsgWakeUp = CreateEvent(NULL, TRUE, FALSE, NULL);  
+}
 
 
 TimestampLoggerFilter::~TimestampLoggerFilter()
-{}
-
-
-CUnknown * WINAPI TimestampLoggerFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
-	TimestampLoggerFilter *pFilter = new TimestampLoggerFilter(pUnk, pHr);
-	if (pFilter== NULL) 
-	{
-		*pHr = E_OUTOFMEMORY;
-	}
-	return pFilter;
+#ifdef _WIN32
+  if(ThreadStatus == THREAD_RUNNING)
+  {
+    ThreadStatus = THREAD_STOPPING;
+    //if(StopEvent) SetEvent(StopEvent);
+    if(MsgWakeUp) SetEvent(MsgWakeUp);
+    if(WriteThread)
+    {
+      if(WAIT_TIMEOUT==WaitForSingleObject(WriteThread,1000)) // Wait for thread to be finished WIN.
+      {     
+        TerminateThread(WriteThread,-1);		// Kill thread, that gets locked.
+      }
+    }
+  }
+  if(WriteThread) {CloseHandle(WriteThread);WriteThread=0;}
+  if(MsgWakeUp) CloseHandle(MsgWakeUp);
+  if(m_outStream.is_open()) m_outStream.close();
+  while(!m_vTimeInfo.empty())
+  {
+    TimeInfo *TI = m_vTimeInfo.front();
+    m_vTimeInfo.pop_front();
+    if(TI) delete TI;
+  }
+  //if(StopEvent) CloseHandle(StopEvent);
+#else
+  StopEvent = 1;
+  pthread_cond_signal(&MsgWakeUp);
+  pthread_join(WriteThread, NULL);	// Wait for thread to be finished LNX.
+#endif
 }
 
-STDMETHODIMP TimestampLoggerFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
+
+CUnknown * WINAPI TimestampLoggerFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
-	if (riid == IID_IFileSourceFilter)
-	{
-		return GetInterface((IFileSourceFilter*) this, ppv);
-	}
-	else
-	{
-		return CTransInPlaceFilter::NonDelegatingQueryInterface(riid, ppv);
-	}
+  TimestampLoggerFilter *pFilter = new TimestampLoggerFilter(pUnk, pHr);
+  if(pFilter== NULL) 
+  {
+    *pHr = E_OUTOFMEMORY;
+  }
+  return pFilter;
 }
+
+
+THREAD_DECL TimestampLoggerFilter::WorkerThread(void* arg)
+{
+DWORD waitobj;
+  TimestampLoggerFilter *Filter = (TimestampLoggerFilter*)arg;
+ // HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED|COINIT_DISABLE_OLE1DDE);  // No need for OLE in this thread, no COM call is used here.
+
+  Filter->ThreadStatus = THREAD_RUNNING;
+  while(Filter->ThreadStatus == THREAD_RUNNING)
+  {
+    DWORD waitobj  = WaitForSingleObject(Filter->MsgWakeUp,INFINITE);
+    if(Filter->ThreadStatus != THREAD_RUNNING) break;
+    ResetEvent(Filter->MsgWakeUp);
+
+    while(!Filter->m_vTimeInfo.empty())
+    {
+      TimeInfo *TI;
+      {
+        CAutoLock cAutoLock(&Filter->m_vTimeInfoLock);
+        TI = Filter->m_vTimeInfo.front();
+        Filter->m_vTimeInfo.pop_front();
+      }
+      if(TI)
+      {
+        if(!Filter->m_outStream.is_open())
+        {
+          if(Filter->m_State != State_Stopped)
+            Filter->m_outStream.open(Filter->m_sFileName.c_str(), std::ios_base::out);
+          if(!Filter->m_outStream.is_open())
+          {
+	    delete(TI);
+	    break;
+          }
+        }
+        TI->log(Filter->m_outStream);
+        delete(TI);
+      }      
+    }
+    if(Filter->m_State == State_Stopped)
+    {
+      if(Filter->m_outStream.is_open())
+          Filter->m_outStream.close();  
+    }
+  }
+
+  if(Filter->m_outStream.is_open())
+      Filter->m_outStream.close();
+  //if(SUCCEEDED(hr)) CoUninitialize();
+  Filter->ThreadStatus = THREAD_STOPPED;
+return 0;
+}
+
+
+STDMETHODIMP TimestampLoggerFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+  if(riid == IID_IFileSourceFilter) return GetInterface((IFileSourceFilter*)this,ppv);
+  return CTransInPlaceFilter::NonDelegatingQueryInterface(riid, ppv);
+}
+
 
 HRESULT TimestampLoggerFilter::Transform(IMediaSample *pSample) // Overrriding the receive method. This method receives a media sample, processes it, and delivers it to the downstream filter.
 {
 	// Output time to file
-	REFERENCE_TIME tStart;
-	REFERENCE_TIME tStop;
+  REFERENCE_TIME tStart;
+  REFERENCE_TIME tStop;
 
-	HRESULT hr = pSample->GetTime(&tStart,&tStop);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-  m_vTimeInfo.push_back(TimeInfo(tStart, tStop, pSample->GetActualDataLength()));
-	return S_OK;
+  HRESULT hr = pSample->GetTime(&tStart,&tStop);
+  if (FAILED(hr))
+  {
+    return S_OK;		// hr	do not break stream
+  }
+ 
+  TimeInfo *pTI = new TimeInfo(tStart, tStop, pSample->GetActualDataLength());
+  {
+    CAutoLock cAutoLock(&m_vTimeInfoLock);
+    m_vTimeInfo.push_back(pTI);
+  }
+  SetEvent(MsgWakeUp);		// Write time info to file
+  return S_OK;
 }
+
 
 HRESULT TimestampLoggerFilter::CheckInputType(const CMediaType* mtIn)
 {
 	// Accept any input type
-	return S_OK;
+  return S_OK;
 }
 
-STDMETHODIMP TimestampLoggerFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
+
+STDMETHODIMP TimestampLoggerFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt)
 {
 	// Store the filename
   m_sFileName = StringUtil::wideStringToString(lpwszFileName);
   return S_OK;
 }
 
-STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYPE *pmt )
+
+STDMETHODIMP TimestampLoggerFilter::GetCurFile(LPOLESTR * ppszFileName, AM_MEDIA_TYPE *pmt)
 {
   if(ppszFileName==NULL) return E_POINTER;
   *ppszFileName = NULL;
@@ -122,29 +214,27 @@ STDMETHODIMP TimestampLoggerFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDI
 }
 
 
-HRESULT TimestampLoggerFilter::Run( REFERENCE_TIME tStart )
+HRESULT TimestampLoggerFilter::Run(REFERENCE_TIME tStart)
 {
-	return CTransInPlaceFilter::Run(tStart);
+  if(ThreadStatus==THREAD_NOT_INITIALISED || ThreadStatus==THREAD_STOPPED)
+  {
+    unsigned int ThreadID;
+    ThreadStatus = THREAD_INITIALISING;
+    WriteThread = (HANDLE)_beginthreadex(NULL, 0, WorkerThread, this, 0, &ThreadID);
+  }
+  return CTransInPlaceFilter::Run(tStart);
 }
 
 
-HRESULT TimestampLoggerFilter::Stop( void )
+HRESULT TimestampLoggerFilter::Stop(void)
 {
-	// Write time info to file
-  m_outStream.open(m_sFileName.c_str(), std::ios_base::out);
-  if(m_outStream.is_open())
-  {
-    for(std::vector<TimeInfo>::iterator it = m_vTimeInfo.begin(); it != m_vTimeInfo.end(); ++it)
-    {
-      m_outStream << (*it).StartTime << " " << (*it).StopTime <<  " " << (*it).StopTime - (*it).StartTime << " " <<  (*it).Size <<  std::endl;
-    }
-    m_outStream.flush();
-    m_outStream.close();
-  }
-
-  // Reset vector
-  m_vTimeInfo.clear();
-
+  SetEvent(MsgWakeUp);		// Write time info to file
   return CTransInPlaceFilter::Stop();
+}
+
+
+void TimestampLoggerFilter::TimeInfo::log(std::ofstream &outStream)
+{
+  outStream << StartTime << " " << StopTime <<  " " << StopTime-StartTime << " " <<  Size <<  std::endl;
 }
 
