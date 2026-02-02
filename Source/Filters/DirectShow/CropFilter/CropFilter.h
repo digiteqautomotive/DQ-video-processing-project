@@ -121,14 +121,14 @@ private:
   void RecalculateFilterParameters();
   /// Pointer to our picture cropper
   PicCropperBase* m_pCropper;
-  BYTE* m_pCropBuffer;
+  //BYTE* m_pCropBuffer;
   unsigned m_nBitsPerPixel;
   //Member variables which affect the transform
   int m_nLeftCrop;
   int m_nRightCrop;
   int m_nTopCrop;
   int m_nBottomCrop;
-  int m_nStride;
-  int m_nPadding;
+  //int m_nStride;
+  //int m_nPadding;
   bool m_DirtyPropsStream;
 };
