@@ -67,8 +67,8 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
-OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
-OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+const OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
+const OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
 
 
 class ScaleFilterInputPin: public CTransformInputPin
@@ -592,72 +592,6 @@ HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_ScaleFilter;
   return S_OK;
-}
-
-
-HRESULT ScaleFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  memset(&var,0,sizeof(var));
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_WIDTH));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(OLE_PARAM_TARGET_WIDTH));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nReqOutWidth,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_HEIGHT));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
-    VariantClear(&var);
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nReqOutHeight,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  VariantClear(&var);
-return S_OK;
-}
-
-
-HRESULT ScaleFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_TARGET_WIDTH));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TARGET_WIDTH,sizeof(FILTER_PARAM_TARGET_WIDTH));
-    var.vt = VT_INT;
-    var.intVal = m_nReqOutWidth;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TARGET_HEIGHT));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TARGET_HEIGHT,sizeof(OLE_PARAM_TARGET_HEIGHT));
-    var.vt = VT_INT;
-    var.intVal = m_nReqOutHeight;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-return S_OK;
 }
 
 

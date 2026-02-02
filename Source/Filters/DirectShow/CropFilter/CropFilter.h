@@ -9,8 +9,8 @@ Crop parameters can be set using the COM SettingsInterface SetParameter method.
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2015, CSIR
-All rights reserved.
+Copyright (c) 2008-2015, CSIR 
+Copyright (c) 2025-2026, Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -53,8 +53,7 @@ class PicCropperBase;
  * 
  * Crop parameters can be set using the COM SettingsInterface SetParameter method.
  */
-class CropFilter: public CCustomBaseFilter, public ISpecifyPropertyPages, 
-                  public IPersistPropertyBag, public IPropertyBag
+class CropFilter: public CCustomBaseFilter, public ISpecifyPropertyPages                  
 {
 public:
     DECLARE_IUNKNOWN
@@ -102,13 +101,7 @@ public:
 
 	// IPersistPropertyBag
   virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-  virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CCustomBaseFilter::InitNew();}
-  virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-  virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
 
-	// IPropertyBag
-  STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-  STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 private:
   /** This method applies the crop transform

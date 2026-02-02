@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/VariantTools.cpp"
 
 
-OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
+const OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
 
 
 RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
@@ -431,80 +431,4 @@ HRESULT RotateFilter::GetClassID(CLSID *pClassID)
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_RotateFilter;
   return S_OK;
-}
-
-
-HRESULT RotateFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  memset(&var,0,sizeof(var));
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ROTATION));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_ROTATION,sizeof(OLE_PARAM_ROTATION));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nRotation,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  VariantClear(&var);
-return S_OK;
-}
-
-
-HRESULT RotateFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ROTATION));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_ROTATION,sizeof(OLE_PARAM_ROTATION));
-    var.vt = VT_INT;
-    var.intVal = m_nRotation;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-return S_OK;
-}
-
-
-//----------------- IPropertyBag------------------
-
-HRESULT RotateFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  VariantClear(pVar);
-
-  if(oleicmp(pszPropName, OLE_PARAM_ROTATION) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nRotation;
-    return S_OK;
-  }
-
-  return E_INVALIDARG;
-}
-
-
-HRESULT RotateFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
-{
-CheckPointer(pszPropName, E_INVALIDARG);
-CheckPointer(pVar, E_INVALIDARG);
-  if(oleicmp(pszPropName, OLE_PARAM_ROTATION) == 0)
-  {   
-    if(getFromVariant(m_nRotation,pVar)) return S_OK;
-  }
-  return E_INVALIDARG;
 }

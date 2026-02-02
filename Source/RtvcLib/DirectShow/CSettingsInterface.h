@@ -42,18 +42,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 enum RTVC_PARAM_TYPES
 {
-	RTVC_STRING,
-	RTVC_INT,
-	RTVC_UINT,
-	RTVC_BOOL,
-	RTVC_DOUBLE
+	VPP_STRING,
+	VPP_INT,
+	VPP_UINT,
+	VPP_BOOL,
+	VPP_DOUBLE
 };
 
 
 class ParameterBase
 {
 public:
-	ParameterBase(const char *NewName, OLECHAR *NewOleName, bool NewReadOnly=false);
+	ParameterBase(const char *NewName, const OLECHAR *NewOleName, bool NewReadOnly=false);
         ~ParameterBase();
 
 	std::string	Name;
@@ -70,13 +70,15 @@ public:
 	virtual RTVC_PARAM_TYPES Type(void) const = 0;
         virtual HRESULT Save(IStream *pStm) const = 0;
         virtual HRESULT Load(IStream *pStm) = 0;
+        virtual void getVariant(VARIANT &var) const = 0;
+        virtual bool setVariant(const VARIANT &var) = 0;
 };
 
 
 class ParameterInt: public ParameterBase
 {
 public:
-	ParameterInt(const char *NewName, OLECHAR *NewOleName, int *ValueAddr, int IniDefaultValue, bool ReadOnly=false);
+	ParameterInt(const char *NewName, const OLECHAR *NewOleName, int *ValueAddr, int IniDefaultValue, bool ReadOnly=false);
 	int	*pValue;
 	int	DefaultValue;
 	int	PreviousValue;
@@ -84,19 +86,21 @@ public:
 	virtual std::string ToStr(void) const;
         virtual bool FromStr(const char *str);
 
-	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_INT;}
+	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_INT;}
 	virtual int Size(void) const {return sizeof(int);}
         virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(*pValue),NULL);};
 	virtual HRESULT Load(IStream *pStm) {return pStm->Read(pValue,sizeof(*pValue),NULL);};
+        virtual void getVariant(VARIANT &var) const;
+        virtual bool setVariant(const VARIANT &var);
 };
 
 
 class ParameterUnsigned: public ParameterBase
 {
 public:
-	ParameterUnsigned(const char *Name, OLECHAR *NewOleName, unsigned *ValueAddr, unsigned IniDefaultValue, bool ReadOnly=false);
+	ParameterUnsigned(const char *Name, const OLECHAR *NewOleName, unsigned *ValueAddr, unsigned IniDefaultValue, bool ReadOnly=false);
 	unsigned *pValue;
 	unsigned DefaultValue;
 	unsigned PreviousValue;
@@ -104,19 +108,21 @@ public:
 	virtual std::string ToStr(void) const;
         virtual bool FromStr(const char *str);
 	
-	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_UINT;}
+	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_UINT;}
         virtual int Size(void) const {return sizeof(unsigned);}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
 	virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}        
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(*pValue),NULL);};
 	virtual HRESULT Load(IStream *pStm) {return pStm->Read(pValue,sizeof(*pValue),NULL);};
+        virtual void getVariant(VARIANT &var) const;
+        virtual bool setVariant(const VARIANT &var);
 };
 
 
 class ParameterDouble: public ParameterBase
 {
 public:
-	ParameterDouble(const char *NewName, OLECHAR *NewOleName, double *ValueAddr, double IniDefaultValue, double NewReadOnly=false);
+	ParameterDouble(const char *NewName, const OLECHAR *NewOleName, double *ValueAddr, double IniDefaultValue, double NewReadOnly=false);
 	double *pValue;
 	double DefaultValue;
 	double PreviousValue;
@@ -124,19 +130,21 @@ public:
 	virtual std::string ToStr(void) const;
         virtual bool FromStr(const char *str);
 
-	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_DOUBLE;}
+	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_DOUBLE;}
         virtual int Size(void) const {return sizeof(double);}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(*pValue),NULL);};
 	virtual HRESULT Load(IStream *pStm) {return pStm->Read(pValue,sizeof(*pValue),NULL);};
+        virtual void getVariant(VARIANT &var) const;
+        virtual bool setVariant(const VARIANT &var);
 };
 
 
 class ParameterBool: public ParameterBase
 {
 public:
-	ParameterBool(const char *Name, OLECHAR *NewOleName, bool *ValueAddr, bool IniDefaultValue, bool ReadOnly=false);
+	ParameterBool(const char *Name, const OLECHAR *NewOleName, bool *ValueAddr, bool IniDefaultValue, bool ReadOnly=false);
 	bool *pValue;
 	bool DefaultValue;
 	bool PreviousValue;
@@ -144,19 +152,21 @@ public:
 	virtual std::string ToStr(void) const;
         virtual bool FromStr(const char *str);
 
-	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_BOOL;}
+	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_BOOL;}
         virtual int Size(void) const {return 1;}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,1,NULL);};
 	virtual HRESULT Load(IStream *pStm);
+        virtual void getVariant(VARIANT &var) const;
+        virtual bool setVariant(const VARIANT &var);
 };
 
 
 class ParameterString: public ParameterBase
 {
 public:
-	ParameterString(const char *Name, OLECHAR *NewOleName, std::string *ValueAddr, std::string IniDefaultValue, bool ReadOnly=false);
+	ParameterString(const char *Name, const OLECHAR *NewOleName, std::string *ValueAddr, std::string IniDefaultValue, bool ReadOnly=false);
 	std::string *pValue;
 	std::string DefaultValue;
 	std::string PreviousValue;
@@ -164,12 +174,14 @@ public:
 	virtual std::string ToStr(void) const;
         virtual bool FromStr(const char *str);
 
-	virtual RTVC_PARAM_TYPES Type(void) const {return RTVC_STRING;}
+	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_STRING;}
         virtual int Size(void) const {return pValue->length()+1;}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
         virtual HRESULT Save(IStream *pStm) const;
 	virtual HRESULT Load(IStream *pStm);
+        virtual void getVariant(VARIANT &var) const;
+        virtual bool setVariant(const VARIANT &var);
 };
 
 
@@ -180,7 +192,7 @@ public:
 
 /** \ingroup DirectShowLib
  * ISettingsInterface implementation. */
-class CSettingsInterface: public ISettingsInterface, public IPersistStream
+class CSettingsInterface: public ISettingsInterface, public IPersistStream, public IPersistPropertyBag, public IPropertyBag
 {
 public:
 	CSettingsInterface(void);
@@ -224,6 +236,12 @@ public:
 
 		//----------------- IPersistPropertyBag------------------
 	virtual STDMETHODIMP InitNew(void);
+        virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
+        virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
+
+		//----------------- IPropertyBag------------------
+	virtual HRESULT STDMETHODCALLTYPE Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
+	virtual HRESULT STDMETHODCALLTYPE Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 protected:
 	// This method needs to be implemented by child classes and called in the child class constructor
@@ -242,7 +260,7 @@ protected:
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, int* pAddr, int nDefaultValue, bool bReadOnly=false);  //, std::vector<int> vAllowedValues = std::vector<int>());
-        void addParameter(const char *sParamName, OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly=false); //, std::vector<int> vAllowedValues)
+        void addParameter(const char *sParamName, const OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly=false); //, std::vector<int> vAllowedValues)
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -250,7 +268,7 @@ protected:
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false); //, std::vector<unsigned> vAllowedValues = std::vector<unsigned>());
-	void addParameter(const char *sParamName, OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false);
+	void addParameter(const char *sParamName, const OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -258,7 +276,7 @@ protected:
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false); //, std::vector<std::string> vAllowedValues = std::vector<std::string>());
-        void addParameter(const char *sParamName, OLECHAR *oleName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false);
+        void addParameter(const char *sParamName, const OLECHAR *oleName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -266,7 +284,7 @@ protected:
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false); //, std::vector<bool> vAllowedValues = std::vector<bool>());
-        void addParameter(const char *sParamName, OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false);
+        void addParameter(const char *sParamName, const OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -274,7 +292,7 @@ protected:
 	/// @param[in] bReadOnly Readonly parameters cannot be set using the SetParameter method
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, double* pAddr, double dDefaultValue, bool bReadOnly=false); //, std::vector<double> vAllowedValues = std::vector<double>());
-        void addParameter(const char *sParamName, OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly=false);
+        void addParameter(const char *sParamName, const OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly=false);
 
 	bool m_DirtyProps;
 

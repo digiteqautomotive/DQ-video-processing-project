@@ -104,8 +104,7 @@ class UtilityFilter: public CTransInPlaceFilter,
                      public CStatusInterface,
                      public CSettingsInterface,
                      public ISpecifyPropertyPages,
-                     public IFilterInfoSourceInterface,
-		     public IPersistPropertyBag, public IPropertyBag
+                     public IFilterInfoSourceInterface		     
 {
 public:
     DECLARE_IUNKNOWN
@@ -140,13 +139,6 @@ public:
 
 	// IPersistPropertyBag
     virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-    virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CSettingsInterface::InitNew();}
-    virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-    virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
-
-	// IPropertyBag
-    STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-    STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 private:
 

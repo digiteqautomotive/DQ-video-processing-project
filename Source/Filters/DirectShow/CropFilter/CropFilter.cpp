@@ -9,8 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2017, CSIR
-Copyright (c) 2025-2026, Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026, Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -42,10 +41,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
-OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);
-OLECHAR OLE_PARAM_RIGHT_CROP[] = olestr(FILTER_PARAM_RIGHT_CROP);
-OLECHAR OLE_PARAM_TOP_CROP[] =  olestr(FILTER_PARAM_TOP_CROP);
-OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
+const OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);
+const OLECHAR OLE_PARAM_RIGHT_CROP[] = olestr(FILTER_PARAM_RIGHT_CROP);
+const OLECHAR OLE_PARAM_TOP_CROP[] =  olestr(FILTER_PARAM_TOP_CROP);
+const OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
 
 
 
@@ -65,17 +64,13 @@ OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
 
  CropFilter::~CropFilter()
 {
-  if (m_pCropper)
+  if(m_pCropper)
   {
     delete m_pCropper;
     m_pCropper = NULL;
   }
-/*  if (m_pCropBuffer)
-  {
-    delete m_pCropBuffer;
-    m_pCropBuffer = NULL;
-  } */
 }
+
 
 CUnknown * WINAPI CropFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
@@ -488,180 +483,3 @@ HRESULT CropFilter::GetClassID(CLSID *pClassID)
   return S_OK;
 }
 
-
-//HRESULT CropFilter::InitNew(void)
-//{
-//  m_nLeftCrop = m_nRightCrop = m_nTopCrop = m_nBottomCrop = 0;
-//  return S_OK;
-//}
-
-
-HRESULT CropFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  memset(&var,0,sizeof(var));
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_LEFT_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_LEFT_CROP,sizeof(OLE_PARAM_LEFT_CROP));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nLeftCrop,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_RIGHT_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_RIGHT_CROP,sizeof(OLE_PARAM_RIGHT_CROP));
-    VariantClear(&var);
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nRightCrop,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TOP_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TOP_CROP,sizeof(OLE_PARAM_TOP_CROP));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nTopCrop,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_BOTTOM_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_BOTTOM_CROP,sizeof(OLE_PARAM_BOTTOM_CROP));
-    VariantClear(&var);
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nBottomCrop,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  VariantClear(&var);
-return S_OK;
-}
-
-
-HRESULT CropFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_LEFT_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_LEFT_CROP,sizeof(FILTER_PARAM_LEFT_CROP));
-    var.vt = VT_INT;
-    var.intVal = m_nLeftCrop;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_RIGHT_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_RIGHT_CROP,sizeof(FILTER_PARAM_RIGHT_CROP));
-    var.vt = VT_INT;
-    var.intVal = m_nRightCrop;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_TOP_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TOP_CROP,sizeof(FILTER_PARAM_TOP_CROP));
-    var.vt = VT_INT;
-    var.intVal = m_nTopCrop;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(FILTER_PARAM_BOTTOM_CROP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_BOTTOM_CROP,sizeof(FILTER_PARAM_BOTTOM_CROP));
-    var.vt = VT_INT;
-    var.intVal = m_nBottomCrop;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-return S_OK;
-}
-
-
-//----------------- IPropertyBag------------------
-
-HRESULT CropFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  VariantClear(pVar);
-
-  if(oleicmp(pszPropName, OLE_PARAM_LEFT_CROP) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nLeftCrop;
-    return S_OK;
-  }
-  if(oleicmp(pszPropName, OLE_PARAM_RIGHT_CROP) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nRightCrop;
-    return S_OK;
-  }
-  if(oleicmp(pszPropName, OLE_PARAM_TOP_CROP) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nTopCrop;
-    return S_OK;
-  }
-  if(oleicmp(pszPropName, OLE_PARAM_BOTTOM_CROP) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nBottomCrop;
-    return S_OK;
-  }
-
-  return E_INVALIDARG;
-}
-
-
-HRESULT CropFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
-{
-CheckPointer(pszPropName, E_INVALIDARG);
-CheckPointer(pVar, E_INVALIDARG);
-  if(oleicmp(pszPropName, OLE_PARAM_LEFT_CROP) == 0)
-  {   
-    if(getFromVariant(m_nLeftCrop,pVar)) return S_OK;
-  }
-  else if(oleicmp(pszPropName, OLE_PARAM_RIGHT_CROP) == 0)
-  {
-    if(getFromVariant(m_nRightCrop,pVar)) return S_OK;    
-  }
-  else if(oleicmp(pszPropName, OLE_PARAM_TOP_CROP) == 0)
-  {
-    if(getFromVariant(m_nTopCrop,pVar)) return S_OK;    
-  }
-  else if(oleicmp(pszPropName, OLE_PARAM_BOTTOM_CROP) == 0)
-  {
-    if(getFromVariant(m_nBottomCrop,pVar)) return S_OK;    
-  }
-  return E_INVALIDARG;
-}

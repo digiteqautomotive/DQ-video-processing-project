@@ -41,9 +41,8 @@ class YUVtoRGBConverter;
 * \ingroup DirectShowFilters
 * This Filter converts the YUV444 Interleaved media back into RGB24 media.
 */
-class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages,
-		      public IPersistPropertyBag, public IPropertyBag
-{
+class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
+{	      
 public:
   DECLARE_IUNKNOWN
 
@@ -105,14 +104,7 @@ protected:
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
 	// IPersistPropertyBag
-  virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-  virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CSettingsInterface::InitNew();}
-  virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-  virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
-
-	// IPropertyBag
-  STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-  STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+  virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);  
 
 private:
 

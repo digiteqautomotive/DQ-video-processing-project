@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include "DirectShow/VideoMixingBase.h"
-#include <DirectShow/CSettingsInterface.h>
+#include "DirectShow/CSettingsInterface.h"
 #include "../FilterParameterStringConstants.h"
 
 #include <list>
@@ -77,8 +77,7 @@ class PicScalerBase;
 /**
  * @brief PicInPicFilter that accepts two RGB24 inputs.
  * The filter should only be confgured after the inputs have been connected. */
-class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages,
-                      public IPersistPropertyBag, public IPropertyBag
+class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {
 public:
 	typedef enum
@@ -128,14 +127,7 @@ public:
 	STDMETHODIMP SetParameter( const char* type, const char* value);
 
 		// IPersistPropertyBag
-	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-	virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return VideoMixingBase::InitNew();}    
-	virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-	virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
-
-		// IPropertyBag
-	STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-	STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);	
 
 private:
         void VFlipImg1(const BYTE* pSrc, BYTE* pDest);

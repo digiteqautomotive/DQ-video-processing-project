@@ -56,8 +56,7 @@ class PicRotateBase;
  * Rotate for RGB24 and RGB32 media. 
  * Rotation parameters can be set using the COM SettingsInterface SetParameter method.
  */
-class RotateFilter: public CCustomBaseFilter, public ISpecifyPropertyPages,
-                    public IPersistPropertyBag, public IPropertyBag
+class RotateFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
 {
 public:
 	DECLARE_IUNKNOWN
@@ -113,14 +112,6 @@ public:
 
 		// IPersistPropertyBag
 	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-	virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CCustomBaseFilter::InitNew();}
-	virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-	virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
-
-		// IPropertyBag
-	STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-	STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
-
 
 private:
 	/**

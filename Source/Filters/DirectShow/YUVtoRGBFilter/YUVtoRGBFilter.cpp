@@ -28,6 +28,8 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
+const OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
+
 
 YUVtoRGBFilter::YUVtoRGBFilter():
   CCustomBaseFilter(NAME("DQ VPP YUV to RGB converter"), 0, CLSID_VPP_YUVtoRGBColorConverter),
@@ -44,6 +46,13 @@ YUVtoRGBFilter::YUVtoRGBFilter():
 
   // init converter
   //m_pConverter->SetFlip(m_bInvert);
+}
+
+
+void YUVtoRGBFilter::initParameters(void)
+{
+  //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
+  addParameter(INVERT, OLE_PARAM_FLIP, &m_bInvert,  m_bInvert);
 }
 
 
@@ -446,13 +455,7 @@ HRESULT YUVtoRGBFilter::GetPages(CAUUID *pPages)
 }
 
 
- void YUVtoRGBFilter::initParameters(void)
-{
-  //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
-  addParameter(INVERT, &m_bInvert,  m_bInvert);
-}
-
-
+ 
 //----------------- IPersistPropertyBag------------------
 
 
@@ -461,92 +464,4 @@ HRESULT  YUVtoRGBFilter::GetClassID(CLSID *pClassID)
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_YUVtoRGBColorConverter;
   return S_OK;
-}
-
-
-OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
-
-
-HRESULT YUVtoRGBFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  memset(&var,0,sizeof(var));
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_FLIP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_FLIP,sizeof(OLE_PARAM_FLIP));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      int Val;
-      getFromVariant(Val,&var);
-      m_bInvert = Val;
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  VariantClear(&var);
-return S_OK;
-}
-
-
-HRESULT  YUVtoRGBFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_FLIP));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_FLIP,sizeof(OLE_PARAM_FLIP));
-    var.vt = VT_BOOL;
-    var.boolVal = m_bInvert;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-return S_OK;
-}
-
-
-//----------------- IPropertyBag------------------
-
-
-HRESULT  YUVtoRGBFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  VariantClear(pVar);
-
-  if(oleicmp(pszPropName, OLE_PARAM_FLIP) == 0)
-  {   
-    pVar->vt = VT_BOOL;
-    pVar->boolVal = m_bInvert;
-    return S_OK;
-  }
-
-  return E_INVALIDARG;
-}
-
-
-HRESULT  YUVtoRGBFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  if(oleicmp(pszPropName, OLE_PARAM_FLIP) == 0)
-  { 
-    int val;
-    if(getFromVariant(val,pVar))
-    {
-      m_bInvert = val;
-      return S_OK;
-    }
-  } 
-  return E_INVALIDARG;
 }

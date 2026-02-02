@@ -51,8 +51,7 @@ static const GUID CLSID_SkewingProperties =
 
 class SkewingFilter: public CTransInPlaceFilter,
                      public CSettingsInterface,
-                     public ISpecifyPropertyPages,
-                     public IPersistPropertyBag, public IPropertyBag
+                     public ISpecifyPropertyPages
 {
 public:
     DECLARE_IUNKNOWN
@@ -81,16 +80,10 @@ public:
 
 	// IPersistPropertyBag
     virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
-    virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CSettingsInterface::InitNew();}
-    virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-    virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
-
-	// IPropertyBag
-    STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-    STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
+    //virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return CSettingsInterface::InitNew();}    
 
 	/// Overridden from CSettingsInterface
-    void initParameters() { addParameter("skewTimestamp", &add_time, 0); }
+    void initParameters(void);
 
 private:
     bool seenFirstFrame;

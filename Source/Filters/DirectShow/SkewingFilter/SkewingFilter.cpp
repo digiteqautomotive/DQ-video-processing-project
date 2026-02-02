@@ -38,15 +38,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DirectShow/VariantTools.cpp"
 
+#define SKEW_TIME_STAMP	"skewTimestamp"
+
+const OLECHAR OLE_SKEW_TIME_STAMP[] =  olestr(SKEW_TIME_STAMP);
+
+
 
 SkewingFilter::SkewingFilter(LPUNKNOWN pUnk, HRESULT *pHr): 
-    CTransInPlaceFilter(NAME("DQ RTVC Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
+    CTransInPlaceFilter(NAME("DQ VPP Skewing Filter"), pUnk, CLSID_VPP_SkewingFilter, pHr, false),
     seenFirstFrame(false),
     previousTimestamp(0),
     add_time(0)
 {
-  // Init parameters
-	initParameters();
+  initParameters();		  // Init parameters
+}
+
+
+void SkewingFilter::initParameters(void)
+{
+  addParameter(SKEW_TIME_STAMP, OLE_SKEW_TIME_STAMP, &add_time, 0);
 }
 
 
@@ -174,84 +184,4 @@ HRESULT SkewingFilter::GetClassID(CLSID *pClassID)
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_SkewingFilter;
   return S_OK;
-}
-
-
-OLECHAR OLE_PARAM_TIME_SKEW[] = olestr("TIME SKEW");
-
-
-HRESULT SkewingFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  memset(&var,0,sizeof(var));
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TIME_SKEW));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TIME_SKEW,sizeof(OLE_PARAM_TIME_SKEW));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(add_time,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  VariantClear(&var);
-return S_OK;
-}
-
-
-HRESULT SkewingFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_TIME_SKEW));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_TIME_SKEW,sizeof(OLE_PARAM_TIME_SKEW));
-    var.vt = VT_INT;
-    var.intVal = add_time;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-return S_OK;
-}
-
-
-//----------------- IPropertyBag------------------
-
-
-HRESULT SkewingFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  VariantClear(pVar);
-
-  if(oleicmp(pszPropName, OLE_PARAM_TIME_SKEW) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = add_time;
-    return S_OK;
-  }
-
-  return E_INVALIDARG;
-}
-
-
-HRESULT SkewingFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
-{
-CheckPointer(pszPropName, E_INVALIDARG);
-CheckPointer(pVar, E_INVALIDARG);
-  if(oleicmp(pszPropName, OLE_PARAM_TIME_SKEW) == 0)
-  {   
-    if(getFromVariant(add_time,pVar)) return S_OK;
-  }
-  return E_INVALIDARG;
 }

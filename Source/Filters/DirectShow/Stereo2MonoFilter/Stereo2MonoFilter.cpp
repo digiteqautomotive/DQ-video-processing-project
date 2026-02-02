@@ -321,7 +321,7 @@ HRESULT Stereo2MonoFilter::GetClassID(CLSID *pClassID)
 }
 
 
-OLECHAR OLE_CHANNEL_PARAM[] = olestr("CHANNEL");
+const OLECHAR OLE_CHANNEL_PARAM[] = olestr("CHANNEL");
 
 
 HRESULT Stereo2MonoFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)

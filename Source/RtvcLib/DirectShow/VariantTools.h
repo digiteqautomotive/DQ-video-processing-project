@@ -23,4 +23,6 @@ bool getFromVariant(unsigned int & val, const VARIANT *pVar);
 
 bool getFromVariant(LONGLONG & val, const VARIANT *pVar);
 
+bool getFromVariant(double & val, const VARIANT *pVar);
+
 #endif

@@ -53,7 +53,7 @@ CSettingsInterface::~CSettingsInterface(void)
   m_vParams.clear();
 }
 
-void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly) //, std::vector<int> vAllowedValues)
+void CSettingsInterface::addParameter(const char *sParamName, const OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly) //, std::vector<int> vAllowedValues)
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterInt(sParamName,oleName,pAddr,nDefaultValue,bReadOnly));
 }
@@ -66,7 +66,7 @@ void CSettingsInterface::addParameter(const char *sParamName, unsigned* pAddr, u
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterUnsigned(sParamName,NULL,pAddr,uiDefaultValue,bReadOnly));
 }
-void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly) //, std::vector<unsigned> vAllowedValues)
+void CSettingsInterface::addParameter(const char *sParamName, const OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly) //, std::vector<unsigned> vAllowedValues)
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterUnsigned(sParamName,oleName,pAddr,uiDefaultValue,bReadOnly));
 }
@@ -75,7 +75,7 @@ void CSettingsInterface::addParameter(const char *sParamName, std::string* pAddr
 {  // Add the param to the map
   m_vParams.push_back(new ParameterString(sParamName,NULL,pAddr,sDefaultValue,bReadOnly));
 }
-void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, std::string* pAddr, std::string sDefaultValue, bool bReadOnly) //, std::vector<std::string> vAllowedValues)
+void CSettingsInterface::addParameter(const char *sParamName, const OLECHAR *oleName, std::string* pAddr, std::string sDefaultValue, bool bReadOnly) //, std::vector<std::string> vAllowedValues)
 {  // Add the param to the map
   m_vParams.push_back(new ParameterString(sParamName,oleName,pAddr,sDefaultValue,bReadOnly));
 }
@@ -84,7 +84,7 @@ void CSettingsInterface::addParameter(const char *sParamName, bool* pAddr, bool 
 {  // Add the param to the map
   m_vParams.push_back(new ParameterBool(sParamName,NULL,pAddr,bDefaultValue,bReadOnly));
 }
-void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly) //, std::vector<bool> vAllowedValues)
+void CSettingsInterface::addParameter(const char *sParamName, const OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly) //, std::vector<bool> vAllowedValues)
 {  // Add the param to the map
   m_vParams.push_back(new ParameterBool(sParamName,oleName,pAddr,bDefaultValue,bReadOnly));
 }
@@ -93,7 +93,7 @@ void CSettingsInterface::addParameter(const char *sParamName, double* pAddr, dou
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterDouble(sParamName,NULL,pAddr,dDefaultValue,bReadOnly));
 }
-void CSettingsInterface::addParameter(const char *sParamName, OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly) //, std::vector<double> vAllowedValues)
+void CSettingsInterface::addParameter(const char *sParamName, const OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly) //, std::vector<double> vAllowedValues)
 {	  // Add the param to the map
   m_vParams.push_back(new ParameterDouble(sParamName,oleName,pAddr,dDefaultValue,bReadOnly));
 }
@@ -133,7 +133,7 @@ std::string CSettingsInterface::GetParameter(const char* szParamName, bool *Ok)
     if(!strcmp(szParamName,(*it)->Name.c_str()))
     {
       if(Ok) *Ok = true;
-      if((*it)->Type()==RTVC_STRING) return (*it)->ToStr();	// Legal string could be empty.
+      if((*it)->Type()==VPP_STRING) return (*it)->ToStr();	// Legal string could be empty.
 
       const std::string valS = (*it)->ToStr();
       if(valS.empty()) break;			// This causes to fail due to empty string.
@@ -252,6 +252,9 @@ CheckPointer(pStm, E_INVALIDARG);
 }
 
 
+//----------------- IPersistPropertyBag------------------
+
+
 HRESULT CSettingsInterface::InitNew(void)
 {
   for(std::list<ParameterBase*>::iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
@@ -264,10 +267,95 @@ HRESULT CSettingsInterface::InitNew(void)
 }
 
 
+HRESULT STDMETHODCALLTYPE CSettingsInterface::Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog)
+{
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+  memset(&var,0,sizeof(var));
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if((*it)->OleName!=NULL && !(*it)->ReadOnly)
+    {
+      if(SUCCEEDED(pPropBag->Read((*it)->OleName,&var,NULL)))
+      {
+        (*it)->setVariant(var);
+      }
+      VariantClear(&var);
+    }
+  }
+  return S_OK;
+}
+
+
+HRESULT STDMETHODCALLTYPE CSettingsInterface::Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
+{
+VARIANT var;
+  if(pPropBag==NULL) return E_POINTER;
+  memset(&var,0,sizeof(var));
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if((*it)->OleName != NULL)
+    {
+      if((*it)->ReadOnly && !fSaveAllProperties) continue;
+      (*it)->getVariant(var);
+      pPropBag->Write((*it)->OleName,&var);
+      VariantClear(&var);
+    }
+  }
+  if(fClearDirty) m_DirtyProps=false;
+  return S_OK;
+}
+
+
+//----------------- IPropertyBag------------------
+
+
+HRESULT STDMETHODCALLTYPE CSettingsInterface::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if((*it)->OleName != NULL)
+    {
+      if(!oleicmp(pszPropName,(*it)->OleName))
+      {
+        (*it)->getVariant(*pVar);
+        return S_OK;
+      }
+    }
+  }
+  return E_INVALIDARG;
+}
+
+
+HRESULT STDMETHODCALLTYPE CSettingsInterface::Write(LPCOLESTR pszPropName, VARIANT *pVar)
+{
+  CheckPointer(pszPropName, E_INVALIDARG);
+  CheckPointer(pVar, E_INVALIDARG);
+
+  VariantClear(pVar);
+  for(std::list<ParameterBase*>::const_iterator it=m_vParams.begin(); it!=m_vParams.end(); ++it)
+  {
+    if((*it)->OleName != NULL)
+    {
+      if(!oleicmp(pszPropName,(*it)->OleName))
+      {
+        if((*it)->setVariant(*pVar)) return S_OK;
+        return E_INVALIDARG;
+      }
+    }
+  }
+  return E_INVALIDARG;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterBase::ParameterBase(const char *NewName, OLECHAR *NewOleName, bool NewReadOnly): Name(NewName), ReadOnly(NewReadOnly)
+ParameterBase::ParameterBase(const char *NewName, const OLECHAR *NewOleName, bool NewReadOnly): Name(NewName), ReadOnly(NewReadOnly)
 {
   if(NewOleName==NULL || *NewOleName==0)
       OleName = NULL;
@@ -289,7 +377,7 @@ ParameterBase::~ParameterBase()
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterInt::ParameterInt(const char *NewName, OLECHAR *NewOleName, int *ValueAddr, int IniDefaultValue, bool NewReadOnly):
+ParameterInt::ParameterInt(const char *NewName, const OLECHAR *NewOleName, int *ValueAddr, int IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue),
@@ -319,10 +407,24 @@ return true;
 }
 
 
+void ParameterInt::getVariant(VARIANT &var) const
+{
+  var.vt = VT_INT;
+  var.intVal = *pValue;
+}
+
+
+bool ParameterInt::setVariant(const VARIANT &var)
+{
+  return getFromVariant(*pValue,&var);
+
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterUnsigned::ParameterUnsigned(const char *NewName, OLECHAR *NewOleName, unsigned *ValueAddr, unsigned IniDefaultValue, bool NewReadOnly):
+ParameterUnsigned::ParameterUnsigned(const char *NewName, const OLECHAR *NewOleName, unsigned *ValueAddr, unsigned IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue),
@@ -352,10 +454,24 @@ return true;
 }
 
 
+void ParameterUnsigned::getVariant(VARIANT &var) const
+{
+  var.vt = VT_UINT;
+  var.uiVal = *pValue;
+}
+
+
+bool ParameterUnsigned::setVariant(const VARIANT &var)
+{
+  return getFromVariant(*pValue,&var);
+
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterBool::ParameterBool(const char *NewName, OLECHAR *NewOleName, bool *ValueAddr, bool IniDefaultValue, bool NewReadOnly):
+ParameterBool::ParameterBool(const char *NewName, const OLECHAR *NewOleName, bool *ValueAddr, bool IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue),
@@ -398,10 +514,22 @@ HRESULT hr;
 }
 
 
+void ParameterBool::getVariant(VARIANT &var) const
+{
+  var.vt = VT_BOOL;
+  var.boolVal = *pValue;
+}
+
+
+bool ParameterBool::setVariant(const VARIANT &var)
+{
+  return getFromVariant(*pValue,&var);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterDouble::ParameterDouble(const char *NewName, OLECHAR *NewOleName, double *ValueAddr, double IniDefaultValue, double NewReadOnly):
+ParameterDouble::ParameterDouble(const char *NewName, const OLECHAR *NewOleName, double *ValueAddr, double IniDefaultValue, double NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue),
@@ -431,10 +559,23 @@ return true;
 }
 
 
+void ParameterDouble::getVariant(VARIANT &var) const
+{
+  var.vt = VT_R8;
+  var.dblVal = *pValue;
+}
+
+
+bool ParameterDouble::setVariant(const VARIANT &var)
+{
+  return getFromVariant(*pValue,&var);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-ParameterString::ParameterString(const char *NewName, OLECHAR *NewOleName, std::string *ValueAddr, std::string IniDefaultValue, bool NewReadOnly):
+ParameterString::ParameterString(const char *NewName, const OLECHAR *NewOleName, std::string *ValueAddr, std::string IniDefaultValue, bool NewReadOnly):
         ParameterBase(NewName,NewOleName,NewReadOnly),
 	pValue(ValueAddr),
 	DefaultValue(IniDefaultValue),
@@ -495,5 +636,38 @@ HRESULT hr;
     if(FAILED(hr)) return hr;
   }
   return hr;
+}
+
+
+void ParameterString::getVariant(VARIANT &var) const
+{
+  if(pValue->empty())
+  {
+    var.vt = VT_NULL;
+    return;
+  }
+
+  var.vt = VT_LPSTR;
+  var.pcVal = (CHAR*)CoTaskMemAlloc(pValue->length()+1);
+  if(var.pcVal!=NULL)
+  {
+    strcpy(var.pcVal,pValue->c_str());
+  }
+}
+
+
+bool ParameterString::setVariant(const VARIANT &var)
+{
+  if(var.vt == VT_NULL)
+  {
+    pValue->clear();
+    return true;
+  }
+  if(var.vt == VT_LPSTR)
+  {
+    *pValue = var.pcVal;
+    return true;
+  }
+  return false;
 }
 
