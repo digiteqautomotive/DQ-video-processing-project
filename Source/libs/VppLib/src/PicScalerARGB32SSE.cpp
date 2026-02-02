@@ -17,8 +17,7 @@ LICENSE: Software License Agreement (BSD License)
 Copyright (c) 2025 Jaroslav Fojtik
 All rights reserved.
 
-===========================================================================
-*/
+===========================================================================*/
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,7 +39,7 @@ extern "C" void ScaleRowAsmARGB32SSE(void *pDst, unsigned _widthOut, void *const
 
 bool PicScalerARGB32SSE::isVideoFormatSupported(const GUID &VideoFormat) const
 {
-  return VideoFormat==MEDIASUBTYPE_ARGB32;
+  return VideoFormat==MEDIASUBTYPE_ARGB32 || VideoFormat==MEDIASUBTYPE_RGB32;
 }
 
 

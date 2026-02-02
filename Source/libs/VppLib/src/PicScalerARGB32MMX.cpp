@@ -43,7 +43,7 @@ extern "C"
 
 bool PicScalerARGB32MMX::isVideoFormatSupported(const GUID &VideoFormat) const
 {
-  return VideoFormat==MEDIASUBTYPE_ARGB32;
+  return VideoFormat==MEDIASUBTYPE_ARGB32 || VideoFormat==MEDIASUBTYPE_RGB32;
 }
 
 

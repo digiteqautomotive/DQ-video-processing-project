@@ -29,7 +29,6 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
 #pragma once
 #include <DirectShow/CustomBaseFilter.h>
@@ -93,6 +92,8 @@ public:
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 	  /// Overridden from CCustomBaseFilter
   virtual void InitialiseInputTypes();
+  virtual CBasePin *GetPin(int n);
+  HRESULT ReceiveConnection(const AM_MEDIA_TYPE *pmt);
 
 	///Overridden from CSettingsInterface
   void initParameters();

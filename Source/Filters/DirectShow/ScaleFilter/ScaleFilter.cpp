@@ -33,8 +33,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // CSIR includes
 #include "ScaleFilter.h"
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/CustomMediaTypes.h>
+#include "DirectShow/CommonDefs.h"
+#include "DirectShow/CustomMediaTypes.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 
 #include <PicScalerRGB24Impl.h>
@@ -69,6 +69,30 @@ DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xA
 
 OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
+
+
+class ScaleFilterInputPin: public CTransformInputPin
+{
+public: ScaleFilterInputPin(__in_opt LPCTSTR pObjectName, __inout ScaleFilter *pTransformFilter,  __inout HRESULT * phr, __in_opt LPCWSTR pName):        
+            CTransformInputPin(pObjectName,pTransformFilter,phr,pName)
+	{
+        }
+
+        STDMETHODIMP ReceiveConnection(IPin * pConnector, const AM_MEDIA_TYPE *pmt)
+        {
+          if(m_Connected && pConnector==m_Connected && m_pTransformFilter!=NULL && pmt!=NULL)
+          {
+            if(m_mt.subtype == pmt->subtype)
+                if(SUCCEEDED(((ScaleFilter*)m_pTransformFilter)->ReceiveConnection(pmt)))
+                {
+		  CMediaType * pcmt = (CMediaType*)pmt;
+                  return(SetMediaType(pcmt));
+                  //return CompleteConnect(pConnector);
+                }
+          }
+          return CTransformInputPin::ReceiveConnection(pConnector,pmt);
+        }
+};
 
 
 
@@ -470,15 +494,18 @@ HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, l
   if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
 
   lOutActualDataLength = labs(m_nInWidth * m_nInHeight * m_nBitsPerPixel) / 8;		// Calculate input data length
-  if(labs(lOutActualDataLength) > lInBufferSize) return E_INVALIDARG;			// Input buffer is too small
+  if(lOutActualDataLength > lInBufferSize) return E_INVALIDARG;			// Input buffer is too small
 
-  if(m_nReqOutWidth==0 || m_nReqOutHeight==0 || (m_nReqOutWidth==m_nInWidth && m_nReqOutHeight==m_nInHeight))
+  if(m_nOutWidth==m_nInWidth && m_nOutHeight==m_nInHeight)
   {
+    if(lOutActualDataLength > lOutBufferSize) return E_INVALIDARG;
     memcpy(pBufferOut,pBufferIn,lOutActualDataLength);
   }
   else
   {
-    lOutActualDataLength = labs(m_nReqOutWidth * m_nReqOutHeight * m_nBitsPerPixel) / 8;	// Calculate output data length
+    m_nOutPixels = labs(m_nOutWidth*m_nOutHeight);		// Update the number of out pixels
+    lOutActualDataLength = (m_nOutPixels * m_nBitsPerPixel) / 8;	// Calculate output data length
+    if(lOutActualDataLength > lOutBufferSize) return E_INVALIDARG;
     if(m_pScaler==NULL)
     {
       DbgLog((LOG_TRACE, 0, TEXT("Scaller is not initialised - unable to scale")));
@@ -486,8 +513,7 @@ HRESULT ScaleFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, l
     }
 	//Call scaling conversion code
     m_pScaler->SetInDimensions(m_nInWidth, m_nInHeight);
-    m_pScaler->SetOutDimensions(m_nReqOutWidth, m_nReqOutHeight);
-    m_nOutPixels = labs(m_pScaler->GetOutHeight() * m_pScaler->GetOutWidth());		// Update the number of out pixels
+    m_pScaler->SetOutDimensions(m_nOutWidth, m_nOutHeight);
     int res = m_pScaler->Scale(pBufferOut, pBufferIn, m_Vflip);
     ASSERT(res == 1);
   }
@@ -518,6 +544,43 @@ HRESULT ScaleFilter::GetPages(CAUUID *pPages)
   }
   pPages->pElems[0] = CLSID_ScaleProperties;
   return S_OK;
+}
+
+
+CBasePin *ScaleFilter::GetPin(int n)
+{
+  if(m_pInput == NULL)
+  {
+    HRESULT hr = S_OK;
+    m_pInput = new ScaleFilterInputPin(NAME("Scale input pin"),this,&hr,L"XForm In");  //ScaleFilterInputPin
+    ASSERT(SUCCEEDED(hr));
+    if (m_pInput == NULL) return NULL;
+    m_pOutput = new CTransformOutputPin(NAME("Scale output pin"), this, &hr, L"XForm Out");   // Pin name
+    ASSERT(SUCCEEDED(hr));    
+    if (m_pOutput == NULL) return NULL;
+  }
+  return CCustomBaseFilter::GetPin(n);
+}
+
+
+/// This inherited function allows format change reconnection.
+HRESULT ScaleFilter::ReceiveConnection(const AM_MEDIA_TYPE *pmt)
+{
+  if(pmt!=NULL && pmt->majortype==MEDIATYPE_Video)		// || pmt->majortype==MEDIATYPE_Video2)
+  {
+    VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
+    if(pVih)
+    {
+      const BITMAPINFOHEADER* const pBiIn = &(pVih->bmiHeader);
+      if(pBiIn->biWidth>0 && pBiIn->biHeight!=0)
+      {
+        //m_nInWidth = pBiIn->biWidth;
+        //m_nInHeight = pBiIn->biHeight;
+        return S_OK;
+      }
+    }
+  }  
+  return E_FAIL;
 }
 
 
