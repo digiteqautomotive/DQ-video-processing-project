@@ -69,11 +69,26 @@ const int iRRGB24YUVCI2_22 = static_cast<int>(0.5 + RRGB24YUVCI2_22 * (2 << iPre
 #define RRGB24YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 #define RRGB24YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
 
-/*
-===========================================================================
+
+
+void FastFixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV)
+{
+  unsigned char *pU = (unsigned char*)pYUV + _width*_height;
+  unsigned char *pV = pU + (_width+1)*(_height+1)/4;
+  Convert(pRgb, pYUV, pU, pV);
+//  if (_flip)
+//    FlipConvert(pRgb, pYUV, pU, pV);
+//  else
+//    NonFlipConvert(pRgb, pYUV, pU, pV);
+}//end Convert.
+
+
+
+/*===========================================================================
 Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range
@@ -82,9 +97,8 @@ to 0..255.
 @param pY		: Lum plane.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
-@return			: none.
-*/
-void FastFixedPointRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, void* pV)
+@return			: none. */
+void FastFixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV)
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -101,9 +115,9 @@ void FastFixedPointRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* p
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + lumOff*3;
+      int	    chrOff = yb*xBlks + xb;
+      int	    lumOff = (yb*_width + xb) << 1;
+      unsigned char *t = src + lumOff*3;
 
       /// Top left pel.
       b = (int)(*t++);

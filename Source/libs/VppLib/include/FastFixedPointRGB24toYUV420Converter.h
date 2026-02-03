@@ -30,9 +30,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include "RGBtoYUV420Converter.h"
@@ -53,5 +51,6 @@ public:
     virtual ~FastFixedPointRGB24toYUV420Converter(void) {}
 
     /// Interface.
-    void Convert(void* pRgb, void* pY, void* pU, void* pV);
+    void Convert(const void* pRgb, void* pY, void* pU, void* pV);
+    void Convert(const void* pRgb, void* pYUV);
 };

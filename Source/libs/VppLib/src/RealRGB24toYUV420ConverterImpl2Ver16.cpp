@@ -91,20 +91,31 @@ to 0..255.
 @param pY		: Lum plane.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
-@return			: none.
-*/
-void RealRGB24toYUV420ConverterImpl2Ver16::Convert(void* pRgb, void* pY, void* pU, void* pV)
+@return			: none. */
+void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void *pYUV)
+{
+  unsigned char *pU = (unsigned char*)pYUV + 4*_width*_height;
+  unsigned char *pV = pU + (_width+1)*(_height+1);
+  if (_flip)
+    FlipConvert(pRgb, pYUV, pU, pV);
+  else
+    NonFlipConvert(pRgb, pYUV, pU, pV);
+} //end Convert.
+
+
+void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void* pY, void* pU, void* pV)
 {
   if (_flip)
     FlipConvert(pRgb, pY, pU, pV);
   else
     NonFlipConvert(pRgb, pY, pU, pV);
-}//end Convert.
+} //end Convert.
+
 
 ///---------------------- Microsoft parallel techniques ------------------------------------------------------------
 #ifdef RRGB24YUVCI2_MICROSOFT_PARALLEL
 
-void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert( void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
@@ -279,7 +290,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipInner(unsigned char* src, shor
 #else
 ///---------------------- No parallel techniques ------------------------------------------------------------
 
-void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert( void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
@@ -356,7 +367,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert( void* pRgb, void* pY, vo
     }//end for xb & yb...
 }
 
-void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert( void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;

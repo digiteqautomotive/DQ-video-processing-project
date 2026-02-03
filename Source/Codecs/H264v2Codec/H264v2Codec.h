@@ -493,8 +493,8 @@ private:
 	IBitStreamReader*			_pBitStreamReader;
 
 	/// An input colour converter.
-	RGBtoYUV420Converter*	_pInColourConverter;
-	YUV420toRGBConverter* _pOutColourConverter;
+	RGBtoYUV420Converter *_pInColourConverter;
+	YUV420toRGBConverter *_pOutColourConverter;
 
 	/// 4x4 and 2x2 IT DC and AC transform filters.
 	IForwardTransform* _pF4x4TLum;

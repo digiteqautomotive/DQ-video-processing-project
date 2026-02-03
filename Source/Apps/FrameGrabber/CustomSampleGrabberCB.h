@@ -25,7 +25,7 @@
 #include "FastLookupTableRGB24toYUV420Converter.h"
 #include "FastFixedPointRGB24toYUV420Converter.h"
 #include "FastSimdRGB24toYUV420Converter.h"
-#include "FastGpuRGB24toYUV420Converter.h"
+//#include "FastGpuRGB24toYUV420Converter.h"
 
 #include <Shared/TimerUtil.h>
 
@@ -101,12 +101,14 @@ public:
         m_pRgbToYuvConverter = new FastSimdRGB24toYUV420Converter();
         break;
       }
+/*
     case GPU:
       {
         printf("Creating GPU-based color converter\r\n");
         m_pRgbToYuvConverter = new FastGpuRGB24toYUV420Converter();
         break;
       }
+*/
     case MT:
       {
 #ifdef USE_MULTI_THREADED

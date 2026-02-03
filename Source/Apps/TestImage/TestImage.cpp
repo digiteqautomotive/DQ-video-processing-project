@@ -20,6 +20,7 @@
 
 #include "AYUV444toRGB24Converter.h"
 #include "RealYUV420toRGB24Converter.h"
+#include "FastFixedPointRGB24toYUV420Converter.h"
 #include "ConvertTesters.h"
 
 
@@ -848,6 +849,60 @@ bool Pause = false;
      }
    }
 
+//-----------------------------------RGB to YUV420-------------------------------------------
+ for(int Width=2; Width<28; Width+=2)
+   for(int Height=2; Height<28; Height+=2)
+   {
+     OrigRealRGB32toYUV420Converter OrigPicConverterRGB32toYUV420(Width,Height);
+     FastFixedPointRGB24toYUV420Converter PicConverterRGB32toYUV420(Width,Height);
+
+     PicConverterRGB32toYUV420.Convert(BlobIn+16, BlobOut+16);
+     OrigPicConverterRGB32toYUV420.Convert(BlobIn+16, BlobTest+16);
+
+     int pos = memcmp(BlobTest, BlobOut, Width*Height+2*(Width+1)*(Height+1));
+     if(pos)   
+     {       
+       int diffs1 = 0;
+       for(int x=0; x<Width; x++)
+         for(int y=0; y<Height; y++)
+         {
+           pos = 16 + (x + Width*y);
+           if(BlobOut[pos]!=BlobTest[pos])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[pos])>1)
+           {
+             printf("\nRGB32toYUV420 %ux%u: x=%d y=%d ... Y=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
+             goto ReturnErr;
+           }
+         }
+#ifdef _DEBUG
+       printf("\nRGB32 to YUV420 %ux%u: 1_diffs=%d.", Width, Height, pos);
+#endif
+       //goto ReturnErr;
+     }
+
+/*
+     picConvertedAYUV2RGB24.SetFlip(true);
+     picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
+
+     {       
+       int diffs1 = 0;
+       for(int y=0; y<Height; y++)
+         for(int x=0; x<Width; x++)
+         {
+           pos = 16 + 3*(x + Width*y);
+	   int posR = 16 + 3*(x + Width*(Height-y-1));
+           if(BlobOut[pos]!=BlobTest[posR] || BlobOut[pos+1]!=BlobTest[posR+1] || BlobOut[pos+2]!=BlobTest[posR+2])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[posR])>1 || labs(BlobOut[pos+1]-BlobTest[posR+1])>1 || labs(BlobOut[pos+2]-BlobTest[posR+2])>1)
+           {
+             printf("\nYUV420toRGB flip %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[posR], BlobOut[pos+1],BlobTest[posR+1], BlobOut[pos+2],BlobTest[posR+2]);
+             goto ReturnErr;
+           }
+         }     
+     }
+*/
+   }
 
   printf("\nAll tests passed OK.");
   free(BlobIn);

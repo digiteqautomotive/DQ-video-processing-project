@@ -67,7 +67,8 @@ public:
 	virtual ~RGBtoYUV420Converter(void) {}
 
 	/// Interface.
-	virtual void Convert(void* pRgb, void* pY, void* pU, void* pV) = 0;
+	virtual void Convert(const void* pRgb, void* pYUV) = 0;
+        virtual void Convert(const void* pRgb, void *pY, void *pU, void *pV) = 0;
 
 	/// Member interface.
 	int	GetWidth(void)			{ return(_width); }
