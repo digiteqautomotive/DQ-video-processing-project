@@ -9,9 +9,7 @@ DESCRIPTION			: This Filter converts the YUV444 Interleaved media back into RGB2
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 // CSIR includes
