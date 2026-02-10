@@ -22,7 +22,6 @@
 #include "RealYUV420toRGB24Converter.h"
 #include "RealRGB32toYUV420Converter.h"
 #include "RGB32toYUV420Converter.h"
-#include "FastRGBtoYUV420Converter.h"
 #include "ConvertTesters.h"
 
 
@@ -857,7 +856,7 @@ bool Pause = false;
    {
      OrigRealRGB32toYUV420Converter OrigPicConverterRGB32toYUV420(Width,Height);
      RealRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height);
-     //FixedPointRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height);	-- nefunguje!!!
+     //FastRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height); //	-- nefunguje!!!
 
      PicConverterRGB32toYUV420.Convert(BlobIn+16, BlobOut+16);
      OrigPicConverterRGB32toYUV420.Convert(BlobIn+16, BlobTest+16);
@@ -950,15 +949,15 @@ bool Pause = false;
     {
       RealRGB32toYUV420Converter picConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(picConverterRGB32toYUV420, BlobIn, BlobOut);
-      printf("\nConvert RGB24 to YUV to resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nConvert RGB32 to YUV to resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
       //picConvertedAYUV2RGB24.SetFlip(true);
       //DurationMin = BenchConverter(picConvertedAYUV2RGB24, BlobIn, BlobOut);
     }
-    {
+/*    {
       FastRGB32toYUV420Converter fpConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(fpConverterRGB32toYUV420, BlobIn, BlobOut);
       printf(" fast %.3f[ms]", DurationMin/1000.0);
-    }
+    } */
     {
       FixedPointRGB32toYUV420Converter fpConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(fpConverterRGB32toYUV420, BlobIn, BlobOut);

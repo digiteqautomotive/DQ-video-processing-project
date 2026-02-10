@@ -175,8 +175,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP16Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYV24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RGB24toYUV420Converter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RGB32toYUV420Converter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGB24Conv_ASM.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
