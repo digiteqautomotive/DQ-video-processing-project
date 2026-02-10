@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 
-#include "FastFixedPointRGB24toYUV420Converter.h"
+#include "RGB24toYUV420Converter.h"
 
 /*
 ===========================================================================
@@ -71,7 +71,7 @@ const int iRRGB24YUVCI2_22 = static_cast<int>(0.5 + RRGB24YUVCI2_22 * (2 << iPre
 
 
 
-void FastFixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV)
+void FixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV) const
 {
   const unsigned BlkYsz = _width*_height;
   unsigned char * const pU = (unsigned char*)pYUV + BlkYsz;
@@ -99,7 +99,7 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void FastFixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV)
+void FixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;

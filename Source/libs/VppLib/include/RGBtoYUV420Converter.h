@@ -74,8 +74,8 @@ public:
         virtual void Convert(const void* pRgb, void *pY, void *pU, void *pV) const = 0;
 
 	/// Member interface.
-	int	GetWidth(void)			{ return(_width); }
-	int	GetHeight(void)			{ return(_height); }
+	int GetWidth(void) const		{ return(_width); }
+	int GetHeight(void) const		{ return(_height); }
 	int GetChrominanceOffset() const { return _chrOff; }
 	bool GetFlip() const { return _flip; }
 

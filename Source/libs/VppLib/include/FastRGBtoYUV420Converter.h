@@ -16,6 +16,9 @@ COPYRIGHT:		 (c)VICS 2000-2006  all rights resevered - info@videocoding.com
 RESTRICTIONS:		The information/data/code contained within this file is 
 			the property of VICS limited and has been classified as 
 			CONFIDENTIAL.
+
+----------> TODO this licence is not compatible with BSD, must be clarified!!!
+
 ===========================================================================*/
 #ifndef _FASTRGB24TOYUV420CONVERTER_H
 #define _FASTRGB24TOYUV420CONVERTER_H
@@ -31,8 +34,8 @@ public:
 	FastRGBtoYUV420Converter() {}
 	FastRGBtoYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-	virtual void Convert(const void* pRgb, void* pYUV);
-        virtual void Convert(const void* pRgb, void* pY, void* pU, void* pV) = 0;
+	virtual void Convert(const void* pRgb, void* pYUV) const;
+        virtual void Convert(const void* pRgb, void* pY, void* pU, void* pV) const = 0;
 
 protected:
 				// Fast colour look up tables.
@@ -60,7 +63,7 @@ public:
 	virtual ~FastRGB24toYUV420Converter(void) {}
 
 	// Interface.
-	void Convert(void* pRgb, void* pY, void* pU, void* pV);
+	void Convert(void* pRgb, void* pY, void* pU, void* pV) const;
 }; //end _FASTRGB24TOYUV420CONVERTER_H.
 
 
@@ -73,7 +76,7 @@ public:
 	virtual ~FastRGB32toYUV420Converter(void) {}
 
 	// Interface.
-	void Convert(const void* pRgb, void* pY, void* pU, void* pV);
+	void Convert(const void* pRgb, void* pY, void* pU, void* pV) const;
 };
 
 

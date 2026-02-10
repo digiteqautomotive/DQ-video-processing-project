@@ -17,6 +17,9 @@ COPYRIGHT:			(c)VICS 2000-2006  all rights resevered - info@videocoding.com
 RESTRICTIONS			: The information/data/code contained within this file is 
 				the property of VICS limited and has been classified as 
 				CONFIDENTIAL.
+
+----------> TODO this licence is not compatible with BSD, must be clarified!!!
+
 ===========================================================================*/
 #include <stdio.h>
 #include <math.h>
@@ -48,7 +51,7 @@ to 0..255.
 @param pV		: Chr V plane.
 @return			: none.
 */
-void FastRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, void* pV)
+void FastRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, void* pV) const
 {
 	yuvType*	py = (yuvType *)pY;
 	yuvType*	pu = (yuvType *)pU;
@@ -2455,7 +2458,7 @@ const int FastRGBtoYUV420Converter::R8[] =
 };
 
 
-void FastRGBtoYUV420Converter::Convert(const void* pRgb, void* pYUV)
+void FastRGBtoYUV420Converter::Convert(const void* pRgb, void* pYUV) const
 {
   const unsigned char BlkSize = _width*_height;
   unsigned char *pU = (unsigned char*)pYUV + BlkSize;
