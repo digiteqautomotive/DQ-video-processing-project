@@ -20,7 +20,7 @@
 
 #include "AYUV444toRGB24Converter.h"
 #include "RealYUV420toRGB24Converter.h"
-#include "FastFixedPointRGB24toYUV420Converter.h"
+#include "RealRGB32toYUV420Converter.h"
 #include "ConvertTesters.h"
 
 
@@ -48,7 +48,7 @@ unsigned char FeaturesCPU = 0x80;
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-unsigned long BenchConverter(YUVtoRGBConverter &converter, const void *BlobIn, void *BlobOut)
+unsigned long BenchConverter(BaseVideoConverter &converter, const void *BlobIn, void *BlobOut)
 {
  unsigned long long TimeStampB, TimeStampE;
  unsigned long DurationMin = ~0;
@@ -854,7 +854,7 @@ bool Pause = false;
    for(int Height=2; Height<28; Height+=2)
    {
      OrigRealRGB32toYUV420Converter OrigPicConverterRGB32toYUV420(Width,Height);
-     FastFixedPointRGB24toYUV420Converter PicConverterRGB32toYUV420(Width,Height);
+     RealRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height);
 
      PicConverterRGB32toYUV420.Convert(BlobIn+16, BlobOut+16);
      OrigPicConverterRGB32toYUV420.Convert(BlobIn+16, BlobTest+16);
@@ -878,6 +878,29 @@ bool Pause = false;
 #ifdef _DEBUG
        printf("\nRGB32 to YUV420 %ux%u: 1_diffs=%d.", Width, Height, pos);
 #endif
+       unsigned Upos = Width * Height;
+       unsigned Vpos = Upos*5 / 4;
+       for(int x=0; x<Width/2; x++)
+         for(int y=0; y<Height/2; y++)
+         {
+           pos = 16 + Upos + (x + Width*y/2);
+           if(BlobOut[pos]!=BlobTest[pos])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[pos])>1)
+           {
+             printf("\nRGB32toYUV420 %ux%u: x/2=%d y/2=%d ... U=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
+             goto ReturnErr;
+           }
+
+           pos = 16 + Vpos + x + Width*y/2;
+           if(BlobOut[pos]!=BlobTest[pos])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[pos])>1)
+           {
+             printf("\nRGB32toYUV420 %ux%u: x/2=%d y/2=%d ... V=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
+             goto ReturnErr;
+           }
+         }
        //goto ReturnErr;
      }
 
@@ -921,6 +944,19 @@ bool Pause = false;
   printf("\n\nBenchmarks:");
   unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
   {
+    {
+      RealRGB32toYUV420Converter picConverterRGB32toYUV420(1920,1080);
+      DurationMin = BenchConverter(picConverterRGB32toYUV420, BlobIn, BlobOut);
+      printf("\nConvert RGB24 to YUV to resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      //picConvertedAYUV2RGB24.SetFlip(true);
+      //DurationMin = BenchConverter(picConvertedAYUV2RGB24, BlobIn, BlobOut);
+    }
+    {
+      OrigRealRGB32toYUV420Converter origConverterRGB32toYUV420(1920,1080);
+      DurationMin = BenchConverter(origConverterRGB32toYUV420, BlobIn, BlobOut);
+      printf(" orig %.3f[ms]", DurationMin/1000.0);
+    }
+
     {
       AYUV444toRGB24Converter picConvertedAYUV2RGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedAYUV2RGB24, BlobIn, BlobOut);

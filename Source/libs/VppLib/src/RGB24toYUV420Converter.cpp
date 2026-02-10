@@ -1,29 +1,29 @@
 /** @file
 
-MODULE						: FastRGB24toYUV420Converter
+MODULE:				FastRGB24toYUV420Converter
 
-TAG								: FRGB24YUVC
+TAG:				FRGB24YUVC
 
-FILE NAME					: FastRGB24toYUV420Converter.cpp
+FILE NAME:			FastRGB24toYUV420Converter.cpp
 
-DESCRIPTION				: Fast RGB 24 bit to YUV420 colour convertion derived from
-										the RGBtoYUV420Converter base class.
+DESCRIPTION:			Fast RGB 24 bit to YUV420 colour convertion derived from
+				the RGBtoYUV420Converter base class.
 
-REVISION HISTORY	:
+REVISION HISTORY:
 									: 
 
-COPYRIGHT					: (c)VICS 2000-2006  all rights resevered - info@videocoding.com
+COPYRIGHT:			(c)VICS 2000-2006  all rights resevered - info@videocoding.com
 
 RESTRICTIONS			: The information/data/code contained within this file is 
-										the property of VICS limited and has been classified as 
-										CONFIDENTIAL.
+				the property of VICS limited and has been classified as 
+				CONFIDENTIAL.
 ===========================================================================*/
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "FastRGB24toYUV420Converter.h"
+#include "FastRGBtoYUV420Converter.h"
 
 /*
 ===========================================================================
@@ -114,7 +114,7 @@ void FastRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, void* p
 
 }//end Convert.
 
-const int FastRGB24toYUV420Converter::R0[] =
+const int FastRGBtoYUV420Converter::R0[] =
 {
 	         0,
 	     78368,
@@ -374,7 +374,7 @@ const int FastRGB24toYUV420Converter::R0[] =
 	  19983840,
 };
 
-const int FastRGB24toYUV420Converter::R1[] =
+const int FastRGBtoYUV420Converter::R1[] =
 {
 	         0,
 	    153888,
@@ -634,7 +634,7 @@ const int FastRGB24toYUV420Converter::R1[] =
 	  39241440,
 };
 
-const int FastRGB24toYUV420Converter::R2[] =
+const int FastRGBtoYUV420Converter::R2[] =
 {
 	         0,
 	     29888,
@@ -894,7 +894,7 @@ const int FastRGB24toYUV420Converter::R2[] =
 	   7621440,
 };
 
-const int FastRGB24toYUV420Converter::R3[] =
+const int FastRGBtoYUV420Converter::R3[] =
 {
 	         0,
 	    114304,
@@ -1154,7 +1154,7 @@ const int FastRGB24toYUV420Converter::R3[] =
 	  29147520,
 };
 
-const int FastRGB24toYUV420Converter::R4[] =
+const int FastRGBtoYUV420Converter::R4[] =
 {
 	         0,
 	    -38528,
@@ -1414,7 +1414,7 @@ const int FastRGB24toYUV420Converter::R4[] =
 	  -9824640,
 };
 
-const int FastRGB24toYUV420Converter::R5[] =
+const int FastRGBtoYUV420Converter::R5[] =
 {
 	         0,
 	    -75744,
@@ -1674,7 +1674,7 @@ const int FastRGB24toYUV420Converter::R5[] =
 	 -19314720,
 };
 
-const int FastRGB24toYUV420Converter::R6[] =
+const int FastRGBtoYUV420Converter::R6[] =
 {
 	         0,
 	    161216,
@@ -1934,7 +1934,7 @@ const int FastRGB24toYUV420Converter::R6[] =
 	  41110080,
 };
 
-const int FastRGB24toYUV420Converter::R7[] =
+const int FastRGBtoYUV420Converter::R7[] =
 {
 	         0,
 	   -135008,
@@ -2194,7 +2194,7 @@ const int FastRGB24toYUV420Converter::R7[] =
 	 -34427040,
 };
 
-const int FastRGB24toYUV420Converter::R8[] =
+const int FastRGBtoYUV420Converter::R8[] =
 {
 	         0,
 	    -26208,
@@ -2453,3 +2453,12 @@ const int FastRGB24toYUV420Converter::R8[] =
 	  -6656832,
 	  -6683040,
 };
+
+
+void FastRGBtoYUV420Converter::Convert(const void* pRgb, void* pYUV)
+{
+  const unsigned char BlkSize = _width*_height;
+  unsigned char *pU = (unsigned char*)pYUV + BlkSize;
+  unsigned char *pV = pU + BlkSize/4;
+  Convert(pRgb, pYUV, pU, pV);
+}

@@ -1,9 +1,6 @@
 #pragma once
 
 
-class YUV444toRGBConverter;
-
-
 class OrigRealYUV444toRGB24Converter: public YUVtoRGBConverter
 {
 public:
@@ -46,10 +43,10 @@ public:
 	virtual ~OrigRealRGB32toYUV420Converter(void) {}
 
 		// Interface.
-	void Convert(const void* pRgb, void* pYUV);
-        void Convert(const void* pRgb, void *pY, void *pU, void *pV);
+	void Convert(const void* pRgb, void* pYUV) const;
+        void Convert(const void* pRgb, void *pY, void *pU, void *pV) const;
 
 private:
-	void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV);
-	void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV);
+	void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
+	void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
 };//end RealRGB32toYUV420Converter.

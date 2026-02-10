@@ -73,8 +73,9 @@ const int iRRGB24YUVCI2_22 = static_cast<int>(0.5 + RRGB24YUVCI2_22 * (2 << iPre
 
 void FastFixedPointRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV)
 {
-  unsigned char *pU = (unsigned char*)pYUV + _width*_height;
-  unsigned char *pV = pU + (_width+1)*(_height+1)/4;
+  const unsigned BlkYsz = _width*_height;
+  unsigned char * const pU = (unsigned char*)pYUV + BlkYsz;
+  unsigned char * const pV = pU + BlkYsz/4;
   Convert(pRgb, pYUV, pU, pV);
 //  if (_flip)
 //    FlipConvert(pRgb, pYUV, pU, pV);

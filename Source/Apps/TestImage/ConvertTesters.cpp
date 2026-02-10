@@ -284,6 +284,16 @@ void OrigRealYUV420toRGB24Converter::NonRotateConvert(const void* pY, const void
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+//TODO: These constants are suspicious, needs to be checked:
+// https://stackoverflow.com/questions/17892346/how-to-convert-rgb-yuv-rgb-both-ways
+//void YUVfromRGB(double& Y, double& U, double& V, const double R, const double G, const double B)
+//{
+//  Y =  0.257 * R + 0.504 * G + 0.098 * B +  16;
+//  U = -0.148 * R - 0.291 * G + 0.439 * B + 128;
+//  V =  0.439 * R - 0.368 * G - 0.071 * B + 128;
+//}
+
+
 /*===========================================================================
 	Constants.
 ===========================================================================*/
@@ -297,6 +307,7 @@ void OrigRealYUV420toRGB24Converter::NonRotateConvert(const void* pY, const void
 #define RRGB32YUVC_21		-0.515
 #define RRGB32YUVC_22		-0.100
 
+
 /*===========================================================================
 	Interface Methods.
 ===========================================================================*/
@@ -309,7 +320,7 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none.*/
-void OrigRealRGB32toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV)
+void OrigRealRGB32toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   if (_flip)
     FlipConvert(pRgb, pY, pU, pV);
@@ -317,17 +328,20 @@ void OrigRealRGB32toYUV420Converter::Convert(const void* pRgb, void* pY, void* p
     NonFlipConvert(pRgb, pY, pU, pV);
 }//end Convert.
 
-void OrigRealRGB32toYUV420Converter::Convert(const void* pRgb, void* pYUV)
+
+void OrigRealRGB32toYUV420Converter::Convert(const void* pRgb, void* pYUV) const
 {
-  unsigned char *pU = (unsigned char*)pYUV + 4*_width*_height;
-  unsigned char *pV = pU + (_width+1)*(_height+1);
+  const unsigned BlkYsz = _width*_height;
+  unsigned char * const pU = (unsigned char*)pYUV + BlkYsz;
+  unsigned char * const pV = pU + BlkYsz/4;
   if (_flip)
     FlipConvert(pRgb, pYUV, pU, pV);
   else
     NonFlipConvert(pRgb, pYUV, pU, pV);
 }//end Convert.
 
-void OrigRealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
+
+void OrigRealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -344,10 +358,10 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, voi
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      //unsigned char*	t				= src + lumOff*4;
-      unsigned char*	t				= src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 4);
+      int chrOff	= yb*xBlks + xb;
+      int lumOff	= (yb*_width + xb) << 1;
+      //unsigned char*	t = src + lumOff*4;
+      unsigned char*	t = src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 4);
 
       /// Top left pel.  255->0.999.
       b = (double)(*t++);
@@ -397,7 +411,7 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, voi
     }//end for xb & yb...
 }
 
-void OrigRealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
+void OrigRealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -414,9 +428,9 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, 
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + lumOff*4;
+      int chrOff	= yb*xBlks + xb;
+      int lumOff	= (yb*_width + xb) << 1;
+      unsigned char*	t = src + lumOff*4;
 
       /// Top left pel.  255->0.999.
       b = (double)(*t++);

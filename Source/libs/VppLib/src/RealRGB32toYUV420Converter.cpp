@@ -70,7 +70,7 @@ to 0..255.
 @param pV		: Chr V plane.
 @return			: none.
 */
-void RealRGB32toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV)
+void RealRGB32toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   if (_flip)
     FlipConvert(pRgb, pY, pU, pV);
@@ -78,17 +78,20 @@ void RealRGB32toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, v
     NonFlipConvert(pRgb, pY, pU, pV);
 }//end Convert.
 
-void RealRGB32toYUV420Converter::Convert(const void* pRgb, void* pYUV)
+
+void RealRGB32toYUV420Converter::Convert(const void* pRgb, void* pYUV) const
 {
-  unsigned char *pU = (unsigned char*)pYUV + 4*_width*_height;
-  unsigned char *pV = pU + (_width+1)*(_height+1);
+  const unsigned YvalSZ = _width*_height;
+  unsigned char * const pU = (unsigned char*)pYUV + YvalSZ;
+  unsigned char * const pV = pU + YvalSZ/4;
   if (_flip)
     FlipConvert(pRgb, pYUV, pU, pV);
   else
     NonFlipConvert(pRgb, pYUV, pU, pV);
 }//end Convert.
 
-void RealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
+
+void RealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -105,16 +108,16 @@ void RealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      //unsigned char*	t				= src + lumOff*4;
-      unsigned char*	t				= src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 4);
+      int chrOff	= yb*xBlks + xb;
+      int lumOff	= (yb*_width + xb) << 1;
+      //unsigned char*	t = src + lumOff*4;
+      unsigned char*	t = src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 4);
 
       /// Top left pel.  255->0.999.
       b = (double)(*t++);
       g = (double)(*t++);
-      r = (double)(*t++);
-      t++;	///< Alpha channel.
+      r = (double)(*t);
+      t += 2;	///< Alpha channel.
       py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u = 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
@@ -123,21 +126,21 @@ void RealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
       /// Top right pel.
       b = (double)(*t++);
       g = (double)(*t++);
-      r = (double)(*t++);
-      t++;	///< Alpha channel.
+      r = (double)(*t);
+			///< Alpha channel.
       py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
 
       lumOff += _width;
-      //t = t + _width*4 - 8;
-      t = t - _width*4 - 8;
+      //t = t + _width*4 + 2 - 8;
+      t = t - _width*4 + 2 - 8;
       /// Bottom left pel.  255->0.999.
       b = (double)(*t++);
       g = (double)(*t++);
-      r = (double)(*t++);
-      t++;	///< Alpha channel.
+      r = (double)(*t);
+      t += 2;	///< Alpha channel.
       py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
@@ -158,7 +161,8 @@ void RealRGB32toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
     }//end for xb & yb...
 }
 
-void RealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
+
+void RealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -175,15 +179,15 @@ void RealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + lumOff*4;
+      int		chrOff	= yb*xBlks + xb;
+      int		lumOff	= (yb*_width + xb) << 1;
+      unsigned char*	t = src + lumOff*4;
 
       /// Top left pel.  255->0.999.
       b = (double)(*t++);
       g = (double)(*t++);
-      r = (double)(*t++);
-      t++;	///< Alpha channel.
+      r = (double)(*t);
+      t += 2;	///< Alpha channel.
       py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u = 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
@@ -192,20 +196,20 @@ void RealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void
       /// Top right pel.
       b = (double)(*t++);
       g = (double)(*t++);
-      r = (double)(*t++);
-      t++;	///< Alpha channel.
+      r = (double)(*t);
+		///< Alpha channel.
       py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
 
       lumOff += _width;
-      t = t + _width*4 - 8;
+      t = t + _width*4 + 2 - 8;
       /// Bottom left pel.  255->0.999.
       b = (double)(*t++);
       g = (double)(*t++);
-      r = (double)(*t++);
-      t++;	///< Alpha channel.
+      r = (double)(*t);
+      t += 2;	///< Alpha channel.
       py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
@@ -225,4 +229,3 @@ void RealRGB32toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void
       pv[chrOff] = (yuvType)( (int)((v + 0.5)/4) );
     }//end for xb & yb...
 }
-

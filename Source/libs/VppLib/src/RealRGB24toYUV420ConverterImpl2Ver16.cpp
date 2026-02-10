@@ -92,7 +92,7 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void *pYUV)
+void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void *pYUV) const
 {
   unsigned char *pU = (unsigned char*)pYUV + 4*_width*_height;
   unsigned char *pV = pU + (_width+1)*(_height+1);
@@ -103,7 +103,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void *pYUV)
 } //end Convert.
 
 
-void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void* pY, void* pU, void* pV)
+void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   if (_flip)
     FlipConvert(pRgb, pY, pU, pV);
@@ -290,7 +290,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipInner(unsigned char* src, shor
 #else
 ///---------------------- No parallel techniques ------------------------------------------------------------
 
-void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
@@ -367,7 +367,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* p
     }//end for xb & yb...
 }
 
-void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;

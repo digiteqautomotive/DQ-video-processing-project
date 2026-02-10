@@ -46,6 +46,9 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _RGBTOYUV420CONVERTER_H
 #define _RGBTOYUV420CONVERTER_H
 
+#include "YUVtoRGBConverter.h"
+
+
 #ifdef _BUILD_FOR_SHORT
 	typedef short yuvType;
 #else
@@ -57,7 +60,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
   Class definition.
 ===========================================================================
 */
-class RGBtoYUV420Converter
+class RGBtoYUV420Converter: public BaseVideoConverter
 {
 public:
 	/// Construction and destruction.
@@ -67,8 +70,8 @@ public:
 	virtual ~RGBtoYUV420Converter(void) {}
 
 	/// Interface.
-	virtual void Convert(const void* pRgb, void* pYUV) = 0;
-        virtual void Convert(const void* pRgb, void *pY, void *pU, void *pV) = 0;
+	virtual void Convert(const void* pRgb, void* pYUV) const = 0;
+        virtual void Convert(const void* pRgb, void *pY, void *pU, void *pV) const = 0;
 
 	/// Member interface.
 	int	GetWidth(void)			{ return(_width); }

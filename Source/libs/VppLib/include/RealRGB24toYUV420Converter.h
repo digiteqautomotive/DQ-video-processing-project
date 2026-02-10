@@ -56,12 +56,12 @@ public:
     virtual ~RealRGB24toYUV420Converter(void) {}
 
     /// Interface.
-    void Convert(const void* pRgb, void *pYUV);
-    void Convert(const void* pRgb, void *pY, void *pU, void *pV);
+    void Convert(const void* pRgb, void *pYUV) const;
+    void Convert(const void* pRgb, void *pY, void *pU, void *pV) const;
 
 protected:
-  void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV);
-  void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV);
+  void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
+  void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
 };//end _REALRGB24TOYUV420CONVERTERIMPL2_H.
 
 

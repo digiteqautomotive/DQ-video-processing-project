@@ -73,7 +73,7 @@ to 0..255.
 @param pV		: Chr V plane.
 @return			: none.
 */
-void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV)
+void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV) const
 {
   unsigned char *pU = (unsigned char*)pYUV + _width*_height;
   unsigned char *pV = pU + (_width+1)*(_height+1)/4;
@@ -84,7 +84,7 @@ void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV)
 }
 
 
-void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV)
+void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   if (_flip)
     FlipConvert(pRgb, pY, pU, pV);
@@ -93,7 +93,7 @@ void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, v
 }
 
 
-void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV)
+void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -169,7 +169,7 @@ void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
     }//end for xb & yb...
 }
 
-void RealRGB24toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV)
+void RealRGB24toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;

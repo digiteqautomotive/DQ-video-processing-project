@@ -6,28 +6,28 @@ TAG				: YUVRGBC
 
 FILE NAME			: YUVtoRGBConverter.h
 
-DESCRIPTION		: Colour convertions are required on the output of
-			all video codecs. For embedded applications only some
-			combinations of colour depths and inversions are required.
-			This class is the base class defining the minimum interface
-			and properties for all derived classes. 
+DESCRIPTION:	Colour convertions are required on the output of
+		all video codecs. For embedded applications only some
+		combinations of colour depths and inversions are required.
+		This class is the base class defining the minimum interface
+		and properties for all derived classes. 
 
-COPYRIGHT		: (c)CSIR 2007-2010
-			(c) 2025 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
+COPYRIGHT:	(c)CSIR 2007-2010
+		(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
 			
-LICENSE			: Software License Agreement (BSD License)
+LICENSE:	Software License Agreement (BSD License)
 
-RESTRICTIONS	: Redistribution and use in source and binary forms, with or without 
+RESTRICTIONS:	Redistribution and use in source and binary forms, with or without 
 		modification, are permitted provided that the following conditions 
 		are met:
-			* Redistributions of source code must retain the above copyright notice, 
-			this list of conditions and the following disclaimer.
-			* Redistributions in binary form must reproduce the above copyright notice, 
-			this list of conditions and the following disclaimer in the documentation 
-			and/or other materials provided with the distribution.
-			* Neither the name of the CSIR nor the names of its contributors may be used 
-			to endorse or promote products derived from this software without specific 
-				prior written permission.
+		* Redistributions of source code must retain the above copyright notice, 
+		this list of conditions and the following disclaimer.
+		* Redistributions in binary form must reproduce the above copyright notice, 
+		this list of conditions and the following disclaimer in the documentation 
+		and/or other materials provided with the distribution.
+		* Neither the name of the CSIR nor the names of its contributors may be used 
+		to endorse or promote products derived from this software without specific 
+		prior written permission.
 
 		THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 		"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -56,16 +56,23 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
   Class definition.
 ===========================================================================*/
 
+class BaseVideoConverter
+{
+public:
+	/// Interface.
+	virtual void Convert(const void* pInputBuffer, void* pRgb) const = 0;
 
-class YUVtoRGBConverter
+	//virtual ~BaseVideoConverter() {}
+};
+
+
+class YUVtoRGBConverter: public BaseVideoConverter
 {
 public:
 	/// Construction and destruction.
-	YUVtoRGBConverter(void):
-	    //_rotate(0),
-	    _flip(false), _width(0), _height(0) {}
+	YUVtoRGBConverter(void): _flip(false), _width(0), _height(0) {}
 	YUVtoRGBConverter(int width, int height);
-	virtual ~YUVtoRGBConverter(void) {}
+	virtual ~YUVtoRGBConverter() {}
 
 	/// Interface.
 	virtual void Convert(const void* pInputBuffer, void* pRgb) const = 0;
@@ -73,20 +80,14 @@ public:
 	/// Member interface.
 	int GetWidth(void) const		{ return(_width); }
 	int GetHeight(void) const		{ return(_height); }
-	//int	GetRotate(void)			{ return(_rotate); }
-	//int GetChrominanceOffset(void)	{ return(_chrOff); }
 	bool GetFlip(void) const		{ return _flip; }
 	
 	void SetDimensions(int width, int height);
-	//void SetRotate(int rotate)			{ _rotate = rotate;}
-	//void SetChrominanceOffset(int val) { _chrOff = val; }
 	void SetFlip(bool flip) { _flip = flip; }
 protected:
 	/// Members.
 	int	_width;
-	int	_height;
-	//int	_rotate;
-	//int	_chrOff;	///< Offset added to the chr values. Typically = 128 to shift all values to positive.
+	int	_height;	
 
   /// Windows bitmaps are bottom to top, standard YUV formats are top to bottom
   /// for our YUV to be compatible with linux we need to flip the image
@@ -106,8 +107,7 @@ public:
      else NonRotateConvert(pY, pU, pV, pRgb);}
 
     virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const = 0;
-    virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const = 0;
-    //virtual void RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const = 0;
+    virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const = 0;    
 };
 
 

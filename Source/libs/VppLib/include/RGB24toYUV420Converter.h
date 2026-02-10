@@ -1,17 +1,17 @@
 /** @file
 
-MODULE				: FastFixedPointRGB24toYUV420Converter
+MODULE:		RGB24toYUV420Converter
 
-FILE NAME			: FastFixedPointRGB24toYUV420Converter.h
+FILE NAME:	RGB24toYUV420Converter.h
 
-DESCRIPTION			: Fixed-point RGB 24 bit to YUV420 colour 
-					conversion derived from the RGBtoYUV420Converter base class.
-					Use this implementation as the reference.
+DESCRIPTION:	Fixed-point RGB 24 bit to YUV420 colour 
+		conversion derived from the RGBtoYUV420Converter base class.
+		Use this implementation as the reference.
 	  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -41,16 +41,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * conversion derived from the RGBtoYUV420Converter base class.
  * Use this implementation as the reference.
  */
-class FastFixedPointRGB24toYUV420Converter: public RGBtoYUV420Converter
+class FixedPointRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
-    FastFixedPointRGB24toYUV420Converter(void) {}
-    FastFixedPointRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
-    FastFixedPointRGB24toYUV420Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) {}
-    virtual ~FastFixedPointRGB24toYUV420Converter(void) {}
+    FixedPointRGB24toYUV420Converter(void) {}
+    FixedPointRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
+    FixedPointRGB24toYUV420Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) {}
+    virtual ~FixedPointRGB24toYUV420Converter(void) {}
 
     /// Interface.
-    void Convert(const void* pRgb, void* pY, void* pU, void* pV);
-    void Convert(const void* pRgb, void* pYUV);
+    void Convert(const void* pRgb, void* pY, void* pU, void* pV) const;
+    void Convert(const void* pRgb, void* pYUV) const;
 };
