@@ -36,8 +36,7 @@ extern "C"
  unsigned GetFeaturesCPU(void);
 #else
  unsigned GetFeaturesCPU(void) {return 0;}
-#endif
- void EmitEMMS(void);
+#endif 
 }
 
 unsigned char FeaturesCPU = 0x80;
@@ -1242,8 +1241,7 @@ bool Pause = false;
     if(FeaturesCPU & 1)
     {
       PicScalerARGB32MMX picScalerARGB32mmx(1920,1080,800,600);     
-      DurationMin = BenchScaller(picScalerARGB32mmx, BlobIn, BlobOut);
-      EmitEMMS();
+      DurationMin = BenchScaller(picScalerARGB32mmx, BlobIn, BlobOut);      
       printf("\nScale ARGB32_MMX from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
     }
 #endif
