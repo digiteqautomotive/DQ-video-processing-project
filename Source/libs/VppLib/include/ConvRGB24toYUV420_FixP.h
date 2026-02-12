@@ -1,23 +1,23 @@
 /** @file
 
-MODULE				: RealRGB32toYUV420Converter
+MODULE:			ConvRGB24toYUV420_FixP
 
-FILE NAME			: RealRGB32toYUV420Converter.h
+FILE NAME:		ConvRGB24toYUV420_FixP.h
 
-DESCRIPTION			: Double precision floating point RGB 32 bit to YUV420 colour 
-					convertion derived from the RGBtoYUV420Converter base class.
-					Use this implementation as the reference.
-			  
+DESCRIPTION:		Fixed-point RGB 24 bit to YUV420 colour 
+			conversion derived from the RGBtoYUV420Converter base class.
+			Use this implementation as the reference.
+	  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* Neither the name of the CSIR nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+* Neither the name of the DQ nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -30,37 +30,26 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
-#ifndef _REALRGB32TOYUV420CONVERTER_H
-#define _REALRGB32TOYUV420CONVERTER_H
-
+===========================================================================*/
 #pragma once
 
 #include "RGBtoYUV420Converter.h"
 
 /**
  * \ingroup ImageLib
- * Double precision floating point RGB 32 bit to YUV420 colour 
- * convertion derived from the RGBtoYUV420Converter base class.
+ * Fixed-point RGB 24 bit to YUV420 colour 
+ * conversion derived from the RGBtoYUV420Converter base class.
  * Use this implementation as the reference.
  */
-class RealRGB32toYUV420Converter: public RGBtoYUV420Converter
+class FastFixedPointRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
-	// Construction and destruction.
-	RealRGB32toYUV420Converter(void) { }
-	RealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
-	virtual ~RealRGB32toYUV420Converter(void) {}
+    /// Construction and destruction.
+    FastFixedPointRGB24toYUV420Converter(void) {}
+    FastFixedPointRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
+    virtual ~FastFixedPointRGB24toYUV420Converter(void) {}
 
-	// Interface.
-
-protected:
-	void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-	void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-
-};//end RealRGB32toYUV420Converter.
-
-
-#endif //_REALRGB32TOYUV420CONVERTER_H
+    /// Interface.
+    void Convert(const void* pRgb, void* pY, void* pU, void* pV);
+    void Convert(const void* pRgb, void* pYUV);
+};

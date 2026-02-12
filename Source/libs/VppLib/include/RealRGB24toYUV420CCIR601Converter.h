@@ -37,7 +37,6 @@ public:
 	// Construction and destruction.
 	RealRGB24toYUV420CCIR601Converter(void) { }
 	RealRGB24toYUV420CCIR601Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
-	RealRGB24toYUV420CCIR601Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) { }
 	virtual ~RealRGB24toYUV420CCIR601Converter(void) {}
 
 	// Interface.

@@ -1,8 +1,8 @@
 /** @file
 
-MODULE:		FastSimdRGB24toYUV420Converter
+MODULE:		ConvRGB24toYUV420_SIMD
 
-FILE NAME:	FastSimdRGB24toYUV420Converter.cpp
+FILE NAME:	ConvRGB24toYUV420_SIMD.cpp
 
 DESCRIPTION:	SIMD RGB 24 bit to YUV420 colour conversion derived from the RGBtoYUV420Converter base class.
 		YUV is represented with 16 bpp. Use this implementation as the reference.
@@ -43,7 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // SSE
 #include <emmintrin.h>
 
-#include "FastSimdRGB24toYUV420Converter.h"
+#include "ConvRGB24toYUV420_SIMD.h"
+
 
 /*===========================================================================
 			Constants
@@ -82,7 +83,7 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void FastSimdRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void ConvRGB24toYUV420_SIMD::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
 {
     // Aligned 16 bit
     __m128 xmm_y = _mm_load_ps(fCOEFF_0);

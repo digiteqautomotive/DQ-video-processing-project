@@ -11,8 +11,8 @@ DESCRIPTION			: Lookup-table-based RGB 24 bit to YUV420 colour
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Win64 time double 12.332[ms] LUT 19.772[ms] fix point 9.089[ms] orig 16.788[ms]
 // Nowadays CPU can do multiplication very fast. It makes no sense to create table.
 
-#include "FastLookupTableRGB24toYUV420Converter.h"
+#include "ConvRGB24toYUV420_LUT.h"
 
 
 /*===========================================================================
@@ -153,6 +153,6 @@ void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void*
 
       pu[chrOff] = (yuvType)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2) );
       pv[chrOff] = (yuvType)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2) );
-    }//end for xb & yb...
-}//end Convert.
+    } //end for xb & yb...
+} //end Convert.
 

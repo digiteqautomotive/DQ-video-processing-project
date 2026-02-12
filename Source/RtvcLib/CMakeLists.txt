@@ -11,6 +11,7 @@ DirectShow/MultiIOInputPin.cpp
 DirectShow/MultiIOOutputPin.cpp
 DirectShow/stdafx.cpp
 DirectShow/VideoMixingBase.cpp
+DirectShow/VariantTools.cpp
 DirectShow/VersionInfo.cpp
 )
 
@@ -19,11 +20,12 @@ GeneralUtils/MeasurementTable.cpp
 )
 
 SET(IU_SRCS
-../libs/VppLib/src/FastFixedPointRGB24toYUV420Converter.cpp
-../libs/VppLib/src/FastGpuRGB24toYUV420Converter.cpp
-../libs/VppLib/src/FastLookupTableRGB24toYUV420Converter.cpp
-../libs/VppLib/src/FastRGB24toYUV420Converter.cpp
-../libs/VppLib/src/FastSimdRGB24toYUV420Converter.cpp
+../libs/VppLib/src/ConvRGB24toYUV420_FixP.cpp
+../libs/VppLib/src/ConvRGB24toYUV420_LUT.cpp
+../libs/VppLib/src/ConvRGB24toYUV420_Real.cpp
+../libs/VppLib/src/ConvRGB24toYUV420_SIMD.cpp
+../libs/VppLib/src/ConvRGB32toYUV420_FixP.cpp
+../libs/VppLib/src/ConvRGB32toYUV420_Real.cpp
 ../libs/VppLib/src/ImageHandlerV2.cpp
 ../libs/VppLib/src/MtRGB24toYUV420Converter.cpp
 ../libs/VppLib/src/OverlayExtMem2Dv2.cpp
@@ -32,27 +34,28 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicConcatRGB32Impl.cpp
 ../libs/VppLib/src/PicCropperRGB24Impl.cpp
 ../libs/VppLib/src/PicCropperRGB32Impl.cpp
+../libs/VppLib/src/PicCropperRGB565Impl.cpp
 ../libs/VppLib/src/PicInPicRGB24Impl.cpp
 ../libs/VppLib/src/PicInPicRGB32Impl.cpp
+../libs/VppLib/src/PicInPicRGB565Impl.cpp
 ../libs/VppLib/src/PicInPicYV24Impl.cpp
+../libs/VppLib/src/PicRotateBPP16Impl.cpp
 ../libs/VppLib/src/PicRotateRGB24Impl.cpp
 ../libs/VppLib/src/PicRotateRGB32Impl.cpp
 ../libs/VppLib/src/PicRotateRGBBase.cpp
 ../libs/VppLib/src/PicScalerARGB32Impl.cpp
+../libs/VppLib/src/PicScalerRGB565Impl.cpp
 ../libs/VppLib/src/PicScalerUYVYImpl.cpp
 ../libs/VppLib/src/PicScalerYUYVImpl.cpp
 ../libs/VppLib/src/PicScalerYUV420PImpl.cpp
 ../libs/VppLib/src/PicScalerYV24Impl.cpp
 ../libs/VppLib/src/RealRGB24toYUV420CCIR601Converter.cpp
 ../libs/VppLib/src/RealRGB24toYUV420CCIR601ConverterVer16.cpp
-../libs/VppLib/src/RealRGB24toYUV420Converter.cpp
 ../libs/VppLib/src/RealRGB24toYUV420ConverterImpl2.cpp
 ../libs/VppLib/src/RealRGB24toYUV420ConverterImpl2Ver16.cpp
-../libs/VppLib/src/RealRGB32toYUV420Converter.cpp
 ../libs/VppLib/src/RealYUV420toRGB24CCIR601Converter.cpp
 ../libs/VppLib/src/RealYUV420toRGB24CCIR601ConverterVer16.cpp
 ../libs/VppLib/src/YUV420toRGBConverter.cpp
-../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2.cpp
 ../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2Ver16.cpp
 ../libs/VppLib/src/YUYVtoRGBConverter.cpp
 ../libs/VppLib/src/YUVtoRGBConverter.cpp
@@ -65,7 +68,7 @@ IF (MMX_SSE_ACCELERATORS)
       ../libs/VppLib/src/PicScalerRGB32ImplA.cpp
       ../libs/VppLib/src/PicScalerARGB32MMX.cpp
       ../libs/VppLib/src/PicScalerARGB32SSE.cpp
-      ../libs/VppLib/src/AYUV444toRGB24Conv_ASM.cpp 
+      ../libs/VppLib/src/ConvAYUV444toRGB24_ASM.cpp
   )
   if ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     SET(IU_SRCS ${IU_SRCS}
@@ -92,7 +95,7 @@ ELSE (MMX_SSE_ACCELERATORS)
   SET(IU_SRCS ${IU_SRCS}
       ../libs/VppLib/src/PicScalerRGB24Impl.cpp
       ../libs/VppLib/src/PicScalerRGB32Impl.cpp
-      ../libs/VppLib/src/AYUV444toRGB24Converter.cpp
+      ../libs/VppLib/src/ConvAYUV444toRGB24.cpp
   )
 ENDIF(MMX_SSE_ACCELERATORS)
 
@@ -115,17 +118,18 @@ DirectShow/NotifyCodes.h
 DirectShow/SettingsInterface.h
 DirectShow/StatusInterface.h
 DirectShow/stdafx.h
+DirectShow/VariantTools.h
 DirectShow/VideoMixingBase.h
 )
 SET(GU_HEADERS
 GeneralUtils/MeasurementTable.h
 )
 SET(IU_HEADERS
-../libs/VppLib/include/FastFixedPointRGB24toYUV420Converter.h
-../libs/VppLib/include/FastGpuRGB24toYUV420Converter.h
-../libs/VppLib/include/FastLookupTableRGB24toYUV420Converter.h
-../libs/VppLib/include/FastRGB24toYUV420Converter.h
-../libs/VppLib/include/FastSimdRGB24toYUV420Converter.h
+../libs/VppLib/include/ConvRGB24toYUV420_FixP.h
+../libs/VppLib/include/ConvRGB24toYUV420_LUT.h
+../libs/VppLib/include/ConvRGB24toYUV420_Real.h
+../libs/VppLib/include/ConvRGB24toYUV420_SIMD.h
+../libs/VppLib/include/ConvRGB32toYUV420_Real.h
 ../libs/VppLib/include/ImageHandlerV2.h
 ../libs/VppLib/include/MtRGB24toYUV420Converter.h
 ../libs/VppLib/include/OverlayExtMem2Dv2.h
@@ -148,10 +152,8 @@ SET(IU_HEADERS
 ../libs/VppLib/include/PicScalerYUV420PImpl.h
 ../libs/VppLib/include/RealRGB24toYUV420CCIR601Converter.h
 ../libs/VppLib/include/RealRGB24toYUV420CCIR601ConverterVer16.h
-../libs/VppLib/include/RealRGB24toYUV420Converter.h
 ../libs/VppLib/include/RealRGB24toYUV420ConverterImpl2.h
 ../libs/VppLib/include/RealRGB24toYUV420ConverterImpl2Ver16.h
-../libs/VppLib/include/RealRGB32toYUV420Converter.h
 ../libs/VppLib/include/RealYUV420toRGB24CCIR601Converter.h
 ../libs/VppLib/include/RealYUV420toRGB24CCIR601ConverterVer16.h
 ../libs/VppLib/include/RealYUV420toRGB24Converter.h
@@ -159,9 +161,7 @@ SET(IU_HEADERS
 ../libs/VppLib/include/RealYUV420toRGB24ConverterImpl2Ver16.h
 ../libs/VppLib/include/RGBtoRGBConverter.h
 ../libs/VppLib/include/RGBtoYUV420Converter.h
-../libs/VppLib/include/YUV420toRGBConverter.h
-../libs/VppLib/include/YUV444toRGBConverter.h
-../libs/VppLib/include/AYUV444toRGB24Converter.h
+../libs/VppLib/include/ConvAYUV444toRGB.h
 )
 SET(S_HEADERS
 Shared/CommonDefs.h

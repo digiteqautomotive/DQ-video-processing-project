@@ -16,7 +16,7 @@ add_executable(TestImage
         ConvertTesters.cpp ConvertTesters.h 
 	RotateTesters.cpp RotateTesters.h 
 	ScaleTesters.cpp ScaleTesters.h
-	TestImage.cpp)
+	TestImage.cpp stdafx.cpp)
 
 
 TARGET_LINK_LIBRARIES (

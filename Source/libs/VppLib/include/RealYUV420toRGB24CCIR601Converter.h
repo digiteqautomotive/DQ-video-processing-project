@@ -1,28 +1,26 @@
 /** @file
 
-MODULE						: RealYUV420toRGB24CCIR601Converter
+MODULE:			RealYUV420toRGB24CCIR601Converter
 
-TAG								: RYUVRGB24CC
+TAG:			RYUVRGB24CC
 
-FILE NAME					: RealYUV420toRGB24CCIR601Converter.h
+FILE NAME:		RealYUV420toRGB24CCIR601Converter.h
 
-DESCRIPTION				: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-										colour convertion derived from	the YUV420toRGBConverter base 
-										class. Assumes that the colour space of the YUV components
-										are defined by the CCIR-601 standard.
+DESCRIPTION:	Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
+				colour convertion derived from	the YUV420toRGBConverter base 
+				class. Assumes that the colour space of the YUV components
+				are defined by the CCIR-601 standard.
 
-REVISION HISTORY	:
-									: 
+REVISION HISTORY:
 
-COPYRIGHT					: 
+COPYRIGHT:
 
-RESTRICTIONS			: 
-===========================================================================
-*/
+RESTRICTIONS:
+===========================================================================*/
 #ifndef _REALYUV420TORGB24CCIR601CONVERTER_H
 #define _REALYUV420TORGB24CCIR601CONVERTER_H
 
-#include "YUV420toRGBConverter.h"
+#include "YUVtoRGBConverter.h"
 
 /*
 ===========================================================================

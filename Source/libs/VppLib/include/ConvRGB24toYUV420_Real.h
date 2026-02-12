@@ -1,17 +1,17 @@
 /** @file
 
-MODULE				: FastLookupTableRGB24toYUV420Converter
+MODULE:			RealRGB24toYUV420Converter
 
-FILE NAME			: FastLookupTableRGB24toYUV420Converter.h
+FILE NAME:		ConvRGB24toYUV420_Real.h
 
-DESCRIPTION			: Lookup-table-based  RGB 24 bit to YUV420 colour 
-					conversion derived from the RGBtoYUV420Converter base class.
-					Use this implementation as the reference.
+DESCRIPTION:		Double precision floating point RGB 24 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
+			Use this implementation as the reference.
 	  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -30,40 +30,33 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-===========================================================================*/
+
+===========================================================================
+*/
+#ifndef _REALRGB24TOYUV420CONVERTER_H
+#define _REALRGB24TOYUV420CONVERTER_H
+
 #pragma once
 
 #include "RGBtoYUV420Converter.h"
 
-/**
- * \ingroup ImageLib
- * Lookup-table based floating point RGB 24 bit to YUV420 colour 
- * conversion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference.
- */
-class ConvRGB24toYUV42_float_LUT: public RGBtoYUV420Converter
+/** \ingroup ImageLib
+ * Double precision floating point RGB 24 bit to YUV420 colour 
+ * convertion derived from the RGBtoYUV420Converter base class.
+ * Use this implementation as the reference. */
+class RealRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
-    ConvRGB24toYUV42_float_LUT(void) { initLookupTable(); }
-    ConvRGB24toYUV42_float_LUT(int width, int height): RGBtoYUV420Converter(width,height) { initLookupTable(); }
-    virtual ~ConvRGB24toYUV42_float_LUT(void) {}
-
-    /// Interface.
-    void NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
-    void FlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
+    RealRGB24toYUV420Converter(void) { }
+    RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
+    virtual ~RealRGB24toYUV420Converter(void) {}
 
 protected:
+	/// Interface.
+  virtual void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+  virtual void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+}; //end _REALRGB24TOYUV420CONVERTERIMPL2_H.
 
-  void initLookupTable();
 
-  float m_RRGB24YUVCI2_00[256];
-  float m_RRGB24YUVCI2_01[256];
-  float m_RRGB24YUVCI2_02[256];
-  float m_RRGB24YUVCI2_10[256];
-  float m_RRGB24YUVCI2_11[256];
-  float m_RRGB24YUVCI2_12[256];
-  float m_RRGB24YUVCI2_20[256];
-  float m_RRGB24YUVCI2_21[256];
-  float m_RRGB24YUVCI2_22[256];
-};
+#endif

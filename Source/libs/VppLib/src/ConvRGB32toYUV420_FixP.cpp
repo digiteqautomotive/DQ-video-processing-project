@@ -1,8 +1,8 @@
 /** @file
 
-MODULE:		FastFixedPointRGB32toYUV420Converter
+MODULE:		ConvRGB32toYUV420_FixP
 
-FILE NAME:	FastFixedPointRGB32toYUV420Converter.cpp
+FILE NAME:	ConvRGB32toYUV420_FixP.cpp
 
 DESCRIPTION:	Fixed-point RGB 32 bit to YUV420 colour 
 		conversion derived from the RGBtoYUV420Converter base class.

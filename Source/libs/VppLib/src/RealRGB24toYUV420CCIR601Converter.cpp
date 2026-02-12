@@ -1,22 +1,21 @@
 /** @file
 
-MODULE						: RealRGB24toYUV420CCIR601Converter
+MODULE:			RealRGB24toYUV420CCIR601Converter
 
-TAG								: RRGB24YUVCC
+TAG:			RRGB24YUVCC
 
-FILE NAME					: RealRGB24toYUV420CCIR601Converter.cpp
+FILE NAME:		RealRGB24toYUV420CCIR601Converter.cpp
 
-DESCRIPTION				: Double precision floating point RGB 24 bit to YUV420 colour 
-										convertion derived from the RGBtoYUV420Converter base class.
-										YUV is represented with 8 bpp. Implements the CCIR-601 colour 
-										conversion process. Use this implementation as the reference.
+DESCRIPTION:		Double precision floating point RGB 24 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
+			YUV is represented with 8 bpp. Implements the CCIR-601 colour 
+			conversion process. Use this implementation as the reference.
 
-REVISION HISTORY	:
-									: 
+REVISION HISTORY:
 
-COPYRIGHT					:
+COPYRIGHT:
 
-RESTRICTIONS			: 
+RESTRICTIONS: 
 ===========================================================================*/
 #include <stdio.h>
 #include <math.h>
@@ -95,8 +94,8 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		r = (double)(*t++);
 		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u = _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v = _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u = 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v = 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Top right pel.
 		b = (double)(*t++);
@@ -104,8 +103,8 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		r = (double)(*t++);
 		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
     lumOff += _width;
     //t = t + _width*3 - 6;
@@ -116,8 +115,8 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		r = (double)(*t++);
 		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Bottom right pel.
 		b = (double)(*t++);
@@ -125,8 +124,8 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		r = (double)(*t++);
 		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Average the 4 chr values.
 		pu[chrOff] = (yuvType)( (int)(u + 0.5)/4 );
@@ -162,8 +161,8 @@ void RealRGB24toYUV420CCIR601Converter::NonFlipConvert( void* pRgb, void* pY, vo
 		r = (double)(*t++);
 		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u = _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v = _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u = 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v = 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Top right pel.
 		b = (double)(*t++);
@@ -171,8 +170,8 @@ void RealRGB24toYUV420CCIR601Converter::NonFlipConvert( void* pRgb, void* pY, vo
 		r = (double)(*t++);
 		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
     lumOff += _width;
     t = t + _width*3 - 6;
@@ -182,8 +181,8 @@ void RealRGB24toYUV420CCIR601Converter::NonFlipConvert( void* pRgb, void* pY, vo
 		r = (double)(*t++);
 		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Bottom right pel.
 		b = (double)(*t++);
@@ -191,8 +190,8 @@ void RealRGB24toYUV420CCIR601Converter::NonFlipConvert( void* pRgb, void* pY, vo
 		r = (double)(*t++);
 		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += _chrOff + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += _chrOff + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Average the 4 chr values.
 		pu[chrOff] = (yuvType)( (int)(u + 0.5)/4 );
@@ -200,5 +199,3 @@ void RealRGB24toYUV420CCIR601Converter::NonFlipConvert( void* pRgb, void* pY, vo
  	}//end for xb & yb...
 
 }//end Convert.
-
-

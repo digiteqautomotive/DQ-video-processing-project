@@ -15,7 +15,7 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 #include "DirectShow/CommonDefs.h"
 #include "DirectShow/CustomMediaTypes.h"
 #include "DirectShow/DirectShowMediaFormats.h"
-#include "AYUV444toRGB24Converter.h"
+#include "ConvAYUV444toRGB.h"
 #include "RealYUV420toRGB24Converter.h"
 #include "YUYVtoRGBConverter.h"
 #include "YVYUtoRGBConverter.h"

@@ -1,17 +1,17 @@
 /** @file
 
-MODULE				: FastSimdRGB24toYUV420Converter
+MODULE:			RealRGB32toYUV420Converter
 
-FILE NAME			: FastSimdRGB24toYUV420Converter.h
+FILE NAME:		ConvRGB32toYUV420_Real.h
 
-DESCRIPTION			: SIMD RGB 24 bit to YUV420 colour 
-					conversion derived from the RGBtoYUV420Converter base class.
-					Use this implementation as the reference.
-	  
+DESCRIPTION:		Double precision floating point RGB 32 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
+			Use this implementation as the reference.
+			  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -30,27 +30,35 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
+#ifndef _REALRGB32TOYUV420CONVERTER_H
+#define _REALRGB32TOYUV420CONVERTER_H
+
 #pragma once
 
 #include "RGBtoYUV420Converter.h"
 
-
-/** \ingroup ImageLib
- * Double precision floating point RGB 24 bit to YUV420 colour 
+/**
+ * \ingroup ImageLib
+ * Double precision floating point RGB 32 bit to YUV420 colour 
  * convertion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference. */
-class FastSimdRGB24toYUV420Converter: public RGBtoYUV420Converter
+ * Use this implementation as the reference.
+ */
+class RealRGB32toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
-    /// Construction and destruction.
-    FastSimdRGB24toYUV420Converter(void) {}
-    FastSimdRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
-    virtual ~FastSimdRGB24toYUV420Converter(void) {}
+	// Construction and destruction.
+	RealRGB32toYUV420Converter(void) { }
+	RealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
+	virtual ~RealRGB32toYUV420Converter(void) {}
+
+	// Interface.
 
 protected:
-    /// Interface.
-    void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-    void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
-};
+	void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+	void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+
+};//end RealRGB32toYUV420Converter.
+
+
+#endif //_REALRGB32TOYUV420CONVERTER_H

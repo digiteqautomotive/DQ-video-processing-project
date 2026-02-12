@@ -1,13 +1,13 @@
 /** @file
 
-MODULE				: MtRGB24toYUV420Converter
+MODULE:			MtRGB24toYUV420Converter
 
-FILE NAME			: MtRGB24toYUV420Converter.cpp
+FILE NAME:		MtRGB24toYUV420Converter.cpp
 
-DESCRIPTION			: Double precision floating point RGB 24 bit to YUV420 colour 
-					convertion derived from the RGBtoYUV420Converter base class.
-					YUV is represented with 8 bpp. Use this implementation as 
-					the reference.
+DESCRIPTION:		Double precision floating point RGB 24 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
+			YUV is represented with 8 bpp. Use this implementation as 
+			the reference.
 
 LICENSE: Software License Agreement (BSD License)
 

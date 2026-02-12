@@ -17,15 +17,14 @@
 
 // Color conversion helper classes
 #include "ImageHandlerV2.h"
-#include "RealRGB24toYUV420Converter.h"
+#include "ConvRGB24toYUV420_Real.h "
 #ifdef USE_MULTI_THREADED
   #include <Image/MtRGB24toYUV420Converter.h>
 #endif
 #include "RealYUV420toRGB24Converter.h"
-#include "FastLookupTableRGB24toYUV420Converter.h"
-//#include "FastFixedPointRGB24toYUV420Converter.h"
-#include "FastSimdRGB24toYUV420Converter.h"
-//#include "FastGpuRGB24toYUV420Converter.h"
+#include "ConvRGB24toYUV420_LUT.h"
+#include "ConvRGB24toYUV420_FixP.h"
+#include "ConvRGB24toYUV420_SIMD.h"
 
 #include <Shared/TimerUtil.h>
 
@@ -100,7 +99,7 @@ public:
     case SIMD:
       {
         printf("Creating SIMD color converter\r\n");
-        m_pRgbToYuvConverter = new FastSimdRGB24toYUV420Converter();
+        m_pRgbToYuvConverter = new ConvRGB24toYUV420_SIMD();
         break;
       }
 /*

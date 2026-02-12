@@ -18,14 +18,14 @@
 #include "PicRotateRGB24Impl.h"
 #include "RotateTesters.h"
 
-#include "AYUV444toRGB24Converter.h"
+#include "ConvAYUV444toRGB.h"
 #include "RealYUV420toRGB24Converter.h"
-#include "RealRGB24toYUV420Converter.h"
-#include "RealRGB32toYUV420Converter.h"
+#include "ConvRGB24toYUV420_Real.h "
+#include "ConvRGB32toYUV420_Real.h "
 #include "RGB24toYUV420Converter.h"
 #include "RGB32toYUV420Converter.h"
-#include "FastLookupTableRGB24toYUV420Converter.h"
-#include "FastSimdRGB24toYUV420Converter.h"
+#include "ConvRGB24toYUV420_LUT.h"
+#include "ConvRGB24toYUV420_SIMD.h"
 #include "ConvertTesters.h"
 
 
@@ -1174,7 +1174,7 @@ bool Pause = false;
 #ifdef USE_SSE
     if(FeaturesCPU & 2)
     {
-      FastSimdRGB24toYUV420Converter simdConverterRGB24toYUV420(1920,1080);
+      ConvRGB24toYUV420_SIMD simdConverterRGB24toYUV420(1920,1080);
       DurationMin = BenchConverter(simdConverterRGB24toYUV420, BlobIn, BlobOut);
       printf(" SIMD %.3f[ms]", DurationMin/1000.0);
     }
