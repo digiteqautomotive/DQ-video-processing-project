@@ -65,8 +65,8 @@ public:
         void Convert(const void* pRgb, void *pY, void *pU, void *pV) const;
 
 private:
-  void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-  void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+  void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+  void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 
 };//end _RealRGB24toYUV420ConverterImpl2Ver16_H.
 

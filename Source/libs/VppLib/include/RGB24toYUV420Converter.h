@@ -49,6 +49,6 @@ public:
 
 protected:
 	// Interface.
-    virtual void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-    virtual void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
+    virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+    virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 };

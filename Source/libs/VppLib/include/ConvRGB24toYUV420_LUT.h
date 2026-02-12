@@ -50,8 +50,8 @@ public:
     virtual ~ConvRGB24toYUV42_float_LUT(void) {}
 
     /// Interface.
-    void NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
-    void FlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
+    void NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+    void FlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
 
 protected:
 

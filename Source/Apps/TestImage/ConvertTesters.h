@@ -44,8 +44,8 @@ public:
 
 		// Interface.
 protected:
-	void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-	void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+	void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+	void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 }; //end RealRGB24toYUV420Converter.
 
 
@@ -59,6 +59,6 @@ public:
 
 		// Interface.
 protected:
-	void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
-	void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+	void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+	void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 };//end RealRGB32toYUV420Converter.

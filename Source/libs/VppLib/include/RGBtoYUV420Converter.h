@@ -87,16 +87,16 @@ public:
           const unsigned BlkYsz = _width*_height;
           unsigned char * const pU = (unsigned char*)pYUV + BlkYsz;
           unsigned char * const pV = pU + BlkYsz/4;
-          if(_flip) FlipConvert((const unsigned char*)pRgb, pYUV, pU, pV);
-               else NonFlipConvert((const unsigned char*)pRgb, pYUV, pU, pV);
+          if(_flip) FlipConvert((const unsigned char*)pRgb, (unsigned char*)pYUV, pU, pV);
+               else NonFlipConvert((const unsigned char*)pRgb, (unsigned char*)pYUV, pU, pV);
         }//end Convert.
         virtual void Convert(const void* pRgb, void* pY, void* pU, void* pV)
         {
-          if(_flip) FlipConvert((const unsigned char*)pRgb, pY, pU, pV);
-          else NonFlipConvert((const unsigned char*)pRgb, pY, pU, pV);
+          if(_flip) FlipConvert((const unsigned char*)pRgb, (unsigned char*)pY, (unsigned char*)pU, (unsigned char*)pV);
+          else NonFlipConvert((const unsigned char*)pRgb, (unsigned char*)pY, (unsigned char*)pU, (unsigned char*)pV);
         }
-	virtual void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const = 0;
-	virtual void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const = 0;
+	virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;
+	virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;
 
 	/// Member interface.
 	int GetWidth(void) const		{ return(_width); }

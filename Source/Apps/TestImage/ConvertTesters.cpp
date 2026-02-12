@@ -320,7 +320,7 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none.*/
-void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -390,7 +390,7 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, void
     }//end for xb & yb...
 }
 
-void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -461,7 +461,7 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, v
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -529,11 +529,11 @@ void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, void
 }
 
 
-void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType*	py = (yuvType *)pY;
-  yuvType*	pu = (yuvType *)pU;
-  yuvType*	pv = (yuvType *)pV;  
+  yuvType *py = (yuvType *)pY;
+  yuvType *pu = (yuvType *)pU;
+  yuvType *pv = (yuvType *)pV;  
 
   /// Y have range 0..255, U & V have range -128..127.
   double	u,v;

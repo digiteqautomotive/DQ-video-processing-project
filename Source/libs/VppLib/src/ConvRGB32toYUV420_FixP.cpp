@@ -60,7 +60,77 @@ const int iRRGB24YUVCI2_22 = static_cast<int>(0.5 + RRGB24YUVCI2_22 * (2 << iPre
 ===========================================================================*/
 
 
-/** Double precision reference implementation.
+void ConvRGB32toYUV420FixP::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
+{
+	// Y have range 0..255, U & V have range -128..127.
+  int	y;
+  int	rs,gs,bs;
+  int	r,g,b;
+
+  pRgb += (4*_width) * (_height-1);
+	// Step in 2x2 pel blocks. (4 pels per block).
+  int yb = _height >> 1;
+  while(yb-- > 0)
+  {
+    int xb = _width >> 1;
+    while(xb-- > 0)
+    {
+	// Top left pel.
+      bs = b = (int)pRgb[0];
+      gs = g = (int)pRgb[1];
+      rs = r = (int)pRgb[2];
+      y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
+      if(y>=255) pY[0]=255;		// y is only positive
+      else pY[0] = (unsigned char)y;
+
+	// Top right pel.
+      bs += b = (int)pRgb[4];
+      gs += g = (int)pRgb[5];
+      rs += r = (int)pRgb[6];
+      y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
+      if(y>=255) pY[1]=255;		// y is only positive
+      else pY[1] = (unsigned char)y;
+
+      pRgb -= _width*4;
+
+	// Bottom left pel.
+      bs += b = (int)pRgb[0];
+      gs += g = (int)pRgb[1];
+      rs += r = (int)pRgb[2];
+      y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
+      if(y>=255) pY[_width]=255;	// y is only positive
+      else pY[_width] = (unsigned char)y;
+
+	// Bottom right pel.
+      bs += b = (int)pRgb[4];
+      gs += g = (int)pRgb[5];
+      rs += r = (int)pRgb[6];
+      y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
+      if(y>=255) pY[_width+1]=255;	// y is only positive
+            else pY[_width+1] = (unsigned char)y;
+
+	// Average the 4 chr values.
+      y = ((iRRGB24YUVCI2_10*rs + iRRGB24YUVCI2_11*gs + iRRGB24YUVCI2_12*bs) >> (iPrecision + 1)) + 4*128 + 2;	// +2 ... rounding.
+      if(y<=0) *pU++=0;
+      else if(y>=4*255) *pU++=255;
+      else *pU++ = (unsigned char)(y>>2);
+
+      y = ((iRRGB24YUVCI2_20*rs + iRRGB24YUVCI2_21*gs + iRRGB24YUVCI2_22*bs) >> (iPrecision + 1)) + 4*128 + 2;	// +2 ... rounding.
+      if(y<=0) *pV++=0;
+      else if(y>=4*255) *pV++=255;
+      else *pV++ = (unsigned char)(y>>2);
+
+      pRgb += _width*4 + 8;
+      pY += 2;
+    } //end for xb
+
+    pY += _width;
+    pRgb -= 3 * 4*_width;
+  }
+}
+
+
+/** Fixed point reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range
 to 0..255.
@@ -69,18 +139,14 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void ConvRGB32toYUV420FixP::NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const
+void ConvRGB32toYUV420FixP::NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType*	py = (yuvType *)pY;
-  yuvType*	pu = (yuvType *)pU;
-  yuvType*	pv = (yuvType *)pV;
-
-  /// Y have range 0..255, U & V have range -128..127.
+	// Y have range 0..255, U & V have range -128..127.
   int	y;
   int	rs,gs,bs;
   int	r,g,b;
 
-  /// Step in 2x2 pel blocks. (4 pels per block).
+	// Step in 2x2 pel blocks. (4 pels per block).
   //const int xBlks = _width >> 1;
   int yb = _height >> 1;
   while(yb-- > 0)
@@ -93,16 +159,16 @@ void ConvRGB32toYUV420FixP::NonFlipConvert(const unsigned char *pRgb, void* pY, 
       gs = g = (int)pRgb[1];
       rs = r = (int)pRgb[2];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
-      if(y>=255) py[0]=255;		// y is only positive
-      else py[0] = (yuvType)y;
+      if(y>=255) pY[0]=255;		// y is only positive
+      else pY[0] = (unsigned char)y;
 
 	// Top right pel.
       bs += b = (int)pRgb[4];
       gs += g = (int)pRgb[5];
       rs += r = (int)pRgb[6];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
-      if(y>=255) py[1]=255;		// y is only positive
-      else py[1] = (yuvType)y;
+      if(y>=255) pY[1]=255;		// y is only positive
+      else pY[1] = (unsigned char)y;
 
       pRgb += _width*4;
 	// Bottom left pel.
@@ -110,33 +176,33 @@ void ConvRGB32toYUV420FixP::NonFlipConvert(const unsigned char *pRgb, void* pY, 
       gs += g = (int)pRgb[1];
       rs += r = (int)pRgb[2];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
-      if(y>=255) py[_width]=255;	// y is only positive
-      else py[_width] = (yuvType)y;
+      if(y>=255) pY[_width]=255;	// y is only positive
+      else pY[_width] = (unsigned char)y;
 
 	// Bottom right pel.
       bs += b = (int)pRgb[4];
       gs += g = (int)pRgb[5];
       rs += r = (int)pRgb[6];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
-      if(y>=255) py[_width+1]=255;	// y is only positive
-            else py[_width+1] = (yuvType)y;
+      if(y>=255) pY[_width+1]=255;	// y is only positive
+            else pY[_width+1] = (unsigned char)y;
 
 	// Average the 4 chr values.
       y = ((iRRGB24YUVCI2_10*rs + iRRGB24YUVCI2_11*gs + iRRGB24YUVCI2_12*bs) >> (iPrecision + 1)) + 4*128 + 2;	// +2 ... rounding.
-      if(y<=0) *pu++=0;
-      else if(y>=4*255) *pu++=255;
-      else *pu++ = (yuvType)(y>>2);
+      if(y<=0) *pU++=0;
+      else if(y>=4*255) *pU++=255;
+      else *pU++ = (unsigned char)(y>>2);
 
       y = ((iRRGB24YUVCI2_20*rs + iRRGB24YUVCI2_21*gs + iRRGB24YUVCI2_22*bs) >> (iPrecision + 1)) + 4*128 + 2;	// +2 ... rounding.
-      if(y<=0) *pv++=0;
-      else if(y>=4*255) *pv++=255;
-      else *pv++ = (yuvType)(y>>2);
+      if(y<=0) *pV++=0;
+      else if(y>=4*255) *pV++=255;
+      else *pV++ = (unsigned char)(y>>2);
 
       pRgb -= _width*4 - 8;
-      py += 2;
+      pY += 2;
     } //end for xb
 
-    py += _width;
+    pY += _width;
     pRgb += 4*_width;
   }
 }//end Convert.

@@ -80,11 +80,11 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType*	py = (yuvType *)pY;
-  yuvType*	pu = (yuvType *)pU;
-  yuvType*	pv = (yuvType *)pV;
+  unsigned char*	py = (unsigned char *)pY;
+  unsigned char*	pu = (unsigned char *)pU;
+  unsigned char*	pv = (unsigned char *)pV;
 
 	// Y have range 0..255, U & V have range -128..127.
   double u,v;
@@ -104,7 +104,7 @@ void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void*
       b = (*t++);
       g = (*t++);
       r = (*t++);
-      py[lumOff] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
+      py[lumOff] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
 
       u = m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v = m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
@@ -113,7 +113,7 @@ void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void*
       b = (*t++);
       g = (*t++);
       r = (*t++);
-      py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
+      py[lumOff+1] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
 
       u += m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v += m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
@@ -124,7 +124,7 @@ void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void*
       b = (*t++);
       g = (*t++);
       r = (*t++);
-      py[lumOff] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
+      py[lumOff] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
 
       u += m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v += m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
@@ -133,8 +133,8 @@ void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void*
       b = (*t++);
       g = (*t++);
       r = (*t++);
-      py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
-      //py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      py[lumOff+1] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255(/*(int)*/(0.5 + m_RRGB24YUVCI2_00[r] + m_RRGB24YUVCI2_01[g] + m_RRGB24YUVCI2_02[b]));
+      //py[lumOff+1] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
 
       u += m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v += m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
@@ -151,8 +151,8 @@ void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void*
       else
         iv += 2;
 
-      pu[chrOff] = (yuvType)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2) );
-      pv[chrOff] = (yuvType)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2) );
+      pu[chrOff] = (unsigned char)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2) );
+      pv[chrOff] = (unsigned char)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2) );
     } //end for xb & yb...
 } //end Convert.
 
