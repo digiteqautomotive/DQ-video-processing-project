@@ -23,7 +23,7 @@
 #endif
 #include "RealYUV420toRGB24Converter.h"
 #include "FastLookupTableRGB24toYUV420Converter.h"
-#include "FastFixedPointRGB24toYUV420Converter.h"
+//#include "FastFixedPointRGB24toYUV420Converter.h"
 #include "FastSimdRGB24toYUV420Converter.h"
 //#include "FastGpuRGB24toYUV420Converter.h"
 
@@ -86,15 +86,17 @@ public:
     case LOOKUP_TABLE:
       {
         printf("Creating lookup table-based color converter\r\n");
-        m_pRgbToYuvConverter = new FastLookupTableRGB24toYUV420Converter();
+        m_pRgbToYuvConverter = new ConvRGB24toYUV42_float_LUT();
         break;
       }
+/*
     case FIXED_POINT:
       {
         printf("Creating fixed-point color converter\r\n");
         m_pRgbToYuvConverter = new FastFixedPointRGB24toYUV420Converter();
         break;
       }
+*/
     case SIMD:
       {
         printf("Creating SIMD color converter\r\n");
@@ -143,10 +145,8 @@ public:
 
     // configure converters
     m_pRgbToYuvConverter->SetDimensions(m_pBbitmapInfoHeader->biWidth, m_pBbitmapInfoHeader->biHeight);
-    m_pRgbToYuvConverter->SetChrominanceOffset(128);
     m_pRgbToYuvConverter->SetFlip(true);
     m_pYuvToRgbConverter->SetDimensions(m_pBbitmapInfoHeader->biWidth, m_pBbitmapInfoHeader->biHeight);
-    //m_pYuvToRgbConverter->SetChrominanceOffset(128);
     m_pYuvToRgbConverter->SetFlip(true);
     
     // allocate memory for YUV (1.5 suffices but BUILD_FOR_SHORT requires 2 x 1.5)

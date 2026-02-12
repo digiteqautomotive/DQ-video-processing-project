@@ -74,15 +74,10 @@ RealRGB24toYUV420ConverterImpl2Ver16::RealRGB24toYUV420ConverterImpl2Ver16(int w
 { 
 }//end constructor.
 
-RealRGB24toYUV420ConverterImpl2Ver16::RealRGB24toYUV420ConverterImpl2Ver16(int width, int height, int chrOff): RGBtoYUV420Converter(width, height, chrOff)
-{
-}//end constructor.
 
-/*
-===========================================================================
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range
@@ -97,18 +92,18 @@ void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void *pYUV)
   unsigned char *pU = (unsigned char*)pYUV + 4*_width*_height;
   unsigned char *pV = pU + (_width+1)*(_height+1);
   if (_flip)
-    FlipConvert(pRgb, pYUV, pU, pV);
+    FlipConvert((const unsigned char*)pRgb, pYUV, pU, pV);
   else
-    NonFlipConvert(pRgb, pYUV, pU, pV);
+    NonFlipConvert((const unsigned char*)pRgb, pYUV, pU, pV);
 } //end Convert.
 
 
 void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
 {
   if (_flip)
-    FlipConvert(pRgb, pY, pU, pV);
+    FlipConvert((const unsigned char*)pRgb, pY, pU, pV);
   else
-    NonFlipConvert(pRgb, pY, pU, pV);
+    NonFlipConvert((const unsigned char*)pRgb, pY, pU, pV);
 } //end Convert.
 
 
@@ -202,12 +197,12 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipInner(unsigned char* src, short* 
   }//end for ...
 }//end FlipInner.
 
-void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert( void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV )
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
   short*	pv = (short *)pV;
-  unsigned char* src = (unsigned char *)pRgb;
+  const unsigned char* src = pRgb;
 
   /// Y have range 0..255, U & V have range -128..127.
   /// Step in 2x2 pel blocks. (4 pels per block).
@@ -290,7 +285,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipInner(unsigned char* src, shor
 #else
 ///---------------------- No parallel techniques ------------------------------------------------------------
 
-void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
+void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
@@ -307,10 +302,10 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* p
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      //unsigned char*	t				= src + lumOff*3;
-      unsigned char*	t				= src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 3);
+      int		chrOff	= yb*xBlks + xb;
+      int		lumOff	= (yb*_width + xb) << 1;
+      //unsigned char*	t = src + lumOff*3;
+      unsigned char*	t = src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 3);
 
       /// Top left pel.
       b = (double)(*t++);
@@ -362,17 +357,16 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* p
       else
         v = (v/4) + 0.5;
 
-      pu[chrOff] = (short)( _chrOff + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(u)) );
-      pv[chrOff] = (short)( _chrOff + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(v)) );
+      pu[chrOff] = (short)( 128 + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(u)) );
+      pv[chrOff] = (short)( 128 + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(v)) );
     }//end for xb & yb...
 }
 
-void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
+void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
   short*	pv = (short *)pV;
-  unsigned char* src = (unsigned char *)pRgb;
 
   /// Y have range 0..255, U & V have range -128..127.
   /// Step in 2x2 pel blocks. (4 pels per block).
@@ -381,9 +375,9 @@ void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const void* pRgb, void
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + lumOff*3;
+      int		chrOff	= yb*xBlks + xb;
+      int		lumOff	= (yb*_width + xb) << 1;
+      const unsigned char *t = pRgb + lumOff*3;
 
       /// Top left pel.
       double b = (double)(*t++);
@@ -433,10 +427,10 @@ void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const void* pRgb, void
       else
         v = (v/4) + 0.5;
 
-      pu[chrOff] = (short)( _chrOff + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(u)) );
-      pv[chrOff] = (short)( _chrOff + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(v)) );
-    }//end for xb & yb...
+      pu[chrOff] = (short)(128 + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(u)));
+      pv[chrOff] = (short)(128 + RRGB24YUVCI2V16_RANGECHECK_N128TO127((int)(v)));
+    } //end for xb...
 
-}//end NonFlipConvert.
+} //end NonFlipConvert.
 
 #endif

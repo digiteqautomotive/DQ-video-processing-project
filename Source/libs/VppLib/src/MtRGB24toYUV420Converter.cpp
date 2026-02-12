@@ -43,20 +43,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef USE_MULTI_THREADED
 
 #include <boost/bind.hpp>
-/*
-===========================================================================
+/*===========================================================================
 	Constants.
-===========================================================================
-*/
-#define RRGB24YUVCI2_00		 0.299
-#define RRGB24YUVCI2_01		 0.587
-#define RRGB24YUVCI2_02		 0.114
-#define RRGB24YUVCI2_10		-0.147
-#define RRGB24YUVCI2_11		-0.289
-#define RRGB24YUVCI2_12		 0.436
-#define RRGB24YUVCI2_20		 0.615
-#define RRGB24YUVCI2_21		-0.515
-#define RRGB24YUVCI2_22		-0.100
+===========================================================================*/
 
 const int iPrecision = 12;
 const int iRRGB24YUVCI2_00 = static_cast<int>(0.299 * (2 << iPrecision));

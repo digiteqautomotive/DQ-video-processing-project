@@ -4,7 +4,7 @@ MODULE				: RealRGB24toYUV420Converter
 
 FILE NAME			: RealRGB24toYUV420Converter.cpp
 
-DESCRIPTION			: Double precision floating point RGB 24 bit to YUV420 colour 
+DESCRIPTION			: float precision floating point RGB 24 bit to YUV420 colour 
 convertion derived from the RGBtoYUV420Converter base class.
 YUV is represented with 8 bpp. Use this implementation as 
 the reference.
@@ -40,29 +40,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RealRGB24toYUV420Converter.h"
 
-/*
-===========================================================================
-Constants.
-===========================================================================
-*/
-#define RRGB24YUVCI2_00		 0.299
-#define RRGB24YUVCI2_01		 0.587
-#define RRGB24YUVCI2_02		 0.114
-#define RRGB24YUVCI2_10		-0.147
-#define RRGB24YUVCI2_11		-0.289
-#define RRGB24YUVCI2_12		 0.436
-#define RRGB24YUVCI2_20		 0.615
-#define RRGB24YUVCI2_21		-0.515
-#define RRGB24YUVCI2_22		-0.100
+/*===========================================================================
+				Defines
+===========================================================================*/
 
 #define RRGB24YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 #define RRGB24YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
 
-/*
-===========================================================================
-Interface Methods.
-===========================================================================
-*/
+/*===========================================================================
+				Interface Methods
+===========================================================================*/
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range
@@ -71,29 +59,8 @@ to 0..255.
 @param pY		: Lum plane.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
-@return			: none.
-*/
-void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pYUV) const
-{
-  unsigned char *pU = (unsigned char*)pYUV + _width*_height;
-  unsigned char *pV = pU + (_width+1)*(_height+1)/4;
-  if (_flip)
-    FlipConvert(pRgb, pYUV, pU, pV);
-  else
-    NonFlipConvert(pRgb, pYUV, pU, pV);
-}
-
-
-void RealRGB24toYUV420Converter::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
-{
-  if (_flip)
-    FlipConvert(pRgb, pY, pU, pV);
-  else
-    NonFlipConvert(pRgb, pY, pU, pV);
-}
-
-
-void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
+@return			: none. */
+void RealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
@@ -101,8 +68,8 @@ void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
   unsigned char* src = (unsigned char *)pRgb;
 
   /// Y have range 0..255, U & V have range -128..127.
-  double	u,v;
-  double	r,g,b;
+  float	u,v;
+  float	r,g,b;
 
   /// Step in 2x2 pel blocks. (4 pels per block).
   int xBlks = _width >> 1;
@@ -110,22 +77,22 @@ void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
   for(int yb = 0; yb < yBlks; yb++)
     for(int xb = 0; xb < xBlks; xb++)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 3);
+      int		chrOff	= yb*xBlks + xb;
+      int		lumOff	= (yb*_width + xb) << 1;
+      unsigned char*	t = src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 3);
       /// Top left pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
+      b = (*t++);
+      g = (*t++);
+      r = (*t++);
       py[lumOff] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
 
       u = RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
       v = RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
 
       /// Top right pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
+      b = (*t++);
+      g = (*t++);
+      r = (*t++);
       py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
 
       u += RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
@@ -135,18 +102,18 @@ void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
 
       t = t - _width*3 - 6;
       /// Bottom left pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
+      b = (*t++);
+      g = (*t++);
+      r = (*t++);
       py[lumOff] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
 
       u += RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
       v += RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
 
       /// Bottom right pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
+      b = (*t++);
+      g = (*t++);
+      r = (*t++);
       py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
 
       u += RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
@@ -164,84 +131,79 @@ void RealRGB24toYUV420Converter::FlipConvert(const void* pRgb, void* pY, void* p
       else
         iv += 2;
 
-      pu[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iu/4) );
-      pv[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iv/4) );
+      pu[chrOff] = (yuvType)(128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu/4) );
+      pv[chrOff] = (yuvType)(128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv/4) );
     }//end for xb & yb...
 }
 
-void RealRGB24toYUV420Converter::NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const
+
+void RealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
 {
   yuvType*	py = (yuvType *)pY;
   yuvType*	pu = (yuvType *)pU;
   yuvType*	pv = (yuvType *)pV;
-  unsigned char* src = (unsigned char *)pRgb;
 
   /// Y have range 0..255, U & V have range -128..127.
-  double	u,v;
-  double	r,g,b;
+  unsigned char	r,g,b;
+  float	rs,gs,bs;
 
   /// Step in 2x2 pel blocks. (4 pels per block).
-  int xBlks = _width >> 1;
-  int yBlks = _height >> 1;
-  for(int yb = 0; yb < yBlks; yb++)
-    for(int xb = 0; xb < xBlks; xb++)
+  const int xBlks = _width >> 1;
+  int yb = _height >> 1;
+  while(yb-- > 0)
+  {  
+    int xb = xBlks;
+    while(xb-- > 0)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + lumOff*3;
+	// Top left pel.
+      bs = b = pRgb[0];
+      gs = g = pRgb[1];
+      rs = r = pRgb[2];
+      int round = (int)(0.5f + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b);
+      if(round >= 255) py[0] = 255;
+      else py[0] = (yuvType)round;
 
-      /// Top left pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
-      py[lumOff] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+	// Top right pel.
+      bs += b = pRgb[3];
+      gs += g = pRgb[4];
+      rs += r = pRgb[5];
+      round = (int)(0.5f + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b);
+      if(round >= 255) py[1] = 255;
+      else py[1] = (yuvType)round;
 
-      u = RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v = RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
+      pRgb += _width*3;
+	// Bottom left pel.
+      bs += b = pRgb[0];
+      gs += g = pRgb[1];
+      rs += r = pRgb[2];
+      round = (int)(0.5f + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b);
+      if(round >= 255) py[_width] = 255;
+      else py[_width] = (yuvType)round;
 
-      /// Top right pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
-      py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+	// Bottom right pel.
+      bs += b = pRgb[3];
+      gs += g = pRgb[4];
+      rs += r = pRgb[5];
+      round = (int)(0.5f + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b);
+      if(round >= 255) py[_width+1] = 255;
+      else py[_width+1] = (yuvType)round;
 
-      u += RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v += RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
+	// Average the 4 chr values.
+      round = (4*128 + 2 + (int)(RRGB24YUVCI2_10*rs + RRGB24YUVCI2_11*gs + RRGB24YUVCI2_12*bs)) / 4;	// Rounding +2.
+      if(round<0) *pu++=0;
+      else if(round>255) *pu++=255;
+      else *pu++ = (yuvType)round;
 
-      lumOff += _width;
-      t = t + _width*3 - 6;
-      /// Bottom left pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
-      py[lumOff] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      round = (4*128 + 2 + (int)(RRGB24YUVCI2_20*rs + RRGB24YUVCI2_21*gs + RRGB24YUVCI2_22*bs)) / 4;
+      if(round<0) *pv++=0;
+      else if(round>255) *pv++=255;
+      else *pv++ = (yuvType)round;
 
-      u += RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v += RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
-
-      /// Bottom right pel.
-      b = (double)(*t++);
-      g = (double)(*t++);
-      r = (double)(*t++);
-      py[lumOff+1] = (yuvType)RRGB24YUVCI2_RANGECHECK_0TO255((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
-
-      u += RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v += RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
-
-      /// Average the 4 chr values.
-      int iu = (int)u;
-      int iv = (int)v;
-      if(iu < 0)	///< Rounding.
-        iu -= 2;
-      else
-        iu += 2;
-      if(iv < 0)	///< Rounding.
-        iv -= 2;
-      else
-        iv += 2;
-
-      pu[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iu/4) );
-      pv[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iv/4) );
-    }//end for xb & yb...
-}//end Convert.
+      pRgb -= _width*3 - 6;
+      py += 2;
+    } //end for xb & yb...
+    py += _width;
+    pRgb += 3*_width;
+  }
+} //end Convert.
 

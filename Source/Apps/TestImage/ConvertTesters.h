@@ -25,13 +25,28 @@ public:
   // Interface.
 
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
+  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
 }; //end OrigRealYUV420toRGB24Converter.
 
 
 
 #include "RGBtoYUV420Converter.h"
+
+
+class OrigRealRGB24toYUV420Converter: public RGBtoYUV420Converter
+{
+public:
+		// Construction and destruction.
+	OrigRealRGB24toYUV420Converter(void) { }
+	OrigRealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
+	virtual ~OrigRealRGB24toYUV420Converter(void) {}
+
+		// Interface.
+protected:
+	void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+	void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+}; //end RealRGB24toYUV420Converter.
 
 
 class OrigRealRGB32toYUV420Converter: public RGBtoYUV420Converter
@@ -43,10 +58,7 @@ public:
 	virtual ~OrigRealRGB32toYUV420Converter(void) {}
 
 		// Interface.
-	void Convert(const void* pRgb, void* pYUV) const;
-        void Convert(const void* pRgb, void *pY, void *pU, void *pV) const;
-
-private:
-	void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
-	void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
+protected:
+	void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+	void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
 };//end RealRGB32toYUV420Converter.

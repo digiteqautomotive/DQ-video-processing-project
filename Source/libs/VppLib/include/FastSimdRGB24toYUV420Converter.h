@@ -11,7 +11,7 @@ DESCRIPTION			: SIMD RGB 24 bit to YUV420 colour
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,28 +31,26 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include "RGBtoYUV420Converter.h"
 
-/**
- * \ingroup ImageLib
+
+/** \ingroup ImageLib
  * Double precision floating point RGB 24 bit to YUV420 colour 
  * convertion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference.
- */
+ * Use this implementation as the reference. */
 class FastSimdRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
     FastSimdRGB24toYUV420Converter(void) {}
     FastSimdRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
-    FastSimdRGB24toYUV420Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) {}
     virtual ~FastSimdRGB24toYUV420Converter(void) {}
 
+protected:
     /// Interface.
-    void Convert(void* pRgb, void* pY, void* pU, void* pV);
-
+    void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+    void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
 };

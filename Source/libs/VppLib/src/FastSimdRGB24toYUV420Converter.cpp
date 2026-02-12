@@ -1,18 +1,16 @@
 /** @file
 
-MODULE				: FastSimdRGB24toYUV420Converter
+MODULE:		FastSimdRGB24toYUV420Converter
 
-FILE NAME			: FastSimdRGB24toYUV420Converter.cpp
+FILE NAME:	FastSimdRGB24toYUV420Converter.cpp
 
-DESCRIPTION			: SIMD RGB 24 bit to YUV420 colour 
-					conversion derived from the RGBtoYUV420Converter base class.
-					YUV is represented with 16 bpp. Use this implementation as 
-					the reference.
+DESCRIPTION:	SIMD RGB 24 bit to YUV420 colour conversion derived from the RGBtoYUV420Converter base class.
+		YUV is represented with 16 bpp. Use this implementation as the reference.
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,8 +29,12 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
+
+//NOTE: In fact this code is not fast, but very slow. It consumes 25.2ms. SIMD does not automatically grant better speed.
+//  Convert RGB32 to YUV res 1920,1080 time 13.762[ms] LUT 20.548[ms] fix point 10.705[ms] orig 17.957[ms]
+//  Convert RGB24 to YUV res 1920,1080 time 18.670[ms] fix point 10.749[ms] orig 18.711[ms] simd 25.157[ms]
+
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -43,11 +45,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "FastSimdRGB24toYUV420Converter.h"
 
-/*
-===========================================================================
-	Constants.
-===========================================================================
-*/
+/*===========================================================================
+			Constants
+===========================================================================*/
 const float fRRGB24YUVCI2_00 = 0.299f;
 const float fRRGB24YUVCI2_01 = 0.587f;
 const float fRRGB24YUVCI2_02 = 0.114f;
@@ -67,11 +67,12 @@ static const __declspec(align(16)) float fCOEFF_2[4] = {fRRGB24YUVCI2_20, fRRGB2
 #define RRGB24YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 #define RRGB24YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
 
-/*
-===========================================================================
+
+/*===========================================================================
 	Interface Methods.
-===========================================================================
-*/
+===========================================================================*/
+
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range
@@ -80,9 +81,8 @@ to 0..255.
 @param pY		: Lum plane.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
-@return			: none.
-*/
-void FastSimdRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, void* pV)
+@return			: none. */
+void FastSimdRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
 {
     // Aligned 16 bit
     __m128 xmm_y = _mm_load_ps(fCOEFF_0);
@@ -92,7 +92,6 @@ void FastSimdRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, voi
     yuvType*	py = (yuvType *)pY;
     yuvType*	pu = (yuvType *)pU;
     yuvType*	pv = (yuvType *)pV;
-    unsigned char* src = (unsigned char *)pRgb;
 
     /// Y have range 0..255, U & V have range -128..127.
     __declspec(align(16)) float bgr1[4];
@@ -110,9 +109,9 @@ void FastSimdRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, voi
     for(int yb = 0; yb < yBlks; yb++)
       for(int xb = 0; xb < xBlks; xb++)
       {
-        int							chrOff	= yb*xBlks + xb;
-        int							lumOff	= (yb*_width + xb) << 1;
-        unsigned char*	t				= src + lumOff*3;
+        int		chrOff	= yb*xBlks + xb;
+        int		lumOff	= (yb*_width + xb) << 1;
+        const unsigned char *t = pRgb + lumOff*3;
 
         bgr1[2] = (float)*t++;
         bgr1[1] = (float)*t++;
@@ -175,8 +174,8 @@ void FastSimdRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, voi
         else
           iv += 2;
 
-        pu[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2) );
-        pv[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2) );
+        pu[chrOff] = (yuvType)(128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2));
+        pv[chrOff] = (yuvType)(128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2));
       }//end for xb & yb...
 }
 

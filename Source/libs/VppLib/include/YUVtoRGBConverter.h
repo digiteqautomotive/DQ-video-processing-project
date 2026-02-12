@@ -40,7 +40,6 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 		LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 		NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 		SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
 #ifndef __YUV_TO_RGBCONVERTER_H__
 #define __YUV_TO_RGBCONVERTER_H__
@@ -83,9 +82,9 @@ public:
 	bool GetFlip(void) const		{ return _flip; }
 	
 	void SetDimensions(int width, int height);
-	void SetFlip(bool flip) { _flip = flip; }
+	void SetFlip(bool flip)			{ _flip = flip; }
 protected:
-	/// Members.
+		// Members.
 	int	_width;
 	int	_height;	
 
@@ -103,11 +102,11 @@ public:
 
     void Convert(const void* pBufferIn, void* pRgb) const;
     void Convert(const void* pY, const void* pU, const void* pV, void* pRgb) const
-    {if (_flip) FlipConvert(pY, pU, pV, pRgb);
-     else NonRotateConvert(pY, pU, pV, pRgb);}
+    {if (_flip) FlipConvert(pY, pU, pV, (unsigned char*)pRgb);
+     else NonRotateConvert(pY, pU, pV, (unsigned char*)pRgb);}
 
-    virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const = 0;
-    virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const = 0;    
+    virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const = 0;
+    virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const = 0;    
 };
 
 

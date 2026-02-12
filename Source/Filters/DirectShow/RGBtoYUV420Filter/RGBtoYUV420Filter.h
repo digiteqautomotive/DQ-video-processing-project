@@ -106,7 +106,7 @@ public:
    */
   void initParameters()
   {
-    addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
+    //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
 #ifdef RTVC_INVERT_OPTIONAL
     // YUV is always top-down: give user option to not flip image
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd407212(v=vs.85).aspx
@@ -165,10 +165,6 @@ private:
 
   /// Pointer to our RGB24 | 32 to YUV420 converter
   RGBtoYUV420Converter* m_pConverter;
-  /// Size of YUV image
-  int m_nSizeYUV;
-  /// Chrominance offset
-  int m_nChrominanceOffset;
-  /// invert image
-  bool m_bInvert;
+  int m_nSizeYUV;		///< Size of YUV image
+  bool m_bInvert;		///< invert image
 };

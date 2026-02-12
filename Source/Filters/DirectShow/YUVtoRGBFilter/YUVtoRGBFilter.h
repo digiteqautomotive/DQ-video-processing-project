@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: YUVtoRGBFilter
+MODULE:			YUVtoRGBFilter
 
-FILE NAME			: YUVtoRGBFilter.h
+FILE NAME:		YUVtoRGBFilter.h
 
-DESCRIPTION			: This Filter converts the YUV444 Interleaved media back into RGB24 media.
+DESCRIPTION:		This Filter converts the YUV444 Interleaved media back into RGB24 media.
 
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 ===========================================================================*/
@@ -16,7 +16,6 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 #include <DirectShow/CustomBaseFilter.h>
 
 // Parameters
-//#define CHROMINANCE_OFFSET "chrominanceoffset"
 #define INVERT "invert"
 
 
@@ -105,13 +104,9 @@ protected:
   virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);  
 
 private:
-
-  /// Pointer to our YUV444 to RGB24 converter
-  YUVtoRGBConverter* m_pConverter;
+  YUVtoRGBConverter* m_pConverter;	  ///< Pointer to our YUV to RGB24 converter.
   // Size of YUV image
   int m_nSizeUV;
-  // Chrominance offset
-  //int m_nChrominanceOffset;
   // YUV is always top down: the invert flag determines whether the image
   // is flipped during conversion, or whether the sign is simply set
   bool m_bInvert;

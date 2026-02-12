@@ -24,12 +24,12 @@ void YUV420toRGBConverter::Convert(const void* pBufferIn, void* pRgb) const
   const yuvType *pV = pU + nInPixelCount/4;
         // let invert take precedence, not catering for both
   if(_flip) 
-      FlipConvert(pBufferIn, pU, pV, pRgb);
+      FlipConvert(pBufferIn, pU, pV, (unsigned char*)pRgb);
   else				
   {
     //if(_rotate)
     // 	RotateConvert(pBufferIn, pU, pV, pRgb);
     //else
-    	NonRotateConvert(pBufferIn, pU, pV, pRgb);
+    	NonRotateConvert(pBufferIn, pU, pV, (unsigned char*)pRgb);
   }
 }  

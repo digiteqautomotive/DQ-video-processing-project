@@ -83,12 +83,12 @@ void RealYUV420toRGB24ConverterImpl2Ver16::Convert(const void* pBufferIn, void* 
   const yuvType *pV = (const yuvType *)pBufferIn + (3*m_nInPixelBytes)/2;
         // let invert take precedence, not catering for both
   if(_flip) 
-      FlipConvert(pBufferIn, pU, pV, pRgb);
+      FlipConvert(pBufferIn, pU, pV, (unsigned char*)pRgb);
   else				
   {
     //if(_rotate)  RotateConvert(pBufferIn, pU, pV, pRgb);
     //else
-  	NonRotateConvert(pBufferIn, pU, pV, pRgb);
+  	NonRotateConvert(pBufferIn, pU, pV, (unsigned char*)pRgb);
   }
 }  
 
@@ -98,7 +98,7 @@ void RealYUV420toRGB24ConverterImpl2Ver16::Convert(const void* pBufferIn, void* 
 	Private Methods.
 ===========================================================================
 */
-void RealYUV420toRGB24ConverterImpl2Ver16::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void RealYUV420toRGB24ConverterImpl2Ver16::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
 	unsigned char* 	optr	=	(unsigned char *)pRgb;
 	const short*	py	= (short *)pY;
@@ -106,7 +106,7 @@ void RealYUV420toRGB24ConverterImpl2Ver16::NonRotateConvert(const void* pY, cons
 	const short*	pv	= (short *)pV;
 	int		lumX	= _width;
 	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+	int		uvX	= _width >> 1;
 
 	int x,y;
 	int lumposy;
@@ -188,7 +188,8 @@ void RealYUV420toRGB24ConverterImpl2Ver16::NonRotateConvert(const void* pY, cons
 
 }//end NonRotateConvert.
 
-void RealYUV420toRGB24ConverterImpl2Ver16::RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+
+void RealYUV420toRGB24ConverterImpl2Ver16::RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
 	unsigned char* 	optr	= (unsigned char *)pRgb;
 	const short	*py	= (short *)pY;
@@ -282,7 +283,7 @@ void RealYUV420toRGB24ConverterImpl2Ver16::RotateConvert(const void* pY, const v
 
 }//end RotateConvert.
 
-void RealYUV420toRGB24ConverterImpl2Ver16::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void RealYUV420toRGB24ConverterImpl2Ver16::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
   unsigned char	*optr	= (unsigned char *)pRgb;
   const short	*py	= (short *)pY;
@@ -290,7 +291,7 @@ void RealYUV420toRGB24ConverterImpl2Ver16::FlipConvert(const void* pY, const voi
   const short	*pv	= (short *)pV;
   int		lumX	= _width;
   int		lumY	= _height;
-  int		uvX		= _width >> 1;
+  int		uvX	= _width >> 1;
 
   int x,y;
   int lumposy;

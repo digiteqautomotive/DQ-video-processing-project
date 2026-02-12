@@ -40,29 +40,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RGBtoYUV420Converter.h"
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * Double precision floating point RGB 24 bit to YUV420 colour 
  * convertion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference.
- */
+ * Use this implementation as the reference. */
 class RealRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
     RealRGB24toYUV420Converter(void) { }
-    RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {  }
-    RealRGB24toYUV420Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) {  }
+    RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
     virtual ~RealRGB24toYUV420Converter(void) {}
 
-    /// Interface.
-    void Convert(const void* pRgb, void *pYUV) const;
-    void Convert(const void* pRgb, void *pY, void *pU, void *pV) const;
-
 protected:
-  void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
-  void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
-};//end _REALRGB24TOYUV420CONVERTERIMPL2_H.
+	/// Interface.
+  virtual void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+  virtual void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+}; //end _REALRGB24TOYUV420CONVERTERIMPL2_H.
 
 
 #endif

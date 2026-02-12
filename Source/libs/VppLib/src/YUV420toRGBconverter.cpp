@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Private Methods.
 ==========================================================================*/
 
-void YUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void YUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
@@ -101,7 +101,7 @@ unsigned char *OutData = (unsigned char *)pRgb + 3*_width*(_height-1);
 } //end FlipConvert
 
 
-void YUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void YUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned width3 = _width * 3;
@@ -191,13 +191,13 @@ unsigned char *OutData = (unsigned char *)pRgb;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void YUV420toRGB32Converter::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void YUV420toRGB32Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
-unsigned char *OutData = (unsigned char *)pRgb + 4*_width*(_height-1);
+unsigned char *OutData = pRgb + 4*_width*(_height-1);
 
   for(int row=0; row<_height; row++)
   {
@@ -253,14 +253,14 @@ unsigned char *OutData = (unsigned char *)pRgb + 4*_width*(_height-1);
 } //end FlipConvert
 
 
-void YUV420toRGB32Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void YUV420toRGB32Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned width4 = _width * 4;
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
-unsigned char *OutData = (unsigned char *)pRgb;
+unsigned char *OutData = pRgb;
 
   for(int row=0; row<_height; row+=2)
   {

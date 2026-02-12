@@ -896,9 +896,9 @@ int H264v2Codec::Open(void)
 	{
 		/// Encoder input.
 #ifdef _CCIR601
-		_pInColourConverter = new RealRGB24toYUV420CCIR601ConverterVer16(_width, _height, 128);
+		_pInColourConverter = new RealRGB24toYUV420CCIR601ConverterVer16(_width, _height);
 #else
-		_pInColourConverter = new RealRGB24toYUV420ConverterImpl2Ver16(_width, _height, 128);
+		_pInColourConverter = new RealRGB24toYUV420ConverterImpl2Ver16(_width, _height);
 #endif
 
 		if(_pInColourConverter == NULL)
@@ -1732,9 +1732,9 @@ int	H264v2Codec::Decode(const void* pCmp, int bitLength, void* pDst)
 	else
         {
           if(_pOutColourConverter->GetFlip()) 
-            _pOutColourConverter->FlipConvert(_pRLum, _pRChrU, _pRChrV, pDst);
+            _pOutColourConverter->FlipConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
           else
-	    _pOutColourConverter->NonRotateConvert(_pRLum, _pRChrU, _pRChrV, pDst);
+	    _pOutColourConverter->NonRotateConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
         }
 
   return(1);

@@ -55,42 +55,62 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 	typedef signed char yuvType;
 #endif
 
-/*
-===========================================================================
-  Class definition.
-===========================================================================
-*/
+
+/*===========================================================================
+			Constants
+===========================================================================*/
+#define RRGB24YUVCI2_00		 0.299f
+#define RRGB24YUVCI2_01		 0.587f
+#define RRGB24YUVCI2_02		 0.114f
+#define RRGB24YUVCI2_10		-0.147f
+#define RRGB24YUVCI2_11		-0.289f
+#define RRGB24YUVCI2_12		 0.436f
+#define RRGB24YUVCI2_20		 0.615f
+#define RRGB24YUVCI2_21		-0.515f
+#define RRGB24YUVCI2_22		-0.100f
+
+
+/*===========================================================================
+		Class definition
+===========================================================================*/
 class RGBtoYUV420Converter: public BaseVideoConverter
 {
 public:
 	/// Construction and destruction.
-	RGBtoYUV420Converter(void) {_width = 0; _height = 0; _chrOff = 0; _flip = false; }
- 	RGBtoYUV420Converter(int width, int height) {_width = width; _height = height; _chrOff = 0; _flip = false; }
-	RGBtoYUV420Converter(int width, int height, int chrOff) {_width = width; _height = height; _chrOff = chrOff; }
+	RGBtoYUV420Converter(void) {_width = 0; _height = 0; _flip = false; }
+ 	RGBtoYUV420Converter(int width, int height) {_width = width; _height = height; _flip = false;}
 	virtual ~RGBtoYUV420Converter(void) {}
 
 	/// Interface.
-	virtual void Convert(const void* pRgb, void* pYUV) const = 0;
-        virtual void Convert(const void* pRgb, void *pY, void *pU, void *pV) const = 0;
+	virtual void Convert(const void* pRgb, void* pYUV) const
+        {
+          const unsigned BlkYsz = _width*_height;
+          unsigned char * const pU = (unsigned char*)pYUV + BlkYsz;
+          unsigned char * const pV = pU + BlkYsz/4;
+          if(_flip) FlipConvert((const unsigned char*)pRgb, pYUV, pU, pV);
+               else NonFlipConvert((const unsigned char*)pRgb, pYUV, pU, pV);
+        }//end Convert.
+        virtual void Convert(const void* pRgb, void* pY, void* pU, void* pV)
+        {
+          if(_flip) FlipConvert((const unsigned char*)pRgb, pY, pU, pV);
+          else NonFlipConvert((const unsigned char*)pRgb, pY, pU, pV);
+        }
+	virtual void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const = 0;
+	virtual void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const = 0;
 
 	/// Member interface.
 	int GetWidth(void) const		{ return(_width); }
 	int GetHeight(void) const		{ return(_height); }
-	int GetChrominanceOffset() const { return _chrOff; }
 	bool GetFlip() const { return _flip; }
 
 	void SetDimensions(int width, int height)	{_width = width; _height = height;}
-	void SetChrOffset(int chrOff){ _chrOff = chrOff; }
 	void SetFlip(bool flip) { _flip = flip; }
-	void SetChrominanceOffset(int val) { _chrOff = val; }
 
 protected:
 	/// Members.
-	int	_width;
-	int	_height;
-	/// Offset added to the chr values. Typically = 128 to shift all values to positive.
-	int	_chrOff;
-  bool _flip;
-};//end RGBtoYUV420Converter.
+	int _width;
+	int _height;
+	bool _flip;
+}; //end RGBtoYUV420Converter.
 
 #endif	// _RGBTOYUV420CONVERTER_H

@@ -57,7 +57,7 @@ public:
 	/// Construction and destruction.
 	RealRGB24toYUV420ConverterImpl2Ver16(void) { }
 	RealRGB24toYUV420ConverterImpl2Ver16(int width, int height);
-	RealRGB24toYUV420ConverterImpl2Ver16(int width, int height, int chrOff);
+	//RealRGB24toYUV420ConverterImpl2Ver16(int width, int height, int chrOff);
 	virtual ~RealRGB24toYUV420ConverterImpl2Ver16(void) {}
 
 	/// Interface.
@@ -65,8 +65,8 @@ public:
         void Convert(const void* pRgb, void *pY, void *pU, void *pV) const;
 
 private:
-  void FlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
-  void NonFlipConvert(const void* pRgb, void* pY, void* pU, void* pV) const;
+  void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+  void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
 
 };//end _RealRGB24toYUV420ConverterImpl2Ver16_H.
 

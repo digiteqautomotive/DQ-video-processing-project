@@ -35,22 +35,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RGBtoYUV420Converter.h"
 
-/**
- * \ingroup ImageLib
+
+/** \ingroup ImageLib
  * Fixed-point RGB 24 bit to YUV420 colour 
  * conversion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference.
- */
-class FixedPointRGB24toYUV420Converter: public RGBtoYUV420Converter
+ * Use this implementation as the reference. */
+class ConvRGB24toYUV420FixP: public RGBtoYUV420Converter
 {
 public:
-    /// Construction and destruction.
-    FixedPointRGB24toYUV420Converter(void) {}
-    FixedPointRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
-    FixedPointRGB24toYUV420Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) {}
-    virtual ~FixedPointRGB24toYUV420Converter(void) {}
+	// Construction and destruction.
+    ConvRGB24toYUV420FixP(void) {}
+    ConvRGB24toYUV420FixP(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-    /// Interface.
-    void Convert(const void* pRgb, void* pY, void* pU, void* pV) const;
-    void Convert(const void* pRgb, void* pYUV) const;
+protected:
+	// Interface.
+    virtual void NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const;
+    virtual void FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
 };

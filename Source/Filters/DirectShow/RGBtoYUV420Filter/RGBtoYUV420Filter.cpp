@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Digiteq Automotive, written by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,8 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RGBtoYUV420Filter.h"
 #include <DirectShow/CommonDefs.h>
 #include <DirectShow/CustomMediaTypes.h>
-#include <RealRGB24toYUV420Converter.h>
-#include <RealRGB32toYUV420Converter.h>
+#include "RGB32toYUV420Converter.h"
+#include "RGB24toYUV420Converter.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 
 #include <wmcodecdsp.h>		// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
@@ -73,52 +73,52 @@ CUnknown * WINAPI RGBtoYUV420Filter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
 void RGBtoYUV420Filter::InitialiseInputTypes()
 {
 	// Add standard input types
-	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
 }
+
 
 HRESULT RGBtoYUV420Filter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
 {
-	HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
-	if (direction == PINDIR_INPUT)
-	{
-   	m_nSizeYUV = m_nInPixels >> 2;
+  HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
+  if(direction == PINDIR_INPUT)
+  {
+    m_nSizeYUV = m_nInPixels >> 2;
 		//Determine whether we are connected to a RGB24 or 32 source
-		if (pmt->majortype == MEDIATYPE_Video)
-		{
+   if(pmt->majortype == MEDIATYPE_Video)
+   {
       // Determine if we need to flip the image or not based on it's orientation
-      VIDEOINFOHEADER *pvi = (VIDEOINFOHEADER*)pmt->Format();
-      if (pvi->bmiHeader.biHeight < 0 )
-      {
+     VIDEOINFOHEADER *pvi = (VIDEOINFOHEADER*)pmt->Format();
+     if(pvi->bmiHeader.biHeight < 0 )
+     {
         // don't need to invert
         m_bInvert = false;
-      }
-      else
-      {
-        m_bInvert = true;
-      }
+     }
+     else
+     {
+       m_bInvert = true;
+     }
 
 			//The converter might already exist if the filter has been connected previously
-			if (m_pConverter)
-			{
-				delete m_pConverter;
-				m_pConverter = NULL;
-			}
-			if (pmt->subtype == MEDIASUBTYPE_RGB24)
-			{
-				m_pConverter = new RealRGB24toYUV420Converter(m_nInWidth, m_nInHeight, m_nChrominanceOffset);
+     if(m_pConverter)
+     {
+       delete m_pConverter;
+       m_pConverter = NULL;
+     }
+     if(pmt->subtype == MEDIASUBTYPE_RGB24)
+     {
+       m_pConverter = new ConvRGB24toYUV420FixP(m_nInWidth, m_nInHeight);
+       m_pConverter->SetFlip(m_bInvert);
+     }
+     else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32)
+     {
+        m_pConverter = new ConvRGB32toYUV420FixP(m_nInWidth, m_nInHeight);
         m_pConverter->SetFlip(m_bInvert);
-        m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
-			}
-			else if (pmt->subtype == MEDIASUBTYPE_RGB32)
-			{
-				m_pConverter = new RealRGB32toYUV420Converter(m_nInWidth, m_nInHeight);
-        m_pConverter->SetFlip(m_bInvert);
-        m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
-			}
-		}
-	}
-	return hr;
+      }
+    }
+  }
+  return hr;
 }
 
 HRESULT RGBtoYUV420Filter::GetMediaType( int iPosition, CMediaType *pMediaType )
@@ -274,13 +274,13 @@ HRESULT RGBtoYUV420Filter::CheckTransform( const CMediaType *mtIn, const CMediaT
 	return S_OK;
 }
 
+
 STDMETHODIMP RGBtoYUV420Filter::SetParameter( const char* type, const char* value )
 {
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
     if (m_pConverter)
     {
-      m_pConverter->SetChrominanceOffset(m_nChrominanceOffset);
       m_pConverter->SetFlip(m_bInvert);
     }
     return S_OK;

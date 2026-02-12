@@ -30,9 +30,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include "RGBtoYUV420Converter.h"
@@ -43,17 +41,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * conversion derived from the RGBtoYUV420Converter base class.
  * Use this implementation as the reference.
  */
-class FastLookupTableRGB24toYUV420Converter: public RGBtoYUV420Converter
+class ConvRGB24toYUV42_float_LUT: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
-    FastLookupTableRGB24toYUV420Converter(void) { initLookupTable(); }
-    FastLookupTableRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { initLookupTable(); }
-    FastLookupTableRGB24toYUV420Converter(int width, int height, int chrOff): RGBtoYUV420Converter(width,height, chrOff) { initLookupTable(); }
-    virtual ~FastLookupTableRGB24toYUV420Converter(void) {}
+    ConvRGB24toYUV42_float_LUT(void) { initLookupTable(); }
+    ConvRGB24toYUV42_float_LUT(int width, int height): RGBtoYUV420Converter(width,height) { initLookupTable(); }
+    virtual ~ConvRGB24toYUV42_float_LUT(void) {}
 
     /// Interface.
-    void Convert(void* pRgb, void* pY, void* pU, void* pV);
+    void NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
+    void FlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
 
 protected:
 
@@ -68,5 +66,4 @@ protected:
   float m_RRGB24YUVCI2_20[256];
   float m_RRGB24YUVCI2_21[256];
   float m_RRGB24YUVCI2_22[256];
-
 };

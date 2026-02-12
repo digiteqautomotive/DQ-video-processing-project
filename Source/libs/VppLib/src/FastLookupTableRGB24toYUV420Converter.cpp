@@ -31,34 +31,26 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
+
+// Note: Accessing a table instead of multiplication looks like smart idea.
+//      Unfortunatelly this algorithm is not performing good.
+// RGB32 to YUV to resolution 1920,1080 
+// Win32 time double 13.762[ms] LUT 20.548[ms] fix point 10.705[ms] orig 17.957[ms]
+// Win64 time double 12.332[ms] LUT 19.772[ms] fix point 9.089[ms] orig 16.788[ms]
+// Nowadays CPU can do multiplication very fast. It makes no sense to create table.
 
 #include "FastLookupTableRGB24toYUV420Converter.h"
 
-/*
-===========================================================================
-	Constants.
-===========================================================================
-*/
-#define RRGB24YUVCI2_00		 0.299f
-#define RRGB24YUVCI2_01		 0.587f
-#define RRGB24YUVCI2_02		 0.114f
-#define RRGB24YUVCI2_10		-0.147f
-#define RRGB24YUVCI2_11		-0.289f
-#define RRGB24YUVCI2_12		 0.436f
-#define RRGB24YUVCI2_20		 0.615f
-#define RRGB24YUVCI2_21		-0.515f
-#define RRGB24YUVCI2_22		-0.100f
+
+/*===========================================================================
+			Defines
+===========================================================================*/
 
 #define RRGB24YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 #define RRGB24YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
 
-void FastLookupTableRGB24toYUV420Converter::initLookupTable()
+void ConvRGB24toYUV42_float_LUT::initLookupTable()
 {
   for (size_t i = 0; i < 256; ++i)
   {
@@ -87,30 +79,28 @@ to 0..255.
 @param pY		: Lum plane.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
-@return			: none.
-*/
-void FastLookupTableRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* pU, void* pV)
+@return			: none. */
+void ConvRGB24toYUV42_float_LUT::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
 {
-	yuvType*	py = (yuvType *)pY;
-	yuvType*	pu = (yuvType *)pU;
-	yuvType*	pv = (yuvType *)pV;
-	unsigned char* src = (unsigned char *)pRgb;
+  yuvType*	py = (yuvType *)pY;
+  yuvType*	pu = (yuvType *)pU;
+  yuvType*	pv = (yuvType *)pV;
 
-  /// Y have range 0..255, U & V have range -128..127.
-  double	u,v;
+	// Y have range 0..255, U & V have range -128..127.
+  double u,v;
   int	r,g,b;
 
-  /// Step in 2x2 pel blocks. (4 pels per block).
+	// Step in 2x2 pel blocks. (4 pels per block).
   int xBlks = _width >> 1;
   int yBlks = _height >> 1;
   for(int yb = 0; yb < yBlks; ++yb)
     for(int xb = 0; xb < xBlks; ++xb)
     {
-      int							chrOff	= yb*xBlks + xb;
-      int							lumOff	= (yb*_width + xb) << 1;
-      unsigned char*	t				= src + lumOff*3;
+      int		chrOff	= yb*xBlks + xb;
+      int		lumOff	= (yb*_width + xb) << 1;
+      const unsigned char *t = pRgb + lumOff*3;
 
-      /// Top left pel.
+	// Top left pel.
       b = (*t++);
       g = (*t++);
       r = (*t++);
@@ -119,7 +109,7 @@ void FastLookupTableRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* 
       u = m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v = m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
 
-      /// Top right pel.
+	// Top right pel.
       b = (*t++);
       g = (*t++);
       r = (*t++);
@@ -130,7 +120,7 @@ void FastLookupTableRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* 
 
       lumOff += _width;
       t = t + _width*3 - 6;
-      /// Bottom left pel.
+	// Bottom left pel.
       b = (*t++);
       g = (*t++);
       r = (*t++);
@@ -139,7 +129,7 @@ void FastLookupTableRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* 
       u += m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v += m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
 
-      /// Bottom right pel.
+	// Bottom right pel.
       b = (*t++);
       g = (*t++);
       r = (*t++);
@@ -149,7 +139,7 @@ void FastLookupTableRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* 
       u += m_RRGB24YUVCI2_10[r] + m_RRGB24YUVCI2_11[g] + m_RRGB24YUVCI2_12[b];
       v += m_RRGB24YUVCI2_20[r] + m_RRGB24YUVCI2_21[g] + m_RRGB24YUVCI2_22[b];
 
-      /// Average the 4 chr values.
+	// Average the 4 chr values.
       int iu = (int)u;
       int iv = (int)v;
       if(iu < 0)	///< Rounding.
@@ -161,8 +151,8 @@ void FastLookupTableRGB24toYUV420Converter::Convert(void* pRgb, void* pY, void* 
       else
         iv += 2;
 
-      pu[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2) );
-      pv[chrOff] = (yuvType)( _chrOff + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2) );
+      pu[chrOff] = (yuvType)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2) );
+      pv[chrOff] = (yuvType)( 128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2) );
     }//end for xb & yb...
 }//end Convert.
 
