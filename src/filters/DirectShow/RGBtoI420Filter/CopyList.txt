@@ -1,8 +1,0 @@
-DLLSetup.cpp
-RGBtoI420Filter.cpp
-stdafx.cpp
-resource.h
-RGBtoI420Filter.h
-RGBtoI420Properties.h
-stdafx.h
-RGBtoI420Filter.def
