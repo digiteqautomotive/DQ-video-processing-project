@@ -39,12 +39,11 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <math.h>
+//#include <string.h>
+//#include <stdlib.h>
 
 #include "RealRGB24toYUV420ConverterImpl2.h"
 

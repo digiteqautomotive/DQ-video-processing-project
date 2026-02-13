@@ -42,6 +42,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ConvRGB24toYUV420_LUT.h"
 
+#include <uuids.h>
+
 
 /*===========================================================================
 			Defines
@@ -66,11 +68,16 @@ void ConvRGB24toYUV42_float_LUT::initLookupTable()
   }
 }
 
-/*
-===========================================================================
-	Interface Methods.
-===========================================================================
-*/
+/*===========================================================================
+			Interface Methods
+===========================================================================*/
+
+bool ConvRGB24toYUV42_float_LUT::isInputVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range

@@ -47,6 +47,8 @@ public:
     ConvRGB24toYUV420FixP(void) {}
     ConvRGB24toYUV420FixP(int width, int height): RGBtoYUV420Converter(width,height) {}
 
+    virtual bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
+
 protected:
 	// Interface.
     virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;

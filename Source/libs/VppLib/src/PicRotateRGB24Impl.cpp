@@ -29,26 +29,22 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "PicRotateRGB24Impl.h"
-#include <stdio.h>
-#include <string.h>
+
 #include <stdlib.h>
+#include <string.h>
 
 
 PicRotateRGB24Impl::PicRotateRGB24Impl()
 {
-	m_eMode = ROTATE_NONE;
+  m_eMode = ROTATE_NONE;
 }
 
-PicRotateRGB24Impl::~PicRotateRGB24Impl()
-{;}
 
 int PicRotateRGB24Impl::BytesPerPixel()
 {
-	return 3;
+  return 3;
 }
 
 

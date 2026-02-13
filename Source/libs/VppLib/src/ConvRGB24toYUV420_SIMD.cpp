@@ -35,15 +35,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  Convert RGB32 to YUV res 1920,1080 time 13.762[ms] LUT 20.548[ms] fix point 10.705[ms] orig 17.957[ms]
 //  Convert RGB24 to YUV res 1920,1080 time 18.670[ms] fix point 10.749[ms] orig 18.711[ms] simd 25.157[ms]
 
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-
 // SSE
 #include <emmintrin.h>
 
 #include "ConvRGB24toYUV420_SIMD.h"
+
+#include <uuids.h>
 
 
 /*===========================================================================
@@ -70,8 +67,15 @@ static const __declspec(align(16)) float fCOEFF_2[4] = {fRRGB24YUVCI2_20, fRRGB2
 
 
 /*===========================================================================
-	Interface Methods.
+				Interface Methods
 ===========================================================================*/
+
+
+bool ConvRGB24toYUV420_SIMD::isInputVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
 
 
 /** Double precision reference implementation.

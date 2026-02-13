@@ -41,6 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Guiddef.h>
 
+#include <math.h>
+
 
 /**
  * \ingroup ImageLib

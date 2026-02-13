@@ -17,18 +17,16 @@ COPYRIGHT:
 
 RESTRICTIONS: 
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <math.h>
+//#include <string.h>
+//#include <stdlib.h>
 
 #include "RealRGB24toYUV420CCIR601Converter.h"
 
-/*
-===========================================================================
-	Constants.
-===========================================================================
-*/
+/*===========================================================================
+				Constants
+===========================================================================*/
 //	CCIR-601:
 //		Y =  0.257r + 0.504g + 0.098b + 16
 //		U	= -0.148r - 0.291g + 0.439b + 128		(Cb)
@@ -43,11 +41,12 @@ RESTRICTIONS:
 #define RRGB24YUVCC_21		-0.368
 #define RRGB24YUVCC_22		-0.071
 
-/*
-===========================================================================
-	Interface Methods.
-===========================================================================
-*/
+
+/*===========================================================================
+			Interface Methods
+===========================================================================*/
+
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 8/16 bits per pel and the CCIR-601 specifies that the Y range is 16..235 

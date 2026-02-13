@@ -47,6 +47,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #define _RGBTOYUV420CONVERTER_H
 
 #include "YUVtoRGBConverter.h"
+#include <Guiddef.h>
 
 
 #ifdef _BUILD_FOR_SHORT
@@ -105,6 +106,8 @@ public:
 
 	void SetDimensions(int width, int height)	{_width = width; _height = height;}
 	void SetFlip(bool flip) { _flip = flip; }
+
+        virtual bool isInputVideoFormatSupported(const GUID &VideoFormat) const = 0;
 
 protected:
 	/// Members.

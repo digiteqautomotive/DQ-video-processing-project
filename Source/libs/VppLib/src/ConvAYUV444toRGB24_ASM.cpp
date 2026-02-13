@@ -32,13 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WINDOWS
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
-#else
-
 #endif
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
 
 #include "ConvAYUV444toRGB.h"
 
@@ -53,11 +47,9 @@ extern "C"
 }
 
 
-/*
-===========================================================================
-	Private Methods.
-===========================================================================
-*/
+/*===========================================================================
+				Private Methods
+===========================================================================*/
 
 //Note: https://topic.alibabacloud.com/a/about-the-common-ayuv-formats-in-rgb-yuy2-yuyv-yvyu-uyvy-directshow-rgbyuv_8_8_10271129.html
 // The ¨AYUV format has an alpha channel, and the YUV component is extracted for each pixel, and the image Data format is as follows:

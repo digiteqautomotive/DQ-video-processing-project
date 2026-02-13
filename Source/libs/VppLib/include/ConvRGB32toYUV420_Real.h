@@ -53,6 +53,7 @@ public:
 	virtual ~RealRGB32toYUV420Converter(void) {}
 
 	// Interface.
+        bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
 
 protected:
 	void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;

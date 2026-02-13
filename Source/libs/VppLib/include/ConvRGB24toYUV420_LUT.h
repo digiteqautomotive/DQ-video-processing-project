@@ -49,6 +49,8 @@ public:
     ConvRGB24toYUV42_float_LUT(int width, int height): RGBtoYUV420Converter(width,height) { initLookupTable(); }
     virtual ~ConvRGB24toYUV42_float_LUT(void) {}
 
+    bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
+
     /// Interface.
     void NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
     void FlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}

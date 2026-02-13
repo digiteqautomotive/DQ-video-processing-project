@@ -43,7 +43,6 @@ class PicRotateRGB32Impl : public PicRotateRGBBase
 {
 public:
 	PicRotateRGB32Impl();
-	~PicRotateRGB32Impl();
 
 	virtual int BytesPerPixel();
         virtual bool Rotate(const void* pInImg, void* pOutImg);

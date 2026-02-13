@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "ConvAYUV444toRGB.h"
 
+#include "typedfs.h"
+
 
 /*===========================================================================
 	Macros.
@@ -42,10 +44,6 @@ DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xA
 /*===========================================================================
 	Private Methods.
 ===========================================================================*/
-
-#ifndef int32_t
- #define int32_t int
-#endif
 
 
 bool YV24toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormat) const

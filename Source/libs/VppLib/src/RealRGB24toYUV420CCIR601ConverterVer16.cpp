@@ -42,18 +42,18 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <math.h>
+//#include <string.h>
+//#include <stdlib.h>
 
 #include "RealRGB24toYUV420CCIR601ConverterVer16.h"
 
-/*
-===========================================================================
-	Constants.
-===========================================================================
-*/
+/*===========================================================================
+				Constants
+===========================================================================*/
+
+
 //	CCIR-601:
 //		Y =  0.257r + 0.504g + 0.098b + 16
 //		U	= -0.148r - 0.291g + 0.439b + 128		(Cb)

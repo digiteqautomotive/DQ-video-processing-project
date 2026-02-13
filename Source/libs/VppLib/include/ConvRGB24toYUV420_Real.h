@@ -30,9 +30,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _REALRGB24TOYUV420CONVERTER_H
 #define _REALRGB24TOYUV420CONVERTER_H
 
@@ -50,7 +48,8 @@ public:
     /// Construction and destruction.
     RealRGB24toYUV420Converter(void) { }
     RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
-    virtual ~RealRGB24toYUV420Converter(void) {}
+
+    bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
 
 protected:
 	/// Interface.

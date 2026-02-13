@@ -32,15 +32,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "YVYUtoRGBConverter.h"
 
+#include "typedfs.h"
+
 
 /*===========================================================================
-	Private Methods.
+			Private Methods
 ===========================================================================*/
 
-
-#ifndef int32_t
- #define int32_t int
-#endif
 
 void YVYUtoRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {

@@ -33,12 +33,9 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "ConvRGB24toYUV420_Real.h"
+
+#include <uuids.h>
 
 
 /*===========================================================================
@@ -52,6 +49,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*===========================================================================
 				Interface Methods
 ===========================================================================*/
+
+
+bool RealRGB24toYUV420Converter::isInputVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
 
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with

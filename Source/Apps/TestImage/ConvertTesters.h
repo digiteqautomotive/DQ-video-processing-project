@@ -19,8 +19,7 @@ class OrigRealYUV420toRGB24Converter: public YUV420toRGBConverter
 public:
   // Construction and destruction.
   OrigRealYUV420toRGB24Converter(void) { }
-  OrigRealYUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) { }
-  virtual ~OrigRealYUV420toRGB24Converter(void) {}
+  OrigRealYUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) {}
 
   // Interface.
 
@@ -38,9 +37,10 @@ class OrigRealRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
 		// Construction and destruction.
-	OrigRealRGB24toYUV420Converter(void) { }
-	OrigRealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
-	virtual ~OrigRealRGB24toYUV420Converter(void) {}
+	OrigRealRGB24toYUV420Converter(void) {}
+	OrigRealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
+
+	bool isInputVideoFormatSupported(const GUID &VideoFormat) const {return true;}
 
 		// Interface.
 protected:
@@ -54,8 +54,8 @@ class OrigRealRGB32toYUV420Converter: public RGBtoYUV420Converter
 public:
 		// Construction and destruction.
 	OrigRealRGB32toYUV420Converter(void) { }
-	OrigRealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
-	virtual ~OrigRealRGB32toYUV420Converter(void) {}
+	OrigRealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}	
+        bool isInputVideoFormatSupported(const GUID &VideoFormat) const {return true;};
 
 		// Interface.
 protected:

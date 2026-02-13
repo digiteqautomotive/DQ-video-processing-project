@@ -39,18 +39,13 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 		NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 		SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "RealYUV420toRGB24ConverterImpl2Ver16.h"
 
-/*
-===========================================================================
-	Macros.
-===========================================================================
-*/
+#include <math.h>
+
+/*===========================================================================
+				Macros
+===========================================================================*/
 #define RYUVRGB24CI2V16_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 
 #define RYUVRGB24CI2V16_U0		 2.032

@@ -60,31 +60,20 @@ public:
 
 	RGB2YUVProperties::RGB2YUVProperties(IUnknown *pUnk) : 
 		FilterPropertiesBase(NAME("RGB 2 YUV Properties"), pUnk, IDD_RGB2YUV_DIALOG, IDS_RGB2YUV_CAPTION)
-	{;}
+	{}
 
 	HRESULT ReadSettings()
 	{
-    setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
-
-    // chrominance offset
-    HRESULT hr = setEditTextFromIntFilterParameter(CHROMINANCE_OFFSET, IDC_EDIT_CHR_OFFSET);
-    if (FAILED(hr)) return hr;
-
-    // invert
-    hr = setCheckBoxFromBoolFilterParameter(INVERT, IDC_CHECK_INVERT);
-
-		return hr;
+		// invert
+          HRESULT hr = setCheckBoxFromBoolFilterParameter(INVERT, IDC_CHECK_INVERT);
+	  return hr;
 	}
 
 	HRESULT OnApplyChanges(void)
 	{
-    // chrom offset
-    HRESULT hr = setIntFilterParameterFromEditText(CHROMINANCE_OFFSET, IDC_EDIT_CHR_OFFSET);
-    assert(SUCCEEDED(hr));
-    // invert
-    hr = setBoolFilterParameterFromCheckBox(INVERT, IDC_CHECK_INVERT);
-    assert(SUCCEEDED(hr));
-		return S_OK;
+	    // invert
+	  HRESULT hr = setBoolFilterParameterFromCheckBox(INVERT, IDC_CHECK_INVERT); 
+	  return hr;
 	} 
 };
 

@@ -33,8 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RealYUV420toRGB24Converter.h"
 
-
-#define int32_t int
+#include "typedfs.h"
 
 
 /*===========================================================================

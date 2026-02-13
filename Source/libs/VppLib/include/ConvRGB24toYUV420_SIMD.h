@@ -46,7 +46,8 @@ public:
     /// Construction and destruction.
     ConvRGB24toYUV420_SIMD(void) {}
     ConvRGB24toYUV420_SIMD(int width, int height): RGBtoYUV420Converter(width,height) {}
-    virtual ~ConvRGB24toYUV420_SIMD(void) {}
+
+    bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
 
 protected:
     /// Interface.

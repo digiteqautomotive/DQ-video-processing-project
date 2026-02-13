@@ -28,12 +28,10 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
-// CSIR includes
-#include <DirectShow/CustomBaseFilter.h>
+	// VPP includes
+#include "DirectShow/CustomBaseFilter.h"
 
 // {D710F353-A342-4335-AA5F-4C9BE46F019A}
 static const GUID CLSID_VPP_RGBtoYUV420ColorConverter = 
@@ -43,18 +41,14 @@ static const GUID CLSID_VPP_RGBtoYUV420ColorConverter =
 static const GUID CLSID_RGBtoYUV420Properties = 
 { 0x650bcc5f, 0x4424, 0x40aa, { 0xba, 0x2a, 0x8, 0xbc, 0xa0, 0xf2, 0x4, 0xe1 } };
 
-
 // Parameters
-#define CHROMINANCE_OFFSET "chrominanceoffset"
 #define INVERT "invert"
 
 // Forward declarations
 class RGBtoYUV420Converter;
 
-/**
- * \ingroup DirectShowFilters
- * DirectShow Filter that converts RGB24 or RGB32 media to I420 format.
- */
+/** \ingroup DirectShowFilters
+ * DirectShow Filter that converts RGB24 or RGB32 media to I420 format. */
 class RGBtoYUV420Filter: public CCustomBaseFilter,
                          public ISpecifyPropertyPages
 {
@@ -101,59 +95,20 @@ public:
    * @brief Overridden from CCustomBaseFilter to define allowed input types
    */
   virtual void InitialiseInputTypes();
-  /**
-   * @brief Overridden from CSettingsInterface to intialise filter parameters
-   */
-  void initParameters()
-  {
-    //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
-#ifdef RTVC_INVERT_OPTIONAL
-    // YUV is always top-down: give user option to not flip image
-    // http://msdn.microsoft.com/en-us/library/windows/desktop/dd407212(v=vs.85).aspx
-    addParameter(INVERT, &m_bInvert, true);
-#endif
-  }
-  /**
-   * @brief Sets the filter parameters
-   */
-  STDMETHODIMP SetParameter( const char* type, const char* value);
-  /**
-   * @brief required for property page
-   */
-  STDMETHODIMP GetPages(CAUUID *pPages)
-  {
-    if (pPages == NULL) return E_POINTER;
-    pPages->cElems = 1;
-    pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-    if (pPages->pElems == NULL) 
-    {
-      return E_OUTOFMEMORY;
-    }
-    pPages->pElems[0] = CLSID_RGBtoYUV420Properties;
-    return S_OK;
-  }
 
-  STDMETHODIMP GetClassID(CLSID *pClassID)
-  {
-    if(pClassID==NULL) return E_POINTER;
-    *pClassID = CLSID_VPP_RGBtoYUV420ColorConverter;
-    return S_OK;
-  }
-  /**
-   * @brief required for COM
-   */
-  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-  {
-    if (riid == IID_ISpecifyPropertyPages)
-    {
-      return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-    }
-    else
-    {
-      // Call the parent class.
-      return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-    }
-  }
+  /** Overridden from CSettingsInterface to intialise filter parameters. */
+  void initParameters();  
+
+  /** Sets the filter parameters */
+  STDMETHODIMP SetParameter( const char* type, const char* value);
+
+  /** Required for property page. */
+  STDMETHODIMP GetPages(CAUUID *pPages);
+
+  STDMETHODIMP GetClassID(CLSID *pClassID);
+
+  /** Required for COM */
+  STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
 private:
   /**

@@ -31,27 +31,26 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "RGB24toYUV420Converter.h"
+
+#include "typedfs.h"
+
+#include <uuids.h>
 
 /*===========================================================================
 			Constants
 ===========================================================================*/
 
 #define iPrecision 12
-const int iRRGB24YUVCI2_00 = static_cast<int>(0.5 + RRGB24YUVCI2_00 * (2 << iPrecision));
-const int iRRGB24YUVCI2_01 = static_cast<int>(0.5 + RRGB24YUVCI2_01 * (2 << iPrecision));
-const int iRRGB24YUVCI2_02 = static_cast<int>(0.5 + RRGB24YUVCI2_02 * (2 << iPrecision));
-const int iRRGB24YUVCI2_10 = static_cast<int>(0.5 + RRGB24YUVCI2_10 * (2 << iPrecision));
-const int iRRGB24YUVCI2_11 = static_cast<int>(0.5 + RRGB24YUVCI2_11 * (2 << iPrecision));
-const int iRRGB24YUVCI2_12 = static_cast<int>(0.5 + RRGB24YUVCI2_12 * (2 << iPrecision));
-const int iRRGB24YUVCI2_20 = static_cast<int>(0.5 + RRGB24YUVCI2_20 * (2 << iPrecision));
-const int iRRGB24YUVCI2_21 = static_cast<int>(0.5 + RRGB24YUVCI2_21 * (2 << iPrecision));
-const int iRRGB24YUVCI2_22 = static_cast<int>(0.5 + RRGB24YUVCI2_22 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_00 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_00 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_01 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_01 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_02 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_02 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_10 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_10 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_11 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_11 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_12 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_12 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_20 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_20 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_21 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_21 * (2 << iPrecision));
+const int32_t iRRGB24YUVCI2_22 = static_cast<int32_t>(0.5 + RRGB24YUVCI2_22 * (2 << iPrecision));
 
 
 /*===========================================================================
@@ -59,12 +58,18 @@ const int iRRGB24YUVCI2_22 = static_cast<int>(0.5 + RRGB24YUVCI2_22 * (2 << iPre
 ===========================================================================*/
 
 
+bool ConvRGB24toYUV420FixP::isInputVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB24;
+}
+
+
 void ConvRGB24toYUV420FixP::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
 	// Y has range 0..255, U & V have range -128..127.
-  int	y;
-  int	r,g,b;
-  int	rs,gs,bs;
+  int32_t y;
+  int32_t r,g,b;
+  int16_t rs,gs,bs;
 
   pRgb += (3*_width) * (_height-1);
 	// Step in 2x2 pel blocks. (4 pels per block).
@@ -75,17 +80,17 @@ void ConvRGB24toYUV420FixP::FlipConvert(const unsigned char* pRgb, unsigned char
     while(xb-- > 0)
     {
 	// Top left pel.
-      bs = b = (int)pRgb[0];
-      gs = g = (int)pRgb[1];
-      rs = r = (int)pRgb[2];
+      bs = b = pRgb[0];
+      gs = g = pRgb[1];
+      rs = r = pRgb[2];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[0]=255;		// y is only positive
             else pY[0] = (unsigned char)y;
 
 	// Top right pel.
-      bs += b = (int)pRgb[3];
-      gs += g = (int)pRgb[4];
-      rs += r = (int)pRgb[5];
+      bs += b = pRgb[3];
+      gs += g = pRgb[4];
+      rs += r = pRgb[5];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[1]=255;		// y is only positive
             else pY[1] = (unsigned char)y;
@@ -93,17 +98,17 @@ void ConvRGB24toYUV420FixP::FlipConvert(const unsigned char* pRgb, unsigned char
       pRgb -= 3 * _width;
 
 	// Bottom left pel.
-      bs += b = (int)pRgb[0];
-      gs += g = (int)pRgb[1];
-      rs += r = (int)pRgb[2];
+      bs += b = pRgb[0];
+      gs += g = pRgb[1];
+      rs += r = pRgb[2];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[_width]=255;	// y is only positive
             else pY[_width] = (unsigned char)y;
 
 	// Bottom right pel.
-      bs += b = (int)pRgb[3];
-      gs += g = (int)pRgb[4];
-      rs += r = (int)pRgb[5];
+      bs += b = pRgb[3];
+      gs += g = pRgb[4];
+      rs += r = pRgb[5];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[_width+1]=255;	// y is only positive
             else pY[_width+1] = (unsigned char)y;
@@ -141,9 +146,9 @@ to 0..255.
 void ConvRGB24toYUV420FixP::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
 	// Y has range 0..255, U & V have range -128..127.
-  int	y;
-  int	r,g,b;
-  int	rs,gs,bs;
+  int32_t y;
+  int32_t r,g,b;
+  int16_t rs,gs,bs;
 
 	// Step in 2x2 pel blocks. (4 pels per block).
   int yb = _height >> 1;
@@ -153,34 +158,34 @@ void ConvRGB24toYUV420FixP::NonFlipConvert(const unsigned char* pRgb, unsigned c
     while(xb-- > 0)
     {
 	// Top left pel.
-      bs = b = (int)pRgb[0];
-      gs = g = (int)pRgb[1];
-      rs = r = (int)pRgb[2];
+      bs = b = pRgb[0];
+      gs = g = pRgb[1];
+      rs = r = pRgb[2];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[0]=255;		// y is only positive
             else pY[0] = (unsigned char)y;
 
 	// Top right pel.
-      bs += b = (int)pRgb[3];
-      gs += g = (int)pRgb[4];
-      rs += r = (int)pRgb[5];
+      bs += b = pRgb[3];
+      gs += g = pRgb[4];
+      rs += r = pRgb[5];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[1]=255;		// y is only positive
             else pY[1] = (unsigned char)y;
 
       pRgb += 3 * _width;
 	// Bottom left pel.
-      bs += b = (int)pRgb[0];
-      gs += g = (int)pRgb[1];
-      rs += r = (int)pRgb[2];
+      bs += b = pRgb[0];
+      gs += g = pRgb[1];
+      rs += r = pRgb[2];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[_width]=255;	// y is only positive
             else pY[_width] = (unsigned char)y;
 
 	// Bottom right pel.
-      bs += b = (int)pRgb[3];
-      gs += g = (int)pRgb[4];
-      rs += r = (int)pRgb[5];
+      bs += b = pRgb[3];
+      gs += g = pRgb[4];
+      rs += r = pRgb[5];
       y = ((iRRGB24YUVCI2_00*r + iRRGB24YUVCI2_01*g + iRRGB24YUVCI2_02*b)>> (iPrecision + 1));
       if(y>=255) pY[_width+1]=255;	// y is only positive
             else pY[_width+1] = (unsigned char)y;

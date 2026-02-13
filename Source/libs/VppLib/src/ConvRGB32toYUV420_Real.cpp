@@ -32,17 +32,20 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "ConvRGB32toYUV420_Real.h"
+
+#include <uuids.h>
 
 
 /*===========================================================================
 			Interface Methods
 ===========================================================================*/
+
+
+bool RealRGB32toYUV420Converter::isInputVideoFormatSupported(const GUID &VideoFormat) const
+{
+  return VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_ARGB32;
+}
 
 
 void RealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char *pU, unsigned char* pV) const

@@ -51,7 +51,6 @@ YUVtoRGBFilter::YUVtoRGBFilter():
 
 void YUVtoRGBFilter::initParameters(void)
 {
-  //addParameter(CHROMINANCE_OFFSET, &m_nChrominanceOffset, 128);
   addParameter(INVERT, OLE_PARAM_FLIP, &m_bInvert,  m_bInvert);
 }
 
