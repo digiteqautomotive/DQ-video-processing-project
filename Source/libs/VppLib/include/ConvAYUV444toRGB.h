@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _AYUV444TORGB24CONVERTER_H
 #define _AYUV444TORGB24CONVERTER_H
 #include <DirectShow/stdafx.h>
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 
 
 /** \ingroup ImageLib

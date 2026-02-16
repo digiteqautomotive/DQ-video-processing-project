@@ -174,12 +174,10 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvAYUV444toRGB24.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvAYUV444toRGB24_ASM.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_FixP.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_fixpLUT.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_LUT.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_Real.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_SIMD.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB32toYUV420_FixP.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB32toYUV420_Real.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUV420toRGB.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUYVtoRGB.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYVYUtoRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicYV24Impl.cpp" />
@@ -194,7 +192,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUVtoRGBConverter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\MtRGB24toYUV420Converter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB24Impl.cpp" />
@@ -269,16 +266,8 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2Ver16.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24CCIR601ConverterVer16.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGBconverter.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24ConverterImpl2Ver16.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUYVtoRGBConverter.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YV24toRGBconverter.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YVYUtoRGBConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h" />

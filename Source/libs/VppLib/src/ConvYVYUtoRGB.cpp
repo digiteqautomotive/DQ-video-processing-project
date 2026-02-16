@@ -1,15 +1,15 @@
 /** @file
 
-MODULE				: AYUV420toRGB24Converter
+MODULE		: YVYUtoRGB24Converter
 
-FILE NAME			: AYUV420toRGB24Converter.cpp
+FILE NAME	: YVYUtoRGB24Converter.cpp
 
-DESCRIPTION			: Implementation of YUV420 (8 bpp) to RGB 24 bit 
-				  colour conversion derived from the YUV420toRGBConverter base class.
+DESCRIPTION	: Implementation of YUV420 (8 bpp) to RGB 24 bit 
+		  colour conversion derived from the YUV420toRGBConverter base class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025, Digiteq Automotive All rights reserved.
+		Copyright (c) 2025, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,17 +29,17 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "YUYVtoRGBConverter.h"
+#include "ConvYVYUtoRGB.h"
 
 #include "typedfs.h"
 
 
 /*===========================================================================
-	Private Methods.
+			Private Methods
 ===========================================================================*/
 
 
-void YUYVtoRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void YVYUtoRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;
@@ -56,8 +56,8 @@ int32_t X;
       while(x-- > 0)
       {
         int32_t Y = 256 * In[0];
-        const signed char U = In[1] - 128; 
-        const signed char V = In[3] - 128;
+        const signed char V = In[1] - 128;
+        const signed char U = In[3] - 128; 
     
         X = (Y + 520*U) >> 8;		// B: Y + 2.032*U
         if(X>255) Out[0]=255;
@@ -99,8 +99,8 @@ int32_t X;
     while(numberOf2Pixels-->0)
     {
       int32_t Y = 256 * In[0];
-      const signed char U = In[1] - 128; 
-      const signed char V = In[3] - 128;
+      const signed char V = In[1] - 128; 
+      const signed char U = In[3] - 128;
     
       X = (Y + 520*U) >> 8;		// B: Y + 2.032*U
       if(X>255) Out[0]=255;
@@ -140,7 +140,7 @@ int32_t X;
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-void YUYVtoARGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void YVYUtoARGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;

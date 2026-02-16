@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
 #ifdef USE_MULTI_THREADED
 #include <Winsock2.h>

@@ -39,7 +39,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 		NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 		SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "RealYUV420toRGB24ConverterImpl2Ver16.h"
+#include "ConvYUV420toRGB24RealImpl2Ver16.h"
 
 #include "typedfs.h"
 

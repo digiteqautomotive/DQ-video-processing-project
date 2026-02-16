@@ -38,7 +38,6 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
 #include <stdio.h>
 #include <memory.h>
@@ -48,11 +47,9 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 
 #include	"OverlayExtMem2Dv2.h"
 
-/*
----------------------------------------------------------------------------
-	Construction, initialisation and destruction.
----------------------------------------------------------------------------
-*/
+/*---------------------------------------------------------------------------
+		Construction, initialisation and destruction
+---------------------------------------------------------------------------*/
 
 OverlayExtMem2Dv2::OverlayExtMem2Dv2(void* srcPtr,	int srcWidth, int srcHeight, 
 																										int width,		int height,

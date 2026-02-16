@@ -20,7 +20,7 @@ RESTRICTIONS:
 #ifndef _REALYUV420TORGB24CCIR601CONVERTER_H
 #define _REALYUV420TORGB24CCIR601CONVERTER_H
 
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 
 /*
 ===========================================================================

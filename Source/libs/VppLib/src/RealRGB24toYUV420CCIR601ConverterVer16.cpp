@@ -42,7 +42,7 @@ RESTRICTIONS:		Redistribution and use in source and binary forms, with or withou
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-#include "RealRGB24toYUV420CCIR601ConverterVer16.h"
+#include "ConvRGB24toYUV420CCIR601Ver16.h"
 
 
 /*===========================================================================

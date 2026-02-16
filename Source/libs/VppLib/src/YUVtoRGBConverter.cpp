@@ -12,7 +12,7 @@ LICENSE: Software License Agreement (BSD License)
 	Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 ===========================================================================*/
 #include <stdlib.h>
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 
 
 CVideoConverter::CVideoConverter(int width, int height):

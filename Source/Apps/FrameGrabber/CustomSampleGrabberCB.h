@@ -17,14 +17,16 @@
 
 // Color conversion helper classes
 #include "ImageHandlerV2.h"
-#include "ConvRGB24toYUV420_Real.h "
-#ifdef USE_MULTI_THREADED
-  #include <Image/MtRGB24toYUV420Converter.h>
-#endif
-#include "RealYUV420toRGB24Converter.h"
-#include "ConvRGB24toYUV420_LUT.h"
-#include "ConvRGB24toYUV420_FixP.h"
-#include "ConvRGB24toYUV420_SIMD.h"
+//#include "ConvRGB24toYUV420_Real.h "
+//#ifdef USE_MULTI_THREADED
+//  #include <Image/MtRGB24toYUV420Converter.h>
+//#endif
+#include "ConvYUV420toRGB.h"
+//#include "ConvRGB24toYUV420_LUT.h"
+//#include "ConvRGB24toYUV420_FixP.h"
+//#include "ConvRGB24toYUV420_SIMD.h"
+#include "ConvRGB24toYUV420.h"
+#include "ConvRGB32toYUV420.h"
 
 #include <Shared/TimerUtil.h>
 
@@ -74,6 +76,8 @@ public:
     // instantiate your color converter
     // Don't forget to undefine the standard color converter
 
+    m_pRgbToYuvConverter = new ConvRGB24toYUV420FixP;
+/*
     switch (m_eMode)
     {
     case ORIGINAL:
@@ -88,48 +92,49 @@ public:
         m_pRgbToYuvConverter = new ConvRGB24toYUV42_float_LUT();
         break;
       }
-/*
-    case FIXED_POINT:
-      {
-        printf("Creating fixed-point color converter\r\n");
-        m_pRgbToYuvConverter = new FastFixedPointRGB24toYUV420Converter();
-        break;
-      }
-*/
+
+//    case FIXED_POINT:
+//      {
+//        printf("Creating fixed-point color converter\r\n");
+//        m_pRgbToYuvConverter = new FastFixedPointRGB24toYUV420Converter();
+//        break;
+//      }
+
     case SIMD:
       {
         printf("Creating SIMD color converter\r\n");
         m_pRgbToYuvConverter = new ConvRGB24toYUV420_SIMD();
         break;
       }
-/*
-    case GPU:
-      {
-        printf("Creating GPU-based color converter\r\n");
-        m_pRgbToYuvConverter = new FastGpuRGB24toYUV420Converter();
-        break;
-      }
+//    case GPU:
+//      {
+//        printf("Creating GPU-based color converter\r\n");
+//        m_pRgbToYuvConverter = new FastGpuRGB24toYUV420Converter();
+//        break;
+//      }
+
+//    case MT:
+//      {
+//#ifdef USE_MULTI_THREADED
+//        printf("Creating multi-threaded color converter\r\n");
+//        m_pRgbToYuvConverter = new MtRGB24toYUV420Converter();
+//        break;
+//        // let fall through to standard
+//#else
+//        printf("Creating multi-threaded color converter requires USE_MULTI_THREADED\r\n");
+//#endif
+//      }
+//    default:
+//      {
+//        printf("Creating standard color converter\r\n");
+//        m_pRgbToYuvConverter = new RealRGB24toYUV420Converter();
+//      }
+//    }
 */
-    case MT:
-      {
-#ifdef USE_MULTI_THREADED
-        printf("Creating multi-threaded color converter\r\n");
-        m_pRgbToYuvConverter = new MtRGB24toYUV420Converter();
-        break;
-        // let fall through to standard
-#else
-        printf("Creating multi-threaded color converter requires USE_MULTI_THREADED\r\n");
-#endif
-      }
-    default:
-      {
-        printf("Creating standard color converter\r\n");
-        m_pRgbToYuvConverter = new RealRGB24toYUV420Converter();
-      }
-    }
 
     m_pYuvToRgbConverter = new YUV420toRGB24Converter();
   }
+
 
   void setBitmapInfoHeader(BITMAPINFOHEADER* pBitmapInfoHeader)
   {

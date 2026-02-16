@@ -43,7 +43,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _REALYUV420TORGB24CCIR601CONVERTERVER16_H
 #define _REALYUV420TORGB24CCIR601CONVERTERVER16_H
 
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 
 #include "typedfs.h"
 

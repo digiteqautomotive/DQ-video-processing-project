@@ -14,7 +14,7 @@ Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All r
 ===========================================================================*/
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
 #include "typedfs.h"
 

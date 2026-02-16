@@ -4,7 +4,7 @@ MODULE				: RealYUV420toRGB24ConverterImpl2Ver16
 
 TAG						: RYUVRGB24CI2V16
 
-FILE NAME			: RealYUV420toRGB24ConverterImpl2Ver16.h
+FILE NAME			: ConvYUV420toRGB24CCIR601Real.h
 
 DESCRIPTION		: Floating point implementation of YUV420 (16 bpp) to RGB 24 bit 
 								colour convertion derived from the YUV420toRGBConverter base 
@@ -44,7 +44,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _RealYUV420toRGB24ConverterImpl2Ver16_H
 #define _RealYUV420toRGB24ConverterImpl2Ver16_H
 
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 
 /*===========================================================================
 			Class definition

@@ -1,17 +1,17 @@
 /** @file
 
-MODULE:		RGB24toYUV420Converter
+MODULE:			RealRGB32toYUV420Converter
 
-FILE NAME:	RGB24toYUV420Converter.h
+FILE NAME:		ConvRGB32toYUV420_Real.h
 
-DESCRIPTION:	Fixed-point RGB 24 bit to YUV420 colour 
-		conversion derived from the RGBtoYUV420Converter base class.
-		Use this implementation as the reference.
-	  
+DESCRIPTION:		Double precision floating point RGB 32 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
+			Use this implementation as the reference.
+			  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,26 +31,35 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+#ifndef _REALRGB32TOYUV420CONVERTER_H
+#define _REALRGB32TOYUV420CONVERTER_H
+
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
-
-/** \ingroup ImageLib
- * Fixed-point RGB 24 bit to YUV420 colour 
- * conversion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference. */
-class ConvRGB24toYUV420FixP: public RGBtoYUV420Converter
+/**
+ * \ingroup ImageLib
+ * Double precision floating point RGB 32 bit to YUV420 colour 
+ * convertion derived from the RGBtoYUV420Converter base class.
+ * Use this implementation as the reference.
+ */
+class RealRGB32toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
 	// Construction and destruction.
-    ConvRGB24toYUV420FixP(void) {}
-    ConvRGB24toYUV420FixP(int width, int height): RGBtoYUV420Converter(width,height) {}
+	RealRGB32toYUV420Converter(void) { }
+	RealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
+	virtual ~RealRGB32toYUV420Converter(void) {}
 
-    virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+	// Interface.
+        bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-	// Interface.
-    virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
-    virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
-};
+	void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+	void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+
+};//end RealRGB32toYUV420Converter.
+
+
+#endif //_REALRGB32TOYUV420CONVERTER_H

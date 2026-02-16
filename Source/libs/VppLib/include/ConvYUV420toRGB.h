@@ -1,17 +1,18 @@
 /** @file
 
-MODULE				: YUV420toRGB24Converter
+MODULE:			YUV420toRGB24Converter
 
-FILE NAME			: YUV420toRGB24Converter.h
+FILE NAME:		ConvYUV420toRGB24.h
 
-DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-colour convertion derived from the YUV420toRGBConverter base 
-class.
+DESCRIPTION:		Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
+			colour convertion derived from the YUV420toRGBConverter base 
+			class.
 					  
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR		All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026, Digiteq Automotive		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -34,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _REALYUV420TORGB24CONVERTER_H
 #define _REALYUV420TORGB24CONVERTER_H
 
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 

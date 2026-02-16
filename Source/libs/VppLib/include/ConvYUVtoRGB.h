@@ -4,7 +4,7 @@ MODULE:		YUVtoRGBConverter
 
 TAG:		YUVRGBC
 
-FILE NAME:	YUVtoRGBConverter.h
+FILE NAME:	ConvYUVtoRGB.h
 
 DESCRIPTION:	Colour convertions are required on the output of
 		all video codecs. For embedded applications only some

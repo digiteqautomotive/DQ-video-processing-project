@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				:YUV420toRGB24Converter
+MODULE:			YUV420toRGB24Converter
 
-FILE NAME			:YUV420toRGB24Converter.cpp
+FILE NAME:		YUV420toRGB24Converter.cpp
 
-DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-					colour conversion derived from the YUV420toRGBConverter base 
-					class.
+DESCRIPTION:		Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
+			colour conversion derived from the YUV420toRGBConverter base 
+			class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -29,10 +29,8 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ==========================================================================*/
-
-#include "RealYUV420toRGB24Converter.h"
+#include "ConvYUV420toRGB24CReal.h"
 
 
 extern "C" void YUV_BGR(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);

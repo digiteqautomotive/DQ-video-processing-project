@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _RealRGB24toYUV420ConverterImpl2Ver16_H
 #define _RealRGB24toYUV420ConverterImpl2Ver16_H
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
 #include "typedfs.h"
 

@@ -30,7 +30,7 @@ protected:
 
 
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
 
 class OrigRealRGB24toYUV420Converter: public RGBtoYUV420Converter

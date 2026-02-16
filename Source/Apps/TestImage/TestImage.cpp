@@ -28,14 +28,14 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "RotateTesters.h"
 
 #include "ConvAYUV444toRGB.h"
-#include "RealYUV420toRGB24Converter.h"
-#include "ConvRGB24toYUV420_Real.h "
-#include "ConvRGB32toYUV420_Real.h "
-#include "RGB24toYUV420Converter.h"
-#include "RGB32toYUV420Converter.h"
-#include "ConvRGB24toYUV420_LUT.h"
-#include "ConvRGB24toYUV420_fixpLUT.h"
-#include "ConvRGB24toYUV420_SIMD.h"
+#include "ConvYUV420toRGB.h"
+#include "ConvRGB24toYUV420.h"
+#include "ConvRGB32toYUV420.h"
+#include "reference/ConvRGB24toYUV420_LUT.h"
+#include "reference/ConvRGB24toYUV420_fixpLUT.h"
+#include "reference/ConvRGB24toYUV420_SIMD.h"
+#include "reference/ConvRGB24toYUV420_Real.h "
+#include "reference/ConvRGB32toYUV420_Real.h "
 #include "ConvertTesters.h"
 
 

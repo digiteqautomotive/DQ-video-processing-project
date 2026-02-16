@@ -1,11 +1,11 @@
 /** @file
 
-MODULE				: AYUV420toRGB24Converter
+MODULE:			AYUV444toRGB24Converter
 
-FILE NAME			: AYUV420toRGB24Converter.cpp
+FILE NAME:		ConvAYUV444toRGB24_ASM.cpp
 
-DESCRIPTION			: Implementation of YUV420 (8 bpp) to RGB 24 bit 
-				  colour conversion derived from the YUV420toRGBConverter base class.
+DESCRIPTION:		Implementation of YUV420 (8 bpp) to RGB 24 bit 
+			colour conversion derived from the YUV420toRGBConverter base class.
 					  
 LICENSE: Software License Agreement (BSD License)
 

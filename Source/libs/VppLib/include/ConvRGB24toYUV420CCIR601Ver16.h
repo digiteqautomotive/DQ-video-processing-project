@@ -48,7 +48,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
 /*
 ===========================================================================

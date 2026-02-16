@@ -50,10 +50,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "BitStreamWriterMSB.h"
 #include "BitStreamReaderMSB.h"
 
-#include "RealRGB24toYUV420CCIR601ConverterVer16.h"
+#include "ConvRGB24toYUV420CCIR601Ver16.h"
 #include "RealYUV420toRGB24CCIR601ConverterVer16.h"	
-#include "RealRGB24toYUV420ConverterImpl2Ver16.h"
-#include "RealYUV420toRGB24ConverterImpl2Ver16.h"
+#include "ConvRGB24toYUV420RealImpl2Ver16.h"
+#include "ConvYUV420toRGB24CCIR601Real.h"
+#include "ConvYUV420toRGB24RealImpl2Ver16.h"
 
 #include "FastForward4x4ITImpl2.h"
 #include "FastForward4x4ITImpl1.h"

@@ -1,17 +1,17 @@
 /** @file
 
-MODULE:			ConvRGB24toYUV420_LUT
+MODULE:		RGB24toYUV420Converter
 
-FILE NAME:		ConvRGB24toYUV420_LUT.h
+FILE NAME:	RGB24toYUV420Converter.h
 
-DESCRIPTION:		Lookup-table-based  RGB 24 bit to YUV420 colour 
-			conversion derived from the RGBtoYUV420Converter base class.
-			Use this implementation as the reference.
+DESCRIPTION:	Fixed-point RGB 24 bit to YUV420 colour 
+		conversion derived from the RGBtoYUV420Converter base class.
+		Use this implementation as the reference.
 	  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -33,37 +33,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
+
 
 /** \ingroup ImageLib
- * Lookup-table based floating point RGB 24 bit to YUV420 colour 
+ * Fixed-point RGB 24 bit to YUV420 colour 
  * conversion derived from the RGBtoYUV420Converter base class.
  * Use this implementation as the reference. */
-class ConvRGB24toYUV42_float_LUT: public RGBtoYUV420Converter
+class ConvRGB24toYUV420FixP: public RGBtoYUV420Converter
 {
 public:
 	// Construction and destruction.
-    ConvRGB24toYUV42_float_LUT(void) { initLookupTable(); }
-    ConvRGB24toYUV42_float_LUT(int width, int height): RGBtoYUV420Converter(width,height) { initLookupTable(); }
-    virtual ~ConvRGB24toYUV42_float_LUT(void) {}
+    ConvRGB24toYUV420FixP(void) {}
+    ConvRGB24toYUV420FixP(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-	// Interface
-    bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+    virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-    void NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
-    void FlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
-
-
-    void initLookupTable(void);
-			// LUT consumes 9KB
-    float m_RRGB_YUVCI2_00[256];
-    float m_RRGB_YUVCI2_01[256];
-    float m_RRGB_YUVCI2_02[256];
-    float m_RRGB_YUVCI2_10[256];
-    float m_RRGB_YUVCI2_11[256];
-    float m_RRGB_YUVCI2_12[256];
-    float m_RRGB_YUVCI2_20[256];
-    float m_RRGB_YUVCI2_21[256];
-    float m_RRGB_YUVCI2_22[256];
+	// Interface.
+    virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+    virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 };

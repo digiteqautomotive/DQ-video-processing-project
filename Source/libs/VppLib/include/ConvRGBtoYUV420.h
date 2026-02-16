@@ -4,7 +4,7 @@ MODULE				: RGBtoYUV420Converter
 
 TAG						: RGBYUVC
 
-FILE NAME			: RGBtoYUV420Converter.h
+FILE NAME			: ConvRGBtoYUV420.h
 
 DESCRIPTION		: Colour convertions to YUV420 are required on the input of
 								all video codecs. For embedded applications only some
@@ -46,7 +46,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #ifndef _RGBTOYUV420CONVERTER_H
 #define _RGBTOYUV420CONVERTER_H
 
-#include "YUVtoRGBConverter.h"
+#include "ConvYUVtoRGB.h"
 #include <Guiddef.h>
 
 

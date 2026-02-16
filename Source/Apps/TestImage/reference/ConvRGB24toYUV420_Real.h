@@ -1,11 +1,11 @@
 /** @file
 
-MODULE:			ConvRGB24toYUV420_SIMD
+MODULE:			RealRGB24toYUV420Converter
 
-FILE NAME:		ConvRGB24toYUV420_SIMD.h
+FILE NAME:		ConvRGB24toYUV420_Real.h
 
-DESCRIPTION:		SIMD RGB 24 bit to YUV420 colour 
-			conversion derived from the RGBtoYUV420Converter base class.
+DESCRIPTION:		Double precision floating point RGB 24 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
 			Use this implementation as the reference.
 	  
 LICENSE: Software License Agreement (BSD License)
@@ -31,26 +31,31 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+#ifndef _REALRGB24TOYUV420CONVERTER_H
+#define _REALRGB24TOYUV420CONVERTER_H
+
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
-
+#include "ConvRGBtoYUV420.h"
 
 /** \ingroup ImageLib
  * Double precision floating point RGB 24 bit to YUV420 colour 
  * convertion derived from the RGBtoYUV420Converter base class.
  * Use this implementation as the reference. */
-class ConvRGB24toYUV420_SIMD: public RGBtoYUV420Converter
+class RealRGB24toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
-    ConvRGB24toYUV420_SIMD(void) {}
-    ConvRGB24toYUV420_SIMD(int width, int height): RGBtoYUV420Converter(width,height) {}
+    RealRGB24toYUV420Converter(void) { }
+    RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
 
     bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-    /// Interface.
-    void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
-    void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
-};
+	/// Interface.
+  virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+  virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+}; //end _REALRGB24TOYUV420CONVERTERIMPL2_H.
+
+
+#endif

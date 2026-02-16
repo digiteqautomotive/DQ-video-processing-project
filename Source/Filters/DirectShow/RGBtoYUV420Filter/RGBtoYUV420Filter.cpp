@@ -28,14 +28,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/CommonDefs.h"
 #include "DirectShow/CustomMediaTypes.h"
 #include "DirectShow/VariantTools.h"
-#include "RGB32toYUV420Converter.h"
-#include "RGB24toYUV420Converter.h"
+#include "ConvRGB32toYUV420.h"
+#include "ConvRGB24toYUV420.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 
 #include "../FilterParameterStringConstants.h"
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
-#include <wmcodecdsp.h>		// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
+#include <wmcodecdsp.h>			// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
 
 
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);

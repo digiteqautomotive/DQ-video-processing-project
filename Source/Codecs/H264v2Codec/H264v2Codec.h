@@ -38,8 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ICodecv2.h"
 #include "ICodecInnerAccess.h"
 
-#include "RGBtoYUV420Converter.h"
-#include "YUVtoRGBConverter.h"
+#include "ConvRGBtoYUV420.h"
+#include "ConvYUVtoRGB.h"
 
 #include "IBitStreamWriter.h"
 #include "IBitStreamReader.h"

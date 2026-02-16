@@ -18,9 +18,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\MtRGB24toYUV420Converter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -111,15 +108,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGB24Conv_ASM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUYVtoRGBConverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YVYUtoRGBConverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGBconverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\YV24toRGBconverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -141,22 +129,10 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP16Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_LUT.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_SIMD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_FixP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB32toYUV420_FixP.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_Real.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB32toYUV420_Real.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvAYUV444toRGB24.cpp">
@@ -165,7 +141,13 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvAYUV444toRGB24_ASM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_fixpLUT.cpp">
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUV420toRGB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYVYUtoRGB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUYVtoRGB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
