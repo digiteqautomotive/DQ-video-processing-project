@@ -11,25 +11,23 @@ DESCRIPTION				: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit
 										class. Assumes that the colour space of the YUV components
 										are defined by the CCIR-601 standard.
 
-REVISION HISTORY	:
-									: 
+REVISION HISTORY:
 
-COPYRIGHT					: 
+COPYRIGHT: 
 
-RESTRICTIONS			: 
+RESTRICTIONS: 
 ===========================================================================*/
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "RealYUV420toRGB24CCIR601Converter.h"
+#include "ConvYUV420toRGB24CCIR601Real.h"
 
-/*
-===========================================================================
-	Macros.
-===========================================================================
-*/
+/*===========================================================================
+				Macros
+===========================================================================*/
+
 #define RYUVRGB24CC_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 
 //	CCIR-601: The defenition assumes limited Y and UV (CbCr) ranges but the inverse

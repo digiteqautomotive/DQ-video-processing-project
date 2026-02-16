@@ -30,7 +30,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==========================================================================*/
-#include "ConvYUV420toRGB24CReal.h"
+#include "ConvYUV420toRGB.h"
 
 
 extern "C" void YUV_BGR(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
@@ -41,7 +41,7 @@ extern "C" void YUV_BGR(unsigned char *OutData, const unsigned char *y, const un
 	Private Methods.
 ==========================================================================*/
 
-void YUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void YUV420toRGB24Converter::FlipConvert(const void *pY, const void *pU, const void *pV, unsigned char *pRgb) const
 {
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
@@ -66,21 +66,21 @@ int row = _height / 2;
 } //end FlipConvert
 
 
-void YUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+void YUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 const unsigned char *y = (const unsigned char *)pY;
-const signed char *u = (const signed char *)pU;
-const signed char *v = (const signed char *)pV;
+const unsigned char *u = (const unsigned char *)pU;
+const unsigned char *v = (const unsigned char *)pV;
 unsigned char *OutData = (unsigned char *)pRgb;
 int row = _height / 2;
 
   while(row-- > 0)
   {
-    YUV_BGR(OutData, y, (const unsigned char *)u, (const unsigned char *)v, _width);
+    YUV_BGR(OutData, y, u, v, _width);
     y += _width;
     OutData += 3*_width;
 
-    YUV_BGR(OutData, y, (const unsigned char *)u, (const unsigned char *)v, _width);
+    YUV_BGR(OutData, y, u, v, _width);
     y += _width;
     OutData += 3*_width;
 

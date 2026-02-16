@@ -31,8 +31,8 @@ void YUV420toRGBConverter::Convert(const void* pBufferIn, void* pRgb) const
 {    
 	//set the Y, U and V pointers to point to the correct positions within the byte array
   const unsigned nInPixelCount = _width *_height;
-  const unsigned char *pU = (const unsigned char *)pBufferIn + nInPixelCount;
-  const unsigned char *pV = pU + nInPixelCount/4;
+  const unsigned char * const pU = (const unsigned char *)pBufferIn + nInPixelCount;
+  const unsigned char * const pV = pU + nInPixelCount/4;
         // let invert take precedence, not catering for both
   if(_flip) 
       FlipConvert(pBufferIn, pU, pV, (unsigned char*)pRgb);

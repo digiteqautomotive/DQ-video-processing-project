@@ -22,7 +22,7 @@ RESTRICTIONS:
 //#include <string.h>
 //#include <stdlib.h>
 
-#include "RealRGB24toYUV420CCIR601Converter.h"
+#include "ConvRGB24toYUV420CCIR601Real.h"
 
 /*===========================================================================
 				Constants

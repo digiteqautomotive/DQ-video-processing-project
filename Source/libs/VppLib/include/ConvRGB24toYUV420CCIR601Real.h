@@ -24,7 +24,7 @@ RESTRICTIONS			:
 
 #pragma once
 
-#include "RGBtoYUV420Converter.h"
+#include "ConvRGBtoYUV420.h"
 
 /*
 ===========================================================================
