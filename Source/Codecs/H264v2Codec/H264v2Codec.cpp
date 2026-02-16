@@ -46,12 +46,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "H264v2Codec.h"
 
-/// Implementations.
+	// Implementations.
 #include "BitStreamWriterMSB.h"
 #include "BitStreamReaderMSB.h"
 
 #include "ConvRGB24toYUV420CCIR601Ver16.h"
-#include "RealYUV420toRGB24CCIR601ConverterVer16.h"	
+#include "ConvYUV420toRGB24CCIR601RealVer16.h"
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
 #include "ConvYUV420toRGB24CCIR601Real.h"
 #include "ConvYUV420toRGB24RealImpl2Ver16.h"
@@ -102,20 +102,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---------------------------------------------------------------------------
 */
 /// Picture type definitions. Values for _pictureCodingType member.
-#define H264V2_INTRA				0
-#define H264V2_INTER				1
+#define H264V2_INTRA			0
+#define H264V2_INTER			1
 #define H264V2_SEQ_PARAM		2
 #define H264V2_PIC_PARAM		3
 
-#define H264V2_I_PIC				0
-#define H264V2_P_PIC				1
-#define H264V2_PB_PIC				2
-#define H264V2_B_PIC				3
-#define H264V2_EI_PIC				4
-#define H264V2_EP_PIC				5
+#define H264V2_I_PIC			0
+#define H264V2_P_PIC			1
+#define H264V2_PB_PIC			2
+#define H264V2_B_PIC			3
+#define H264V2_EI_PIC			4
+#define H264V2_EP_PIC			5
 
-#define H264V2_MAX_QP							  51	///< Maximum QP value
-#define H264V2_MAX_EXT_QP	          71	///< Maximum extended QP value for Inter
+#define H264V2_MAX_QP			51	///< Maximum QP value
+#define H264V2_MAX_EXT_QP	        71	///< Maximum extended QP value for Inter
 #define H264V2_I_MAX_EXT_QP	        85	///< Maximum extended QP value for Intra
 
 #define H264V2_MAX_INTRA_ITERATIONS	5 	///< Default settings for a limit on optimisation iterations for slow convergence.
