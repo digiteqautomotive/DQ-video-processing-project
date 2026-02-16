@@ -46,19 +46,16 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 
 #include "YUVtoRGBConverter.h"
 
-/*
-===========================================================================
-  Class definition.
-===========================================================================
-*/
+/*===========================================================================
+			Class definition
+===========================================================================*/
+
 class RealYUV420toRGB24ConverterImpl2Ver16: public YUV420toRGBConverter
 {
 public:
 	// Construction and destruction.
-    RealYUV420toRGB24ConverterImpl2Ver16(void) { }
+    RealYUV420toRGB24ConverterImpl2Ver16(void)	{}
     RealYUV420toRGB24ConverterImpl2Ver16(int width, int height);
-    //RealYUV420toRGB24ConverterImpl2Ver16(int width, int height, int chrOff);
-    virtual ~RealYUV420toRGB24ConverterImpl2Ver16(void) { }
 
 	// Interface.
     virtual void Convert(const void* pBufferIn, void* pRgb) const;
@@ -66,9 +63,7 @@ public:
 protected:
     virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const;
     virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const;
-    virtual void RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const;
-
-};//end RealYUV420toRGB24ConverterImpl2Ver16.
+}; //end RealYUV420toRGB24ConverterImpl2Ver16.
 
 
 #endif	// _RealYUV420toRGB24ConverterImpl2Ver16_H

@@ -66,7 +66,7 @@ public:
         virtual void RevertToPreviousValue(void) = 0;
 	virtual std::string ToStr(void) const = 0;
         virtual bool FromStr(const char *str) = 0;
-        virtual int Size(void) const = 0;
+        virtual size_t Size(void) const = 0;
 	virtual RTVC_PARAM_TYPES Type(void) const = 0;
         virtual HRESULT Save(IStream *pStm) const = 0;
         virtual HRESULT Load(IStream *pStm) = 0;
@@ -87,7 +87,7 @@ public:
         virtual bool FromStr(const char *str);
 
 	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_INT;}
-	virtual int Size(void) const {return sizeof(int);}
+	virtual size_t Size(void) const {return sizeof(int);}
         virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(*pValue),NULL);};
@@ -109,7 +109,7 @@ public:
         virtual bool FromStr(const char *str);
 	
 	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_UINT;}
-        virtual int Size(void) const {return sizeof(unsigned);}
+        virtual size_t Size(void) const {return sizeof(unsigned);}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
 	virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}        
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(*pValue),NULL);};
@@ -131,7 +131,7 @@ public:
         virtual bool FromStr(const char *str);
 
 	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_DOUBLE;}
-        virtual int Size(void) const {return sizeof(double);}
+        virtual size_t Size(void) const {return sizeof(double);}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(*pValue),NULL);};
@@ -153,7 +153,7 @@ public:
         virtual bool FromStr(const char *str);
 
 	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_BOOL;}
-        virtual int Size(void) const {return 1;}
+        virtual size_t Size(void) const {return 1;}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
         virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,1,NULL);};
@@ -175,7 +175,7 @@ public:
         virtual bool FromStr(const char *str);
 
 	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_STRING;}
-        virtual int Size(void) const {return pValue->length()+1;}
+        virtual size_t Size(void) const {return pValue->length()+1;}
 	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
         virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
         virtual HRESULT Save(IStream *pStm) const;

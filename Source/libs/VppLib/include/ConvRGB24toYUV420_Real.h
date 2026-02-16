@@ -49,7 +49,7 @@ public:
     RealRGB24toYUV420Converter(void) { }
     RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-    bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
+    bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
 	/// Interface.

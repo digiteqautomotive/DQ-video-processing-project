@@ -97,10 +97,12 @@ public:
   virtual void InitialiseInputTypes();
 
   /** Overridden from CSettingsInterface to intialise filter parameters. */
-  void initParameters();  
+  void initParameters(void);
+
+  virtual HRESULT BreakConnect(PIN_DIRECTION dir);
 
   /** Sets the filter parameters */
-  STDMETHODIMP SetParameter( const char* type, const char* value);
+  STDMETHODIMP SetParameter(const char* type, const char* value);
 
   /** Required for property page. */
   STDMETHODIMP GetPages(CAUUID *pPages);
@@ -110,16 +112,16 @@ public:
   /** Required for COM */
   STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-private:
-  /**
-   * This method converts the input buffer from RGB24 | 32 to YUV420P
+protected:
+  /** This method converts the input buffer from RGB24 | 32 to YUV420P
    * @param pSource The source buffer
-   * @param pDest The destination buffer
-   */
+   * @param pDest The destination buffer */
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
-  /// Pointer to our RGB24 | 32 to YUV420 converter
+	/// Pointer to our RGB24 | 32 to YUV420 converter
   RGBtoYUV420Converter* m_pConverter;
-  int m_nSizeYUV;		///< Size of YUV image
   bool m_bInvert;		///< invert image
+
+  GUID in_MediaType;
+  GUID out_MediaType;
 };

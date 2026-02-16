@@ -484,7 +484,7 @@ private:
 	/// Fast search on the macroblock distortion vs. QP curve 
 	/// changes the step size.
 	static const int MbStepSize[];
-  static const int NextQPDec[];
+	static const int NextQPDec[];
 
 /// Operational members.
 private:
@@ -493,7 +493,7 @@ private:
 	IBitStreamReader*			_pBitStreamReader;
 
 	/// An input colour converter.
-	RGBtoYUV420Converter *_pInColourConverter;
+	RGBtoYUV420Converter16 *_pInColourConverter;
 	YUV420toRGBConverter *_pOutColourConverter;
 
 	/// 4x4 and 2x2 IT DC and AC transform filters.

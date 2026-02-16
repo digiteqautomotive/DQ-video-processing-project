@@ -451,6 +451,7 @@ HRESULT CropFilter::GetPages(CAUUID *pPages)
   pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
   if (pPages->pElems == NULL)
   {
+    pPages->cElems = 0;
     return E_OUTOFMEMORY;
   }
   pPages->pElems[0] = CLSID_CropProperties;

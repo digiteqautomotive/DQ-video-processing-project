@@ -5,7 +5,7 @@ MODULE:			ConvAYUV444toRGB
 FILE NAME:		ConvAYUV444toRGB.h
 
 DESCRIPTION:		Floating point implementation of YUV420 (8 bpp) to RGB 24 & 32 bit 
-			colour convertion derived from the YUVtoRGBConverter base class.
+			colour convertion derived from the CVideoConverter base class.
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -37,13 +37,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-* colour convertion derived from the YUVtoRGBConverter base class. */
-class AYUV444toRGB24Converter: public YUVtoRGBConverter
+* colour convertion derived from the CVideoConverter base class. */
+class AYUV444toRGB24Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   AYUV444toRGB24Converter(void) { }
-  AYUV444toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) {}
+  AYUV444toRGB24Converter(int width, int height): CVideoConverter(width,height) {}
   virtual ~AYUV444toRGB24Converter(void) {}
 
   // Interface.
@@ -54,13 +54,13 @@ public:
 
 /** \ingroup ImageLib
 * Integer implementation of AYUV444 (32 bpp) to RGB 32 bit 
-* colour convertion derived from the YUVtoRGBConverter base class. */
-class AYUV444toARGB32Converter: public YUVtoRGBConverter
+* colour convertion derived from the CVideoConverter base class. */
+class AYUV444toARGB32Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   AYUV444toARGB32Converter(void) { }
-  AYUV444toARGB32Converter(int width, int height): YUVtoRGBConverter(width,height) {}
+  AYUV444toARGB32Converter(int width, int height): CVideoConverter(width,height) {}
   virtual ~AYUV444toARGB32Converter(void) {}
 
   // Interface.
@@ -73,12 +73,12 @@ public:
 //////////////////////////////////////////////////////////////
 
 
-class YV24toRGB24Converter: public YUVtoRGBConverter
+class YV24toRGB24Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   YV24toRGB24Converter(void) { }
-  YV24toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) {}
+  YV24toRGB24Converter(int width, int height): CVideoConverter(width,height) {}
   virtual ~YV24toRGB24Converter(void) {}
 
   // Interface.
@@ -87,12 +87,12 @@ public:
 };	//end YV24toRGB24Converter.
 
 
-class YV24toRGB32Converter: public YUVtoRGBConverter
+class YV24toRGB32Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   YV24toRGB32Converter(void) { }
-  YV24toRGB32Converter(int width, int height): YUVtoRGBConverter(width,height) {}
+  YV24toRGB32Converter(int width, int height): CVideoConverter(width,height) {}
   virtual ~YV24toRGB32Converter(void) {}
 
   // Interface.

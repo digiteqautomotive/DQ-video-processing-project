@@ -88,15 +88,15 @@ protected:
   void init();
   void doConvert(unsigned char* pRgb, yuvType* pY, yuvType* pU, yuvType* pV, unsigned uiThread);
 
-  float m_RRGB24YUVCI2_00[256];
-  float m_RRGB24YUVCI2_01[256];
-  float m_RRGB24YUVCI2_02[256];
-  float m_RRGB24YUVCI2_10[256];
-  float m_RRGB24YUVCI2_11[256];
-  float m_RRGB24YUVCI2_12[256];
-  float m_RRGB24YUVCI2_20[256];
-  float m_RRGB24YUVCI2_21[256];
-  float m_RRGB24YUVCI2_22[256];
+  float m_RRGB_YUVCI2_00[256];
+  float m_RRGB_YUVCI2_01[256];
+  float m_RRGB_YUVCI2_02[256];
+  float m_RRGB_YUVCI2_10[256];
+  float m_RRGB_YUVCI2_11[256];
+  float m_RRGB_YUVCI2_12[256];
+  float m_RRGB_YUVCI2_20[256];
+  float m_RRGB_YUVCI2_21[256];
+  float m_RRGB_YUVCI2_22[256];
 
   // for threads
   boost::asio::io_service io_service;

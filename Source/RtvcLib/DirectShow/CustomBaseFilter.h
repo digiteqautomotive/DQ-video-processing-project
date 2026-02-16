@@ -44,10 +44,10 @@ typedef std::vector<GUID*> GUIDList_t;
  * \defgroup ImageLib Image Library
  */
 
-/**
- * \ingroup DirectShowLib
- *  Base class for CSIR 1 to 1 transform filters. This class inherits from CSettingsInterface and CStatusInterface to give all our filters basic configuration and notification functionality.
- */
+
+/** \ingroup DirectShowLib
+ *  Base class for CSIR 1 to 1 transform filters. This class inherits from CSettingsInterface and CStatusInterface to give all 
+ *   our filters basic configuration and notification functionality. */
 class CCustomBaseFilter: public CTransformFilter, public CSettingsInterface, public CStatusInterface
 {
   //this needs to be declared for the extra interface (adds the COM AddRef, etc methods)
@@ -66,13 +66,12 @@ public:
   /// Override this method to set other initialization code but call this base class method first
   virtual HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
 
-  /// Transform code
-  /**
-   * @brief This method takes the source sample and transforms it and writes the transformed sample to the destination
-   * This method is called by the transform input pin's Receive method.
-   * @param pSource The source sample
-   * @param pDest The destination sample
-   */
+	/// Transform code
+
+  /// This method takes the source sample and transforms it and writes the transformed sample to the destination.
+  /// This method is called by the transform input pin's Receive method.
+  /// @param pSource The source sample
+  /// @param pDest The destination sample
   HRESULT Transform(IMediaSample *pSource, IMediaSample *pDest);
 
   /// override this to publicize our interfaces
@@ -84,15 +83,13 @@ public:
   virtual HRESULT BreakConnect(PIN_DIRECTION dir);
 
 protected:
-  /**
-   * Used for Media Type Negotiation
-   * Call the AddInputType method in your overridden InitialiseInputTypes
-   * method to add your acceptable media types, subtypes and formats.
-   */
+  /// Used for Media Type Negotiation.
+  /// Call the AddInputType method in your overridden InitialiseInputTypes
+  /// method to add your acceptable media types, subtypes and formats.
   void AddInputType(const GUID* pType, const GUID* pSubType, const GUID* pFormat);
 
-  /** This method must be overridden in the sub class to apply the filter specific transformation
-   * It must return the size of the resulting transformed output buffer. */
+  /// This method must be overridden in the sub class to apply the filter specific transformation
+  /// It must return the size of the resulting transformed output buffer.
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength) PURE;
 
   VIDEOINFOHEADER m_videoInHeader;	///< Video header of input

@@ -28,12 +28,11 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "DirectShow/stdafx.h"
 #include "CustomBaseFilter.h"
 #include <Dvdmedia.h>
+
 
 CCustomBaseFilter::CCustomBaseFilter(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid)
   : CTransformFilter(pObjectName, lpUnk, clsid),
@@ -97,7 +96,7 @@ HRESULT CCustomBaseFilter::CheckInputType( const CMediaType *pMediaType )
 }
 
 
-HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt )
+HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt)
 {
   if(direction == PINDIR_INPUT)
   {
@@ -134,7 +133,7 @@ HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     }
     else if (pmt->formattype == FORMAT_MPEG2Video)
     {
-      MPEG2VIDEOINFO* pMpeg2Vih = (MPEG2VIDEOINFO*) pmt->pbFormat;
+      MPEG2VIDEOINFO* pMpeg2Vih = (MPEG2VIDEOINFO*)pmt->pbFormat;
 			//Set these values now so we don't have to repeat it for each transform
       m_nInHeight = pMpeg2Vih->hdr.bmiHeader.biHeight;
       m_nInWidth = pMpeg2Vih->hdr.bmiHeader.biWidth;

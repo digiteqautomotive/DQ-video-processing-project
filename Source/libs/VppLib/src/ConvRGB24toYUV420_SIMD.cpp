@@ -46,24 +46,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*===========================================================================
 			Constants
 ===========================================================================*/
-const float fRRGB24YUVCI2_00 = 0.299f;
-const float fRRGB24YUVCI2_01 = 0.587f;
-const float fRRGB24YUVCI2_02 = 0.114f;
-const float fRRGB24YUVCI2_10 = -0.147f;
-const float fRRGB24YUVCI2_11 = -0.289f;
-const float fRRGB24YUVCI2_12 = 0.436f;
-const float fRRGB24YUVCI2_20 = 0.615f;
-const float fRRGB24YUVCI2_21 = -0.515f;
-const float fRRGB24YUVCI2_22 = -0.100f;
 
 // SSE
-static const __declspec(align(16)) float fCOEFF_0[4] = {fRRGB24YUVCI2_00, fRRGB24YUVCI2_01, fRRGB24YUVCI2_02, 0};
-static const __declspec(align(16)) float fCOEFF_1[4] = {fRRGB24YUVCI2_10, fRRGB24YUVCI2_11, fRRGB24YUVCI2_12, 0};
-static const __declspec(align(16)) float fCOEFF_2[4] = {fRRGB24YUVCI2_20, fRRGB24YUVCI2_21, fRRGB24YUVCI2_22, 0};
+static const __declspec(align(16)) float fCOEFF_0[4] = {RRGB_YUVCI2_00, RRGB_YUVCI2_01, RRGB_YUVCI2_02, 0};
+static const __declspec(align(16)) float fCOEFF_1[4] = {RRGB_YUVCI2_10, RRGB_YUVCI2_11, RRGB_YUVCI2_12, 0};
+static const __declspec(align(16)) float fCOEFF_2[4] = {RRGB_YUVCI2_20, RRGB_YUVCI2_21, RRGB_YUVCI2_22, 0};
 
 
-#define RRGB24YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
-#define RRGB24YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
+#define RRGB_YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
+#define RRGB_YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
+
+
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 
 /*===========================================================================
@@ -71,11 +66,11 @@ static const __declspec(align(16)) float fCOEFF_2[4] = {fRRGB24YUVCI2_20, fRRGB2
 ===========================================================================*/
 
 
-bool ConvRGB24toYUV420_SIMD::isInputVideoFormatSupported(const GUID &VideoFormat) const
+bool ConvRGB24toYUV420_SIMD::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
-  return VideoFormat==MEDIASUBTYPE_RGB24;
+  return VideoFormatIn==MEDIASUBTYPE_RGB24 &&
+         (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);
 }
-
 
 
 /** Double precision reference implementation.
@@ -139,18 +134,18 @@ void ConvRGB24toYUV420_SIMD::NonFlipConvert(const unsigned char* pRgb, unsigned 
 
         // Y
         __m128 xmm_res_y = _mm_mul_ps(xmm1, xmm_y);
-        py[lumOff] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
+        py[lumOff] = (unsigned char)RRGB_YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
         // Y
         xmm_res_y = _mm_mul_ps(xmm2, xmm_y);
-        py[lumOff + 1] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
+        py[lumOff + 1] = (unsigned char)RRGB_YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
         lumOff += _width;
         //t = t + _width*3 - 6;
         // Y
         xmm_res_y = _mm_mul_ps(xmm3, xmm_y);
-        py[lumOff] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
+        py[lumOff] = (unsigned char)RRGB_YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
         // Y
         xmm_res_y = _mm_mul_ps(xmm4, xmm_y);
-        py[lumOff+1] = (unsigned char)RRGB24YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
+        py[lumOff+1] = (unsigned char)RRGB_YUVCI2_RANGECHECK_0TO255((xmm_res_y.m128_f32[0] + xmm_res_y.m128_f32[1] + xmm_res_y.m128_f32[2] ));
 
 
         // U
@@ -179,8 +174,8 @@ void ConvRGB24toYUV420_SIMD::NonFlipConvert(const unsigned char* pRgb, unsigned 
         else
           iv += 2;
 
-        pu[chrOff] = (unsigned char)(128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iu >> 2));
-        pv[chrOff] = (unsigned char)(128 + RRGB24YUVCI2_RANGECHECK_N128TO127(iv >> 2));
+        pu[chrOff] = (unsigned char)(128 + RRGB_YUVCI2_RANGECHECK_N128TO127(iu >> 2));
+        pv[chrOff] = (unsigned char)(128 + RRGB_YUVCI2_RANGECHECK_N128TO127(iv >> 2));
       }//end for xb & yb...
 }
 

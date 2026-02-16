@@ -39,40 +39,35 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _REALYUV420TORGB24CCIR601CONVERTERVER16_H
 #define _REALYUV420TORGB24CCIR601CONVERTERVER16_H
 
 #include "YUVtoRGBConverter.h"
 
-/*
-===========================================================================
-  Class definition.
-===========================================================================
-*/
-class RealYUV420toRGB24CCIR601ConverterVer16: public YUVtoRGBConverter
+#include "typedfs.h"
+
+
+/*===========================================================================
+			Class definition
+===========================================================================*/
+
+class RealYUV420toRGB24CCIR601ConverterVer16: public CVideoConverter
 {
-	public:
+public:
 		// Construction and destruction.
-		RealYUV420toRGB24CCIR601ConverterVer16(void) { }
-		RealYUV420toRGB24CCIR601ConverterVer16(int width, int height): YUVtoRGBConverter(width,height) { }
-		virtual ~RealYUV420toRGB24CCIR601ConverterVer16(void) {}
+	RealYUV420toRGB24CCIR601ConverterVer16(void) { }
+	RealYUV420toRGB24CCIR601ConverterVer16(int width, int height): CVideoConverter(width,height) {}
 
 		// Interface.
-		virtual void Convert(void* pY, void* pU, void* pV, void* pRgb) 
-		{
-			//if(_rotate) RotateConvert(pY, pU, pV, pRgb);
-			//else
-				NonRotateConvert(pY, pU, pV, pRgb);
-		};
+	virtual void Convert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+	{
+	  NonRotateConvert((const uint16_t*)pY, (const uint16_t *)pU, (const uint16_t *)pV, pRgb);
+	}
 
-	protected:
-		virtual void NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-		//virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-
-};//end RealYUV420toRGB24CCIR601ConverterVer16.
+protected:
+	virtual void NonRotateConvert(const uint16_t* pY, const uint16_t* pU, const uint16_t *pV, void* pRgb) const;
+}; //end RealYUV420toRGB24CCIR601ConverterVer16.
 
 
 #endif	// _REALYUV420TORGB24CCIR601CONVERTERVER16_H

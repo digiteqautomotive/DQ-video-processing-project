@@ -1,10 +1,10 @@
 /** @file
 
-MODULE				: YUVtoRGBConverter
+MODULE:		YUVtoRGBConverter
 
-TAG				: YUVRGBC
+TAG:		YUVRGBC
 
-FILE NAME			: YUVtoRGBConverter.h
+FILE NAME:	YUVtoRGBConverter.h
 
 DESCRIPTION:	Colour convertions are required on the output of
 		all video codecs. For embedded applications only some
@@ -12,7 +12,7 @@ DESCRIPTION:	Colour convertions are required on the output of
 		This class is the base class defining the minimum interface
 		and properties for all derived classes. 
 
-COPYRIGHT:	(c)CSIR 2007-2010
+COPYRIGHT:	(c) 2007-2010 CSIR
 		(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik  all rights resevered
 			
 LICENSE:	Software License Agreement (BSD License)
@@ -48,8 +48,9 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 #ifdef _BUILD_FOR_SHORT
 	typedef short yuvType;
 #else
-	typedef signed char yuvType ;
+	typedef signed char yuvType;
 #endif
+
 
 /*===========================================================================
   Class definition.
@@ -65,40 +66,41 @@ public:
 };
 
 
-class YUVtoRGBConverter: public BaseVideoConverter
+class CVideoConverter: public BaseVideoConverter
 {
 public:
 	/// Construction and destruction.
-	YUVtoRGBConverter(void): _flip(false), _width(0), _height(0) {}
-	YUVtoRGBConverter(int width, int height);
-	virtual ~YUVtoRGBConverter() {}
+	CVideoConverter(void): _flip(false), _width(0), _height(0) {}
+	CVideoConverter(int width, int height);
+	virtual ~CVideoConverter() {}
 
 	/// Interface.
 	virtual void Convert(const void* pInputBuffer, void* pRgb) const = 0;
 
 	/// Member interface.
-	int GetWidth(void) const		{ return(_width); }
-	int GetHeight(void) const		{ return(_height); }
-	bool GetFlip(void) const		{ return _flip; }
+	unsigned GetWidth(void) const		{return(_width);}
+	unsigned GetHeight(void) const		{return(_height);}
+	bool GetFlip(void) const		{return _flip;}
 	
 	void SetDimensions(int width, int height);
-	void SetFlip(bool flip)			{ _flip = flip; }
+	void SetFlip(bool flip)			{_flip = flip;}
+
 protected:
-		// Members.
-	int	_width;
-	int	_height;	
+		// Members
+	unsigned _width;
+	unsigned _height;	
 
-  /// Windows bitmaps are bottom to top, standard YUV formats are top to bottom
-  /// for our YUV to be compatible with linux we need to flip the image
+	/// Windows bitmaps are bottom to top, standard YUV formats are top to bottom
+	/// for our YUV to be compatible with linux we need to flip the image
 	bool _flip;
-};//end YUVtoRGBConverter.
+}; //end YUVtoRGBConverter.
 
 
-class YUV420toRGBConverter: public YUVtoRGBConverter
+class YUV420toRGBConverter: public CVideoConverter
 {
 public:
     YUV420toRGBConverter(void) {}
-    YUV420toRGBConverter(int width, int height): YUVtoRGBConverter(width,height) {}
+    YUV420toRGBConverter(int width, int height): CVideoConverter(width,height) {}
 
     void Convert(const void* pBufferIn, void* pRgb) const;
     void Convert(const void* pY, const void* pU, const void* pV, void* pRgb) const

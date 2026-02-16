@@ -518,7 +518,8 @@ STDMETHODIMP UtilityFilter::GetPages(CAUUID *pPages)
   pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
   if(pPages->pElems == NULL) 
   {
-	return E_OUTOFMEMORY;
+    pPages->cElems = 0;
+    return E_OUTOFMEMORY;
   }
   pPages->pElems[0] = CLSID_UtilityProperties;
   return S_OK;

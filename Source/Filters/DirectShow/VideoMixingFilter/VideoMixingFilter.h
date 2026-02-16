@@ -45,19 +45,12 @@ DEFINE_GUID(CLSID_VideoMixingProperties,
 0x2799f9e3, 0x1def, 0x4c71, 0xae, 0xb8, 0x27, 0x9a, 0x7e, 0xdd, 0x20, 0x60);
 
 
-#ifdef _BUILD_FOR_SHORT
-typedef short yuvType;
-#else
-typedef signed char yuvType ;
-#endif
-
 // Forward declarations
 class PicConcatBase;
 
 /**\ingroup DirectShowFilters
  * Video Mixing Filter for RGB24 and RGB32 Media */
-class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages,
-                         public IPersistPropertyBag, public IPropertyBag
+class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages                         
 {
 public:
 	DECLARE_IUNKNOWN;

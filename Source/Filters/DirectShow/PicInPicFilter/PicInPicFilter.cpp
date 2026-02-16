@@ -223,6 +223,7 @@ void PicInPicFilter::initParameters(void)
   // currently unused: supposed to be one of the standard positions to insert 
   // the picture i.e. top left or top right corner.
   // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
+
   addParameter(FILTER_PARAM_OFFSET_X, OLE_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
   addParameter(FILTER_PARAM_OFFSET_Y, OLE_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
 
@@ -869,7 +870,8 @@ HRESULT PicInPicFilter::GetPages(CAUUID *pPages)
   pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
   if(pPages->pElems == NULL) 
   {
-	return E_OUTOFMEMORY;
+    pPages->cElems = 0;
+    return E_OUTOFMEMORY;
   }
   pPages->pElems[0] = CLSID_PicInPicProperties;
   return S_OK;

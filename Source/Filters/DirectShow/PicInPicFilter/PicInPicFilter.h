@@ -64,15 +64,10 @@ public:
 };
 
 
-#ifdef _BUILD_FOR_SHORT
-typedef short yuvType;
-#else
-typedef signed char yuvType ;
-#endif
-
 // Forward declarations
 class PicInPicBase;
 class PicScalerBase;
+
 
 /**
  * @brief PicInPicFilter that accepts two RGB24 inputs.

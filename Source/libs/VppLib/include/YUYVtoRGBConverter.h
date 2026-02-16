@@ -5,7 +5,7 @@ MODULE				: YUYVtoRGB24Converter
 FILE NAME			: YUYVtoRGB24Converter.h
 
 DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-colour convertion derived from the YUVtoRGBConverter base 
+colour convertion derived from the CVideoConverter base 
 class.
 					  
 LICENSE: Software License Agreement (BSD License)
@@ -39,13 +39,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /** \ingroup ImageLib
 * Implementation of YUYV (16 bpp) to RGB 24 bit colour convertion derived 
-from the YUVtoRGBConverter base class. */
-class YUYVtoRGB24Converter: public YUVtoRGBConverter
+from the CVideoConverter base class. */
+class YUYVtoRGB24Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   YUYVtoRGB24Converter(void) { }
-  YUYVtoRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) { }
+  YUYVtoRGB24Converter(int width, int height): CVideoConverter(width,height) { }
   virtual ~YUYVtoRGB24Converter(void) {}
 
   // Interface.
@@ -56,13 +56,13 @@ public:
 
 /** \ingroup ImageLib
 * Implementation of YUYV (16 bpp) to RGB 32 bit colour convertion derived 
-from the YUVtoRGBConverter base class. */
-class YUYVtoARGB32Converter: public YUVtoRGBConverter
+from the CVideoConverter base class. */
+class YUYVtoARGB32Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   YUYVtoARGB32Converter(void) { }
-  YUYVtoARGB32Converter(int width, int height): YUVtoRGBConverter(width,height) { }
+  YUYVtoARGB32Converter(int width, int height): CVideoConverter(width,height) { }
   virtual ~YUYVtoARGB32Converter(void) {}
 
   // Interface.

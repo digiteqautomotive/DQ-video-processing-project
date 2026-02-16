@@ -90,9 +90,9 @@ void OrigRealYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRg
 void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
   unsigned char *optr	=	(unsigned char *)pRgb;
-  const yuvType *py	= (yuvType *)pY;
-  const yuvType *pu	= (yuvType *)pU;
-  const yuvType *pv	= (yuvType *)pV;
+  const unsigned char *py	= (unsigned char *)pY;
+  const unsigned char *pu	= (unsigned char *)pU;
+  const unsigned char *pv	= (unsigned char *)pV;
   int		lumX	= _width;
   int		lumY	= _height;
   int		uvX	= _width >> 1;
@@ -188,9 +188,9 @@ void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU,
 void OrigRealYUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
   unsigned char* 	optr	=	(unsigned char *)pRgb;
-  const yuvType*				py		= (yuvType *)pY;
-  const yuvType*				pu		= (yuvType *)pU;
-  const yuvType*				pv		= (yuvType *)pV;
+  const unsigned char*				py		= (unsigned char *)pY;
+  const unsigned char*				pu		= (unsigned char *)pU;
+  const unsigned char*				pv		= (unsigned char *)pV;
   int		lumX	= _width;
   int		lumY	= _height;
   int		uvX		= _width >> 1;
@@ -322,9 +322,9 @@ to 0..255.
 @return			: none.*/
 void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType*	py = (yuvType *)pY;
-  yuvType*	pu = (yuvType *)pU;
-  yuvType*	pv = (yuvType *)pV;
+  unsigned char*	py = (unsigned char *)pY;
+  unsigned char*	pu = (unsigned char *)pU;
+  unsigned char*	pv = (unsigned char *)pV;
   unsigned char* src = (unsigned char *)pRgb;
 
   /// Y have range 0..255, U & V have range -128..127.
@@ -347,7 +347,7 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       g = (double)(*t++);
       r = (double)(*t++);
       t++;	///< Alpha channel.
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u = 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v = 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -357,7 +357,7 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       g = (double)(*t++);
       r = (double)(*t++);
       t++;	///< Alpha channel.
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -370,7 +370,7 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       g = (double)(*t++);
       r = (double)(*t++);
       t++;	///< Alpha channel.
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -379,22 +379,22 @@ void OrigRealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t);
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
 
       /// Average the 4 chr values.
-      pu[chrOff] = (yuvType)( (int)((u + 0.5)/4) );
-      pv[chrOff] = (yuvType)( (int)((v + 0.5)/4) );
+      pu[chrOff] = (unsigned char)((int)(0.5 + u/4));
+      pv[chrOff] = (unsigned char)((int)(0.5 + v/4));
     }//end for xb & yb...
 }
 
 void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType*	py = (yuvType *)pY;
-  yuvType*	pu = (yuvType *)pU;
-  yuvType*	pv = (yuvType *)pV;
+  unsigned char*	py = (unsigned char *)pY;
+  unsigned char*	pu = (unsigned char *)pU;
+  unsigned char*	pv = (unsigned char *)pV;
 
   /// Y have range 0..255, U & V have range -128..127.
   double	u,v;
@@ -415,7 +415,7 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       g = (double)(*t++);
       r = (double)(*t++);
       t++;	///< Alpha channel.
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u = 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v = 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -425,7 +425,7 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       g = (double)(*t++);
       r = (double)(*t++);
       t++;	///< Alpha channel.
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -437,7 +437,7 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       g = (double)(*t++);
       r = (double)(*t++);
       t++;	///< Alpha channel.
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -446,14 +446,14 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t);
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
 
       /// Average the 4 chr values.
-      pu[chrOff] = (yuvType)( (int)((u + 0.5)/4) );
-      pv[chrOff] = (yuvType)( (int)((v + 0.5)/4) );
+      pu[chrOff] = (unsigned char)((int)(0.5 + u/4));
+      pv[chrOff] = (unsigned char)((int)(0.5 + v/4));
     }//end for xb & yb...
 }
 
@@ -463,9 +463,9 @@ void OrigRealRGB32toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
 
 void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType*	py = (yuvType *)pY;
-  yuvType*	pu = (yuvType *)pU;
-  yuvType*	pv = (yuvType *)pV;
+  unsigned char*	py = (unsigned char *)pY;
+  unsigned char*	pu = (unsigned char *)pU;
+  unsigned char*	pv = (unsigned char *)pV;
   unsigned char* src = (unsigned char *)pRgb;
 
   /// Y have range 0..255, U & V have range -128..127.
@@ -487,7 +487,7 @@ void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t++);     
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u = 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v = 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -496,7 +496,7 @@ void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t++);
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -508,7 +508,7 @@ void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t++);
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -517,23 +517,23 @@ void OrigRealRGB24toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsi
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t);
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
 
       /// Average the 4 chr values.
-      pu[chrOff] = (yuvType)( (int)((u + 0.5)/4) );
-      pv[chrOff] = (yuvType)( (int)((v + 0.5)/4) );
+      pu[chrOff] = (unsigned char)((int)(0.5 + u/4));
+      pv[chrOff] = (unsigned char)((int)(0.5 + v/4));
     }//end for xb & yb...
 }
 
 
 void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
-  yuvType *py = (yuvType *)pY;
-  yuvType *pu = (yuvType *)pU;
-  yuvType *pv = (yuvType *)pV;  
+  unsigned char *py = (unsigned char *)pY;
+  unsigned char *pu = (unsigned char *)pU;
+  unsigned char *pv = (unsigned char *)pV;  
 
   /// Y have range 0..255, U & V have range -128..127.
   double	u,v;
@@ -553,7 +553,7 @@ void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t++);
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u = 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v = 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -562,7 +562,7 @@ void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t++);
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -573,7 +573,7 @@ void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t++);
-      py[lumOff] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
@@ -582,14 +582,14 @@ void OrigRealRGB24toYUV420Converter::NonFlipConvert(const unsigned char* pRgb, u
       b = (double)(*t++);
       g = (double)(*t++);
       r = (double)(*t);
-      py[lumOff+1] = (yuvType)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
+      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB32YUVC_00*r + RRGB32YUVC_01*g + RRGB32YUVC_02*b));
 
       u += 128.0 + RRGB32YUVC_10*r + RRGB32YUVC_11*g + RRGB32YUVC_12*b;
       v += 128.0 + RRGB32YUVC_20*r + RRGB32YUVC_21*g + RRGB32YUVC_22*b;
 
       /// Average the 4 chr values.
-      pu[chrOff] = (yuvType)( (int)((u + 0.5)/4) );
-      pv[chrOff] = (yuvType)( (int)((v + 0.5)/4) );
+      pu[chrOff] = (unsigned char)((int)(0.5 + u/4));
+      pv[chrOff] = (unsigned char)((int)(0.5 + v/4));
     }//end for xb & yb...
 }
 

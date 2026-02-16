@@ -1,6 +1,15 @@
-/** Copyright (c) 2025-2026 Jaroslav Fojtik
-    All rights reserved.
-**/
+/** @file
+
+MODULE:			TestImage
+
+FILE NAME:		TestImage.cpp
+
+DESCRIPTION:
+
+LICENSE:		Software License Agreement (BSD License)
+
+Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +34,7 @@
 #include "RGB24toYUV420Converter.h"
 #include "RGB32toYUV420Converter.h"
 #include "ConvRGB24toYUV420_LUT.h"
+#include "ConvRGB24toYUV420_fixpLUT.h"
 #include "ConvRGB24toYUV420_SIMD.h"
 #include "ConvertTesters.h"
 
@@ -911,7 +921,6 @@ bool Pause = false;
    {
      OrigRealRGB32toYUV420Converter OrigPicConverterRGB32toYUV420(Width,Height);
      RealRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height);
-     //ConvRGB24toYUV42_float_LUT LutConverterRGB32toYUV420(Width,Height);
      ConvRGB32toYUV420FixP fpConverterRGB32toYUV420(Width,Height);
      //FastRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height); //	-- nefunguje!!!
 
@@ -949,7 +958,7 @@ bool Pause = false;
    {
      OrigRealRGB24toYUV420Converter OrigPicConverterRGB24toYUV420(Width,Height);
      RealRGB24toYUV420Converter PicConverterRGB24toYUV420(Width,Height);
-     //ConvRGB24toYUV42_float_LUT LutConverterRGB32toYUV420(Width,Height);
+     ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(Width,Height);
      ConvRGB24toYUV420FixP fpConverterRGB24toYUV420(Width,Height);
      //FastRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height); //	-- nefunguje!!!
 
@@ -962,6 +971,11 @@ bool Pause = false;
      fpConverterRGB24toYUV420.Convert(BlobIn+16, BlobOut+16);
 
      res = I420compare("RGB24toYUV420_Fixed Point", Width,Height, BlobOut,BlobTest);
+     if(res>=10000) goto ReturnErr;
+
+     LutConverterRGB24toYUV420.Convert(BlobIn+16, BlobOut+16);
+
+     res = I420compare("RGB24toYUV420_LUT", Width,Height, BlobOut,BlobTest);
      if(res>=10000) goto ReturnErr;     
 
      OrigPicConverterRGB24toYUV420.SetFlip(true);
@@ -977,6 +991,12 @@ bool Pause = false;
      fpConverterRGB24toYUV420.Convert(BlobIn+16, BlobOut+16);
 
      res = I420compare("RGB24toYUV420_FixedPoint flip", Width,Height, BlobOut,BlobTest);
+     if(res>=10000) goto ReturnErr;
+
+     LutConverterRGB24toYUV420.SetFlip(true);
+     LutConverterRGB24toYUV420.Convert(BlobIn+16, BlobOut+16);
+
+     res = I420compare("RGB24toYUV420_LUT flip", Width,Height, BlobOut,BlobTest);
      if(res>=10000) goto ReturnErr;
    }
 
@@ -1001,18 +1021,13 @@ bool Pause = false;
     {
       RealRGB32toYUV420Converter picConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(picConverterRGB32toYUV420, BlobIn, BlobOut);
-      printf("\nConvert RGB32 to YUV res 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nConvert RGB32 to YUV 1920x1080 time %.3f[ms]", DurationMin/1000.0);
     }
 /*    {
       FastRGB32toYUV420Converter fpConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(fpConverterRGB32toYUV420, BlobIn, BlobOut);
       printf(" fast %.3f[ms]", DurationMin/1000.0);
     } */
-    {
-      ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(1920,1080);
-      DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf(" LUT %.3f[ms]", DurationMin/1000.0);
-    }
     {
       ConvRGB32toYUV420FixP fpConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(fpConverterRGB32toYUV420, BlobIn, BlobOut);
@@ -1046,7 +1061,7 @@ bool Pause = false;
     {
       RealRGB24toYUV420Converter picConverterRGB24toYUV420(1920,1080);
       DurationMin = BenchConverter(picConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf("\nConvert RGB24 to YUV res 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nConvert RGB24 to YUV 1920x1080 time %.3f[ms]", DurationMin/1000.0);
     }
     {
       ConvRGB24toYUV420FixP fpConverterRGB24toYUV420(1920,1080);
@@ -1066,12 +1081,18 @@ bool Pause = false;
       printf(" SIMD %.3f[ms]", DurationMin/1000.0);
     }
 #endif
+    {
+      ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(1920,1080);
+      DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
+      printf(" LUT %.3f[ms]", DurationMin/1000.0);
+    }
+
 	/////////////////////////////////////////////////////////////////////////////
     {
       RealRGB24toYUV420Converter picConverterRGB24toYUV420(1920,1080);
       picConverterRGB24toYUV420.SetFlip(true);
       DurationMin = BenchConverter(picConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf("\nFlipConv RGB24 to YUV res 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nFlipConv RGB24 to YUV 1920x1080 time %.3f[ms]", DurationMin/1000.0);
     }
     {
       ConvRGB24toYUV420FixP fpConverterRGB24toYUV420(1920,1080);
@@ -1085,6 +1106,19 @@ bool Pause = false;
       DurationMin = BenchConverter(origConverterRGB24toYUV420, BlobIn, BlobOut);
       printf(" orig %.3f[ms]", DurationMin/1000.0);
     }
+    {
+      ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(1920,1080);
+      LutConverterRGB24toYUV420.SetFlip(true);
+      DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
+      printf(" LUT %.3f[ms]", DurationMin/1000.0);
+    }
+    {
+      ConvRGB24toYUV42_fixp_LUT LutConverterRGB24toYUV420(1920,1080);
+      LutConverterRGB24toYUV420.SetFlip(true);
+      DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
+      printf("+Fix %.3f[ms]", DurationMin/1000.0);
+    }
+
 	/////////////////////////////////////////////////////////////////////////////
     {
       AYUV444toRGB24Converter picConverterAYUV2RGB24(1920,1080);

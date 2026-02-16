@@ -403,7 +403,7 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 
 STDMETHODIMP VideoMixingBase::Run(REFERENCE_TIME tStart)
 {
-  m_LastFrame_us = GetTickCount_us();
+  m_LastFrame_us = (unsigned)GetTickCount_us();
   return CMultiIOBaseFilter::Run(tStart);
 }
 

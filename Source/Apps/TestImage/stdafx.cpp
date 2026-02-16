@@ -1,3 +1,5 @@
+//#include "stdafx.h"
+
 #include <initguid.h>
 #include <uuids.h>
 //#include <wmcodecdsp.h> //for i420 GUID

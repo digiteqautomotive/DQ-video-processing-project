@@ -9,17 +9,17 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
-
 ===========================================================================*/
 #include "YUVtoRGBFilter.h"
 #include "DirectShow/CommonDefs.h"
-#include "DirectShow/CustomMediaTypes.h"
-#include "DirectShow/DirectShowMediaFormats.h"
+
 #include "ConvAYUV444toRGB.h"
 #include "RealYUV420toRGB24Converter.h"
 #include "YUYVtoRGBConverter.h"
 #include "YVYUtoRGBConverter.h"
 
+//#include "DirectShow/CustomMediaTypes.h"
+#include "DirectShow/DirectShowMediaFormats.h"
 #include <wmcodecdsp.h>			// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 #include "DirectShow/VariantTools.cpp"
@@ -35,17 +35,12 @@ YUVtoRGBFilter::YUVtoRGBFilter():
   CCustomBaseFilter(NAME("DQ VPP YUV to RGB converter"), 0, CLSID_VPP_YUVtoRGBColorConverter),
   m_pConverter(NULL),
   m_nSizeUV(0),
-  m_bInvert(false)
+  m_bInvert(false),
+  in_MediaType(GUID_NULL), out_MediaType(GUID_NULL)
 {
-  out_MediaType = GUID_NULL;
-  in_MediaType = GUID_NULL;
-
-  //Call the initialise input method to load all acceptable input types for this filter
+	// Call the initialise input method to load all acceptable input types for this filter
   InitialiseInputTypes();
   initParameters();
-
-  // init converter
-  //m_pConverter->SetFlip(m_bInvert);
 }
 
 
@@ -123,12 +118,24 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
   HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
   if(direction == PINDIR_INPUT)
   {
-    in_MediaType = pmt->subtype;
+    if(pmt->majortype == MEDIATYPE_Video)
+        in_MediaType = pmt->subtype;
+    else
+    {    
+      in_MediaType = GUID_NULL;
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
     m_nSizeUV = m_nInPixels >> 2;
   }
   else
   {
-    out_MediaType = pmt->subtype;
+    if(pmt->majortype == MEDIATYPE_Video)
+        out_MediaType = pmt->subtype;
+    else
+    {
+      out_MediaType = GUID_NULL;
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
   }
 
   if(out_MediaType!=GUID_NULL && in_MediaType!=GUID_NULL)
@@ -175,7 +182,7 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
 
 HRESULT YUVtoRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
-  if (iPosition < 0)
+  if(iPosition < 0)
   {
     return E_INVALIDARG;
   }
@@ -324,9 +331,8 @@ HRESULT YUVtoRGBFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PROPE
 
 HRESULT YUVtoRGBFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {  
- if(m_pConverter==NULL) return E_POINTER;
-  ASSERT(pBufferIn);
-  ASSERT(pBufferOut);
+  if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
+  if(m_pConverter==NULL) return E_UNEXPECTED;
 
   lOutActualDataLength = m_nInPixels * m_videoOutHeader.bmiHeader.biBitCount / 8;
   if(lOutBufferSize < lOutActualDataLength) return E_INVALIDARG;	// Check block size
@@ -430,15 +436,16 @@ STDMETHODIMP YUVtoRGBFilter::SetParameter(const char* type, const char* value)
 
 HRESULT YUVtoRGBFilter::GetPages(CAUUID *pPages)
 {
-    if (pPages == NULL) return E_POINTER;
-    pPages->cElems = 1;
-    pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-    if (pPages->pElems == NULL) 
-    {
-      return E_OUTOFMEMORY;
-    }
-    pPages->pElems[0] = CLSID_YUVtoRGBProperties;
-    return S_OK;
+  if(pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+    pPages->cElems = 0;
+    return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_YUVtoRGBProperties;
+  return S_OK;
 }
 
 

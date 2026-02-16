@@ -4,19 +4,19 @@ MODULE				: RealRGB24toYUV420CCIR601ConverterVer16
 
 TAG						: RRGB24YUVCCV16
 
-FILE NAME			: RealRGB24toYUV420CCIR601ConverterVer16.cpp
+FILE NAME:		RealRGB24toYUV420CCIR601ConverterVer16.cpp
 
-DESCRIPTION		: Double precision floating point RGB 24 bit to YUV420 colour 
-								convertion derived from the RGBtoYUV420Converter base class.
-                YUV colour components are stored as 16-bit shorts per component.
-								Implements the CCIR-601 colour conversion process. Use this 
-								implementation as the reference.
+DESCRIPTION:		Double precision floating point RGB 24 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420Converter base class.
+	                YUV colour components are stored as 16-bit shorts per component.
+			Implements the CCIR-601 colour conversion process. Use this 
+			implementation as the reference.
 
-COPYRIGHT			:	(c)CSIR 2007-2012 all rights resevered
+COPYRIGHT:		(c)CSIR 2007-2012 all rights resevered
 
-LICENSE				: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
-RESTRICTIONS	: Redistribution and use in source and binary forms, with or without 
+RESTRICTIONS:		Redistribution and use in source and binary forms, with or without 
 								modification, are permitted provided that the following conditions 
 								are met:
 
@@ -40,14 +40,10 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
-//#include <stdio.h>
-//#include <math.h>
-//#include <string.h>
-//#include <stdlib.h>
 
 #include "RealRGB24toYUV420CCIR601ConverterVer16.h"
+
 
 /*===========================================================================
 				Constants
@@ -68,11 +64,11 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #define RRGB24YUVCCV16_21		-0.368
 #define RRGB24YUVCCV16_22		-0.071
 
-/*
-===========================================================================
-	Interface Methods.
-===========================================================================
-*/
+/*===========================================================================
+			Interface Methods
+===========================================================================*/
+
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 16 bits per pel and the CCIR-601 specifies that the Y range is 16..235 
@@ -82,16 +78,7 @@ and the UV (CbCr) range is 16..240 centred on 128.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void RealRGB24toYUV420CCIR601ConverterVer16::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
-{
-  if (_flip)
-    FlipConvert((const unsigned char*)pRgb, pY, pU, pV);
-  else
-    NonFlipConvert((const unsigned char*)pRgb, pY, pU, pV);
-}
-
-
-void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV) const
+void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert(const unsigned char* pRgb, uint8_t* pY, uint16_t *pU, uint16_t* pV) const
 {
 	short*	py = (short *)pY;
 	short*	pu = (short *)pU;
@@ -159,7 +146,8 @@ void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert(const unsigned char* pR
 
 }//end Convert.
 
-void RealRGB24toYUV420CCIR601ConverterVer16::NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const
+
+void RealRGB24toYUV420CCIR601ConverterVer16::NonFlipConvert(const unsigned char *pRgb, uint8_t *pY, uint16_t *pU, uint16_t *pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;

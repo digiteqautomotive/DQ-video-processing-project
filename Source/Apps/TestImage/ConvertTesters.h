@@ -1,12 +1,12 @@
 #pragma once
 
 
-class OrigRealYUV444toRGB24Converter: public YUVtoRGBConverter
+class OrigRealYUV444toRGB24Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
   OrigRealYUV444toRGB24Converter(void) { }
-  OrigRealYUV444toRGB24Converter(int width, int height): YUVtoRGBConverter(width,height) { }
+  OrigRealYUV444toRGB24Converter(int width, int height): CVideoConverter(width,height) { }
   virtual ~OrigRealYUV444toRGB24Converter(void) {}
 
   // Interface.
@@ -40,7 +40,7 @@ public:
 	OrigRealRGB24toYUV420Converter(void) {}
 	OrigRealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-	bool isInputVideoFormatSupported(const GUID &VideoFormat) const {return true;}
+	bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const {return true;}
 
 		// Interface.
 protected:
@@ -55,7 +55,7 @@ public:
 		// Construction and destruction.
 	OrigRealRGB32toYUV420Converter(void) { }
 	OrigRealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}	
-        bool isInputVideoFormatSupported(const GUID &VideoFormat) const {return true;};
+        bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const {return true;};
 
 		// Interface.
 protected:

@@ -49,8 +49,7 @@ static const GUID CLSID_Stereo2MonoProperties =
 // Forward declarations
 
 class Stereo2MonoFilter: public CCustomBaseFilter,
-                         public ISpecifyPropertyPages,
-                         public IPersistPropertyBag, public IPropertyBag
+                         public ISpecifyPropertyPages
 {
 public:
     DECLARE_IUNKNOWN

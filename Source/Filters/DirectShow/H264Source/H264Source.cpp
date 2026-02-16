@@ -650,7 +650,8 @@ HRESULT H264SourceFilter::GetPages(CAUUID *pPages)
   pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
   if (pPages->pElems == NULL) 
   {
-      return E_OUTOFMEMORY;
+    pPages->cElems = 0;
+    return E_OUTOFMEMORY;
   }
   pPages->pElems[0] = CLSID_H264Properties;
   return S_OK;

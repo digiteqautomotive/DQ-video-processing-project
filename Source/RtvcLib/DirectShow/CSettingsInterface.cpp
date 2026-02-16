@@ -31,10 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "stdafx.h"
 #include "CSettingsInterface.h"
-#include <sstream>
 
 #include "VariantTools.h"
 #include "wxdebug.h"
+
+#include <sstream>
 
 
 CSettingsInterface::CSettingsInterface(void): m_DirtyProps(false)

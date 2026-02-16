@@ -32,7 +32,7 @@ DEFINE_GUID(CLSID_YUVtoRGBProperties,
 
 
 // Forward declarations
-class YUVtoRGBConverter;
+class CVideoConverter;
 
 /**
 * \ingroup DirectShowFilters
@@ -104,7 +104,7 @@ protected:
   virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);  
 
 private:
-  YUVtoRGBConverter* m_pConverter;	  ///< Pointer to our YUV to RGB24 converter.
+  CVideoConverter* m_pConverter;	  ///< Pointer to our YUV to RGB24 converter.
   // Size of YUV image
   int m_nSizeUV;
   // YUV is always top down: the invert flag determines whether the image

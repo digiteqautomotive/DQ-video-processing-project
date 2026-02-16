@@ -55,14 +55,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RRGB24YUVCI2V16_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 #define RRGB24YUVCI2V16_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
 
-/*
-===========================================================================
-	Constructor Methods.
-===========================================================================
-*/
-RealRGB24toYUV420ConverterImpl2Ver16::RealRGB24toYUV420ConverterImpl2Ver16(int width, int height): RGBtoYUV420Converter(width, height)
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+
+
+/*===========================================================================
+		Constructor Methods
+===========================================================================*/
+
+RealRGB24toYUV420ConverterImpl2Ver16::RealRGB24toYUV420ConverterImpl2Ver16(int width, int height): RGBtoYUV420Converter16(width,height)
 { 
-}//end constructor.
+} //end constructor.
 
 
 /*===========================================================================
@@ -70,9 +73,10 @@ RealRGB24toYUV420ConverterImpl2Ver16::RealRGB24toYUV420ConverterImpl2Ver16(int w
 ===========================================================================*/
 
 
-bool RealRGB24toYUV420ConverterImpl2Ver16::isInputVideoFormatSupported(const GUID &VideoFormat) const
+bool RealRGB24toYUV420ConverterImpl2Ver16::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
-  return VideoFormat==MEDIASUBTYPE_RGB24;
+  return VideoFormatIn==MEDIASUBTYPE_RGB24 &&
+         (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);
 }
 
 
@@ -85,28 +89,12 @@ to 0..255.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void *pYUV) const
-{
-  unsigned char *pU = (unsigned char*)pYUV + 4*_width*_height;
-  unsigned char *pV = pU + (_width+1)*(_height+1);
-  if (_flip)
-    FlipConvert((const unsigned char*)pRgb, (unsigned char*)pYUV, (unsigned char*)pU, (unsigned char*)pV);
-  else
-    NonFlipConvert((const unsigned char*)pRgb, (unsigned char*)pYUV, (unsigned char*)pU, (unsigned char*)pV);
-} //end Convert.
-
-
-void RealRGB24toYUV420ConverterImpl2Ver16::Convert(const void* pRgb, void* pY, void* pU, void* pV) const
-{
-  if (_flip)
-    FlipConvert((const unsigned char*)pRgb, (unsigned char*)pY, (unsigned char*)pU, (unsigned char*)pV);
-  else
-    NonFlipConvert((const unsigned char*)pRgb, (unsigned char*)pY, (unsigned char*)pU, (unsigned char*)pV);
-} //end Convert.
 
 
 ///---------------------- Microsoft parallel techniques ------------------------------------------------------------
-#ifdef RRGB24YUVCI2_MICROSOFT_PARALLEL
+#ifdef RRGB_YUVCI2_MICROSOFT_PARALLEL
+
+#define _chrOff			128
 
 void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const void* pRgb, void* pY, void* pU, void* pV )
 {
@@ -283,7 +271,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipInner(unsigned char* src, shor
 #else
 ///---------------------- No parallel techniques ------------------------------------------------------------
 
-void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
+void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const unsigned char* pRgb, uint16_t *pY, uint16_t *pU, uint16_t *pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
@@ -360,7 +348,8 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipConvert(const unsigned char* pRgb
     }//end for xb & yb...
 }
 
-void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
+
+void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const unsigned char *pRgb, uint16_t *pY, uint16_t *pU, uint16_t *pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;

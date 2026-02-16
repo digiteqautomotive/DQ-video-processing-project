@@ -35,37 +35,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RGBtoYUV420Converter.h"
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * Lookup-table based floating point RGB 24 bit to YUV420 colour 
  * conversion derived from the RGBtoYUV420Converter base class.
- * Use this implementation as the reference.
- */
+ * Use this implementation as the reference. */
 class ConvRGB24toYUV42_float_LUT: public RGBtoYUV420Converter
 {
 public:
-    /// Construction and destruction.
+	// Construction and destruction.
     ConvRGB24toYUV42_float_LUT(void) { initLookupTable(); }
     ConvRGB24toYUV42_float_LUT(int width, int height): RGBtoYUV420Converter(width,height) { initLookupTable(); }
     virtual ~ConvRGB24toYUV42_float_LUT(void) {}
 
-    bool isInputVideoFormatSupported(const GUID &VideoFormat) const;
-
-    /// Interface.
-    void NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
-    void FlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const {NonFlipConvert(pRgb,pY,pU,pV);}
+	// Interface
+    bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
+    void NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+    void FlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 
-  void initLookupTable();
 
-  float m_RRGB24YUVCI2_00[256];
-  float m_RRGB24YUVCI2_01[256];
-  float m_RRGB24YUVCI2_02[256];
-  float m_RRGB24YUVCI2_10[256];
-  float m_RRGB24YUVCI2_11[256];
-  float m_RRGB24YUVCI2_12[256];
-  float m_RRGB24YUVCI2_20[256];
-  float m_RRGB24YUVCI2_21[256];
-  float m_RRGB24YUVCI2_22[256];
+    void initLookupTable(void);
+			// LUT consumes 9KB
+    float m_RRGB_YUVCI2_00[256];
+    float m_RRGB_YUVCI2_01[256];
+    float m_RRGB_YUVCI2_02[256];
+    float m_RRGB_YUVCI2_10[256];
+    float m_RRGB_YUVCI2_11[256];
+    float m_RRGB_YUVCI2_12[256];
+    float m_RRGB_YUVCI2_20[256];
+    float m_RRGB_YUVCI2_21[256];
+    float m_RRGB_YUVCI2_22[256];
 };

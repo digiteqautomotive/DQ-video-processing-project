@@ -53,8 +53,6 @@ public:
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
   virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  //virtual void RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
-
 }; //end YUV420toRGB24Converter.
 
 
@@ -75,8 +73,6 @@ public:
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
   virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  //virtual void RotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
-
 }; //end YUV420toRGB24Converter.
 
 

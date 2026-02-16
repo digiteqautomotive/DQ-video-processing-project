@@ -50,39 +50,35 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #include <Guiddef.h>
 
 
-#ifdef _BUILD_FOR_SHORT
-	typedef short yuvType;
-#else
-	typedef signed char yuvType;
-#endif
-
-
 /*===========================================================================
 			Constants
 ===========================================================================*/
-#define RRGB24YUVCI2_00		 0.299f
-#define RRGB24YUVCI2_01		 0.587f
-#define RRGB24YUVCI2_02		 0.114f
-#define RRGB24YUVCI2_10		-0.147f
-#define RRGB24YUVCI2_11		-0.289f
-#define RRGB24YUVCI2_12		 0.436f
-#define RRGB24YUVCI2_20		 0.615f
-#define RRGB24YUVCI2_21		-0.515f
-#define RRGB24YUVCI2_22		-0.100f
+
+#define RRGB_YUVCI2_00		 0.299f
+#define RRGB_YUVCI2_01		 0.587f
+#define RRGB_YUVCI2_02		 0.114f
+#define RRGB_YUVCI2_10		-0.147f
+#define RRGB_YUVCI2_11		-0.289f
+#define RRGB_YUVCI2_12		 0.436f
+#define RRGB_YUVCI2_20		 0.615f
+#define RRGB_YUVCI2_21		-0.515f
+#define RRGB_YUVCI2_22		-0.100f
 
 
 /*===========================================================================
 		Class definition
 ===========================================================================*/
-class RGBtoYUV420Converter: public BaseVideoConverter
+
+class RGBtoYUV420Converter: public CVideoConverter
 {
 public:
 	/// Construction and destruction.
-	RGBtoYUV420Converter(void) {_width = 0; _height = 0; _flip = false; }
- 	RGBtoYUV420Converter(int width, int height) {_width = width; _height = height; _flip = false;}
+	RGBtoYUV420Converter(void)		{}
+ 	RGBtoYUV420Converter(int width, int height): CVideoConverter(width,height)	{}
 	virtual ~RGBtoYUV420Converter(void) {}
 
-	/// Interface.
+
+		// Interface.
 	virtual void Convert(const void* pRgb, void* pYUV) const
         {
           const unsigned BlkYsz = _width*_height;
@@ -90,30 +86,57 @@ public:
           unsigned char * const pV = pU + BlkYsz/4;
           if(_flip) FlipConvert((const unsigned char*)pRgb, (unsigned char*)pYUV, pU, pV);
                else NonFlipConvert((const unsigned char*)pRgb, (unsigned char*)pYUV, pU, pV);
-        }//end Convert.
+        } //end Convert.
+
         virtual void Convert(const void* pRgb, void* pY, void* pU, void* pV)
         {
           if(_flip) FlipConvert((const unsigned char*)pRgb, (unsigned char*)pY, (unsigned char*)pU, (unsigned char*)pV);
           else NonFlipConvert((const unsigned char*)pRgb, (unsigned char*)pY, (unsigned char*)pU, (unsigned char*)pV);
         }
-	virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;
-	virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;
 
-	/// Member interface.
-	int GetWidth(void) const		{ return(_width); }
-	int GetHeight(void) const		{ return(_height); }
-	bool GetFlip() const { return _flip; }
-
-	void SetDimensions(int width, int height)	{_width = width; _height = height;}
-	void SetFlip(bool flip) { _flip = flip; }
-
-        virtual bool isInputVideoFormatSupported(const GUID &VideoFormat) const = 0;
+		// Member interface.
+        virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const = 0;
 
 protected:
-	/// Members.
-	int _width;
-	int _height;
-	bool _flip;
+	virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;
+	virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;	
 }; //end RGBtoYUV420Converter.
+
+
+
+#include "typedfs.h"
+
+class RGBtoYUV420Converter16: public CVideoConverter
+{
+public:
+	/// Construction and destruction.
+	RGBtoYUV420Converter16(void)		{}
+ 	RGBtoYUV420Converter16(int width, int height): CVideoConverter(width,height)	{}
+	virtual ~RGBtoYUV420Converter16(void) {}
+
+		// Interface.
+	virtual void Convert(const void* pRgb, void* pYUV) const
+        {
+          const unsigned BlkYsz = _width*_height;
+          uint16_t * const pU = (uint16_t*)pYUV + BlkYsz;
+          uint16_t * const pV = pU + BlkYsz/4;			// BlkYsz/4 is calculated for WORDs.
+          if(_flip) FlipConvert((const unsigned char*)pRgb, (uint16_t*)pYUV, pU, pV);
+               else NonFlipConvert((const unsigned char*)pRgb, (uint16_t*)pYUV, pU, pV);
+        } //end Convert.
+
+        virtual void Convert(const void* pRgb, void* pY, void* pU, void* pV)
+        {
+          if(_flip) FlipConvert((const unsigned char*)pRgb, (uint16_t*)pY, (uint16_t*)pU, (uint16_t*)pV);
+          else NonFlipConvert((const unsigned char*)pRgb, (uint16_t*)pY, (uint16_t*)pU, (uint16_t*)pV);
+        }
+
+		// Member interface.
+        virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const = 0;
+
+protected:
+	virtual void FlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t* pU, uint16_t* pV) const = 0;
+	virtual void NonFlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t* pU, uint16_t* pV) const = 0;
+}; //end RGBtoYUV420Converter.
+
 
 #endif	// _RGBTOYUV420CONVERTER_H

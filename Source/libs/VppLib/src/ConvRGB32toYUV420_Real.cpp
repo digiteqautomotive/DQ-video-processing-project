@@ -37,84 +37,78 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <uuids.h>
 
 
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+
+
+
 /*===========================================================================
 			Interface Methods
 ===========================================================================*/
 
 
-bool RealRGB32toYUV420Converter::isInputVideoFormatSupported(const GUID &VideoFormat) const
+bool RealRGB32toYUV420Converter::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
-  return VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_ARGB32;
+  return (VideoFormatIn==MEDIASUBTYPE_RGB32 || VideoFormatIn==MEDIASUBTYPE_ARGB32) &&
+         (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);
 }
 
 
 void RealRGB32toYUV420Converter::FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char *pU, unsigned char* pV) const
 {
-  unsigned char*	py = (unsigned char *)pY;
-  unsigned char*	pu = (unsigned char *)pU;
-  unsigned char*	pv = (unsigned char *)pV;  
-
-  /// Y have range 0..255, U & V have range -128..127.
-  float	u,v;
+	// Y have range 0..255, U & V have range -128..127.
   float	r,g,b;
+  float	rs,gs,bs;
+
+  pRgb += (4*_width) * (_height-1);
 
   /// Step in 2x2 pel blocks. (4 pels per block).
-  int xBlks = _width >> 1;
-  int yBlks = _height >> 1;
-  for(int yb = 0; yb < yBlks; yb++)
-    for(int xb = 0; xb < xBlks; xb++)
+  int yb = _height >> 1;
+  while(yb-- > 0)
+  {
+    int xb = _width >> 1;
+    while(xb-- > 0)
     {
-      int chrOff	= yb*xBlks + xb;
-      int lumOff	= (yb*_width + xb) << 1;
-      //unsigned char*	t = src + lumOff*4;
-      const unsigned char *t = pRgb + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 4);
+	// Top left pel.  255->0.999.
+      bs = b = pRgb[0];
+      gs = g = pRgb[1];
+      rs = r = pRgb[2];
+		//< Alpha channel.
+      pY[0] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
-      /// Top left pel.  255->0.999.
-      b = (*t++);
-      g = (*t++);
-      r = (*t);
-      t += 2;	///< Alpha channel.
-      py[lumOff] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
-
-      u = 128.0f + RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v = 128.0f + RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
-
-      /// Top right pel.
-      b = (*t++);
-      g = (*t++);
-      r = (*t);
+	// Top right pel.
+      bs += b = pRgb[4];
+      gs += g = pRgb[5];
+      rs += r = pRgb[6];
 			///< Alpha channel.
-      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      pY[1] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
-      u += 128.0f + RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v += 128.0f + RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
+      pRgb -= _width*4;
 
-      lumOff += _width;
-      //t = t + _width*4 + 2 - 8;
-      t = t - _width*4 + 2 - 8;
-      /// Bottom left pel.  255->0.999.
-      b = (*t++);
-      g = (*t++);
-      r = (*t);
-      t += 2;	///< Alpha channel.
-      py[lumOff] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+	// Bottom left pel.  255->0.999.
+      bs += b = pRgb[0];
+      gs += g = pRgb[1];
+      rs += r = pRgb[2];
+		//< Alpha channel.
+      pY[_width] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
-      u += 128.0f + RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v += 128.0f + RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
+	// Bottom right pel.
+      bs += b = pRgb[4];
+      gs += g = pRgb[5];
+      rs += r = pRgb[6];
+      pY[_width+1] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
-      /// Bottom right pel.
-      b = (*t++);
-      g = (*t++);
-      r = (*t);
-      py[lumOff+1] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+	// Average the 4 chr values.
+      *pU++ = (unsigned char)((int)((RRGB_YUVCI2_10*rs + RRGB_YUVCI2_11*gs + RRGB_YUVCI2_12*bs + 4*128.0f + 2)/4));
+      *pV++ = (unsigned char)((int)((RRGB_YUVCI2_20*rs + RRGB_YUVCI2_21*gs + RRGB_YUVCI2_22*bs + 4*128.0f + 2)/4));
 
-      u += 128.0f + RRGB24YUVCI2_10*r + RRGB24YUVCI2_11*g + RRGB24YUVCI2_12*b;
-      v += 128.0f + RRGB24YUVCI2_20*r + RRGB24YUVCI2_21*g + RRGB24YUVCI2_22*b;
+      pRgb += _width*4 + 8;
+      pY += 2;
+    } //end for xb & yb...
 
-      /// Average the 4 chr values.
-      pu[chrOff] = (unsigned char)( (int)((u + 0.5)/4) );
-      pv[chrOff] = (unsigned char)( (int)((v + 0.5)/4) );
-    }//end for xb & yb...
+    pY += _width;
+    pRgb -= 3 * 4*_width;
+  }
 }
 
 
@@ -139,9 +133,8 @@ void RealRGB32toYUV420Converter::NonFlipConvert(const unsigned char *pRgb, unsig
 
   /// Step in 2x2 pel blocks. (4 pels per block).
   const int xBlks = _width >> 1;
-  const int yBlks = _height >> 1;
-  const unsigned char *t = pRgb;
-  for(int yb = 0; yb < yBlks; yb++)
+  int yb = _height >> 1;
+  while(yb-- > 0)    
   {
     int xb = xBlks;
     while(xb-- > 0)    
@@ -151,14 +144,14 @@ void RealRGB32toYUV420Converter::NonFlipConvert(const unsigned char *pRgb, unsig
       gs = g = pRgb[1];
       rs = r = pRgb[2];
 		///< Alpha channel.
-      py[0] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      py[0] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
 	// Top right pel.
       bs += b = pRgb[4];
       gs += g = pRgb[5];
       rs += r = pRgb[6];
 		///< Alpha channel.
-      py[1] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      py[1] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
       //lumOff += _width;
       pRgb += _width*4;
@@ -167,21 +160,21 @@ void RealRGB32toYUV420Converter::NonFlipConvert(const unsigned char *pRgb, unsig
       gs += g = pRgb[1];
       rs += r = pRgb[2];
 		///< Alpha channel.
-      py[_width] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      py[_width] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
 	// Bottom righpRgb pel.
       bs += b = pRgb[4];
       gs += g = pRgb[5];
       rs += r = pRgb[6];
-      py[_width+1] = (unsigned char)((int)(0.5 + RRGB24YUVCI2_00*r + RRGB24YUVCI2_01*g + RRGB24YUVCI2_02*b));
+      py[_width+1] = (unsigned char)((int)(0.5 + RRGB_YUVCI2_00*r + RRGB_YUVCI2_01*g + RRGB_YUVCI2_02*b));
 
 	// Average the 4 chr values.
-      *pu++ = (unsigned char)( (int)((RRGB24YUVCI2_10*rs + RRGB24YUVCI2_11*gs + RRGB24YUVCI2_12*bs + 4*128.0f + 0.5f)/4) );
-      *pv++ = (unsigned char)( (int)((RRGB24YUVCI2_20*rs + RRGB24YUVCI2_21*gs + RRGB24YUVCI2_22*bs + 4*128.0f + 0.5f)/4) );
+      *pu++ = (unsigned char)((int)((RRGB_YUVCI2_10*rs + RRGB_YUVCI2_11*gs + RRGB_YUVCI2_12*bs + 4*128.0f + 2)/4));
+      *pv++ = (unsigned char)((int)((RRGB_YUVCI2_20*rs + RRGB_YUVCI2_21*gs + RRGB_YUVCI2_22*bs + 4*128.0f + 2)/4));
 
       pRgb -= _width*4 - 8;
       py += 2;
-    } //end for xb & yb...
+    } //end for xb...
     py += _width;
     pRgb += 4*_width;
   }

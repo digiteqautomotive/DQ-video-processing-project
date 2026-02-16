@@ -535,11 +535,12 @@ HRESULT ScaleFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 
 HRESULT ScaleFilter::GetPages(CAUUID *pPages)
 {
-  if (pPages == NULL) return E_POINTER;
+  if(pPages == NULL) return E_POINTER;
   pPages->cElems = 1;
   pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
   if (pPages->pElems == NULL)
   {
+    pPages->cElems = 0;
     return E_OUTOFMEMORY;
   }
   pPages->pElems[0] = CLSID_ScaleProperties;
