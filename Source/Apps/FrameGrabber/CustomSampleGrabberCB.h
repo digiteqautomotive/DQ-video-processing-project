@@ -30,6 +30,14 @@
 
 #include <Shared/TimerUtil.h>
 
+
+#ifdef _BUILD_FOR_SHORT
+typedef short yuvType;
+#else
+typedef signed char yuvType ;
+#endif
+
+
 enum Mode
 {
   ORIGINAL,

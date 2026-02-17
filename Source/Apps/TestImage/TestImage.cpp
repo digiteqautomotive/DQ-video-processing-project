@@ -31,6 +31,9 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "ConvYUV420toRGB.h"
 #include "ConvRGB24toYUV420.h"
 #include "ConvRGB32toYUV420.h"
+#ifdef USE_ASM
+#include "ConvYUV420toRGB_ASM.h"
+#endif
 #include "reference/ConvRGB24toYUV420_LUT.h"
 #include "reference/ConvRGB24toYUV420_fixpLUT.h"
 #include "reference/ConvRGB24toYUV420_SIMD.h"
@@ -867,6 +870,9 @@ bool Pause = false;
    for(int Height=2; Height<28; Height+=2)
    {
      YUV420toRGB24Converter picConvertedAYUV2RGB24(Width,Height);
+#ifdef USE_ASM
+     ConvYUV420toRGB24_ASM asmConvertedAYUV2RGB24(Width,Height);
+#endif
      OrigRealYUV420toRGB24Converter OrigPicConvertedAYUV2RGB24(Width,Height);
      
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
@@ -893,6 +899,32 @@ bool Pause = false;
 #endif
        //goto ReturnErr;
      }
+
+#ifdef USE_ASM
+    asmConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
+
+    pos = memcmp(BlobTest, BlobOut, Width*Height*3+32);
+     if(pos)   
+     {       
+       int diffs1 = 0;
+       for(int x=0; x<Width; x++)
+         for(int y=0; y<Height; y++)
+         {
+           pos = 16 + 3*(x + Width*y);
+           if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2])
+		diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
+           {
+             printf("\nYUV420toRGB24_ASM %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
+             goto ReturnErr;
+           }
+         }
+#ifdef _DEBUG
+       printf("\nYUV420 to RGB24 %ux%u: 1_diffs=%d.", Width, Height, pos);
+#endif
+       //goto ReturnErr;
+     }
+#endif
 
      picConvertedAYUV2RGB24.SetFlip(true);
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
@@ -1151,6 +1183,17 @@ bool Pause = false;
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
     }
     printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+
+#ifdef USE_ASM
+    {
+      ConvYUV420toRGB24_ASM picConvertedYUV420toRGB24(1920,1080);
+      DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
+      printf(" ASM %.3f[ms]", DurationMin/1000.0);
+      picConvertedYUV420toRGB24.SetFlip(true);
+      DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
+    }
+    printf(" ASM_Flip: %.3f[ms]", DurationMin/1000.0);
+#endif
     
     {
       OrigRealYUV420toRGB24Converter picConvertedYUV420toRGB24(1920,1080);

@@ -32,8 +32,7 @@ ConvertRowAsmAYUV_ARGB24 proc \
 	jecxz	toend
 
 LoopPx: xor	edx,edx
-	mov	dh,[esi+1]	; 255*Y	
-
+	mov	dh,[esi+1]	; 255*Y
 	movzx	ebx,byte ptr [esi+3]	; V
 	sub	ebx,128	
 	imul	eax,ebx,KOEF_V2R	; 292*V	
@@ -147,9 +146,9 @@ toend:
 ConvertRowAsmAYUV_ARGB32 endp
 
 
-;void YUV_BGR(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public YUV_BGR
-YUV_BGR proc \
+;void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public YUV_RGB
+YUV_RGB proc \
         uses edi esi ebx, \
         OutData: ptr BYTE, \
         y: ptr BYTE, \
@@ -172,14 +171,14 @@ LoopPx:	xor	edx,edx
 
 	movzx	eax,byte ptr [ebp]	; V
 	sub	eax,128	
-	imul	eax,292			; 292*V	
+	imul	eax,KOEF_V2R		; 292*V	
 	add	eax,edx
 
 	test	eax,0FFFF0000h
 	jz	NormR1
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax
-NormR1:	mov	[edi+2],ah		; R1
+NormR1:	mov	[edi],ah		; R1
 
 	movzx	eax,byte ptr [ebx]	; U
 	sub	eax,128
@@ -190,7 +189,7 @@ NormR1:	mov	[edi+2],ah		; R1
 	jz	NormB1
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax	
-NormB1:	mov	[edi],ah	; B1
+NormB1:	mov	[edi+2],ah		; B1
 
 				;EDX = 255*Y
 	movzx	eax,byte ptr [ebp]	; V
@@ -217,14 +216,14 @@ NormG1:	mov	[edi+1],dh	; G1
 
 	movzx	eax,byte ptr [ebp]	; V
 	sub	eax,128	
-	imul	eax,292			; 292*V	
+	imul	eax,KOEF_V2R		; 292*V	
 	add	eax,edx
 	
 	test	eax,0FFFF0000h
 	jz	NormR2
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax
-NormR2:	mov	[edi+5],ah	; R2	
+NormR2:	mov	[edi+3],ah	; R2	
 
 	movzx	eax,byte ptr[ebx]	; U
 	sub	eax,128
@@ -235,7 +234,7 @@ NormR2:	mov	[edi+5],ah	; R2
 	jz	NormB2
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax
-NormB2:	mov	[edi+3],ah	; B2
+NormB2:	mov	[edi+5],ah	; B2
 
 				;EDX = 255*Y
 	movzx	eax,byte ptr [ebp]	; V
@@ -266,7 +265,7 @@ NormG2:	mov	[edi+4],dh	; G2
 Exit:	
 	pop	ebp
 	ret
-YUV_BGR endp
+YUV_RGB endp
 
 
         end

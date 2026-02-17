@@ -38,19 +38,17 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _REALYUV420TORGB24CONVERTERIMPL2_H
 #define _REALYUV420TORGB24CONVERTERIMPL2_H
 
 #include "YUVtoRGBConverter.h"
 
-/*
-===========================================================================
-  Class definition.
-===========================================================================
-*/
+
+/*===========================================================================
+			 Class definition
+===========================================================================*/
+
 class RealYUV420toRGB24ConverterImpl2: public YUV420toRGBConverter
 {
 public:

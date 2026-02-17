@@ -157,11 +157,11 @@ ConvertRowAsmAYUV_ARGB32 endp
 
 
 
-;void YUV_BGR(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public YUV_BGR
+;void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public YUV_RGB
 	
 IF (@Version LT 1200) OR (@Version GE 1300)
-YUV_BGR proc \
+YUV_RGB proc \
         uses rdi rsi rbx,
         OutData: ptr BYTE,
         y: ptr BYTE,
@@ -170,7 +170,7 @@ YUV_BGR proc \
 	PixelCount: DWORD	; on stack
 ELSE
 ;; The ASM from MSVC2013 seems to be much more worse than previous one. Use blind arguments.
-YUV_BGR proc \
+YUV_RGB proc \
         uses rdi rsi rbx
 ENDIF
 
@@ -199,7 +199,7 @@ LoopPx:	xor	edx,edx
 	jz	NormR1
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax
-NormR1:	mov	[rdi+2],ah		; R1
+NormR1:	mov	[rdi],ah		; R1
 
 	movzx	eax,byte ptr [R8]	; U
 	sub	eax,128
@@ -211,7 +211,7 @@ NormR1:	mov	[rdi+2],ah		; R1
 	jz	NormB1
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax	
-NormB1:	mov	[rdi],ah		; B1
+NormB1:	mov	[rdi+2],ah		; B1
 				;EDX = 255*Y
 	mov	rax,R10			; V	
 	imul	eax,KOEF_V2G
@@ -241,7 +241,7 @@ NormG1:	mov	[rdi+1],dh	; G1
 	jz	NormR2
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax
-NormR2:	mov	[rdi+5],ah	; R2
+NormR2:	mov	[rdi+3],ah	; R2
 
 	mov	eax,R11d		; U
 	imul	eax,KOEF_U2B		; 520*U	
@@ -251,7 +251,7 @@ NormR2:	mov	[rdi+5],ah	; R2
 	jz	NormB2
 	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
 	not	eax
-NormB2:	mov	[rdi+3],ah		; B2
+NormB2:	mov	[rdi+5],ah		; B2
 
 				;EDX = 255*Y
 	mov	rax,R10			; V	
@@ -278,7 +278,7 @@ NormG2:	mov	[rdi+4],dh	; G2
 
 Exit:	
 	ret
-YUV_BGR endp
+YUV_RGB endp
 
 
 

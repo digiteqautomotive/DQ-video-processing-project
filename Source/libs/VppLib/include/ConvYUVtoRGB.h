@@ -45,13 +45,6 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 #define __YUV_TO_RGBCONVERTER_H__
 
 
-#ifdef _BUILD_FOR_SHORT
-	typedef short yuvType;
-#else
-	typedef signed char yuvType;
-#endif
-
-
 /*===========================================================================
   Class definition.
 ===========================================================================*/

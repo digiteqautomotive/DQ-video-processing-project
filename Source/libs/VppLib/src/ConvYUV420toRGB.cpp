@@ -39,7 +39,7 @@ int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
-unsigned char *OutData = (unsigned char *)pRgb + 3*_width*(_height-1);
+pRgb += 3*_width*(_height-1);
 
   for(int row=0; row<_height; row++)
   {
@@ -54,36 +54,36 @@ unsigned char *OutData = (unsigned char *)pRgb + 3*_width*(_height-1);
 
       int32_t Y = 256 * *(y++);
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
-      if(X>255) OutData[2]=255;
-      else if(X<0) OutData[2]=0;
-      else OutData[2] = X;
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[1]=255;
-      else if(X<0) OutData[1]=0;
-      else OutData[1] = X;
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.40*V;
-      if(X>255) OutData[0]=255;
-      else if(X<0) OutData[0]=0;
-      else OutData[0] = X;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
 
       Y = 256 * *(y++);
 
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
-      if(X>255) OutData[5]=255;
-      else if(X<0) OutData[5]=0;
-      else OutData[5] = X;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[4]=255;
-      else if(X<0) OutData[4]=0;
-      else OutData[4] = X;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
-      if(X>255) OutData[3]=255;
-      else if(X<0) OutData[3]=0;
-      else OutData[3] = X;
+      if(X>255) pRgb[3]=255;
+      else if(X<0) pRgb[3]=0;
+      else pRgb[3] = X;
 
-      OutData += 6;
+      pRgb += 6;
     }
-    OutData -= 6*_width;
+    pRgb -= 6*_width;
     if((row&1) == 0)
     {
       u -= _width/2;
@@ -100,7 +100,6 @@ const unsigned width3 = _width * 3;
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
-unsigned char *OutData = (unsigned char *)pRgb;
 
   for(int row=0; row<_height; row+=2)
   {
@@ -115,66 +114,66 @@ unsigned char *OutData = (unsigned char *)pRgb;
 
       int32_t Y = 256 * *y;
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
-      if(X>255) OutData[2]=255;
-      else if(X<0) OutData[2]=0;
-      else OutData[2] = X;
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[1]=255;
-      else if(X<0) OutData[1]=0;
-      else OutData[1] = X;
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.40*V;
-      if(X>255) OutData[0]=255;
-      else if(X<0) OutData[0]=0;
-      else OutData[0] = X;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
 
       Y = 256 * y[1];
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
-      if(X>255) OutData[5]=255;
-      else if(X<0) OutData[5]=0;
-      else OutData[5] = X;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[4]=255;
-      else if(X<0) OutData[4]=0;
-      else OutData[4] = X;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
-      if(X>255) OutData[3]=255;
-      else if(X<0) OutData[3]=0;
-      else OutData[3] = X;
+      if(X>255) pRgb[3]=255;
+      else if(X<0) pRgb[3]=0;
+      else pRgb[3] = X;
 
-      OutData += width3;
+      pRgb += width3;
 
       Y = 256 * y[_width];
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
-      if(X>255) OutData[2]=255;
-      else if(X<0) OutData[2]=0;
-      else OutData[2] = X;
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[1]=255;
-      else if(X<0) OutData[1]=0;
-      else OutData[1] = X;
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.40*V;
-      if(X>255) OutData[0]=255;
-      else if(X<0) OutData[0]=0;
-      else OutData[0] = X;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
 
       Y = 256 * y[_width+1];
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
-      if(X>255) OutData[5]=255;
-      else if(X<0) OutData[5]=0;
-      else OutData[5] = X;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[4]=255;
-      else if(X<0) OutData[4]=0;
-      else OutData[4] = X;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
-      if(X>255) OutData[3]=255;
-      else if(X<0) OutData[3]=0;
-      else OutData[3] = X;
+      if(X>255) pRgb[3]=255;
+      else if(X<0) pRgb[3]=0;
+      else pRgb[3] = X;
 
-      OutData = OutData - width3 + 6;
+      pRgb = pRgb - width3 + 6;
       y += 2;
     }
-    OutData += width3;
+    pRgb += width3;
     y += _width;
   }
 } //end NonRotateConvert.
@@ -189,7 +188,7 @@ int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
-unsigned char *OutData = pRgb + 4*_width*(_height-1);
+pRgb += 4*_width*(_height-1);
 
   for(int row=0; row<_height; row++)
   {
@@ -204,38 +203,38 @@ unsigned char *OutData = pRgb + 4*_width*(_height-1);
       int32_t Y = 256 * *(y++);
 
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
-      if(X>255) OutData[2]=255;
-      else if(X<0) OutData[2]=0;
-      else OutData[2] = X;
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[1]=255;
-      else if(X<0) OutData[1]=0;
-      else OutData[1] = X;
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.40*V;
-      if(X>255) OutData[0]=255;
-      else if(X<0) OutData[0]=0;
-      else OutData[0] = X;
-      OutData[3] = 0;			// A
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+      pRgb[3] = 0;			// A
 
       Y = 256 * *(y++);
 
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
-      if(X>255) OutData[6]=255;
-      else if(X<0) OutData[6]=0;
-      else OutData[6] = X;
+      if(X>255) pRgb[6]=255;
+      else if(X<0) pRgb[6]=0;
+      else pRgb[6] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[5]=255;
-      else if(X<0) OutData[5]=0;
-      else OutData[5] = X;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
-      if(X>255) OutData[4]=255;
-      else if(X<0) OutData[4]=0;
-      else OutData[4] = X;
-      OutData[7] = 0;			// A
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+      pRgb[7] = 0;			// A
 
-      OutData += 8;
+      pRgb += 8;
     }
-    OutData -= 8*_width;
+    pRgb -= 8*_width;
     if((row&1) == 0)
     {
       u -= _width/2;
@@ -252,7 +251,6 @@ const unsigned width4 = _width * 4;
 const unsigned char *y = (const unsigned char *)pY;
 const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
-unsigned char *OutData = pRgb;
 
   for(int row=0; row<_height; row+=2)
   {
@@ -267,74 +265,74 @@ unsigned char *OutData = pRgb;
 
       int32_t Y = 256 * *y;
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
-      if(X>255) OutData[2]=255;
-      else if(X<0) OutData[2]=0;
-      else OutData[2] = X;
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[1]=255;
-      else if(X<0) OutData[1]=0;
-      else OutData[1] = X;
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.40*V;
-      if(X>255) OutData[0]=255;
-      else if(X<0) OutData[0]=0;
-      else OutData[0] = X;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
 
-      OutData[3] = 0;			// A
+      pRgb[3] = 0;			// A
 
       Y = 256 * y[1];
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
-      if(X>255) OutData[6]=255;
-      else if(X<0) OutData[6]=0;
-      else OutData[6] = X;
+      if(X>255) pRgb[6]=255;
+      else if(X<0) pRgb[6]=0;
+      else pRgb[6] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[5]=255;
-      else if(X<0) OutData[5]=0;
-      else OutData[5] = X;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
-      if(X>255) OutData[4]=255;
-      else if(X<0) OutData[4]=0;
-      else OutData[4] = X;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
 
-      OutData[7] = 0;			// A
+      pRgb[7] = 0;			// A
 
-      OutData += width4;
+      pRgb += width4;
 
       Y = 256 * y[_width];
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
-      if(X>255) OutData[2]=255;
-      else if(X<0) OutData[2]=0;
-      else OutData[2] = X;
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[1]=255;
-      else if(X<0) OutData[1]=0;
-      else OutData[1] = X;
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.40*V;
-      if(X>255) OutData[0]=255;
-      else if(X<0) OutData[0]=0;
-      else OutData[0] = X;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
 
-      OutData[3] = 0;			// A
+      pRgb[3] = 0;			// A
 
       Y = 256 * y[_width+1];
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
-      if(X>255) OutData[6]=255;
-      else if(X<0) OutData[6]=0;
-      else OutData[6] = X;
+      if(X>255) pRgb[6]=255;
+      else if(X<0) pRgb[6]=0;
+      else pRgb[6] = X;
       X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
-      if(X>255) OutData[5]=255;
-      else if(X<0) OutData[5]=0;
-      else OutData[5] = X;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
       X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
-      if(X>255) OutData[4]=255;
-      else if(X<0) OutData[4]=0;
-      else OutData[4] = X;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
 
-      OutData[7] = 0;			// A
+      pRgb[7] = 0;			// A
 
-      OutData = OutData - width4 + 8;
+      pRgb = pRgb - width4 + 8;
       y += 2;
     }
-    OutData += width4;
+    pRgb += width4;
     y += _width;
   }
 } //end NonRotateConvert.

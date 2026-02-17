@@ -47,7 +47,6 @@ public:
   // Construction and destruction.
   YUV420toRGB24Converter(void) { }
   YUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) { }
-  virtual ~YUV420toRGB24Converter(void) {}
 
   // Interface.
 
@@ -67,7 +66,6 @@ public:
   // Construction and destruction.
   YUV420toRGB32Converter(void) { }
   YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) { }
-  virtual ~YUV420toRGB32Converter(void) {}
 
   // Interface.
 

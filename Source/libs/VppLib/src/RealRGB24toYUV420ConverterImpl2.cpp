@@ -36,6 +36,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "ConvRGB24toYUV420RealImpl2.h"
 
+
+#ifdef _BUILD_FOR_SHORT
+	typedef short yuvType;
+#else
+	typedef signed char yuvType;
+#endif
+
+
+
 /*===========================================================================
 			Defines
 ===========================================================================*/
