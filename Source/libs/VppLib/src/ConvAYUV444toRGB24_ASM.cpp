@@ -29,12 +29,9 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifdef _WINDOWS
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-#include <windows.h>
-#endif
-
 #include "ConvAYUV444toRGB.h"
+
+#include <uuids.h>
 
 
 extern "C"
@@ -44,6 +41,13 @@ extern "C"
 
  void ConvertRowAsmYV24_RGB24(void *pDst, const void *pSrc, unsigned Pixels);
  void ConvertRowAsmYV24_RGB32(void *pDst, const void *pSrc, unsigned Pixels);
+}
+
+
+bool AYUV444toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_AYUV &&
+	 VideoFormatOut==MEDIASUBTYPE_RGB24;
 }
 
 
@@ -112,8 +116,19 @@ void YV24toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
   else
       ConvertRowAsmYV24_RGB24(pRgb, pInputBuffer, _width*_height);
 }
+*/
 
 
+/////////////////////////////////////////////////////////////////////////
+
+
+bool AYUV444toARGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_AYUV &&
+	 (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32);
+}
+
+/*
 void YV24toRGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
   if(_flip)

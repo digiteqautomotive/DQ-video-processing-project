@@ -43,6 +43,8 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 
 #include "typedfs.h"
 
+#include <uuids.h>
+
 /*===========================================================================
 				Macros
 ===========================================================================*/
@@ -62,11 +64,11 @@ RealYUV420toRGB24ConverterImpl2Ver16::RealYUV420toRGB24ConverterImpl2Ver16(int w
 { 
 }//end constructor.
 
-/*
-RealYUV420toRGB24ConverterImpl2Ver16::RealYUV420toRGB24ConverterImpl2Ver16(int width, int height, int chrOff): YUV420toRGBConverter(width, height, chrOff)
-{ 
-}//end constructor.
-*/
+
+bool RealYUV420toRGB24ConverterImpl2Ver16::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatOut==MEDIASUBTYPE_RGB24;
+}
 
 
 void RealYUV420toRGB24ConverterImpl2Ver16::Convert(const void* pBufferIn, void* pRgb) const

@@ -48,10 +48,8 @@ class RealRGB24toYUV420ConverterImpl2: public RGBtoYUV420Converter
 {
 public:
 	/// Construction and destruction.
-	RealRGB24toYUV420ConverterImpl2(void) { }
+	RealRGB24toYUV420ConverterImpl2(void)	 {}
 	RealRGB24toYUV420ConverterImpl2(int width, int height);
-	RealRGB24toYUV420ConverterImpl2(int width, int height, int chrOff);
-	virtual ~RealRGB24toYUV420ConverterImpl2(void) {}
 
 	/// Interface.
 protected:

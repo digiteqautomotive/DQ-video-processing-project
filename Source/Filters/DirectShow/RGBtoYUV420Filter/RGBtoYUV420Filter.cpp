@@ -122,9 +122,9 @@ HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
 			//The converter might already exist if the filter has been connected previously
     if(m_pConverter)
     {
-      if(!m_pConverter->isInputVideoFormatSupported(in_MediaType,out_MediaType))
+      if(!m_pConverter->isVideoFormatSupported(in_MediaType,out_MediaType))
       {
-        RGBtoYUV420Converter *tmp_Converter = m_pConverter;
+        CVideoConverter *tmp_Converter = m_pConverter;
         m_pConverter = NULL;
         delete tmp_Converter;
       }
@@ -362,4 +362,3 @@ STDMETHODIMP RGBtoYUV420Filter::NonDelegatingQueryInterface(REFIID riid, void **
 	// Call the parent class.
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
-

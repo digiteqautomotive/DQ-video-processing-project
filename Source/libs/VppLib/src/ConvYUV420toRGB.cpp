@@ -28,10 +28,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "typedfs.h"
 
+#include <uuids.h>
+
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+
 
 /*===========================================================================
 	Private Methods.
 ==========================================================================*/
+
+
+bool YUV420toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return (VideoFormatOut==MEDIASUBTYPE_RGB24) &&
+         (VideoFormatIn==MEDIASUBTYPE_YUV420P_S || VideoFormatIn==MEDIASUBTYPE_I420 || VideoFormatIn==MEDIASUBTYPE_YV12);
+}
+
 
 void YUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
@@ -180,6 +193,13 @@ const signed char *v = (const signed char *)pV;
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+bool YUV420toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32) &&
+         (VideoFormatIn==MEDIASUBTYPE_YUV420P_S || VideoFormatIn==MEDIASUBTYPE_I420 || VideoFormatIn==MEDIASUBTYPE_YV12);
+}
 
 
 void YUV420toRGB32Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const

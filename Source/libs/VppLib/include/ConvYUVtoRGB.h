@@ -45,6 +45,9 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 #define __YUV_TO_RGBCONVERTER_H__
 
 
+#include <Guiddef.h>
+
+
 /*===========================================================================
   Class definition.
 ===========================================================================*/
@@ -69,6 +72,7 @@ public:
 
 	/// Interface.
 	virtual void Convert(const void* pInputBuffer, void* pRgb) const = 0;
+        virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const = 0;
 
 	/// Member interface.
 	unsigned GetWidth(void) const		{return(_width);}
@@ -95,8 +99,8 @@ public:
     YUV420toRGBConverter(void) {}
     YUV420toRGBConverter(int width, int height): CVideoConverter(width,height) {}
 
-    void Convert(const void* pBufferIn, void* pRgb) const;
-    void Convert(const void* pY, const void* pU, const void* pV, void* pRgb) const
+    virtual void Convert(const void* pBufferIn, void* pRgb) const;
+    void Convert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
     {if (_flip) FlipConvert(pY, pU, pV, (unsigned char*)pRgb);
      else NonRotateConvert(pY, pU, pV, (unsigned char*)pRgb);}
 

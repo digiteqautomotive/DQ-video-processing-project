@@ -60,11 +60,6 @@ public:
 	RealYUV420toRGB24CCIR601ConverterVer16(int width, int height): CVideoConverter(width,height) {}
 
 		// Interface.
-	virtual void Convert(const void* pY, const void* pU, const void* pV, void* pRgb) const
-	{
-	  NonRotateConvert((const uint16_t*)pY, (const uint16_t *)pU, (const uint16_t *)pV, pRgb);
-	}
-
 protected:
 	virtual void NonRotateConvert(const uint16_t* pY, const uint16_t* pU, const uint16_t *pV, void* pRgb) const;
 }; //end RealYUV420toRGB24CCIR601ConverterVer16.

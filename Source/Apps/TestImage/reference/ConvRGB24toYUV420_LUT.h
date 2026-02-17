@@ -48,7 +48,7 @@ public:
     virtual ~ConvRGB24toYUV42_float_LUT(void) {}
 
 	// Interface
-    bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+    bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
     void NonFlipConvert(const unsigned char *pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;

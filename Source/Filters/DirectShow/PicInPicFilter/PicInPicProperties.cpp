@@ -8,6 +8,7 @@ CUnknown * WINAPI PicInPicProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pH
   return pNewObject;
 }
 
+
 PicInPicProperties::PicInPicProperties(IUnknown *pUnk) :
 FilterPropertiesBase(NAME("Pic in pic Properties"), pUnk, IDD_PIC_IN_PIC_DIALOG, IDS_PIC_IN_PIC_CAPTION)
 {
@@ -45,31 +46,32 @@ HRESULT PicInPicProperties::ReadSettings()
   return hr;
 }
 
+
 HRESULT PicInPicProperties::OnApplyChanges(void)
 {
   HRESULT hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_TARGET_HEIGHT, IDC_EDIT_TARGET_HEIGHT);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   // Subpicture dimensions
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_SUB_PIC_WIDTH, IDC_EDIT_SUBPICTURE_WIDTH);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_SUB_PIC_HEIGHT, IDC_EDIT_SUBPICTURE_HEIGHT);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   // Use custom offset
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_X, IDC_EDIT_SUBPICTURE_OFFSET_X);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setBoolFilterParameterFromCheckBox(FILTER_THROTTLE, IDC_CHECK_THROTTLE);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
   hr = setBoolFilterParameterFromCheckBox(FILTER_DUPLICATE_FRAMES, IDC_CHECK_DUPLICATE_FRAMES);
-  if (FAILED(hr)) return hr;
+  if(FAILED(hr)) return hr;
 
   hr = setIntFilterParameterFromEditText(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
   

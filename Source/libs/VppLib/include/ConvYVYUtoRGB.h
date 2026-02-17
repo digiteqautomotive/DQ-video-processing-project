@@ -40,8 +40,9 @@ class YVYUtoRGB24Converter: public CVideoConverter
 public:
   // Construction and destruction.
   YVYUtoRGB24Converter(void) { }
-  YVYUtoRGB24Converter(int width, int height): CVideoConverter(width,height) { }
-  virtual ~YVYUtoRGB24Converter(void) {}
+  YVYUtoRGB24Converter(int width, int height): CVideoConverter(width,height) {}
+
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
   // Interface.
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
@@ -57,11 +58,12 @@ class YVYUtoARGB32Converter: public CVideoConverter
 public:
   // Construction and destruction.
   YVYUtoARGB32Converter(void) { }
-  YVYUtoARGB32Converter(int width, int height): CVideoConverter(width,height) { }
+  YVYUtoARGB32Converter(int width, int height): CVideoConverter(width,height) {}
   virtual ~YVYUtoARGB32Converter(void) {}
 
   // Interface.
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 };//end YVYUtoARGB32Converter.
 

@@ -32,6 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "typedfs.h"
 
+#include <uuids.h>
+
 
 /*===========================================================================
 	Macros.
@@ -45,9 +47,10 @@ DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xA
 ===========================================================================*/
 
 
-bool YV24toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormat) const
+bool YV24toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
-  return VideoFormat==MEDIASUBTYPE_YV24;
+  return VideoFormatIn==MEDIASUBTYPE_YV24 &&
+         VideoFormatOut==MEDIASUBTYPE_RGB24;
 }
 
 
@@ -125,6 +128,13 @@ int32_t X;
 bool YV24toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormat) const
 {
   return VideoFormat==MEDIASUBTYPE_YV24;
+}
+
+
+bool YV24toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_YV24 &&
+         (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32);
 }
 
 

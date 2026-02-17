@@ -55,7 +55,7 @@ void ConvRGB24toYUV42_fixp_LUT::initLookupTable(void)
 			Interface Methods
 ===========================================================================*/
 
-bool ConvRGB24toYUV42_fixp_LUT::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvRGB24toYUV42_fixp_LUT::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_RGB24 &&
          (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);

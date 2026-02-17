@@ -48,7 +48,7 @@ public:
 	RealRGB24toYUV420ConverterImpl2Ver16(int width, int height);
 
 		/// Interface.
-        virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+        virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
 	virtual void FlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t* pU, uint16_t* pV) const;

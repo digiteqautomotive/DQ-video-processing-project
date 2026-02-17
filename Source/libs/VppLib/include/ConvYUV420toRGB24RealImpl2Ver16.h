@@ -59,6 +59,7 @@ public:
 
 	// Interface.
     virtual void Convert(const void* pBufferIn, void* pRgb) const;
+    virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
     virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const;

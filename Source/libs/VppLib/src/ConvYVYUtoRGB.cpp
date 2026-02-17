@@ -33,10 +33,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "typedfs.h"
 
+#include <uuids.h>
+
 
 /*===========================================================================
 			Private Methods
 ===========================================================================*/
+
+
+bool YVYUtoRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_YVYU &&
+         VideoFormatOut==MEDIASUBTYPE_RGB24;
+}
 
 
 void YVYUtoRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
@@ -138,6 +147,13 @@ int32_t X;
 
 
 ///////////////////////////////////////////////////////////////////////////////////
+
+
+bool YVYUtoARGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_YVYU &&
+         (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32);
+}
 
 
 void YVYUtoARGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const

@@ -41,12 +41,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class AYUV444toRGB24Converter: public CVideoConverter
 {
 public:
-  // Construction and destruction.
+	 // Construction and destruction.
   AYUV444toRGB24Converter(void) { }
   AYUV444toRGB24Converter(int width, int height): CVideoConverter(width,height) {}
-  virtual ~AYUV444toRGB24Converter(void) {}
 
-  // Interface.
+  virtual ~AYUV444toRGB24Converter(void) {}
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+
+	// Interface.
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };//end AYUV444toRGB24Converter.
@@ -61,10 +63,11 @@ public:
   // Construction and destruction.
   AYUV444toARGB32Converter(void) { }
   AYUV444toARGB32Converter(int width, int height): CVideoConverter(width,height) {}
-  virtual ~AYUV444toARGB32Converter(void) {}
 
-  // Interface.
+
+	// Interface
   //virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };//end AYUV444toARGB32Converter.
@@ -76,15 +79,14 @@ public:
 class YV24toRGB24Converter: public CVideoConverter
 {
 public:
-  // Construction and destruction.
-  YV24toRGB24Converter(void) { }
+	// Construction and destruction.
+  YV24toRGB24Converter(void) {}
   YV24toRGB24Converter(int width, int height): CVideoConverter(width,height) {}
-  virtual ~YV24toRGB24Converter(void) {}
 
-  // Interface.
-  virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
+	// Interface
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
-};	//end YV24toRGB24Converter.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+}; //end YV24toRGB24Converter.
 
 
 class YV24toRGB32Converter: public CVideoConverter
@@ -97,6 +99,8 @@ public:
 
   // Interface.
   virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
 };	//end YV24toRGB24Converter.

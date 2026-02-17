@@ -45,7 +45,7 @@ static const GUID CLSID_RGBtoYUV420Properties =
 #define INVERT "invert"
 
 // Forward declarations
-class RGBtoYUV420Converter;
+class CVideoConverter;
 
 /** \ingroup DirectShowFilters
  * DirectShow Filter that converts RGB24 or RGB32 media to I420 format. */
@@ -55,29 +55,19 @@ class RGBtoYUV420Filter: public CCustomBaseFilter,
 public:
   DECLARE_IUNKNOWN
 
-  /**
-   * @brief Constructor
-   */
+  /** @brief Constructor */
   RGBtoYUV420Filter();
-  /**
-   * @brief Destructor
-   */
+  /** @brief Destructor */
   ~RGBtoYUV420Filter();
-  /**
-   * @brief Static object-creation method (for the class factory)
-   */
+  /** @brief Static object-creation method (for the class factory) */
   static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
-  /**
-   * Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter
-   */
+  /** Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter */
   HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
-  /**
-   * Used for Media Type Negotiation 
+  /** Used for Media Type Negotiation 
    * Returns an HRESULT value. Possible values include those shown in the following table.
    * <table border="0" cols="2"><tr valign="top"><td><b>Value</b></td><td><b>Description</b></td></TR><TR><TD>S_OK</TD><TD>Success</TD></TR><TR><TD>VFW_S_NO_MORE_ITEMS</TD><TD>Index out of range</TD></TR><TR><TD>E_INVALIDARG</TD><TD>Index less than zero</TD></TR></TABLE>
    * The output pin's CTransformOutputPin::GetMediaType method calls this method. The derived class must implement this method. For more information, see CBasePin::GetMediaType.
-   * To use custom media types, the media type can be manipulated in this method.
-   */
+   * To use custom media types, the media type can be manipulated in this method. */
   HRESULT GetMediaType(int iPosition, CMediaType *pMediaType);
   /**
    * The output pin's CTransformOutputPin::DecideBufferSize method calls this method. The derived class must implement this method. For more information, see CBaseOutputPin::DecideBufferSize. 
@@ -119,7 +109,7 @@ protected:
   virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
 	/// Pointer to our RGB24 | 32 to YUV420 converter
-  RGBtoYUV420Converter* m_pConverter;
+  CVideoConverter* m_pConverter;
   bool m_bInvert;		///< invert image
 
   GUID in_MediaType;

@@ -29,7 +29,7 @@ public:
     ConvRGB32toYUV420FixP(void) {}
     ConvRGB32toYUV420FixP(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-    bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+    bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
 	// Interface.    

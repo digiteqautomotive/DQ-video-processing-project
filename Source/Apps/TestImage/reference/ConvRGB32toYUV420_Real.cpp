@@ -47,7 +47,7 @@ DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xa
 ===========================================================================*/
 
 
-bool RealRGB32toYUV420Converter::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool RealRGB32toYUV420Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return (VideoFormatIn==MEDIASUBTYPE_RGB32 || VideoFormatIn==MEDIASUBTYPE_ARGB32) &&
          (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);

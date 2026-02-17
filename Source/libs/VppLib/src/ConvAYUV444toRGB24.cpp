@@ -28,9 +28,11 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================*/
 #include "ConvAYUV444toRGB.h"
+
+#include <uuids.h>
+
 
 /*===========================================================================
 	Macros.
@@ -51,6 +53,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef int32_t
  #define int32_t int
 #endif
+
+
+bool AYUV444toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_AYUV &&
+	 VideoFormatOut==MEDIASUBTYPE_RGB24;
+}
+
 
 void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
@@ -117,6 +127,16 @@ int32_t X;
       In+=4;
     }
   }
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+bool AYUV444toARGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_AYUV &&
+	 (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32);
 }
 
 

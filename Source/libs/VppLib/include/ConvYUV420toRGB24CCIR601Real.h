@@ -37,13 +37,6 @@ public:
 	virtual ~RealYUV420toRGB24CCIR601Converter(void) {}
 
 		// Interface.
-	virtual void Convert(void* pY, void* pU, void* pV, void* pRgb) 
-	{
-		//if(_rotate) RotateConvert(pY, pU, pV, pRgb);
-		//else
-		   NonRotateConvert(pY, pU, pV, pRgb);
-	};
-
 protected:
 	virtual void NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb);
 	virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);

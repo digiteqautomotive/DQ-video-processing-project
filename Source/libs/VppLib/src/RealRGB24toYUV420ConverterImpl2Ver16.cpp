@@ -73,7 +73,7 @@ RealRGB24toYUV420ConverterImpl2Ver16::RealRGB24toYUV420ConverterImpl2Ver16(int w
 ===========================================================================*/
 
 
-bool RealRGB24toYUV420ConverterImpl2Ver16::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool RealRGB24toYUV420ConverterImpl2Ver16::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_RGB24 &&
          (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);

@@ -31,15 +31,26 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==========================================================================*/
 #include "ConvYUV420toRGB_ASM.h"
+#include <uuids.h>
 
 
 extern "C" void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
 
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 
 
 /*===========================================================================
 	Private Methods.
 ==========================================================================*/
+
+
+bool ConvYUV420toRGB24_ASM::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return (VideoFormatIn==MEDIASUBTYPE_YUV420P_S || VideoFormatIn==MEDIASUBTYPE_I420 || VideoFormatIn==MEDIASUBTYPE_YV12) &&
+         (VideoFormatOut==MEDIASUBTYPE_RGB24);
+}
+
 
 void ConvYUV420toRGB24_ASM::FlipConvert(const void *pY, const void *pU, const void *pV, unsigned char *pRgb) const
 {

@@ -61,8 +61,6 @@ public:
 protected:
     virtual void FlipConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
     virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, void* pRgb) const;
-    //virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-
 };//end RealYUV420toRGB24ConverterImpl2.
 
 

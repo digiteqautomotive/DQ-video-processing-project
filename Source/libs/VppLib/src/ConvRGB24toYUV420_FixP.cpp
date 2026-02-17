@@ -62,7 +62,7 @@ const int32_t iRRGB_YUVCI2_22 = static_cast<int32_t>(0.5 + RRGB_YUVCI2_22 * (2 <
 ===========================================================================*/
 
 
-bool ConvRGB24toYUV420FixP::isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvRGB24toYUV420FixP::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_RGB24 &&
         (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);

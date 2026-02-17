@@ -95,8 +95,6 @@ public:
         }
 
 		// Member interface.
-        virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const = 0;
-
 protected:
 	virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;
 	virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const = 0;	
@@ -131,7 +129,7 @@ public:
         }
 
 		// Member interface.
-        virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const = 0;
+        virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const = 0;
 
 protected:
 	virtual void FlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t* pU, uint16_t* pV) const = 0;

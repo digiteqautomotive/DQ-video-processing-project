@@ -31,6 +31,7 @@ public:
   ConvYUV420toRGB24_ASM(int width, int height): YUV420toRGBConverter(width,height) {}
 
 	// Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;

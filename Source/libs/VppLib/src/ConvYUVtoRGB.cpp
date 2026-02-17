@@ -27,6 +27,9 @@ void CVideoConverter::SetDimensions(int width, int height)
 }
 
 
+//////////////////////////////////////////////////////////////////
+
+
 void YUV420toRGBConverter::Convert(const void* pBufferIn, void* pRgb) const 
 {    
 	//set the Y, U and V pointers to point to the correct positions within the byte array

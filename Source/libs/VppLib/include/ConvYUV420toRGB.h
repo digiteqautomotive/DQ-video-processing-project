@@ -46,9 +46,10 @@ class YUV420toRGB24Converter: public YUV420toRGBConverter
 public:
   // Construction and destruction.
   YUV420toRGB24Converter(void) { }
-  YUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) { }
+  YUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) {}
 
-  // Interface.
+	// Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
@@ -67,7 +68,8 @@ public:
   YUV420toRGB32Converter(void) { }
   YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) { }
 
-  // Interface.
+	// Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;

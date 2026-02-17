@@ -264,7 +264,7 @@ public:
       pU = pYUV + m_uiPixels;
       pV = pYUV + m_uiPixels + m_uiYuvSize;
       //Convert
-      m_pYuvToRgbConverter->Convert((void*)pY, (void*)pU, (void*)pV, (void*)m_pRgbDataBuffer);
+      m_pYuvToRgbConverter->Convert((void*)pY, (void*)pU, (void*)pV, m_pRgbDataBuffer);
 
       if (m_bMeasurePSNR)
       {

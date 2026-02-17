@@ -1761,6 +1761,7 @@ int	H264v2Codec::Decode(const void* pCmp, int bitLength, void* pDst)
 		return(ret);
 }//end Decode.
 
+
 int H264v2Codec::Close(void)
 {
 #ifdef H264V2_DUMP_HEADERS
