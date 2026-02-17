@@ -145,10 +145,7 @@ ScaleFilter::~ScaleFilter()
 CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   ScaleFilter *pFilter = new ScaleFilter();
-  if (pFilter == NULL)
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

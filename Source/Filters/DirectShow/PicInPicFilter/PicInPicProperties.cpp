@@ -4,10 +4,7 @@
 CUnknown * WINAPI PicInPicProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   PicInPicProperties *pNewObject = new PicInPicProperties(pUnk);
-  if (pNewObject == NULL)
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pNewObject==NULL) ? E_OUTOFMEMORY : S_OK;
   return pNewObject;
 }
 

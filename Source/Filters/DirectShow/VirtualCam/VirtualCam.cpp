@@ -64,8 +64,8 @@ RGBTRIPLE lineColors[MAX_COLORS] = { white, yellow, cyan, green, magenta, red, b
 //////////////////////////////////////////////////////////////////////////
 CUnknown * WINAPI CVCam::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr)
 {
-  ASSERT(phr);
-  CUnknown *punk = new CVCam(lpunk, phr);
+  CVCam *punk = new CVCam(lpunk, phr);
+  if(phr && punk==NULL) *phr=E_OUTOFMEMORY;
   return punk;
 }
 

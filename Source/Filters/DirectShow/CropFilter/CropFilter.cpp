@@ -75,10 +75,7 @@ const OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
 CUnknown * WINAPI CropFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   CropFilter *pFilter = new CropFilter();
-  if (pFilter == NULL)
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

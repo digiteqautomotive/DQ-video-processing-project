@@ -73,13 +73,10 @@ RotateFilter::~RotateFilter()
   }
 }
 
-CUnknown * WINAPI RotateFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+CUnknown * WINAPI RotateFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 {
   RotateFilter *pFilter = new RotateFilter();
-  if(pFilter== NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

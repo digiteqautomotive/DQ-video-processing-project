@@ -49,14 +49,11 @@ RtvcTee::~RtvcTee()
 {}
 
 
-CUnknown * WINAPI RtvcTee::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+CUnknown * WINAPI RtvcTee::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
-	RtvcTee *pFilter = new RtvcTee();
-	if (pFilter== NULL) 
-	{
-		*pHr = E_OUTOFMEMORY;
-	}
-	return pFilter;
+  RtvcTee *pFilter = new RtvcTee();
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
+  return pFilter;
 }
 
 

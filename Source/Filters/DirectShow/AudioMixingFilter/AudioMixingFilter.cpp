@@ -85,15 +85,19 @@ AudioMixingFilter::~AudioMixingFilter()
 	}
 }
 
-CUnknown * WINAPI AudioMixingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+
+CUnknown * WINAPI AudioMixingFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 {
-	AudioMixingFilter* pFilter = new AudioMixingFilter();
-	return pFilter;
+  AudioMixingFilter* pFilter = new AudioMixingFilter();
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
+  return pFilter;
 }
+
 
 void AudioMixingFilter::initParameters()
 {
 }
+
 
 HRESULT AudioMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {

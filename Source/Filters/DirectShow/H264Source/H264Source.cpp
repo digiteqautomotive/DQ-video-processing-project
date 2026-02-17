@@ -68,14 +68,8 @@ const unsigned char g_startCode_3[] = { 0, 0, 1};
 
 CUnknown * WINAPI H264SourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
 {
-  H264SourceFilter *pNewFilter = new H264SourceFilter(pUnk, phr );
-  if (phr)
-  {
-    if (pNewFilter == NULL) 
-      *phr = E_OUTOFMEMORY;
-    else
-      *phr = S_OK;
-  }
+  H264SourceFilter *pNewFilter = new H264SourceFilter(pUnk, phr);
+  if(phr && pNewFilter==NULL) *phr=E_OUTOFMEMORY;
   return pNewFilter;
 }
 
@@ -103,9 +97,9 @@ H264SourceFilter::H264SourceFilter(IUnknown *pUnk, HRESULT *phr)
 
   m_pPin = new H264OutputPin(phr, this);
 
-  if (phr)
+  if(phr)
   {
-    if (m_pPin == NULL)
+    if(m_pPin == NULL)
       *phr = E_OUTOFMEMORY;
     else
       *phr = S_OK;
@@ -117,7 +111,7 @@ H264SourceFilter::H264SourceFilter(IUnknown *pUnk, HRESULT *phr)
   if (!m_pCodec)
   {
     SetLastError("Unable to create H264 Encoder from Factory.", true);
-    *phr = E_OUTOFMEMORY;
+    if(phr) *phr=E_OUTOFMEMORY;
   }
 }
 

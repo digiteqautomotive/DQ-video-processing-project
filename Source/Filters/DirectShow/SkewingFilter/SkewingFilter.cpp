@@ -67,10 +67,7 @@ SkewingFilter::~SkewingFilter()
 CUnknown * WINAPI SkewingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   SkewingFilter *pFilter = new SkewingFilter(pUnk, pHr);
-  if (pFilter== NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr && pFilter==NULL) *pHr = E_OUTOFMEMORY;
   return pFilter;
 }
 

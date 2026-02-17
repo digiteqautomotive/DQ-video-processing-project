@@ -22,9 +22,6 @@
 //  #include <Image/MtRGB24toYUV420Converter.h>
 //#endif
 #include "ConvYUV420toRGB.h"
-//#include "ConvRGB24toYUV420_LUT.h"
-//#include "ConvRGB24toYUV420_FixP.h"
-//#include "ConvRGB24toYUV420_SIMD.h"
 #include "ConvRGB24toYUV420.h"
 #include "ConvRGB32toYUV420.h"
 

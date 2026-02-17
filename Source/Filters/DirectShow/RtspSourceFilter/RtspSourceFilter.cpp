@@ -87,15 +87,14 @@ RtspSourceFilter::~RtspSourceFilter(void)
   }
 }
 
+
 CUnknown *WINAPI RtspSourceFilter::CreateInstance( IUnknown* pUnk, HRESULT* phr )
 {
-	RtspSourceFilter* pSource = new RtspSourceFilter(pUnk, phr);
-	if (!pSource)
-	{
-		*phr = E_OUTOFMEMORY;
-	}
-	return pSource;
+  RtspSourceFilter* pSource = new RtspSourceFilter(pUnk, phr);
+  if(phr) *phr = (pSource==NULL) ? E_OUTOFMEMORY : S_OK;
+  return pSource;
 }
+
 
 STDMETHODIMP RtspSourceFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {

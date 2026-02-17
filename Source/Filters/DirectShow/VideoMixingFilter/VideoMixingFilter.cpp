@@ -83,6 +83,7 @@ VideoMixingFilter::~VideoMixingFilter()
 CUnknown * WINAPI VideoMixingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   VideoMixingFilter* pFilter = new VideoMixingFilter();
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

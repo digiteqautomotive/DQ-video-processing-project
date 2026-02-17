@@ -156,14 +156,12 @@ H264EncoderFilter::~H264EncoderFilter()
   if (m_pPicParamSet) delete[] m_pPicParamSet; m_pPicParamSet = NULL;
 }
 
-CUnknown * WINAPI H264EncoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+
+CUnknown * WINAPI H264EncoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 {
-	H264EncoderFilter *pFilter = new H264EncoderFilter();
-	if (pFilter== NULL) 
-	{
-		*pHr = E_OUTOFMEMORY;
-	}
-	return pFilter;
+  H264EncoderFilter *pFilter = new H264EncoderFilter();
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
+  return pFilter;
 }
 
  

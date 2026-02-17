@@ -60,13 +60,10 @@ YUVtoRGBFilter::~YUVtoRGBFilter()
 }
 
 
-CUnknown * WINAPI YUVtoRGBFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+CUnknown * WINAPI YUVtoRGBFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   YUVtoRGBFilter *pFilter = new YUVtoRGBFilter();
-  if (pFilter== NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

@@ -89,10 +89,7 @@ TimestampLoggerFilter::~TimestampLoggerFilter()
 CUnknown * WINAPI TimestampLoggerFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   TimestampLoggerFilter *pFilter = new TimestampLoggerFilter(pUnk, pHr);
-  if(pFilter== NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

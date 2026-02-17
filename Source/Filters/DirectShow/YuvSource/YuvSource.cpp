@@ -58,21 +58,15 @@ const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
 **********************************************/
 
 
-CUnknown * WINAPI YuvSourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *phr)
+CUnknown * WINAPI YuvSourceFilter::CreateInstance(IUnknown *pUnk, HRESULT *pHr)
 {
-  YuvSourceFilter *pNewFilter = new YuvSourceFilter(pUnk, phr );
-  if (phr)
-  {
-    if (pNewFilter == NULL) 
-      *phr = E_OUTOFMEMORY;
-    else
-      *phr = S_OK;
-  }
+  YuvSourceFilter *pNewFilter = new YuvSourceFilter(pUnk, pHr);		// new operator sets HRESULT
+  if(pHr && pNewFilter==NULL) *pHr=E_OUTOFMEMORY;
   return pNewFilter;
 }
 
-YuvSourceFilter::YuvSourceFilter(IUnknown *pUnk, HRESULT *phr)
-  : CSource(NAME("DQ RTVC YUV Source"), pUnk, CLSID_VPP_YUVSource),
+
+YuvSourceFilter::YuvSourceFilter(IUnknown *pUnk, HRESULT *phr): CSource(NAME("DQ RTVC YUV Source"), pUnk, CLSID_VPP_YUVSource),
   m_iWidth(352),
   m_iHeight(288),
   m_sDimensions("352x288"),
@@ -88,7 +82,7 @@ YuvSourceFilter::YuvSourceFilter(IUnknown *pUnk, HRESULT *phr)
 
   m_pPin = new YuvOutputPin(phr, this);
 
-  if (phr)
+  if(phr)
   {
     if (m_pPin == NULL)
       *phr = E_OUTOFMEMORY;

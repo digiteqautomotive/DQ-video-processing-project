@@ -257,9 +257,10 @@ PicInPicFilter::~PicInPicFilter()
 }
 
 
-CUnknown * WINAPI PicInPicFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+CUnknown * WINAPI PicInPicFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 {
   PicInPicFilter* pFilter = new PicInPicFilter();
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

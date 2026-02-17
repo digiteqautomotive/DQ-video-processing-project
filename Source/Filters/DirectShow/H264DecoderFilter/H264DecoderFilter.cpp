@@ -104,10 +104,7 @@ H264DecoderFilter::~H264DecoderFilter()
 CUnknown * WINAPI H264DecoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
 {
   H264DecoderFilter *pFilter = new H264DecoderFilter();
-  if (pFilter== NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 

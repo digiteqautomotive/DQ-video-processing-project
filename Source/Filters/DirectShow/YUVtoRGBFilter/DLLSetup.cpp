@@ -100,10 +100,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 CUnknown * WINAPI YUV2RGBProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr) 
 {
   YUV2RGBProperties *pNewObject = new YUV2RGBProperties(pUnk);
-  if(pNewObject == NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr) *pHr = (pNewObject==NULL) ? E_OUTOFMEMORY : S_OK;
   return pNewObject;
 }
 

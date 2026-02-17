@@ -69,10 +69,7 @@ FrameSkippingFilter::~FrameSkippingFilter()
 CUnknown * WINAPI FrameSkippingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   FrameSkippingFilter *pFilter = new FrameSkippingFilter(pUnk, pHr);
-  if (pFilter == NULL)
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
+  if(pHr && pFilter == NULL) *pHr=E_OUTOFMEMORY;  
   return pFilter;
 }
 
