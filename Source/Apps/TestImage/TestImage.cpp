@@ -1048,7 +1048,7 @@ bool Pause = false;
   }
 
   printf("\n\nBenchmarks:");
-  unsigned long long TimeStampB, TimeStampE, Duration, DurationMin;
+  unsigned long long DurationMin;
   {
     {
       RealRGB32toYUV420Converter picConverterRGB32toYUV420(1920,1080);

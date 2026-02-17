@@ -47,19 +47,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class RealRGB32toYUV420Converter: public RGBtoYUV420Converter
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	RealRGB32toYUV420Converter(void) { }
 	RealRGB32toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
 	virtual ~RealRGB32toYUV420Converter(void) {}
 
-	// Interface.
+		// Interface
         bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
 	void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 	void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
 
-};//end RealRGB32toYUV420Converter.
+}; //end RealRGB32toYUV420Converter.
 
 
 #endif //_REALRGB32TOYUV420CONVERTER_H
