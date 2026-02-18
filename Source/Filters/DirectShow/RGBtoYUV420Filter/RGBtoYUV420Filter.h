@@ -114,4 +114,5 @@ protected:
 
   GUID in_MediaType;
   GUID out_MediaType;
+  int m_nOutBitCount;
 };

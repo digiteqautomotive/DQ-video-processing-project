@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/VariantTools.h"
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGB24toYUV420.h"
+#include "ConvRGB24toYUYV.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 
 #include "../FilterParameterStringConstants.h"
@@ -43,9 +44,10 @@ DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00,
 const OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
 
 
-RGBtoYUV420Filter::RGBtoYUV420Filter(): CCustomBaseFilter(NAME("DQ VPP RGB 2 YUV420P Converter"), 0, CLSID_VPP_RGBtoYUV420ColorConverter),
+RGBtoYUV420Filter::RGBtoYUV420Filter(): CCustomBaseFilter(NAME("DQ VPP RGB 2 YUV Converter"), 0, CLSID_VPP_RGBtoYUV420ColorConverter),
 	m_pConverter(NULL),
 	m_bInvert(true),
+        m_nOutBitCount(0),
         in_MediaType(GUID_NULL), out_MediaType(GUID_NULL)        
 {
 	//Call the initialise input method to load all acceptable input types for this filter
@@ -134,15 +136,25 @@ HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
     {
       if(in_MediaType == MEDIASUBTYPE_RGB24)
       {
-        m_pConverter = new ConvRGB24toYUV420FixP(m_nInWidth,m_nInHeight);
+        if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new ConvRGB24toYUYV_FixP(m_nInWidth,m_nInHeight);
+        else
+          m_pConverter = new ConvRGB24toYUV420FixP(m_nInWidth,m_nInHeight);
       }
       else if(in_MediaType==MEDIASUBTYPE_RGB32 || in_MediaType==MEDIASUBTYPE_ARGB32)
-      {        
-        m_pConverter = new ConvRGB32toYUV420FixP(m_nInWidth,m_nInHeight);
+      {
+        if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new ConvRGB32toYUYV_FixP(m_nInWidth,m_nInHeight);
+        else
+          m_pConverter = new ConvRGB32toYUV420FixP(m_nInWidth,m_nInHeight);
       }
       if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
     }
     m_pConverter->SetFlip(m_bInvert ^ (m_nInHeight<0));
+    if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
+      m_nOutBitCount = 16;
+    else
+      m_nOutBitCount = 12;
   }
 
   return hr;
@@ -155,7 +167,7 @@ HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
   {
     return E_INVALIDARG;
   }
-  else if(iPosition == 0)
+  else if(iPosition <= 1)
   {
 	// Get the input pin's media type and return this as the output media type - we want to retain
 	// all the information about the image
@@ -164,7 +176,6 @@ HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
 		
 		// Change the output format to MEDIASUBTYPE_I420 
     pMediaType->SetType(&MEDIATYPE_Video);
-    pMediaType->SetSubtype(&out_MediaType);
 
 		// Get bitmap info header and modify
     BITMAPINFOHEADER *pBmi = NULL;
@@ -179,18 +190,29 @@ HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
       if(pVih2) pBmi = &pVih2->bmiHeader;
     }
     
-    if(pBmi==NULL) return E_FAIL;
-
-    pBmi->biBitCount = 12;
-    pBmi->biCompression = MAKEFOURCC('I', '4', '2', '0');
+    if(pBmi==NULL) return E_FAIL;    
 
     // YUV420 is naturally top to bottom
     // YUV DIBS have no sign and ignore it
     if(pBmi->biHeight < 0 )
       pBmi->biHeight = -pBmi->biHeight; // get rid of -1
 
+    if(iPosition==0)
+    {
+      pMediaType->SetSubtype(&MEDIASUBTYPE_I420);
+      pBmi->biBitCount = BITS_PER_PIXEL_YUV420P;
+      pBmi->biCompression = MAKEFOURCC('I', '4', '2', '0');
+    }
+    else
+    {
+      pMediaType->SetSubtype(&MEDIASUBTYPE_YUYV);
+      pBmi->biBitCount = 16;
+      //pBmi->biCompression = MAKEFOURCC('I', '4', '2', '0');
+    }
+
+
     // update sample sizes
-    pBmi->biSizeImage = ((m_nInPixels * BITS_PER_PIXEL_YUV420P)/8);
+    pBmi->biSizeImage = ((labs(pBmi->biWidth*pBmi->biHeight)*pBmi->biBitCount) / 8);
     pMediaType->SetSampleSize(pBmi->biSizeImage);
     return S_OK;
   }
@@ -211,7 +233,7 @@ HRESULT RGBtoYUV420Filter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PRO
   BITMAPINFOHEADER *pbmi = HEADER(mt.pbFormat);
 	//For YUV: we need to amount of bytes needed to store a frame of YUV 
 	//(Since our converters are using yuvType pointers for arithmetics we need to take the total * sizeof(yuvType)
-  pProp->cbBuffer = ((m_nInPixels * BITS_PER_PIXEL_YUV420P)/8);
+  pProp->cbBuffer = ((m_nOutPixels*m_nOutBitCount)/8);
 	
   if(pProp->cbAlign == 0)
   {
@@ -245,8 +267,12 @@ HRESULT RGBtoYUV420Filter::ApplyTransform(const BYTE* pBufferIn, long lInBufferS
   if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
   if(m_pConverter==NULL) return E_UNEXPECTED;
 
-  lOutActualDataLength = ((m_nInPixels * BITS_PER_PIXEL_YUV420P)/8);
-  if(lOutBufferSize<lOutActualDataLength) return E_INVALIDARG;	// Output buffer is too short.
+  lOutActualDataLength = ((m_nOutPixels*m_nOutBitCount)/8);
+  if(lOutBufferSize<lOutActualDataLength)
+  {
+    DbgLog((LOG_TRACE, 0, TEXT("Output buffer is too short")));
+    return E_INVALIDARG;
+  }
 
 	//Convert to YUV
   m_pConverter->Convert(pBufferIn, pBufferOut);
@@ -294,6 +320,10 @@ HRESULT RGBtoYUV420Filter::CheckTransform(const CMediaType *mtIn, const CMediaTy
   if(mtIn->subtype==MEDIASUBTYPE_RGB24 || mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype==MEDIASUBTYPE_YUV420P_S || mtOut->subtype==MEDIASUBTYPE_I420 || mtOut->subtype==MEDIASUBTYPE_YV12)
+    {
+      TransformOK = true;
+    } 
+    if(mtOut->subtype==MEDIASUBTYPE_YUYV || mtOut->subtype==MEDIASUBTYPE_YUY2)
     {
       TransformOK = true;
     } 

@@ -26,9 +26,22 @@ class ConvRGB24toYUYV_FixP: public CVideoConverter
 public:
 	// Construction and destruction.
     ConvRGB24toYUYV_FixP(void) {}
-    ConvRGB24toYUYV_FixP(int width, int height): RGBtoYUV420Converter(width,height) {}
+    ConvRGB24toYUYV_FixP(int width, int height): CVideoConverter(width,height) {}
 
     virtual void Convert(const void* pBufferIn, void* pRgb) const;
 
-    virtual bool isInputVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+    virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;            
+};
+
+
+class ConvRGB32toYUYV_FixP: public CVideoConverter
+{
+public:
+	// Construction and destruction.
+    ConvRGB32toYUYV_FixP(void) {}
+    ConvRGB32toYUYV_FixP(int width, int height): CVideoConverter(width,height) {}
+
+    virtual void Convert(const void* pBufferIn, void* pRgb) const;
+
+    virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;            
 };
