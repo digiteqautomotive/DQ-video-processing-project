@@ -12,7 +12,7 @@ LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026 Digiteq Automotive, written by Jaroslav Fojtik		All rights reserved.
 ===========================================================================*/
-#include "ConvRGB24toYUYV.h"
+#include "ConvRGBtoYUYV.h"
 
 #include "typedfs.h"
 

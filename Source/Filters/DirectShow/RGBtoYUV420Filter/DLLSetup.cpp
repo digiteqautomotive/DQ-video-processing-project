@@ -28,25 +28,24 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "RGBtoYUV420Filter.h"
 #include "RGB2YUVProperties.h"
 
+
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
-static const WCHAR g_wszName[] = L"DQ VPP RGB 2 YUV420P Converter";   /// A name for the filter 
+static const WCHAR g_wszName[] = L"DQ VPP RGB to YUV Converter";   /// A name for the filter 
 
 // The next bunch of structures define information for the class factory.
 AMOVIESETUP_FILTER FilterInfo =
 {
   &CLSID_VPP_RGBtoYUV420ColorConverter, // CLSID
-  g_wszName,                            // Name
-  MERIT_DO_NOT_USE,                     // Merit
-  0,                                    // Number of AMOVIESETUP_PIN structs
-  NULL                                  // Pin registration information.
+  g_wszName,				// Name
+  MERIT_NORMAL,				// Merit
+  0,					// Number of AMOVIESETUP_PIN structs
+  NULL					// Pin registration information.
 };
 
 CFactoryTemplate g_Templates[2] =
@@ -67,6 +66,7 @@ CFactoryTemplate g_Templates[2] =
   }
 };
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);
+
 
 STDAPI DllRegisterServer(void)
 {

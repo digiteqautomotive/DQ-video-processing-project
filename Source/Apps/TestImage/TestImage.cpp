@@ -31,6 +31,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "ConvYUV420toRGB.h"
 #include "ConvRGB24toYUV420.h"
 #include "ConvRGB32toYUV420.h"
+#include "ConvRGBtoYUYV.h"
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
 #endif
@@ -1201,6 +1202,24 @@ bool Pause = false;
     }
     printf("\nConvert Orig YUV420 to RGB24 resolution 1920,1080 time %.3f[ms].", DurationMin/1000.0);
 
+    {
+      ConvRGB24toYUYV_FixP ConvRGB24toYUYV(1920,1080);
+      DurationMin = BenchConverter(ConvRGB24toYUYV, BlobIn, BlobOut);
+      printf("\nConvert RGB24 to YUYV resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      ConvRGB24toYUYV.SetFlip(true);
+      DurationMin = BenchConverter(ConvRGB24toYUYV, BlobIn, BlobOut);
+    }
+    printf(" flip %.3f[ms]", DurationMin/1000.0);
+
+    {
+      ConvRGB32toYUYV_FixP ConvRGB32toYUYV(1920,1080);
+      DurationMin = BenchConverter(ConvRGB32toYUYV, BlobIn, BlobOut);
+      printf("\nConvert RGB32 to YUYV resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      ConvRGB32toYUYV.SetFlip(true);
+      DurationMin = BenchConverter(ConvRGB32toYUYV, BlobIn, BlobOut);
+    }
+    printf(" flip %.3f[ms]", DurationMin/1000.0);
+
 	/////////////////////////////////////////////////////////
 
     {
@@ -1271,7 +1290,7 @@ bool Pause = false;
     }
     {
       OrigRotateRGB24Impl OrigRotateRGB24;
-      BenchRotator("OrigRot RGB24", OrigRotateRGB24, BlobIn, BlobOut);
+      BenchRotator("RotOrig RGB24", OrigRotateRGB24, BlobIn, BlobOut);
     }
 
     {
@@ -1281,7 +1300,7 @@ bool Pause = false;
 
     {
       OrigRotateRGB32Impl OrigRotateRGB32;
-      BenchRotator("OrigRot RGB32", OrigRotateRGB32, BlobIn, BlobOut);
+      BenchRotator("RotOrig RGB32", OrigRotateRGB32, BlobIn, BlobOut);
     }
   }
 

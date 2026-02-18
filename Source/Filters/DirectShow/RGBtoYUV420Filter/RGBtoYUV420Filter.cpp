@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/VariantTools.h"
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGB24toYUV420.h"
-#include "ConvRGB24toYUYV.h"
+#include "ConvRGBtoYUYV.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 
 #include "../FilterParameterStringConstants.h"

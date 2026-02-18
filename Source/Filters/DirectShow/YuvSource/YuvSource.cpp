@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -17,20 +17,13 @@ Redistribution and use in source and binary forms, with or without modification,
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 * Neither the name of the CSIR nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+===========================================================================*/
 #include <streams.h>
 
 #include <fstream>
@@ -231,28 +224,14 @@ STDMETHODIMP YuvSourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYPE
   return NOERROR;
 }
 
+
 STDMETHODIMP YuvSourceFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
-  if(riid == (IID_ISettingsInterface))
-  {
-    return GetInterface((ISettingsInterface*) this, ppv);
-  }
-  else if (riid == IID_IStatusInterface)
-  {
-    return GetInterface((IStatusInterface*) this, ppv);
-  }
-  else if (riid == IID_IFileSourceFilter)
-  {
-    return GetInterface((IFileSourceFilter*) this, ppv);
-  }
-  else if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else
-  {
-    return CSource::NonDelegatingQueryInterface(riid, ppv);
-  }
+  if(riid == (IID_ISettingsInterface)) return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IStatusInterface)     return GetInterface((IStatusInterface*) this, ppv);
+  if(riid == IID_IFileSourceFilter)    return GetInterface((IFileSourceFilter*) this, ppv);
+  if (riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  return CSource::NonDelegatingQueryInterface(riid, ppv);  
 }
 
 STDMETHODIMP YuvSourceFilter::Stop()

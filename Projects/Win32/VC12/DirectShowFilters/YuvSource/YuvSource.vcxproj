@@ -215,6 +215,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YuvSource\DLLSetup.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YuvSource\YuvOutputPin.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YuvSource\YuvProperties.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\YuvSource\YuvSource.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 
 MODULE:		RGB24toYUV420Converter
 
-FILE NAME:	RGB24toYUV420Converter.h
+FILE NAME:	ConvRGBtoYUYV.h
 
 DESCRIPTION:	Fixed-point RGB 24 bit to YUV420 colour 
 		conversion derived from the RGBtoYUV420Converter base class.

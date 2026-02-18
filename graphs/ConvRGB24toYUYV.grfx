@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph">
+    <filter name="Video Renderer" index="0" clsid="{70E102B0-5556-11CE-97C0-00AA0055595A}"/>
+    <filter name="AVObjects Video Transformer" index="1" clsid="{1C804950-2A3D-4190-B003-BAE68E95FC04}">
+        <ipersiststream encoding="base64" data="UEmAHD0qkEGwA7rmjpX8BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAP////8AAAAAAAAAABonAADoAwAA"/>
+    </filter>
+    <filter name="DQ VPP RGB 2 YUV420P Converter" index="2" clsid="{D710F353-A342-4335-AA5F-4C9BE46F019A}">
+        <ipersiststream encoding="base64" data="AQ=="/>
+    </filter>
+    <filter name="AVObjects Video Generator" index="3" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}" clock="1">
+        <ipersiststream encoding="base64" data="kMxvlnocw0Ki3/kfC+rdoQEAAAAAAAAAZAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAAaJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADQAgAAQAIAAAAAAAAAADlApQAAAIC7AAAoAAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    </filter>
+    <connect out="AVObjects Video Generator/Video" in="DQ VPP RGB 2 YUV420P Converter/XForm In" outFilterIndex="3" outPinId="Video" outPinName="Video" outPinIndex="0" inFilterIndex="2" inPinId="In" inPinName="XForm In" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1244160" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4NQOAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAYAAAAAAAA/BIAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="DQ VPP RGB 2 YUV420P Converter/XForm Out" in="AVObjects Video Transformer/In" outFilterIndex="2" outPinId="Out" outPinName="XForm Out" outPinIndex="0" inFilterIndex="1" inPinId="In" inPinName="In" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_YUYV" sampleSize="829440" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{56595559-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4NQOAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAQAAAAAAAAqAwAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="AVObjects Video Transformer/Out" in="Video Renderer/Input" outFilterIndex="1" outPinId="Out" outPinName="Out" outPinIndex="0" inFilterIndex="0" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_ARGB32" sampleSize="1658880" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{773C9AC0-3274-11D0-B724-00AA006C1A01}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgMYTAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAgAAAAAAAAUBkAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+</graph>
