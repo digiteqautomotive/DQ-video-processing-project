@@ -225,7 +225,7 @@ int I420compare(const char *Alg, int Width, int Height, const unsigned char *Blo
     }
        //goto ReturnErr;
      
-    return diffs1;     
+    return diffs1;
   }
   return 0;
 }
@@ -886,7 +886,7 @@ bool Pause = false;
  for(int Width=2; Width<28; Width+=2)
    for(int Height=2; Height<28; Height+=2)
    {
-     YUV420toRGB24Converter picConvertedAYUV2RGB24(Width,Height);
+     ConvYUV420toRGB24 picConvertedAYUV2RGB24(Width,Height);
 #ifdef USE_ASM
      ConvYUV420toRGB24_ASM asmConvertedAYUV2RGB24(Width,Height);
 #endif
@@ -1150,7 +1150,7 @@ bool Pause = false;
     printf(" Flip: %.3f[ms]", DurationMin/1000.0);
 
     {
-      YUV420toRGB24Converter picConvertedYUV420toRGB24(1920,1080);
+      ConvYUV420toRGB24 picConvertedYUV420toRGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
       printf("\nConvert YUV420 to RGB24 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
       picConvertedYUV420toRGB24.SetFlip(true);

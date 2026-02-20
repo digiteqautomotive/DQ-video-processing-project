@@ -144,6 +144,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ProgramDataBaseFileName>..\..\$(PlatformName)\$(ConfigurationName)\lib\vcImageLib$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Lib>
       <OutputFile>..\..\$(PlatformName)\$(ConfigurationName)\lib\libRtvc$(ProjectName).lib</OutputFile>
@@ -340,6 +341,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
+      <TreatWarningsAsErrors Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</TreatWarningsAsErrors>
     </MASM>
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

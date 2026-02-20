@@ -26,25 +26,23 @@ RESTRICTIONS			:
 
 #include "ConvRGBtoYUV420.h"
 
-/*
-===========================================================================
-  Class definition.
-===========================================================================
-*/
+/*===========================================================================
+						Class definition
+===========================================================================*/
+
 class RealRGB24toYUV420CCIR601Converter: public RGBtoYUV420Converter
 {
 public:
-	// Construction and destruction.
+		// Construction and destruction.
 	RealRGB24toYUV420CCIR601Converter(void) { }
-	RealRGB24toYUV420CCIR601Converter(int width, int height): RGBtoYUV420Converter(width,height) { }
-	virtual ~RealRGB24toYUV420CCIR601Converter(void) {}
+	RealRGB24toYUV420CCIR601Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
 
-	// Interface.
-	void Convert(void* pRgb, void* pY, void* pU, void* pV);
+		// Interface.
+	void Convert(const unsigned char *Rgb, void* pY, void* pU, void* pV) const;
 
 private:
-	void FlipConvert(void* pRgb, void* pY, void* pU, void* pV);
-	void NonFlipConvert(void* pRgb, void* pY, void* pU, void* pV);
+	void FlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
+	void NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
 
 };//end _REALRGB24TOYUV420CCIR601CONVERTER_H.
 

@@ -42,22 +42,22 @@ RESTRICTIONS:
 #define RYUVRGB24CC_V1		-0.581
 #define RYUVRGB24CC_V0		 1.140
 
-/*
-===========================================================================
-	Private Methods.
-===========================================================================
-*/
-void RealYUV420toRGB24CCIR601Converter::NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb)
-{
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	yuvType*				py		= (yuvType *)pY;
-	yuvType*				pu		= (yuvType *)pU;
-	yuvType*				pv		= (yuvType *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+/*===========================================================================
+				Private Methods
+===========================================================================*/
 
-	int x,y;
+
+void RealYUV420toRGB24CCIR601Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+{
+  unsigned char *optr = (unsigned char *)pRgb;
+  const unsigned char *py	= (const unsigned char*)pY;
+  const unsigned char *pu	= (const unsigned char*)pU;
+  const unsigned char *pv	= (const unsigned char*)pV;
+  int lumX = _width;
+  int lumY = _height;
+  int uvX = _width >> 1;
+
+  int x,y;
 	int lumposy;
 	int rgbposy;
 	int uvposy;
@@ -137,12 +137,12 @@ void RealYUV420toRGB24CCIR601Converter::NonRotateConvert(void* pY, void* pU, voi
 
 }//end NonRotateConvert.
 
-void RealYUV420toRGB24CCIR601Converter::RotateConvert(void* pY, void* pU, void* pV, void* pRgb)
+void RealYUV420toRGB24CCIR601Converter::RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	yuvType*				py		= (yuvType *)pY;
-	yuvType*				pu		= (yuvType *)pU;
-	yuvType*				pv		= (yuvType *)pV;
+	unsigned char *optr = (unsigned char *)pRgb;
+	const unsigned char *py = (const unsigned char*)pY;
+	const unsigned char *pu	= (const unsigned char*)pU;
+	const unsigned char *pv	= (const unsigned char*)pV;
 	int		lumX	= _width;
 	int		lumY	= _height;
 	int		uvX		= _width >> 1;

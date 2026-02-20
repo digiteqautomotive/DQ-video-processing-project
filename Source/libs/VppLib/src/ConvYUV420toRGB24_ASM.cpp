@@ -38,6 +38,7 @@ extern "C"
 {
  void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
  void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
 }
 
 DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
@@ -66,14 +67,9 @@ int row = _height / 2;
 
   while(row-- > 0)
   {
-    YUV_RGB(pRgb, y, u, v, _width);
-    y += _width;
-    pRgb -= 3*_width;
-
-    YUV_RGB(pRgb, y, u, v, _width);
-    y += _width;
-    pRgb -= 3*_width;
-
+    PelYUV_RGB_Flip(pRgb,  y,  u, v, _width);
+    pRgb -= 6*_width;
+    y += 2*_width;
     u += _width/2;
     v += _width/2;
   }

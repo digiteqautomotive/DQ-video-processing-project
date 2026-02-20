@@ -457,4 +457,192 @@ Exit:
 PelYUV_RGB endp
 
 
+;void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB_Flip
+PelYUV_RGB_Flip proc \
+        uses edi esi ebx, \
+        OutData: ptr BYTE, \
+        y: ptr BYTE, \
+        u: ptr BYTE, \
+	v: ptr BYTE, \
+	PixelCount: DWORD
+local	PelCount: DWORD
+local	ValV_R: DWORD
+local	ValU_B: DWORD
+;local	ValUV_G: DWORD
+local	PixelCount3: DWORD
+local	PixelCount3p6: DWORD
+
+	mov	edi,[OutData]
+	mov	esi,[y]	
+	mov	ecx,[PixelCount]
+	mov	eax,ecx
+	add	eax,ecx
+	add	eax,ecx			; 3*PixelCount
+	mov	[PixelCount3],eax
+	add	eax,6
+	mov	[PixelCount3p6],eax	; 3*PixelCount - 6
+
+	shr	ecx,1
+	or	ecx,ecx
+	jz	Exit
+	mov	[PelCount],ecx
+
+	xor	edx,edx
+LoopPel:mov	ebx,[v]
+	mov	al,[ebx]
+	inc	ebx
+	sub	al,128
+	mov	[v],ebx
+	mov	ch,al			; V
+	movsx	eax,al
+	imul	eax,KOEF_V2R		; 292*V	
+	mov	[ValV_R],eax
+	mov	ebx,eax	
+
+	mov	dh,[esi]		; 255*y11
+	add	eax,edx
+	test	eax,0FFFF0000h
+	jz	NormR11
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR11:mov	[edi],ah		; R11
+
+	mov	eax,ebx
+	mov	dh,[esi+1]		; 256*y12
+	add	eax,edx
+	test	eax,0FFFF0000h
+	jz	NormR12
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR12:mov	[edi+3],ah		; R12
+
+	mov	ebx,[u]
+	mov	al,[ebx]
+	inc	ebx
+	sub	al,128
+	mov	[u],ebx
+	mov	cl,al			; U
+	movsx	eax,al
+	imul	eax,KOEF_U2B		; 520*U
+	mov	[ValU_B],eax
+	mov	ebx,eax
+
+	mov	dh,[esi]		; 256*y11
+	add	eax,edx
+	test	eax,0FFFF0000h
+	jz	NormB11
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormB11:mov	[edi+2],ah		; B11
+
+	mov	eax,ebx
+	mov	dh,[esi+1]		; 256*y12
+	add	eax,edx
+	test	eax,0FFFF0000h
+	jz	NormB12
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormB12:mov	[edi+5],ah		; R12
+
+	movsx	eax,ch			; V
+	movsx	ecx,cl			; U
+	imul	eax,-KOEF_V2G
+	mov	dh,[esi]		; Y11
+	imul	ecx,-KOEF_U2G
+	add	eax,ecx
+	mov	ebx,eax
+;	mov	[ValUV_G],eax		; No need to store.
+
+	add	eax,edx
+	test	eax,0FFFF0000h
+	jz	NormG11
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormG11:mov	[edi+1],ah		; G11
+
+	mov	dh,[esi+1]		; Y11
+	mov	eax,ebx
+	add	eax,edx	
+	test	eax,0FFFF0000h
+	jz	NormG12
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormG12:mov	[edi+4],ah		; G12
+
+;---------------------------------------
+	mov	eax,[PixelCount]
+	sub	edi,[PixelCount3]
+	mov	cx, word ptr [esi+eax]
+
+	mov	eax,ebx			; ValUV_G
+	mov	dh,cl			; 256 * Y21
+	add	eax,edx			; 256*Y21
+
+	and	ecx,00000FF00h
+
+	test	eax,0FFFF0000h
+	jz	NormG21
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormG21:mov	[edi+1],ah		; G21
+
+	add	ebx,ecx			; 256*Y22 + ValUV_G
+	test	ebx,0FFFF0000h
+	jz	NormG22
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+NormG22:mov	[edi+4],bh		; G22
+
+	mov	eax,[ValV_R]
+	mov	ebx,eax
+	add	eax,edx			; 256*y21
+	test	eax,0FFFF0000h
+	jz	NormR21
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR21:mov	[edi],ah		; R21
+
+	add	ebx,ecx			; + 255*y22
+	test	ebx,0FFFF0000h
+	jz	NormR22
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+NormR22:mov	[edi+3],bh		; R22
+
+	mov	eax,[ValU_B]
+	mov	ebx,eax
+	add	eax,edx			; +256*y21
+
+	test	eax,0FFFF0000h
+	jz	NormB21
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormB21:mov	[edi+2],ah		; B21
+
+	add	ebx,ecx			; + 255*y22
+;	mov	eax,ebx
+;	sar	eax,24
+;	not	eax
+;	test	ebx,0FFFF0000h
+;	cmovnz	bx,ax
+;	mov	[edi+5],bh		; B22
+
+	test	ebx,0FFFF0000h
+	jz	NormB22
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+NormB22:mov	[edi+5],bh		; B22
+
+	add	esi,2
+	add	edi,[PixelCount3p6]
+
+	dec	[PelCount]
+	jnz	LoopPel		
+
+Exit:
+	ret
+PelYUV_RGB_Flip endp
+
+
         end

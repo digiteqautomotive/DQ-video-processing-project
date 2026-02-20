@@ -1,5 +1,5 @@
 ;***************************************************************************
-; Copyright: (c) 2021-2025 Jaroslav Fojtik                                 *
+; Copyright: (c) 2021-2026 Jaroslav Fojtik                                 *
 ;* This code could be redistributed under LGPL licency.
 ;***************************************************************************
 
@@ -8,6 +8,14 @@
 .MODEL FLAT, C    ;Use the flat memory model. Use C calling conventions
 
 .CODE             ;Indicates the start of a code segment.
+
+
+HasMMX	EQU	1
+HasSSE	EQU	2
+HasSSE2	EQU	4
+HasSSSE3 EQU	8
+HasSSE41 EQU	16
+HasSSE42 EQU	32
 
 
 ; https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eojdc/index.html
@@ -41,22 +49,22 @@ GetFeaturesCPU PROC \
 	
 	test	edx, 100000000000000000000000b
 	jz	NoMMX
-	or	esi,1
+	or	esi,HasMMX
 NoMMX:  test	edx, 10000000000000000000000000b
 	jz	NoSSE
-	or	esi,2
+	or	esi,HasSSE
 NoSSE:  test	edx, 100000000000000000000000000b
 	jz	NoSSE2
-	or	esi,4
+	or	esi,HasSSE2
 NoSSE2: test	ecx, 1000000000b
 	jz	NoSSSE3
-	or	esi,8
+	or	esi,HasSSSE3
 NoSSSE3:test	ecx, 10000000000000000000b
 	jz	NoSSE41
-	or	esi,16
+	or	esi,HasSSE41
 NoSSE41:test	ecx, 100000000000000000000b
 	jz	NoSSE42
-	or	esi,32
+	or	esi,HasSSE42
 NoSSE42:	
 exit:	mov	eax,esi
 	ret

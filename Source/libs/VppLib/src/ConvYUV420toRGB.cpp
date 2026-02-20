@@ -1,6 +1,6 @@
 /** @file
 
-MODULE:			YUV420toRGB24Converter
+MODULE:			ConvYUV420toRGB24
                         
 FILE NAME:		ConvYUV420toRGB24CReal.cpp
 
@@ -39,14 +39,14 @@ DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xa
 ==========================================================================*/
 
 
-bool YUV420toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvYUV420toRGB24::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return (VideoFormatOut==MEDIASUBTYPE_RGB24) &&
          (VideoFormatIn==MEDIASUBTYPE_YUV420P_S || VideoFormatIn==MEDIASUBTYPE_I420 || VideoFormatIn==MEDIASUBTYPE_YV12);
 }
 
 
-void YUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void ConvYUV420toRGB24::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
@@ -106,7 +106,7 @@ pRgb += 3*_width*(_height-1);
 } //end FlipConvert
 
 
-void YUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void ConvYUV420toRGB24::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned width3 = _width * 3;

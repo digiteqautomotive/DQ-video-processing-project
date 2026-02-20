@@ -20,6 +20,7 @@ GeneralUtils/MeasurementTable.cpp
 )
 
 SET(IU_SRCS
+../libs/VppLib/src/ConvRGBtoYUYV_FixP.cpp
 ../libs/VppLib/src/ConvRGB24toYUV420_FixP.cpp
 ../libs/VppLib/src/ConvRGB32toYUV420_FixP.cpp
 ../libs/VppLib/src/ConvYUVtoRGB.cpp
@@ -128,6 +129,7 @@ SET(IU_HEADERS
 ../libs/VppLib/include/ConvRGB24toYUV420RealImpl2Ver16.h
 ../libs/VppLib/include/ConvRGB32toYUV420.h
 ../libs/VppLib/include/ConvRGBtoYUV420.h
+../libs/VppLib/include/ConvRGBtoYUYV.h
 ../libs/VppLib/include/ConvYUV420toRGB.h
 ../libs/VppLib/include/ConvYUV420toRGB24CCIR601Real.h
 ../libs/VppLib/include/ConvYUV420toRGB24CCIR601RealVer16.h

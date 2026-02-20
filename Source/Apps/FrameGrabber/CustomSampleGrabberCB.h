@@ -137,7 +137,7 @@ public:
 //    }
 */
 
-    m_pYuvToRgbConverter = new YUV420toRGB24Converter();
+    m_pYuvToRgbConverter = new ConvYUV420toRGB24();
   }
 
 

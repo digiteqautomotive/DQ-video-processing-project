@@ -34,12 +34,11 @@ public:
 		// Construction and destruction.
 	RealYUV420toRGB24CCIR601Converter(void) { }
 	RealYUV420toRGB24CCIR601Converter(int width, int height): YUV420toRGBConverter(width,height) { }
-	virtual ~RealYUV420toRGB24CCIR601Converter(void) {}
 
 		// Interface.
 protected:
-	virtual void NonRotateConvert(void* pY, void* pU, void* pV, void* pRgb);
-	virtual void RotateConvert(void* pY, void* pU, void* pV, void* pRgb);
+	virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+	virtual void RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
 
 }; //end RealYUV420toRGB24CCIR601Converter.
 

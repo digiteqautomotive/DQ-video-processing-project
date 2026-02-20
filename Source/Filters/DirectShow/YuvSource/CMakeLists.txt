@@ -21,6 +21,7 @@ YuvSource.h
 SET(FLT_SRCS 
 DLLSetup.cpp
 YuvOutputPin.cpp
+YuvProperties.cpp
 YuvSource.cpp
 YuvSource.def
 YuvSource.rc

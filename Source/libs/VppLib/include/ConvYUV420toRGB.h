@@ -41,12 +41,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 * colour convertion derived from the YUV420toRGBConverter base 
 * class. */
-class YUV420toRGB24Converter: public YUV420toRGBConverter
+class ConvYUV420toRGB24: public YUV420toRGBConverter
 {
 public:
   // Construction and destruction.
-  YUV420toRGB24Converter(void) { }
-  YUV420toRGB24Converter(int width, int height): YUV420toRGBConverter(width,height) {}
+  ConvYUV420toRGB24(void) { }
+  ConvYUV420toRGB24(int width, int height): YUV420toRGBConverter(width,height) {}
 
 	// Interface.
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
@@ -54,7 +54,7 @@ public:
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
   virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-}; //end YUV420toRGB24Converter.
+}; //end ConvYUV420toRGB24.
 
 
 /** \ingroup ImageLib
@@ -74,7 +74,7 @@ public:
 protected:
   virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
   virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-}; //end YUV420toRGB24Converter.
+}; //end ConvYUV420toRGB24.
 
 
 #endif	// _REALYUV420TORGB24CONVERTER_H

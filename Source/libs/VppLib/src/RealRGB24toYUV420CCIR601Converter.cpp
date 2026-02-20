@@ -57,7 +57,7 @@ and the UV (CbCr) range is 16..240 centred on 128.
 @param pV		: Chr V plane.
 @return			: none.
 */
-void RealRGB24toYUV420CCIR601Converter::Convert(void* pRgb, void* pY, void* pU, void* pV)
+void RealRGB24toYUV420CCIR601Converter::Convert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const
 {
   if (_flip)
     FlipConvert(pRgb, pY, pU, pV);
@@ -65,25 +65,25 @@ void RealRGB24toYUV420CCIR601Converter::Convert(void* pRgb, void* pY, void* pU, 
     NonFlipConvert(pRgb, pY, pU, pV);
 }
 
-void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void* pU, void* pV )
+void RealRGB24toYUV420CCIR601Converter::FlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const
 {
-	yuvType*	py = (yuvType *)pY;
-	yuvType*	pu = (yuvType *)pU;
-	yuvType*	pv = (yuvType *)pV;
-	unsigned char* src = (unsigned char *)pRgb;
+  unsigned char* py = (unsigned char*)pY;
+  unsigned char* pu = (unsigned char*)pU;
+  unsigned char* pv = (unsigned char*)pV;
+  unsigned char* src = (unsigned char *)pRgb;
 
 	// Y1 & Y2 have range 16..235, U & V have range 16..240.
-	double	u,v;
-	double	r,g,b;
+  double	u,v;
+  double	r,g,b;
 
 	// Step in 2x2 pel blocks. (4 pels per block).
-	int xBlks = _width >> 1;
-	int yBlks = _height >> 1;
-	for(int yb = 0; yb < yBlks; yb++)
-   for(int xb = 0; xb < xBlks; xb++)
-	{
-    int							chrOff	= yb*xBlks + xb;
-    int							lumOff	= (yb*_width + xb) << 1;
+  int xBlks = _width >> 1;
+  int yBlks = _height >> 1;
+  for(int yb = 0; yb < yBlks; yb++)
+    for(int xb = 0; xb < xBlks; xb++)
+    {
+      int	chrOff	= yb*xBlks + xb;
+      int	lumOff	= (yb*_width + xb) << 1;
     //unsigned char*	t				= src + lumOff*3;
     unsigned char*	t				= src + ((((_height - (yb * 2) - 1) * _width) + (xb * 2)) * 3);
 
@@ -91,7 +91,7 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		b = (double)(*t++);
 		g = (double)(*t++);
 		r = (double)(*t++);
-		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+		py[lumOff] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
 		u = 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
 		v = 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
@@ -100,7 +100,7 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		b = (double)(*t++);
 		g = (double)(*t++);
 		r = (double)(*t++);
-		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+		py[lumOff+1] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
 		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
 		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
@@ -112,7 +112,7 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		b = (double)(*t++);
 		g = (double)(*t++);
 		r = (double)(*t++);
-		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+		py[lumOff] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
 		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
 		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
@@ -121,80 +121,81 @@ void RealRGB24toYUV420CCIR601Converter::FlipConvert( void* pRgb, void* pY, void*
 		b = (double)(*t++);
 		g = (double)(*t++);
 		r = (double)(*t++);
-		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+		py[lumOff+1] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
 		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
 		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Average the 4 chr values.
-		pu[chrOff] = (yuvType)( (int)(u + 0.5)/4 );
-		pv[chrOff] = (yuvType)( (int)(v + 0.5)/4 );
+		pu[chrOff] = (unsigned char)( (int)(u + 0.5)/4 );
+		pv[chrOff] = (unsigned char)( (int)(v + 0.5)/4 );
  	}//end for xb & yb...
 
 }//end Convert.
 
-void RealRGB24toYUV420CCIR601Converter::NonFlipConvert( void* pRgb, void* pY, void* pU, void* pV )
+
+void RealRGB24toYUV420CCIR601Converter::NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const
 {
-	yuvType*	py = (yuvType *)pY;
-	yuvType*	pu = (yuvType *)pU;
-	yuvType*	pv = (yuvType *)pV;
-	unsigned char* src = (unsigned char *)pRgb;
+  unsigned char*	py = (unsigned char*)pY;
+  unsigned char*	pu = (unsigned char*)pU;
+  unsigned char*	pv = (unsigned char*)pV;
+  unsigned char* src = (unsigned char *)pRgb;
 
 	// Y1 & Y2 have range 16..235, U & V have range 16..240.
-	double	u,v;
-	double	r,g,b;
+  double	u,v;
+  double	r,g,b;
 
 	// Step in 2x2 pel blocks. (4 pels per block).
-	int xBlks = _width >> 1;
-	int yBlks = _height >> 1;
-	for(int yb = 0; yb < yBlks; yb++)
-   for(int xb = 0; xb < xBlks; xb++)
-	{
-    int							chrOff	= yb*xBlks + xb;
-    int							lumOff	= (yb*_width + xb) << 1;
-    unsigned char*	t				= src + lumOff*3;
+  int xBlks = _width >> 1;
+  int yBlks = _height >> 1;
+  for(int yb = 0; yb < yBlks; yb++)
+    for(int xb = 0; xb < xBlks; xb++)
+    {
+      int							chrOff	= yb*xBlks + xb;
+      int							lumOff	= (yb*_width + xb) << 1;
+      unsigned char*	t				= src + lumOff*3;
 
 		// Top left pel.
-		b = (double)(*t++);
-		g = (double)(*t++);
-		r = (double)(*t++);
-		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+      b = (double)(*t++);
+      g = (double)(*t++);
+      r = (double)(*t++);
+      py[lumOff] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u = 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v = 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+      u = 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+      v = 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Top right pel.
-		b = (double)(*t++);
-		g = (double)(*t++);
-		r = (double)(*t++);
-		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+      b = (double)(*t++);
+      g = (double)(*t++);
+      r = (double)(*t++);
+      py[lumOff+1] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+      u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+      v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
-    lumOff += _width;
-    t = t + _width*3 - 6;
+      lumOff += _width;
+      t = t + _width*3 - 6;
 		// Bottom left pel..
-		b = (double)(*t++);
-		g = (double)(*t++);
-		r = (double)(*t++);
-		py[lumOff] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+      b = (double)(*t++);
+      g = (double)(*t++);
+      r = (double)(*t++);
+      py[lumOff] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+      u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+      v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Bottom right pel.
-		b = (double)(*t++);
-		g = (double)(*t++);
-		r = (double)(*t++);
-		py[lumOff+1] = 16 + (yuvType)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
+      b = (double)(*t++);
+      g = (double)(*t++);
+      r = (double)(*t++);
+      py[lumOff+1] = 16 + (unsigned char)(0.5 + RRGB24YUVCC_00*r + RRGB24YUVCC_01*g + RRGB24YUVCC_02*b);
 
-		u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
-		v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
+      u += 128 + RRGB24YUVCC_10*r + RRGB24YUVCC_11*g + RRGB24YUVCC_12*b;
+      v += 128 + RRGB24YUVCC_20*r + RRGB24YUVCC_21*g + RRGB24YUVCC_22*b;
 
 		// Average the 4 chr values.
-		pu[chrOff] = (yuvType)( (int)(u + 0.5)/4 );
-		pv[chrOff] = (yuvType)( (int)(v + 0.5)/4 );
- 	}//end for xb & yb...
+      pu[chrOff] = (unsigned char)( (int)(u + 0.5)/4 );
+      pv[chrOff] = (unsigned char)( (int)(v + 0.5)/4 );
+  }//end for xb & yb...
 
 }//end Convert.
