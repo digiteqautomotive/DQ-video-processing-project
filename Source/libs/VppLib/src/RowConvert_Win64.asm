@@ -158,8 +158,7 @@ ConvertRowAsmAYUV_ARGB32 endp
 
 
 ;void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public YUV_RGB
-	
+	public YUV_RGB	
 IF (@Version LT 1200) OR (@Version GE 1300)
 YUV_RGB proc \
         uses rdi rsi rbx,
@@ -279,6 +278,190 @@ NormG2:	mov	[rdi+4],dh	; G2
 Exit:	
 	ret
 YUV_RGB endp
+
+
+;void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB
+IF (@Version LT 1200) OR (@Version GE 1300)
+PelYUV_RGB proc \
+        uses rdi rsi rbx R12 R13 R14,
+        OutData: ptr BYTE,
+        y: ptr BYTE,
+        u: ptr BYTE,		; R8
+	v: ptr BYTE,		; R9
+	PixelCount: DWORD	; on stack
+ELSE
+; The ASM from MSVC2013 seems to be much more worse than previous one. Use blind arguments.
+PelYUV_RGB proc \
+        uses rdi rsi rbx R12 R13 R14
+ENDIF
+	mov	rdi,rcx		; [OutData]
+	mov	rsi,rdx		; [y]
+IF (@Version LT 1200) OR (@Version GE 1300)
+	mov	R12d,PixelCount
+ELSE
+	mov	R12d,[rsp+28h+6*8]	;28h stays for 5th arg; rdi,rsi,rbx are now on the stack, i.e. 3*8
+ENDIF
+	mov	R13,R12
+
+	shr	R12,1
+	or	R12,R12
+	jz	Exit
+
+	xor	edx,edx
+LoopPel:mov	al,[R9]
+	inc	R9
+	sub	al,128
+	mov	ch,al			; V
+	movsx	eax,al
+	imul	eax,KOEF_V2R		; 292*V	
+	mov	R11d,eax		; ValV_R
+
+	mov	dh,[rsi]		; 255*y11
+	mov	R14d,edx
+	add	eax,edx
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi],ah		; R11
+
+	mov	eax,R11d
+	mov	dh,[rsi+1]		; 256*y12
+	add	eax,edx
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+3],ah		; R12
+
+	mov	al,[R8]			; u
+	inc	R8
+	sub	al,128
+	mov	cl,al			; U
+	movsx	eax,al
+	imul	eax,KOEF_U2B		; 520*U
+	mov	R10d,eax		; ValU_B
+
+	add	eax,R14d		; 256*y11
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+2],ah		; B11
+
+	mov	eax,R10d
+	add	eax,edx			; edx = 256*y12
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+5],ah		; R12
+
+	movsx	eax,ch			; V
+	movsx	ecx,cl			; U
+	imul	eax,-KOEF_V2G
+	imul	ecx,-KOEF_U2G
+	add	eax,ecx
+	mov	ebx,eax			; -KOEF_U2G -KOEF_V2G
+;	mov	[ValUV_G],eax		; No need to store.
+
+	add	eax,R14d		; Y11
+	mov	R14d,ebx		; R14d now contains -KOEF_U2G -KOEF_V2G
+
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+1],ah		; G11
+
+	mov	eax,R14d
+	add	eax,edx			; 256*Y12
+
+	mov	rbx,rax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+4],ah		; G12
+
+;---------------------------------------
+	add	rdi,R13
+	mov	cx, word ptr [rsi+R13]
+	add	rdi,R13
+	add	rdi,R13
+
+	mov	eax,R14d		; ValUV_G
+	mov	dh,cl			; 256 * Y21
+	add	eax,edx			; 256*Y21
+	mov	ebx,eax
+
+	and	ecx,00000FF00h
+
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+1],ah		; G21
+
+	add	R14d,ecx		; 256*Y22 + ValUV_G
+	mov	eax,R14d
+	sar	R14d,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	R14d
+	test	eax,0FFFF0000h
+	cmovnz	ax,R14w
+	mov	[rdi+4],ah		; G22
+
+	mov	eax,R11d		;[ValV_R]
+	add	eax,edx			; 256*y21
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi],ah		; R21
+
+	add	R11d,ecx		; + 255*y22
+	mov	eax,R11d
+	sar	R11d,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	R11d
+	test	eax,0FFFF0000h
+	cmovnz	ax,R11w
+	mov	[rdi+3],ah		; R22
+
+	mov	eax,R10d		;[ValU_B]
+	add	eax,edx			; +256*y21
+	mov	ebx,eax
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+	test	eax,0FFFF0000h
+	cmovnz	ax,bx
+	mov	[rdi+2],ah		; B21
+
+	add	R10d,ecx		; + 255*y22
+	mov	eax,R10d
+	sar	R10d,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	R10d
+	test	eax,0FFFF0000h
+	cmovnz	ax,R10w	
+	mov	[rdi+5],ah		; B22
+
+	sub	rdi,R13
+	sub	rdi,R13
+	add	rsi,2
+	sub	rdi,R13
+	add	rdi,6
+
+	dec	R12
+	jnz	LoopPel
+Exit:
+	ret
+PelYUV_RGB endp
 
 
 

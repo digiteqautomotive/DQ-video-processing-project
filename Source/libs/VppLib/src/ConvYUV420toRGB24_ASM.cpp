@@ -34,7 +34,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <uuids.h>
 
 
-extern "C" void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+extern "C"
+{
+ void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+}
 
 DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
@@ -82,18 +86,13 @@ void ConvYUV420toRGB24_ASM::NonRotateConvert(const void* pY, const void* pU, con
 const unsigned char *y = (const unsigned char *)pY;
 const unsigned char *u = (const unsigned char *)pU;
 const unsigned char *v = (const unsigned char *)pV;
-int row = _height / 2;
+int row = _height / 2;  
 
   while(row-- > 0)
   {
-    YUV_RGB(pRgb, y, u, v, _width);
-    y += _width;
-    pRgb += 3*_width;
-
-    YUV_RGB(pRgb, y, u, v, _width);
-    y += _width;
-    pRgb += 3*_width;
-
+    PelYUV_RGB(pRgb,  y,  u, v, _width);
+    y += 2*_width;
+    pRgb += 6*_width;
     u += _width/2;
     v += _width/2;
   }

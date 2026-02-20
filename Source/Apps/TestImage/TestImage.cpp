@@ -231,6 +231,55 @@ int I420compare(const char *Alg, int Width, int Height, const unsigned char *Blo
 }
 
 
+int RGBcompareFlip(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{  
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x++)
+    {
+      unsigned pos = 16 + 3*(x + Width*y);
+      unsigned posR = 16 + 3*(x + Width*(Height-y-1));
+      if(BlobOut[pos]!=BlobTest[posR] || BlobOut[pos+1]!=BlobTest[posR+1] || BlobOut[pos+2]!=BlobTest[posR+2])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[posR])>1 || labs(BlobOut[pos+1]-BlobTest[posR+1])>1 || labs(BlobOut[pos+2]-BlobTest[posR+2])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[posR], BlobOut[pos+1],BlobTest[posR+1], BlobOut[pos+2],BlobTest[posR+2]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
+int RGBcompare(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{
+  int pos = memcmp(BlobTest, BlobOut, Width*Height*3+32);
+  if(pos==0) return 0;
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x++)
+    {
+      pos = 16 + 3*(x + Width*y);
+      if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
 int main(int argc, char *argv[])
 {
 PicScalerRGB32Impl picScalerRGB32;
@@ -772,47 +821,14 @@ bool Pause = false;
 
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
      OrigPicConvertedAYUVtoRGB24.Convert(BlobIn+16, BlobTest+16);
-     int pos = memcmp(BlobTest, BlobOut, Width*Height*3+32);
-     if(pos)
-     {       
-       int diffs1 = 0;
-       for(int x=0; x<Width; x++)
-         for(int y=0; y<Height; y++)
-         {
-           pos = 16 + 3*(x + Width*y);
-           if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2])
-		diffs1++;
-	   if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
-           {
-             printf("\nAYUV444toRGB x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
-             goto ReturnErr;
-           }
-         }
-#ifdef _DEBUG
-       printf("\nAYUV to RGB24 %ux%u: 1_diffs=%d.", Width, Height, pos);
-#endif
-       //goto ReturnErr;
-     }
+
+     int pos = RGBcompare("AYUV444toRGB", Width,Height, BlobOut, BlobTest);
+     if(pos >= 10000) goto ReturnErr;
 
      picConvertedAYUV2RGB24.SetFlip(true);
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
 
-     {       
-       int diffs1 = 0;
-       for(int y=0; y<Height; y++)
-         for(int x=0; x<Width; x++)
-         {
-           pos = 16 + 3*(x + Width*y);
-	   int posR = 16 + 3*(x + Width*(Height-y-1));
-           if(BlobOut[pos]!=BlobTest[posR] || BlobOut[pos+1]!=BlobTest[posR+1] || BlobOut[pos+2]!=BlobTest[posR+2])
-		diffs1++;
-	   if(labs(BlobOut[pos]-BlobTest[posR])>1 || labs(BlobOut[pos+1]-BlobTest[posR+1])>1 || labs(BlobOut[pos+2]-BlobTest[posR+2])>1)
-           {
-             printf("\nAYUV444toRGB flip %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[posR], BlobOut[pos+1],BlobTest[posR+1], BlobOut[pos+2],BlobTest[posR+2]);
-             goto ReturnErr;
-           }
-         }     
-     }
+     pos = RGBcompareFlip("AYUV444toRGB Flip", Width,Height, BlobOut, BlobTest);
 
      AYUV444toARGB32Converter picConvertedAYUV2ARGB32(Width,Height);
 
@@ -879,73 +895,30 @@ bool Pause = false;
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
      OrigPicConvertedAYUV2RGB24.Convert(BlobIn+16, BlobTest+16);
 
-     int pos = memcmp(BlobTest, BlobOut, Width*Height*3+32);
-     if(pos)   
-     {       
-       int diffs1 = 0;
-       for(int x=0; x<Width; x++)
-         for(int y=0; y<Height; y++)
-         {
-           pos = 16 + 3*(x + Width*y);
-           if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2])
-		diffs1++;
-	   if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
-           {
-             printf("\nYUV420toRGB24 %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
-             goto ReturnErr;
-           }
-         }
-#ifdef _DEBUG
-       printf("\nYUV420 to RGB24 %ux%u: 1_diffs=%d.", Width, Height, pos);
-#endif
-       //goto ReturnErr;
-     }
+     int pos = RGBcompare("YUV420toRGB24", Width,Height, BlobTest, BlobOut);
+     if(pos >= 10000) goto ReturnErr;
 
 #ifdef USE_ASM
     asmConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
 
-    pos = memcmp(BlobTest, BlobOut, Width*Height*3+32);
-     if(pos)   
-     {       
-       int diffs1 = 0;
-       for(int x=0; x<Width; x++)
-         for(int y=0; y<Height; y++)
-         {
-           pos = 16 + 3*(x + Width*y);
-           if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2])
-		diffs1++;
-	   if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
-           {
-             printf("\nYUV420toRGB24_ASM %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
-             goto ReturnErr;
-           }
-         }
-#ifdef _DEBUG
-       printf("\nYUV420 to RGB24 %ux%u: 1_diffs=%d.", Width, Height, pos);
-#endif
-       //goto ReturnErr;
-     }
+    pos = RGBcompare("YUV420toRGB24_ASM", Width,Height, BlobTest, BlobOut);
+    if(pos >= 10000) goto ReturnErr;
 #endif
 
      picConvertedAYUV2RGB24.SetFlip(true);
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
 
-     {       
-       int diffs1 = 0;
-       for(int y=0; y<Height; y++)
-         for(int x=0; x<Width; x++)
-         {
-           pos = 16 + 3*(x + Width*y);
-	   int posR = 16 + 3*(x + Width*(Height-y-1));
-           if(BlobOut[pos]!=BlobTest[posR] || BlobOut[pos+1]!=BlobTest[posR+1] || BlobOut[pos+2]!=BlobTest[posR+2])
-		diffs1++;
-	   if(labs(BlobOut[pos]-BlobTest[posR])>1 || labs(BlobOut[pos+1]-BlobTest[posR+1])>1 || labs(BlobOut[pos+2]-BlobTest[posR+2])>1)
-           {
-             printf("\nYUV420toRGB flip %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Width,Height, x,y, BlobOut[pos],BlobTest[posR], BlobOut[pos+1],BlobTest[posR+1], BlobOut[pos+2],BlobTest[posR+2]);
-             goto ReturnErr;
-           }
-         }     
-     }
+     pos = RGBcompareFlip("YUV420toRGB24 Flip", Width,Height, BlobTest, BlobOut);
+     if(pos >= 10000) goto ReturnErr;
+
+#ifdef USE_ASM
+    asmConvertedAYUV2RGB24.SetFlip(true);
+    asmConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
+
+    pos = RGBcompareFlip("YUV420toRGB24_ASM Flip", Width,Height, BlobTest, BlobOut);
+    if(pos >= 10000) goto ReturnErr;
+#endif
+
    }
 
 //-----------------------------------RGB to YUV420-------------------------------------------
