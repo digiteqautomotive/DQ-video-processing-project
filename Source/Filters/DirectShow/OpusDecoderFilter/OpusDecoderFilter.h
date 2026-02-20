@@ -35,7 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectShow/CustomBaseFilter.h>
 #include <DirectShow/CustomMediaTypes.h>
 #include <DirectShow/NotifyCodes.h>
-#include <Filters/DirectShow/FilterParameters.h>
 
 // Forward
 class ICodecv2;

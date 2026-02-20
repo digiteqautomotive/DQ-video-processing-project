@@ -65,6 +65,7 @@ IF (MMX_SSE_ACCELERATORS)
       ../libs/VppLib/src/PicScalerARGB32MMX.cpp
       ../libs/VppLib/src/PicScalerARGB32SSE.cpp
       ../libs/VppLib/src/ConvAYUV444toRGB24_ASM.cpp
+      ../libs/VppLib/src/ConvYUV420toRGB24_ASM.cpp
   )
   if ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
     SET(IU_SRCS ${IU_SRCS}

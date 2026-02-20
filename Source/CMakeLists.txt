@@ -50,7 +50,7 @@ SET(GLOG_SUPPORT false CACHE BOOL "Enable/Disable Google log")
 # MMX and SSE accelerators
 SET(MMX_SSE_ACCELERATORS true CACHE BOOL "Enable MMX and SSE accelerators in assembly")
 IF (MMX_SSE_ACCELERATORS)
-  add_compile_definitions(USE_MMX USE_SSE)
+  add_compile_definitions(USE_ASM USE_MMX USE_SSE)
 ENDIF(MMX_SSE_ACCELERATORS)
 
 
