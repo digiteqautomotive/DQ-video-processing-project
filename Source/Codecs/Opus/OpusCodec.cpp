@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include <string.h>
 #include <stdlib.h>
@@ -126,7 +124,7 @@ int OpusCodec::SetParameter(const char* type, const char* value)
 	return(1);
 }
 
-int	OpusCodec::Code(void* pSrc, void* pCmp, int codeParameter)
+int OpusCodec::Code(const void *pSrc, void* pCmp, int codeParameter)
 {
 	if(!m_pOpusEncoder)
 	{
@@ -173,7 +171,7 @@ int	OpusCodec::Code(void* pSrc, void* pCmp, int codeParameter)
   return 1;
 }
 
-int	OpusCodec::Decode(void *src, int bitLength, void *dst)
+int OpusCodec::Decode(const void *src, int bitLength, void *dst)
 {
   if (!m_pOpusDecoder)
 	{

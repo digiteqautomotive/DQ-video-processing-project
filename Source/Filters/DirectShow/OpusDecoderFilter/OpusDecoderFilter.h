@@ -107,6 +107,8 @@ public:
 	STDMETHODIMP SetParameter( const char* type, const char* value);
 	STDMETHODIMP GetParameterSettings( char* szResult, int nSize );
 
+	STDMETHODIMP GetClassID(CLSID* pClassID);
+
 	/// Overridden from CCustomBaseFilter
 	virtual void InitialiseInputTypes();
 
@@ -115,7 +117,7 @@ private:
    * This method has to be overridden from CCustomBaseFilter.
    * It is not used in this class!
 	 */
-	virtual HRESULT ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
+	virtual HRESULT ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength);
 
 	ICodecv2* m_pCodec;
 };

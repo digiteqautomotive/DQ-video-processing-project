@@ -495,7 +495,7 @@ const std::string UtilityFilter::getString( double dAverageFramerate )
 }
 
 
-STDMETHODIMP UtilityFilter::SetParameter( const char* type, const char* value )
+STDMETHODIMP UtilityFilter::SetParameter(const char* type, const char* value)
 {
   if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {

@@ -5,11 +5,11 @@
 INCLUDE_DIRECTORIES(
 ${vppIncludes}
 ${vppCodecIncludes}
-$ENV{OPUS_ROOT}/include
-$ENV{OPUS_ROOT}/celt
-$ENV{OPUS_ROOT}/silk
-$ENV{OPUS_ROOT}/silk/fixed
-$ENV{OPUS_ROOT}/silk/float
+${OPUS_DIRECRORY}/include
+${OPUS_DIRECRORY}/celt
+${OPUS_DIRECRORY}/silk
+${OPUS_DIRECRORY}/silk/fixed
+${OPUS_DIRECRORY}/silk/float
 )
 
 # Lib directories

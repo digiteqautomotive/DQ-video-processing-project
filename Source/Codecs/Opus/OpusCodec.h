@@ -63,8 +63,8 @@ public:
    * @brief 
    * @param codeParameter Size of in-buffer pSrc in bytes
    */
-	int		Code(void* pSrc, void* pCmp, int codeParameter);
-	int		Decode(void* pCmp, int bitLength, void* pDst);
+	int		Code(const void* pSrc, void* pCmp, int codeParameter);
+	int		Decode(const void* pCmp, int bitLength, void* pDst);
 
 private:
 

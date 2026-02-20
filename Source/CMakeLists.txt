@@ -43,6 +43,9 @@ SET(BUILD_RTSP_SINK_FILTER true CACHE BOOL "Build RTSP sink filter")
 
 # Opus
 SET(OPUS_SUPPORT true CACHE BOOL "Enable/Disable Opus")
+IF (OPUS_SUPPORT)
+  FIND_PATH(OPUS_DIRECRORY include/opus.h HINTS $ENV{OPUS_ROOT})
+ENDIF (OPUS_SUPPORT)
 
 # Glog
 SET(GLOG_SUPPORT false CACHE BOOL "Enable/Disable Google log")
@@ -69,22 +72,22 @@ set_target_properties( SimpleRateAdaptation PROPERTIES IMPORTED_LOCATION_RELEASE
 ENDIF(BUILD_RTSP_SINK_FILTER)
 
 IF (OPUS_SUPPORT)
-message("Opus: $ENV{OPUS_ROOT}")
+message("Opus: ${OPUS_DIRECTORY}")
 add_library( opus UNKNOWN IMPORTED )
 add_library( celt UNKNOWN IMPORTED )
 add_library( silk_common UNKNOWN IMPORTED )
 add_library( silk_fixed UNKNOWN IMPORTED )
 add_library( silk_float UNKNOWN IMPORTED )
-set_target_properties( opus PROPERTIES IMPORTED_LOCATION_DEBUG $ENV{OPUS_ROOT}/lib/Debug/opus.lib )
-set_target_properties( opus PROPERTIES IMPORTED_LOCATION_RELEASE $ENV{OPUS_ROOT}/lib/Release/opus.lib )
-set_target_properties( celt PROPERTIES IMPORTED_LOCATION_DEBUG $ENV{OPUS_ROOT}/lib/Debug/celt.lib )
-set_target_properties( celt PROPERTIES IMPORTED_LOCATION_RELEASE $ENV{OPUS_ROOT}/lib/Release/celt.lib )
-set_target_properties( silk_common PROPERTIES IMPORTED_LOCATION_DEBUG $ENV{OPUS_ROOT}/lib/Debug/silk_common.lib )
-set_target_properties( silk_common PROPERTIES IMPORTED_LOCATION_RELEASE $ENV{OPUS_ROOT}/lib/Release/silk_common.lib )
-set_target_properties( silk_fixed PROPERTIES IMPORTED_LOCATION_DEBUG $ENV{OPUS_ROOT}/lib/Debug/silk_fixed.lib )
-set_target_properties( silk_fixed PROPERTIES IMPORTED_LOCATION_RELEASE $ENV{OPUS_ROOT}/lib/Release/silk_fixed.lib )
-set_target_properties( silk_float PROPERTIES IMPORTED_LOCATION_DEBUG $ENV{OPUS_ROOT}/lib/Debug/silk_float.lib )
-set_target_properties( silk_float PROPERTIES IMPORTED_LOCATION_RELEASE $ENV{OPUS_ROOT}/lib/Release/silk_float.lib )
+set_target_properties( opus PROPERTIES IMPORTED_LOCATION_DEBUG ${OPUS_DIRECTORY}/lib/Debug/opus.lib )
+set_target_properties( opus PROPERTIES IMPORTED_LOCATION_RELEASE ${OPUS_DIRECTORY}/lib/Release/opus.lib )
+set_target_properties( celt PROPERTIES IMPORTED_LOCATION_DEBUG ${OPUS_DIRECTORY}/lib/Debug/celt.lib )
+set_target_properties( celt PROPERTIES IMPORTED_LOCATION_RELEASE ${OPUS_DIRECTORY}/lib/Release/celt.lib )
+set_target_properties( silk_common PROPERTIES IMPORTED_LOCATION_DEBUG ${OPUS_DIRECTORY}/lib/Debug/silk_common.lib )
+set_target_properties( silk_common PROPERTIES IMPORTED_LOCATION_RELEASE ${OPUS_DIRECTORY}/lib/Release/silk_common.lib )
+set_target_properties( silk_fixed PROPERTIES IMPORTED_LOCATION_DEBUG ${OPUS_DIRECTORY}/lib/Debug/silk_fixed.lib )
+set_target_properties( silk_fixed PROPERTIES IMPORTED_LOCATION_RELEASE ${OPUS_DIRECTORY}/lib/Release/silk_fixed.lib )
+set_target_properties( silk_float PROPERTIES IMPORTED_LOCATION_DEBUG ${OPUS_DIRECTORY}/lib/Debug/silk_float.lib )
+set_target_properties( silk_float PROPERTIES IMPORTED_LOCATION_RELEASE ${OPUS_DIRECTORY}/lib/Release/silk_float.lib )
 ENDIF(OPUS_SUPPORT)
 
 #define 3rd party libs under windows

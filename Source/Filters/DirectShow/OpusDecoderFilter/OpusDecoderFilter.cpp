@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,13 +28,11 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "OpusDecoderFilter.h"
 #include <Codecs/CodecUtils/ICodecv2.h>
 #include <Codecs/Opus/OpusFactory.h>
-#include <Shared/Conversion.h>
+
 
 OpusDecoderFilter::OpusDecoderFilter()
 	: CCustomBaseFilter(NAME("DQ VPP Opus Decoder"), 0, CLSID_VPP_OpusDecoder), m_pCodec(NULL)
@@ -92,9 +90,9 @@ HRESULT OpusDecoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
 			return E_FAIL;
 
     WAVEFORMATEX *pWfx = (WAVEFORMATEX*)pmt->pbFormat;
-    m_pCodec->SetParameter("samples_per_second", toString(pWfx->nSamplesPerSec).c_str());
-    m_pCodec->SetParameter("channels", toString(pWfx->nChannels).c_str());
-    m_pCodec->SetParameter("bits_per_sample", toString(pWfx->wBitsPerSample).c_str());
+    m_pCodec->SetParameter("samples_per_second", std::to_string(pWfx->nSamplesPerSec).c_str());
+    m_pCodec->SetParameter("channels", std::to_string(pWfx->nChannels).c_str());
+    m_pCodec->SetParameter("bits_per_sample", std::to_string(pWfx->wBitsPerSample).c_str());
 
 		if (!m_pCodec->Open())
 		{
@@ -166,7 +164,7 @@ HRESULT OpusDecoderFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
   pProp->cbBuffer = pWfx->nSamplesPerSec * pWfx->wBitsPerSample * pWfx->nChannels / 8;
 
   // update max compressed size of codec
-  m_pCodec->SetParameter("max_compr_size", toString(pProp->cbBuffer).c_str());
+  m_pCodec->SetParameter("max_compr_size", std::to_string(pProp->cbBuffer).c_str());
 
 	pProp->cBuffers		= 5;
   pProp->cbAlign = pWfx->nBlockAlign;
@@ -190,7 +188,7 @@ HRESULT OpusDecoderFilter::DecideBufferSize( IMemAllocator *pAlloc, ALLOCATOR_PR
 	return S_OK;
 }
 
-HRESULT OpusDecoderFilter::ApplyTransform(BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT OpusDecoderFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
 #if 0
   //  we are overriding Receive to control outgoing samples.
@@ -392,4 +390,17 @@ STDMETHODIMP OpusDecoderFilter::GetParameterSettings( char* szResult, int nSize 
 		return E_FAIL;
 	}
 }
+
+
+//----------------- IPersistPropertyBag------------------
+
+
+HRESULT OpusDecoderFilter::GetClassID(CLSID* pClassID)
+{
+  if(pClassID == NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_OpusDecoder;
+  return S_OK;
+}
+
+
 
