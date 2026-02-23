@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_FixP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUYV_FixP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB32toYUV420_FixP.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvUYVYtoRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUV420toRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUV420toRGB24_ASM.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

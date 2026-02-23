@@ -17,6 +17,7 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 #include "ConvYUV420toRGB.h"
 #include "ConvYUYVtoRGB.h"
 #include "ConvYVYUtoRGB.h"
+#include "ConvUYVYtoRGB.h" 
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
 #endif
@@ -30,6 +31,7 @@ Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
 DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 const OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
 
@@ -84,6 +86,9 @@ void YUVtoRGBFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
  
 	/////////////////////////////////////////////////
 /*
@@ -154,6 +159,8 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
           m_pConverter = new YUYVtoARGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YVYU)
           m_pConverter = new YVYUtoARGB32Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_UYVY || in_MediaType==MEDIASUBTYPE_HDYC)
+          m_pConverter = new UYVYtoARGB32Converter(m_nInWidth, m_nInHeight);
     }
     if(out_MediaType == MEDIASUBTYPE_RGB24)
     {
@@ -173,6 +180,8 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
           m_pConverter = new YUYVtoRGB24Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YVYU)
           m_pConverter = new YVYUtoRGB24Converter(m_nInWidth, m_nInHeight);
+      if(in_MediaType==MEDIASUBTYPE_UYVY || in_MediaType==MEDIASUBTYPE_HDYC)
+          m_pConverter = new UYVYtoRGB24Converter(m_nInWidth, m_nInHeight);
     }
 
     if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
@@ -403,6 +412,8 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YVYU)
         TransformOK = true;
+    if(mtIn->subtype==MEDIASUBTYPE_UYVY || mtIn->subtype==MEDIASUBTYPE_HDYC)
+        TransformOK = true;
   }
   else if(mtOut->subtype == MEDIASUBTYPE_RGB24)
   {
@@ -415,6 +426,8 @@ HRESULT YUVtoRGBFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
     if(mtIn->subtype==MEDIASUBTYPE_YUYV || mtIn->subtype==MEDIASUBTYPE_YUY2)
         TransformOK = true;
     if(mtIn->subtype==MEDIASUBTYPE_YVYU)
+        TransformOK = true;
+    if(mtIn->subtype==MEDIASUBTYPE_UYVY || mtIn->subtype==MEDIASUBTYPE_HDYC)
         TransformOK = true;
   }
 
