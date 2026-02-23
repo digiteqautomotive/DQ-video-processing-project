@@ -29,10 +29,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 // Meraka includes
-#include <DirectShow/CodecControlInterface.h>
-#include <DirectShow/CustomBaseFilter.h>
-#include <DirectShow/CustomMediaTypes.h>
-#include <DirectShow/NotifyCodes.h>
+#include "DirectShow/CodecControlInterface.h"
+#include "DirectShow/CStatusInterface.h"
+#include "DirectShow/CustomBaseFilter.h"
+#include "DirectShow/CustomMediaTypes.h"
+#include "DirectShow/NotifyCodes.h"
 #include "Filters/DirectShow/FilterParameterStringConstants.h"
 #include "Filters/DirectShow/ParameterConstants.h"
 
@@ -47,6 +48,7 @@ static const GUID CLSID_H264Properties =
 
 
 class H264EncoderFilter: public CCustomBaseFilter,
+			 public CStatusInterface,
                          public ISpecifyPropertyPages,
                          public ICodecControlInterface
 {

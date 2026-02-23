@@ -28,19 +28,16 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "CStatusInterface.h"
 #include "NotifyCodes.h"
 
 const int MAX_MESSAGE_LENGTH = 512;
 
-CStatusInterface::CStatusInterface()
-: m_sLastError(""),
-m_pMediaEventSink(NULL),
-m_lFriendlyId(-1)
+CStatusInterface::CStatusInterface(): m_sLastError(""),
+	m_pMediaEventSink(NULL)
+//	,m_lFriendlyId(-1)
 {}
 
 STDMETHODIMP CStatusInterface::GetVersion(char* szVersion, int nBufferSize)
@@ -56,6 +53,7 @@ STDMETHODIMP CStatusInterface::GetVersion(char* szVersion, int nBufferSize)
   szVersion[sVersion.length()] = '\0';
   return S_OK;
 }
+
 
 STDMETHODIMP CStatusInterface::GetNotificationMessage( char* szMessage, int nBufferSize)
 {
@@ -74,19 +72,27 @@ STDMETHODIMP CStatusInterface::SetNotificationMessage( const char* szMessage )
   if (strlen(szMessage) > MAX_MESSAGE_LENGTH)
     return E_FAIL;
   m_sNotification = std::string(szMessage, strlen(szMessage));
-  NotifyApplication(WM_GRAPHNOTIFY_INFO, m_lFriendlyId);
+  //NotifyApplication(WM_GRAPHNOTIFY_INFO, m_lFriendlyId);
   return S_OK;
 }
 
+
+/// JFO: This is completelly wrong, this would not notify anything. There must be defined callback interface to
+/// provide this functionality. It is better to disable it and not use it.
+/// Notification can be catched in a child object virtual method, but COM object is binary object.
+/// THIS approach is not working here. I have currently no motivation to make this functionality workable.
 STDMETHODIMP CStatusInterface::SetLastError(const char* szLastError, bool bNotifyApplication)
 {
-	m_sLastError = std::string(szLastError);
-	if (bNotifyApplication)
-	{
+  m_sLastError = std::string(szLastError);
+/*
+  if(bNotifyApplication)
+  {
     NotifyApplication(WM_GRAPHNOTIFY_CRIT, m_lFriendlyId);
-	}
-	return S_OK;
+  }
+*/
+  return S_OK;
 }
+
 
 STDMETHODIMP CStatusInterface::GetLastError(char* szLastError, int nBufferSize)
 {
@@ -100,12 +106,15 @@ STDMETHODIMP CStatusInterface::GetLastError(char* szLastError, int nBufferSize)
   return S_OK;
 }
 
+/*
 STDMETHODIMP CStatusInterface::SetMediaEventSink( IMediaEventSink* pEventSink )
 {
 	m_pMediaEventSink = pEventSink;
 	return S_OK;
 }
+*/
 
+/*
 STDMETHODIMP CStatusInterface::SetFriendlyID( long lId )
 {
 	m_lFriendlyId = lId;
@@ -117,7 +126,9 @@ STDMETHODIMP CStatusInterface::GetFriendlyID( long& lId )
 	lId = m_lFriendlyId;
 	return S_OK;
 }
+*/
 
+/*
 void CStatusInterface::NotifyApplication( long lEventCode, LONG_PTR lEventParam1 )
 {
 	//Notify sending the friendly ID as a parameter
@@ -129,6 +140,7 @@ void CStatusInterface::notify(const std::string& sMessage)
 {
   SetNotificationMessage(sMessage.c_str());
 }
+*/
 
 void CStatusInterface::notifyError(const std::string& sMessage, bool bNotifyApp)
 {

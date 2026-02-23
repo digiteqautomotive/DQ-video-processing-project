@@ -79,12 +79,15 @@ DEFINE_GUID( IID_IStatusInterface, /* 60178ec0-c670-11d0-837a-0000f80220b9 */
 DECLARE_INTERFACE_( IStatusInterface, IUnknown )
 {
   STDMETHOD(GetVersion)(char* szVersion, int nBufferSize) = 0;
-  STDMETHOD(GetNotificationMessage)( char* szError, int nBufferSize) = 0;
-  STDMETHOD(SetNotificationMessage)( const char* szError ) = 0;
+  //STDMETHOD(GetNotificationMessage)( char* szError, int nBufferSize) = 0;
+  //STDMETHOD(SetNotificationMessage)( const char* szError ) = 0;
   STDMETHOD(GetLastError)(char* szLastError, int nBufferSize) = 0;
   STDMETHOD(SetLastError)(const char* szLastError, bool bNotifyApplication) = 0;
-  STDMETHOD(SetMediaEventSink) (IMediaEventSink* pEventSink) = 0;
-  //We need an id for when we perform a callback
-  STDMETHOD(SetFriendlyID) ( long lId) = 0;
-  STDMETHOD(GetFriendlyID) ( long& lId) = 0;
+  //STDMETHOD(SetMediaEventSink) (IMediaEventSink* pEventSink) = 0;
+
+	// We need an id for when we perform a callback
+	// JFO: The only unique identifier should pointer to IUnknown. There should be no other
+	//      "friendly" crap.
+  //STDMETHOD(SetFriendlyID) ( long lId) = 0;
+  //STDMETHOD(GetFriendlyID) ( long& lId) = 0;
 };

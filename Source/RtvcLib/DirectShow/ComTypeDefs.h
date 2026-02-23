@@ -42,7 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <comdef.h>
 
 #include "SettingsInterface.h"
-#include "StatusInterface.h"
+//#include "StatusInterface.h"
 #include "CodecControlInterface.h"
 #include "IFileInfoSourceInterface.h"
 
@@ -78,6 +78,6 @@ _COM_SMARTPTR_TYPEDEF(IAMCrossbar, IID_IAMCrossbar);
 
 //Smart pointers for VPP COM interfaces
 _COM_SMARTPTR_TYPEDEF(ISettingsInterface, IID_ISettingsInterface);
-_COM_SMARTPTR_TYPEDEF(IStatusInterface, IID_IStatusInterface);
+//_COM_SMARTPTR_TYPEDEF(IStatusInterface, IID_IStatusInterface);
 _COM_SMARTPTR_TYPEDEF(ICodecControlInterface, IID_ICodecControlInterface);
 _COM_SMARTPTR_TYPEDEF(IFilterInfoSourceInterface, IID_IFilterInfoSourceInterface);

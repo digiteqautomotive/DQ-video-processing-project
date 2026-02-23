@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <deque>
 #include <comdef.h>
 #include "DirectShow/CSettingsInterface.h"
-#include "DirectShow/CStatusInterface.h"
+//#include "DirectShow/CStatusInterface.h"
 #include "DirectShow/IFileInfoSourceInterface.h"
 #include "UtilityProperties.h"
 
@@ -101,7 +101,7 @@ static bool isFramerateEstimationMode(UtilityMode eMode )
  * Estimate framerate based on timestamps
  * \ingroup DirectShowFilters */
 class UtilityFilter: public CTransInPlaceFilter,
-                     public CStatusInterface,
+//                   public CStatusInterface,
                      public CSettingsInterface,
                      public ISpecifyPropertyPages,
                      public IFilterInfoSourceInterface		     

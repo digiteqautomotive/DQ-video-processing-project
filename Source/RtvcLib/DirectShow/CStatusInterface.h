@@ -1,22 +1,29 @@
 /** @file
 
-MODULE				: DirectShow
+MODULE:			DirectShow
 
-FILE NAME			: CStatusInterface.h
+FILE NAME:		CStatusInterface.h
 
-DESCRIPTION			: Implementation of COM IStatusInterface
+DESCRIPTION:		Implementation of COM IStatusInterface
 
-					This interface enables communication between a DirectShow filter and the main 
-					application using the GetLastError and SetLastError methods.
+			This interface enables communication between a DirectShow filter and the main 
+			application using the GetLastError and SetLastError methods.
 
-					The GetLastError, GetFriendlyID and SetFriendlyID methods should be called from the application code.
-					The friendly ID is used purely for filter identification purposes. It is the responsibility of the developer
-					to assign unique IDs to each filter that supports this interface on filter creation.
-					The last error that occurred in the filter can be obtained by calling GetLastError.
+			The GetLastError, GetFriendlyID and SetFriendlyID methods should be called from the application code.
+			The friendly ID is used purely for filter identification purposes. It is the responsibility of the developer
+			to assign unique IDs to each filter that supports this interface on filter creation.
+			The last error that occurred in the filter can be obtained by calling GetLastError.
 					
-					The SetLastError should be called from within the filter code itself. If a media event sink has
-					been set, the main application will be notified of the error via the Windows event WM_TM_GRAPHNOTIFY.
-					The main application can then use the friendly ID to determine which filter caused the event.
+			The SetLastError should be called from within the filter code itself. If a media event sink has
+			been set, the main application will be notified of the error via the Windows event WM_TM_GRAPHNOTIFY.
+			The main application can then use the friendly ID to determine which filter caused the event.
+
+
+/// JFO: This is completelly wrong, this would not notify anything. There must be defined callback interface to
+/// provide this functionality. It is better to disable this Interface and not use it.
+/// Currently implemented notification can be catched in a child object virtual method, but COM object is a binary
+/// object without further C++ inheritance.
+/// THIS approach is not working here. I have currently no motivation to make this functionality workable.
 							
 					  
 LICENSE: Software License Agreement (BSD License)
@@ -41,10 +48,9 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once 
+
 
 #include "StatusInterface.h"
 #include <Windows.h>
@@ -70,31 +76,25 @@ public:
 	/// Returns the last error that occurred in the filter
     STDMETHODIMP GetLastError( char* szLastError, int nBufferSize);
 	/// Mutator for media event sink which enables notification via Windows message passing
-    STDMETHODIMP SetMediaEventSink( IMediaEventSink* pEventSink );
-	/// Mutator for friendly ID
-    STDMETHODIMP SetFriendlyID( long lId );
-	/// Accessor for friendly ID
-    STDMETHODIMP GetFriendlyID( long& lId );
+    //STDMETHODIMP SetMediaEventSink( IMediaEventSink* pEventSink );
+
+    //STDMETHODIMP SetFriendlyID( long lId );		///< Mutator for friendly ID
+    //STDMETHODIMP GetFriendlyID( long& lId );		/// Accessor for friendly ID
 
 protected:
-  /**
-   * @brief Helper method that can be used by sub-classes
-   */
-  void notify(const std::string& sMessage);
-  /**
-   * @brief Helper method that can be used by sub-classes
-   */
-  void notifyError(const std::string& sMessage, bool bNotifyApp);
+  /** @brief Helper method that can be used by sub-classes */
+    void notify(const std::string& sMessage);
+  /** @brief Helper method that can be used by sub-classes */
+    void notifyError(const std::string& sMessage, bool bNotifyApp);
 
 	/// This method notifies the application with the specified params
-	void NotifyApplication(long lEventCode, LONG_PTR lEventParam1);
+    //void NotifyApplication(long lEventCode, LONG_PTR lEventParam1);
 
   /// String to store notification message
-  std::string m_sNotification;
+    std::string m_sNotification;
 	/// String to store last error
-	std::string m_sLastError;
+    std::string m_sLastError;
 	/// Event sink used for windows message passing notification
-	IMediaEventSink* m_pMediaEventSink;
-	/// Friendly id of the filter
-	long m_lFriendlyId;
+    IMediaEventSink* m_pMediaEventSink;
+  // long m_lFriendlyId;			///< Friendly id of the filter
 };

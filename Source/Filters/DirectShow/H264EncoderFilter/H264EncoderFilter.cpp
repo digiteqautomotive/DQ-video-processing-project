@@ -137,10 +137,10 @@ H264EncoderFilter::H264EncoderFilter()
 	{
     configureDefaultH264CodecParameters(m_pCodec);
   }
-	else
-	{
-		SetLastError("Unable to create H264 Encoder from Factory.", true);
-	}
+  else
+  {
+    CStatusInterface::SetLastError("Unable to create H264 Encoder from Factory.", true);
+  }
 }
 
 H264EncoderFilter::~H264EncoderFilter()
@@ -167,7 +167,7 @@ CUnknown * WINAPI H264EncoderFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pH
  
 void H264EncoderFilter::InitialiseInputTypes()
 {
-	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24,		&FORMAT_VideoInfo);
+	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24,	&FORMAT_VideoInfo);
 	AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S,	&FORMAT_VideoInfo);
   // TODO
 #if 0
@@ -216,7 +216,7 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     if(!m_pCodec->Code(NULL, m_pSeqParamSet, 100 * 8))
     {
       if (m_pSeqParamSet) delete[] m_pSeqParamSet; m_pSeqParamSet = NULL;
-      SetLastError(m_pCodec->GetErrorStr(), true);
+      CStatusInterface::SetLastError(m_pCodec->GetErrorStr(), true);
       return hr;
     }
     else
@@ -233,7 +233,7 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
     {
       if (m_pSeqParamSet) delete[] m_pSeqParamSet; m_pSeqParamSet = NULL;
       if (m_pPicParamSet) delete[] m_pPicParamSet; m_pPicParamSet = NULL;
-      SetLastError(m_pCodec->GetErrorStr(), true);
+      CStatusInterface::SetLastError(m_pCodec->GetErrorStr(), true);
       return E_FAIL;
     }
     else
@@ -254,7 +254,7 @@ HRESULT H264EncoderFilter::SetMediaType( PIN_DIRECTION direction, const CMediaTy
 			//Houston: we have a failure
 			char* szErrorStr = m_pCodec->GetErrorStr();
 			printf("%s\n", szErrorStr);
-			SetLastError(szErrorStr, true);
+			CStatusInterface::SetLastError(szErrorStr, true);
       return E_FAIL;
 		}
 
@@ -580,7 +580,7 @@ HRESULT H264EncoderFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferS
         {
           if (m_bNotifyOnIFrame)
           {
-            SetNotificationMessage("I-Frame");
+            CStatusInterface::SetNotificationMessage("I-Frame");
           }
         }
 
@@ -638,7 +638,7 @@ HRESULT H264EncoderFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferS
       
 #if 1
         m_pCodec->Restart();
-        SetLastError(sError.c_str(), true);
+        CStatusInterface::SetLastError(sError.c_str(), true);
         lOutActualDataLength = 0;
 #else
         // This alternative is more sophisticated in that it tries to encode the same picture again
@@ -778,7 +778,7 @@ STDMETHODIMP H264EncoderFilter::SetParameter( const char* type, const char* valu
           //Houston: we have a failure
           char* szErrorStr = m_pCodec->GetErrorStr();
           printf("%s\n", szErrorStr);
-          SetLastError(szErrorStr, true);
+          CStatusInterface::SetLastError(szErrorStr, true);
           return E_FAIL;
         }
       }

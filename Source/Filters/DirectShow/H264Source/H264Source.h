@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fstream>
 #include <vector>
 #include <DirectShow/CStatusInterface.h>
-#include <DirectShow/CSettingsInterface.h>
+#include "DirectShow/CSettingsInterface.h"
 
 
 // UNITS = 10 ^ 7  

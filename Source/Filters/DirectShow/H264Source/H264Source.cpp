@@ -135,6 +135,7 @@ H264SourceFilter::~H264SourceFilter()
   }
 }
 
+
 void H264SourceFilter::reset()
 {
   m_pPin->m_iCurrentFrame = 0;
@@ -144,6 +145,7 @@ void H264SourceFilter::reset()
   m_in1.clear(); // clear for next play
   m_in1.seekg( 0 , std::ios::beg );
 }
+
 
 STDMETHODIMP H264SourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt)
 {
@@ -314,30 +316,12 @@ STDMETHODIMP H264SourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYP
 
 STDMETHODIMP H264SourceFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
-  if(riid == (IID_ISettingsInterface))
-  {
-    return GetInterface((ISettingsInterface*) this, ppv);
-  }
-  else if (riid == IID_IStatusInterface)
-  {
-    return GetInterface((IStatusInterface*) this, ppv);
-  }
-  else if (riid == IID_IFileSourceFilter)
-  {
-    return GetInterface((IFileSourceFilter*) this, ppv);
-  }
-  else if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else if (riid == IID_IMediaSeeking)
-  {
-    return GetInterface((IMediaSeeking*) this, ppv);
-  }
-  else
-  {
-    return CSource::NonDelegatingQueryInterface(riid, ppv);
-  }
+  if(riid == IID_ISettingsInterface) return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IStatusInterface)   return GetInterface((IStatusInterface*) this, ppv);
+  if(riid == IID_IFileSourceFilter)  return GetInterface((IFileSourceFilter*) this, ppv);
+  if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == IID_IMediaSeeking) return GetInterface((IMediaSeeking*) this, ppv);
+  return CSource::NonDelegatingQueryInterface(riid, ppv);
 }
 
 STDMETHODIMP H264SourceFilter::Stop()

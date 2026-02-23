@@ -101,22 +101,10 @@ CUnknown *WINAPI RtspSinkFilter::CreateInstance( IUnknown* pUnk, HRESULT* phr )
 
 STDMETHODIMP RtspSinkFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
 {
-  if (riid == IID_ISpecifyPropertyPages)
-  {
-    return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-  }
-  else if(riid == (IID_ISettingsInterface))
-	{
-		return GetInterface((ISettingsInterface*) this, ppv);
-	}
-	else if (riid == IID_IStatusInterface)
-	{
-		return GetInterface((IStatusInterface*) this, ppv);
-	}
-	else
-	{
-		return CBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-	}
+  if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  if(riid == (IID_ISettingsInterface))  return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IStatusInterface)	return GetInterface((IStatusInterface*) this, ppv);
+  return CBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }
 
 void RtspSinkFilter::OnConnect(int nIndex)

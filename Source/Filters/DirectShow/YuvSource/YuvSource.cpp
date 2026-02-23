@@ -256,12 +256,14 @@ STDMETHODIMP YuvSourceFilter::SetParameter( const char* type, const char* value 
   }
 }
 
+
 void YuvSourceFilter::recalculate()
 {
   m_iFrameSize = m_iWidth*m_iHeight*m_dBytesPerPixel;
   m_iNoFrames = m_iFileSize/m_iFrameSize;
   m_pPin->m_rtFrameLength = UNITS/m_iFramesPerSecond;
 }
+
 
 bool YuvSourceFilter::readFrame()
 {
@@ -272,6 +274,7 @@ bool YuvSourceFilter::readFrame()
   }
   return false;
 }
+
 
 bool YuvSourceFilter::setDimensions( const std::string& sDimensions )
 {
@@ -287,6 +290,7 @@ bool YuvSourceFilter::setDimensions( const std::string& sDimensions )
   }
   return false;
 }
+
 
 bool YuvSourceFilter::updatePictureBuffer(int iWidth, int iHeight, double dBytesPerPixel)
 {

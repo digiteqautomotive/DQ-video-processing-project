@@ -43,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RtspClientSessionManager.h"
 #endif
 #include <DirectShow/CStatusInterface.h>
-#include <DirectShow/CSettingsInterface.h>
+#include "DirectShow/CSettingsInterface.h"
 
 // Forward
 class RtspSourceOutputPin;

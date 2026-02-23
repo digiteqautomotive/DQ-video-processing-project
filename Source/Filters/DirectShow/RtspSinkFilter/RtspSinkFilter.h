@@ -2,7 +2,7 @@
 #include <map>
 #include <memory>
 #include <DirectShow/CSettingsInterface.h>
-#include <DirectShow/CStatusInterface.h>
+//#include <DirectShow/CStatusInterface.h>
 #include <Filters/DirectShow/FilterParameters.h>
 #include <Media/IRateController.h>
 #include <Media/SingleChannelManager.h>
@@ -19,9 +19,9 @@ class StepBasedRateController;
  * @brief This RtspSinkFilter class supports at most two input pins, one for video and one for audio.
  */
 class RtspSinkFilter : public CBaseFilter,				   /* Source Filter */
-                       public ISpecifyPropertyPages, /* property pages */
-                       public CSettingsInterface,	   /* Rtvc Settings Interface */
-                       public CStatusInterface	     /* Rtvc Status Interface */
+                       public ISpecifyPropertyPages,	/* property pages */
+                       public CSettingsInterface	/* Rtvc Settings Interface */
+//                     ,public CStatusInterface		/* Rtvc Status Interface */
 {   
 	/// Give the pin friend access
 	friend class RtspSinkInputPin;

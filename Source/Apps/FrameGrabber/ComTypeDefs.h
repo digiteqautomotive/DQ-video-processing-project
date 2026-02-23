@@ -8,8 +8,8 @@
 
 #include <comdef.h>
 
-#include <DirectShow/SettingsInterface.h>
-#include <DirectShow/StatusInterface.h>
+#include "DirectShow/SettingsInterface.h"
+//#include <DirectShow/StatusInterface.h>
 
 // DirectShow COM smart pointers
 _COM_SMARTPTR_TYPEDEF(IGraphBuilder, IID_IGraphBuilder);
@@ -39,4 +39,4 @@ _COM_SMARTPTR_TYPEDEF(IAMCrossbar, IID_IAMCrossbar);
 
 //Smart pointers for RTVC COM interfaces
 _COM_SMARTPTR_TYPEDEF(ISettingsInterface, IID_ISettingsInterface);
-_COM_SMARTPTR_TYPEDEF(IStatusInterface, IID_IStatusInterface);
+//_COM_SMARTPTR_TYPEDEF(IStatusInterface, IID_IStatusInterface);

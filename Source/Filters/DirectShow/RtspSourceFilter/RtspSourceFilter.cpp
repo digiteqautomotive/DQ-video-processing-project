@@ -95,29 +95,15 @@ CUnknown *WINAPI RtspSourceFilter::CreateInstance( IUnknown* pUnk, HRESULT* phr 
 }
 
 
-STDMETHODIMP RtspSourceFilter::NonDelegatingQueryInterface( REFIID riid, void **ppv )
+STDMETHODIMP RtspSourceFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-	if(riid == (IID_ISettingsInterface))
-	{
-		return GetInterface((ISettingsInterface*) this, ppv);
-	}
-	else if (riid == IID_IStatusInterface)
-	{
-		return GetInterface((IStatusInterface*) this, ppv);
-	}
-	else if (riid == IID_IFileSourceFilter)
-	{
-		return GetInterface((IFileSourceFilter*) this, ppv);
-	}
-	else if (riid == IID_ISpecifyPropertyPages)
-	{
-		return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-	}
-	else
-	{
-		return CSource::NonDelegatingQueryInterface(riid, ppv);
-	}
+  if(riid == (IID_ISettingsInterface))	return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_IStatusInterface)	return GetInterface((IStatusInterface*) this, ppv);
+  if(riid == IID_IFileSourceFilter)	return GetInterface((IFileSourceFilter*) this, ppv);
+  if(riid == IID_ISpecifyPropertyPages)	return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+  return CSource::NonDelegatingQueryInterface(riid,ppv);
 }
+
 
 static DWORD WINAPI LiveMediaThread(LPVOID pvParam)
 {
@@ -125,6 +111,7 @@ static DWORD WINAPI LiveMediaThread(LPVOID pvParam)
   pSourceFilter->startRtspSession();
   return S_OK;
 }
+
 
 void RtspSourceFilter::startRtspSession()
 {

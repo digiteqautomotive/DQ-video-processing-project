@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SkewingFilter.h"
 #include "GeneralUtils/StringUtil.h"
-#include "DirectShow/StatusInterface.h"
+//#include "DirectShow/StatusInterface.h"
 
 #include "DirectShow/VariantTools.h"
 
@@ -75,7 +75,7 @@ CUnknown * WINAPI SkewingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 STDMETHODIMP SkewingFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
   if(riid == (IID_ISettingsInterface))	  return GetInterface((ISettingsInterface*) this, ppv);
-  if(riid == (IID_IStatusInterface))	  return GetInterface((IStatusInterface*) this, ppv);
+//  if(riid == (IID_IStatusInterface))	  return GetInterface((IStatusInterface*) this, ppv);
   if(riid == (IID_ISpecifyPropertyPages)) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
   if(riid == IID_IPersistPropertyBag)	  return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
   if(riid == IID_IPropertyBag)		  return GetInterface(static_cast<IPropertyBag*>(this), ppv);
