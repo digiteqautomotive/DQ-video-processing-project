@@ -16,6 +16,7 @@ HasSSE2	EQU	4
 HasSSSE3 EQU	8
 HasSSE41 EQU	16
 HasSSE42 EQU	32
+HasCMOV	EQU	010000h
 
 
 ; https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eojdc/index.html
@@ -46,8 +47,11 @@ GetFeaturesCPU PROC \
 	
 	mov	eax,1
 	cpuid
-	
-	test	edx, 100000000000000000000000b
+
+	test	edx, 1000000000000000b
+	jz	NoCMOV
+	or	esi,HasCMOV	
+NoCMOV:	test	edx, 100000000000000000000000b
 	jz	NoMMX
 	or	esi,HasMMX
 NoMMX:  test	edx, 10000000000000000000000000b
@@ -99,7 +103,7 @@ EmitFSAVE ENDP
 EmitFRSTOR PROC \
 	pBlock:ptr byte
 	mov	ecx,pBlock
-	fsave	[ecx]
+	frstor	[ecx]
 	ret
 EmitFRSTOR ENDP
 

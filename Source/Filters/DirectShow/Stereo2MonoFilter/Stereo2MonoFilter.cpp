@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Stereo2MonoFilter.h"
 #include "GeneralUtils/StringUtil.h"
 
-#include "DirectShow/VariantTools.cpp"
+#include "DirectShow/VariantTools.h"
 
 
 Stereo2MonoFilter::Stereo2MonoFilter(LPUNKNOWN pUnk, HRESULT *pHr):

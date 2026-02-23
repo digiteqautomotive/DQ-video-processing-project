@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <set>
 #include <dvdmedia.h>
 #include "MediaUtil.h"
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 

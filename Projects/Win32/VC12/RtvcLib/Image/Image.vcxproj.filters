@@ -170,9 +170,6 @@
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\MtRGB24toYUV420Converter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -263,6 +260,60 @@
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\YUV420toRGBConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvAYUV444toRGB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420CCIR601Real.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420CCIR601Ver16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420RealImpl2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420RealImpl2Ver16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB32toYUV420.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGBtoYUV420.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGBtoYUYV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB_ASM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24CCIR601Real.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24CCIR601RealVer16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24RealImpl2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24RealImpl2Ver16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUVtoRGB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUYVtoRGB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYVYUtoRGB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\raster_MSVC.asm">
@@ -299,6 +350,9 @@
       <Filter>Source Files</Filter>
     </MASM>
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win32_CMOV.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>

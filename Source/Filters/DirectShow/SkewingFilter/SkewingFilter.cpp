@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GeneralUtils/StringUtil.h"
 #include "DirectShow/StatusInterface.h"
 
-#include "DirectShow/VariantTools.cpp"
+#include "DirectShow/VariantTools.h"
 
 #define SKEW_TIME_STAMP	"skewTimestamp"
 

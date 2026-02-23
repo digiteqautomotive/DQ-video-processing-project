@@ -88,7 +88,7 @@ public:
     case ORIGINAL:
       {
         printf("Creating standard color converter\r\n");
-        m_pRgbToYuvConverter = new RealRGB24toYUV420Converter();
+        m_pRgbToYuvConverter = new ConvRGB24toYUV420Real();
         break;
       }
     case LOOKUP_TABLE:
@@ -132,7 +132,7 @@ public:
 //    default:
 //      {
 //        printf("Creating standard color converter\r\n");
-//        m_pRgbToYuvConverter = new RealRGB24toYUV420Converter();
+//        m_pRgbToYuvConverter = new ConvRGB24toYUV420Real();
 //      }
 //    }
 */

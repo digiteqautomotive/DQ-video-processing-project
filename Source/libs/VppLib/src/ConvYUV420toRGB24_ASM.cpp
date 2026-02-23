@@ -38,7 +38,10 @@ extern "C"
 {
  void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
  void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB32(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB_CMOV(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
  void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB32_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
 }
 
 DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
@@ -87,8 +90,57 @@ int row = _height / 2;
   while(row-- > 0)
   {
     PelYUV_RGB(pRgb,  y,  u, v, _width);
+    //PelYUV_RGB_CMOV(pRgb,  y,  u, v, _width);
     y += 2*_width;
     pRgb += 6*_width;
+    u += _width/2;
+    v += _width/2;
+  }
+} //end NonRotateConvert.
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+bool ConvYUV420toRGB32_ASM::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return (VideoFormatIn==MEDIASUBTYPE_YUV420P_S || VideoFormatIn==MEDIASUBTYPE_I420 || VideoFormatIn==MEDIASUBTYPE_YV12) &&
+         (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32);
+}
+
+
+void ConvYUV420toRGB32_ASM::FlipConvert(const void *pY, const void *pU, const void *pV, unsigned char *pRgb) const
+{
+const unsigned char *y = (const unsigned char *)pY;
+const unsigned char *u = (const unsigned char *)pU;
+const unsigned char *v = (const unsigned char *)pV;
+pRgb += 4*_width*(_height-1);
+int row = _height / 2;
+
+  while(row-- > 0)
+  {
+    PelYUV_RGB32_Flip(pRgb,  y,  u, v, _width);
+    pRgb -= 8*_width;
+    y += 2*_width;
+    u += _width/2;
+    v += _width/2;
+  }
+
+} //end FlipConvert
+
+
+void ConvYUV420toRGB32_ASM::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+{
+const unsigned char *y = (const unsigned char *)pY;
+const unsigned char *u = (const unsigned char *)pU;
+const unsigned char *v = (const unsigned char *)pV;
+int row = _height / 2;  
+
+  while(row-- > 0)
+  {
+    PelYUV_RGB32(pRgb,  y,  u, v, _width);
+    //PelYUV_RGB_CMOV(pRgb,  y,  u, v, _width);
+    y += 2*_width;
+    pRgb += 8*_width;
     u += _width/2;
     v += _width/2;
   }

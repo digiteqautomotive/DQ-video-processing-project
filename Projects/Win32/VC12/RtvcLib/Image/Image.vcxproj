@@ -282,12 +282,29 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealYUV420toRGB24ConverterImpl2Ver16.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvAYUV444toRGB.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420CCIR601Real.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420CCIR601Ver16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420RealImpl2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB24toYUV420RealImpl2Ver16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGB32toYUV420.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGBtoYUV420.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvRGBtoYUYV.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24CCIR601Real.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24CCIR601RealVer16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24RealImpl2.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB24RealImpl2Ver16.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUV420toRGB_ASM.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUVtoRGB.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUYVtoRGB.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYVYUtoRGB.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastGpuRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastLookupTableRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastSimdRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.h" />
-    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\MtRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatBase.h" />
@@ -342,6 +359,18 @@
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
       <TreatWarningsAsErrors Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</TreatWarningsAsErrors>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseSafeExceptionHandlers>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</UseSafeExceptionHandlers>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win32_CMOV.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <TreatWarningsAsErrors Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatWarningsAsErrors>
+      <TreatWarningsAsErrors Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatWarningsAsErrors>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseSafeExceptionHandlers>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</UseSafeExceptionHandlers>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseSafeExceptionHandlers>
+      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
     </MASM>
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

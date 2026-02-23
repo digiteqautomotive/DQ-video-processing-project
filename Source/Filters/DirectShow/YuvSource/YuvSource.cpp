@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "YuvOutputPin.h"
 
 #include "GeneralUtils/Conversion.h"
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
@@ -96,10 +95,10 @@ YuvSourceFilter::~YuvSourceFilter()
   delete m_pPin;
 }
 
-STDMETHODIMP YuvSourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
+STDMETHODIMP YuvSourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt)
 {
   // Store the URL
-  m_sFile = StringUtil::wideToStl(lpwszFileName);
+  m_sFile = StringUtil::wideStringToString(lpwszFileName);
  
   m_in1.open(m_sFile.c_str(), std::ifstream::in | std::ifstream::binary);
   if ( m_in1.is_open() )
@@ -205,21 +204,20 @@ void YuvSourceFilter::createYuvFrameBuffer()
 
 }
 
-STDMETHODIMP YuvSourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYPE *pmt )
+STDMETHODIMP YuvSourceFilter::GetCurFile(LPOLESTR *ppszFileName, AM_MEDIA_TYPE *pmt)
 {
+  if(ppszFileName==NULL) return E_POINTER;
   *ppszFileName = NULL;
 
-  if (m_sFile.length()!=0) 
+  if(m_sFile.length()!=0) 
   {
-    WCHAR* pFileName = (StringUtil::stlToWide(m_sFile));	
+    std::wstring wFileName(StringUtil::stringToWideString(m_sFile));	
+    DWORD n = sizeof(WCHAR)*(1+wFileName.length());
 
-    DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
-
-    *ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
-    if (*ppszFileName!=NULL) {
-      CopyMemory(*ppszFileName, pFileName, n);
+    *ppszFileName = (LPOLESTR)CoTaskMemAlloc(n);
+    if(*ppszFileName!=NULL) {
+      memcpy(*ppszFileName, wFileName.c_str(), n);
     }
-    delete[] pFileName;
   }
   return NOERROR;
 }

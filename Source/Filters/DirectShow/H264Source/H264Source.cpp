@@ -38,8 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "H264v2/H264v2.h"
 #include "CodecUtils/ICodecv2.h"
 #include "GeneralUtils/Conversion.h"
-
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 const AMOVIESETUP_MEDIATYPE sudOpPinTypes =
@@ -147,10 +145,10 @@ void H264SourceFilter::reset()
   m_in1.seekg( 0 , std::ios::beg );
 }
 
-STDMETHODIMP H264SourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
+STDMETHODIMP H264SourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt)
 {
   // Store the URL
-  m_sFile = StringUtil::wideToStl(lpwszFileName);
+  m_sFile = StringUtil::wideStringToString((const wchar_t*)lpwszFileName);
 
   m_in1.open(m_sFile.c_str(), std::ifstream::in | std::ifstream::binary);
   if ( m_in1.is_open() )

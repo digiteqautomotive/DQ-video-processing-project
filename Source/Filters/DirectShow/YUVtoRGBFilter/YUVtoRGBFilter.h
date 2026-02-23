@@ -34,10 +34,8 @@ DEFINE_GUID(CLSID_YUVtoRGBProperties,
 // Forward declarations
 class CVideoConverter;
 
-/**
-* \ingroup DirectShowFilters
-* This Filter converts the YUV444 Interleaved media back into RGB24 media.
-*/
+/** \ingroup DirectShowFilters
+* This Filter converts the YUV444 Interleaved media back into RGB24 media. */
 class YUVtoRGBFilter: public CCustomBaseFilter, public ISpecifyPropertyPages
 {	      
 public:
@@ -54,28 +52,22 @@ public:
   /** Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter */
   HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt);
 
-  /**
-  * Used for Media Type Negotiation.
+  /** Used for Media Type Negotiation.
   * Returns an HRESULT value. Possible values include those shown in the following table.
   * <table border="0" cols="2"><tr valign="top"><td><b>Value</b></td><td><b>Description</b></td></TR><TR><TD>S_OK</TD><TD>Success</TD></TR><TR><TD>VFW_S_NO_MORE_ITEMS</TD><TD>Index out of range</TD></TR><TR><TD>E_INVALIDARG</TD><TD>Index less than zero</TD></TR></TABLE>
   * The output pin's CTransformOutputPin::GetMediaType method calls this method. The derived class must implement this method. For more information, see CBasePin::GetMediaType.
-  * To use custom media types, the media type can be manipulated in this method.
-  */
+  * To use custom media types, the media type can be manipulated in this method.  */
   HRESULT GetMediaType(int iPosition, CMediaType *pMediaType);
 
   /// Buffer Allocation
-  /**
-  * The output pin's CTransformOutputPin::DecideBufferSize method calls this method. The derived class must implement this method. For more information, see CBaseOutputPin::DecideBufferSize. 
+  /** The output pin's CTransformOutputPin::DecideBufferSize method calls this method. The derived class must implement this method. For more information, see CBaseOutputPin::DecideBufferSize. 
   * @param pAlloc Pointer to the IMemAllocator interface on the output pin's allocator.
   * @param pProp Pointer to an ALLOCATOR_PROPERTIES structure that contains buffer requirements from the downstream input pin.
-  * @return Value: Returns S_OK or another HRESULT value.
-  */
+  * @return Value: Returns S_OK or another HRESULT value.  */
   HRESULT DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp);
 
-  /**
-  * The CheckTransform method checks whether an input media type is compatible with an output media type.
-  * <table border="0" cols="2"> <tr valign="top"> <td  width="50%"><b>Value</b></td> <td width="50%"><b>Description</b></td> </tr> <tr valign="top"> <td width="50%">S_OK</td> <td width="50%">The media types are compatible.</td> </tr> <tr valign="top"> <td width="50%">VFW_E_TYPE_NOT_ACCEPTED</td> <td width="50%">The media types are not compatible.</td> </tr> </table>
-  */
+  /** The CheckTransform method checks whether an input media type is compatible with an output media type.
+  * <table border="0" cols="2"> <tr valign="top"> <td  width="50%"><b>Value</b></td> <td width="50%"><b>Description</b></td> </tr> <tr valign="top"> <td width="50%">S_OK</td> <td width="50%">The media types are compatible.</td> </tr> <tr valign="top"> <td width="50%">VFW_E_TYPE_NOT_ACCEPTED</td> <td width="50%">The media types are not compatible.</td> </tr> </table>  */
   HRESULT CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut);
 
   /// Overridden from CCustomBaseFilter

@@ -160,11 +160,10 @@ std::string toString(const std::vector<T>& vecT, char delim = ' ')
 
 #endif
 }
-/**
- * @brief conversion utility function from string to bool
- *
- * Converts "1", "true", "TRUE" to true and "0", "FALSE" and "false" to false
- */
+
+
+/** @brief conversion utility function from string to bool
+ * Converts "1", "true", "TRUE" to true and "0", "FALSE" and "false" to false */
 static bool stringToBool(const std::string& sValue)
 {
   if (sValue == "1" || sValue == "TRUE" || sValue == "true")
@@ -181,20 +180,18 @@ static bool stringToBool(const std::string& sValue)
     return true;
   }
 }
-/**
- * @brief conversion utility function from int to bool
- *
- * Converts 0 to false, and non-zero values to true
- */
+
+
+/** @brief conversion utility function from int to bool
+ * Converts 0 to false, and non-zero values to true */
 static bool i2b(uint32_t uiNum)
 {
   return (uiNum == 0) ? false: true;
 }
-/**
- * @brief conversion utility function bool to string
- *
- * Converts false to "0", and true to "1"
- */
+
+
+/** @brief conversion utility function bool to string
+ * Converts false to "0", and true to "1" */
 static std::string boolToString(bool bValue)
 {
   std::string sResult = bValue?"1":"0";

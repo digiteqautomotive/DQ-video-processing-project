@@ -37,13 +37,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Gdiplus.h>
 #include <GdiPlusInit.h>
 #include <numeric>
-
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-#include "DirectShow/VariantTools.cpp"
+#include "DirectShow/VariantTools.h"
 
 
 const OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);

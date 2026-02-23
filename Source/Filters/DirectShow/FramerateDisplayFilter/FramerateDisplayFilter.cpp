@@ -34,8 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 
 #include "FramerateDisplayFilter.h"
-
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 #include <Gdiplus.h>
@@ -185,7 +183,7 @@ HRESULT FramerateDisplayFilter::Transform(IMediaSample *pSample)
       // Create a string.
       m_dEstimatedFramerate = dAverageFramerate;
       std::string sFramerate = StringUtil::doubleToString(dAverageFramerate) + " fps";
-      wchar_t* wsFramerate = StringUtil::stlToWide(sFramerate);
+      std::wstring wsFramerate(StringUtil::stringToWideString(sFramerate));
 
       // get image properties
       AM_MEDIA_TYPE mt;
@@ -222,14 +220,12 @@ HRESULT FramerateDisplayFilter::Transform(IMediaSample *pSample)
 
       // Draw string
       pGraphics->DrawString(
-        wsFramerate,
+        wsFramerate.c_str(),
         sFramerate.length(),
         &myFont,
         layoutRect,
         &format,
         &greenBrush);
-
-      delete[] wsFramerate;
 
       // Do we need to delete it?
       delete pGraphics;

@@ -28,19 +28,17 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "DirectShowHelper.h"
 
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 
 
 CDirectShowHelper::CDirectShowHelper()
-{;}
+{}
+
 
 HRESULT CDirectShowHelper::GetUnconnectedPin( IBaseFilter *pFilter, PIN_DIRECTION PinDir, IPin **ppPin)
 {
@@ -180,18 +178,14 @@ HRESULT CDirectShowHelper::GetFilterByCategory( IBaseFilter** gottaFilter, LPCWS
 	}
 }
 
+
 HRESULT CDirectShowHelper::GetFilterByCategory( IBaseFilter** gottaFilter, std::string sMatchName, GUID Category )
 {
-#ifdef _CONVERT_WITH_ATL
-	WCHAR* wszName = StringUtil::stlToWide(sMatchName);
-        HRESULT hr = CDirectShowHelper::GetFilterByCategory(gottaFilter, wszName, Category);
-	delete wszName;
-#else
-        std::wstring wszName = StringUtil::stringToWideString(sMatchName);
-        HRESULT hr = CDirectShowHelper::GetFilterByCategory(gottaFilter, wszName.c_str(), Category);
-#endif	
-	return hr;
+  std::wstring wszName = StringUtil::stringToWideString(sMatchName);
+  HRESULT hr = CDirectShowHelper::GetFilterByCategory(gottaFilter, wszName.c_str(), Category);
+  return hr;
 }
+
 
 HRESULT CDirectShowHelper::SaveGraphFile( IGraphBuilder *pGraph, WCHAR *wszPath )
 {
@@ -327,12 +321,7 @@ HRESULT CDirectShowHelper::GetFilterNamesByCategory( GUID Category, FILTER_NAME_
 				{
 					LPCWSTR mychar; // narrow string
 					mychar = (LPCWSTR) (varName.bstrVal);
-					//TODO
-					vFilters.push_back(StringUtil::wideToStl(mychar));
-					//USES_CONVERSION;
-					//char* szTempBuffer = W2A(mychar);
-					//szTempBuffer  = W2A(mychar);
-					//vFilters.push_back(std::string(szTempBuffer));
+					vFilters.push_back(StringUtil::wideStringToString(mychar));
 				}
 				VariantClear(&varName);	
 				pPropBag->Release();
@@ -353,26 +342,28 @@ HRESULT CDirectShowHelper::GetVideoInputs(FILTER_NAME_LIST& vList )
 
 HRESULT CDirectShowHelper::GetAudioInputs(FILTER_NAME_LIST& vList)
 {
-	return GetFilterNamesByCategory(CLSID_AudioInputDeviceCategory, vList);
+  return GetFilterNamesByCategory(CLSID_AudioInputDeviceCategory, vList);
 }
+
 
 HRESULT CDirectShowHelper::AddFilterByCategoryAndName( IGraphBuilder *pGraph, const GUID& category, LPCWSTR wszName, IBaseFilter **ppF )
 {
-	HRESULT hr = CDirectShowHelper::GetFilterByCategory(ppF, wszName, category);
-	if (SUCCEEDED(hr)) 
-	{
-		hr = pGraph->AddFilter(*ppF, wszName);
-	}
+  HRESULT hr = CDirectShowHelper::GetFilterByCategory(ppF, wszName, category);
+  if(SUCCEEDED(hr)) 
+  {
+    hr = pGraph->AddFilter(*ppF, wszName);
+  }
   return hr;
 }
 
+
 HRESULT CDirectShowHelper::AddFilterByCategoryAndName( IGraphBuilder *pGraph, const GUID& category, std::string sName, IBaseFilter **ppF )
 {
-	WCHAR* wszName = StringUtil::stlToWide(sName);
-	HRESULT hr = CDirectShowHelper::AddFilterByCategoryAndName(pGraph, category, wszName, ppF);
-	delete[] wszName;
-	return hr;	
+  std::wstring wszName(StringUtil::stringToWideString(sName));
+  HRESULT hr = CDirectShowHelper::AddFilterByCategoryAndName(pGraph, category, wszName.c_str(), ppF);
+  return hr;	
 }
+
 
 HRESULT CDirectShowHelper::GetPin( IBaseFilter *pFilter, PIN_DIRECTION PinDir, IPin **ppPin )
 {

@@ -171,6 +171,7 @@
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VariantTools.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VersionInfo.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\RtvcLib\DirectShow\VideoMixingBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\RtvcLib\GeneralUtils\StringUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\RtvcLib\DirectShow\CommonDefs.h" />

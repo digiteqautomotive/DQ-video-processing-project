@@ -1,6 +1,6 @@
 /** @file
 
-MODULE:			RealRGB24toYUV420Converter
+MODULE:			ConvRGB24toYUV420Real
 
 FILE NAME:		ConvRGB24toYUV420_Real.h
 
@@ -42,12 +42,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Double precision floating point RGB 24 bit to YUV420 colour 
  * convertion derived from the RGBtoYUV420Converter base class.
  * Use this implementation as the reference. */
-class RealRGB24toYUV420Converter: public RGBtoYUV420Converter
+class ConvRGB24toYUV420Real: public RGBtoYUV420Converter
 {
 public:
     /// Construction and destruction.
-    RealRGB24toYUV420Converter(void) { }
-    RealRGB24toYUV420Converter(int width, int height): RGBtoYUV420Converter(width,height) {}
+    ConvRGB24toYUV420Real(void) { }
+    ConvRGB24toYUV420Real(int width, int height): RGBtoYUV420Converter(width,height) {}
 
     bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 

@@ -37,7 +37,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "RtspSourceFilter.h"
 #include "RtspSourceOutputPin.h"
 
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 
 
@@ -139,15 +138,16 @@ void RtspSourceFilter::startRtspSession()
   SetEvent(m_hLiveMediaStopEvent);
 }
 
-STDMETHODIMP RtspSourceFilter::Load( LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt )
+
+STDMETHODIMP RtspSourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt)
 {
   m_mediaPacketManager.resetTypeInfoCompleteEventHandle();
 
-  // Store the URL
-  m_sUrl = StringUtil::wideToStl(lpwszFileName);
+	// Store the URL
+  m_sUrl = StringUtil::wideStringToString(lpwszFileName);
   m_rtspSessionManager.setStreamUsingTcp(m_bStreamUsingTCP);
 
-  // Create a new thread for the RTSP liveMedia event loop
+	// Create a new thread for the RTSP liveMedia event loop
   m_hLiveMediaThreadHandle = CreateThread(0, 0, LiveMediaThread, (void*)this, 0, &m_dwThreadID);
 #if 1
   DWORD dwResult = WaitForSingleObject(m_mediaPacketManager.getTypeInfoCompleteEventHandle(), TIMEOUT_MILLISECONDS);
@@ -221,15 +221,12 @@ STDMETHODIMP RtspSourceFilter::GetCurFile( LPOLESTR * ppszFileName, AM_MEDIA_TYP
 
 	if (m_sUrl.length()!=0) 
 	{
-		WCHAR* pFileName = (StringUtil::stlToWide(m_sUrl));	
-
-		DWORD n = sizeof(WCHAR)*(1+lstrlenW(pFileName));
-
+		std::wstring wFileName(StringUtil::stringToWideString(m_sUrl));
+		DWORD n = sizeof(WCHAR)*(1+wFileName.length());
 		*ppszFileName = (LPOLESTR) CoTaskMemAlloc( n );
 		if (*ppszFileName!=NULL) {
-			CopyMemory(*ppszFileName, pFileName, n);
+			CopyMemory(*ppszFileName, wFileName.c_str(), n);
 		}
-		delete[] pFileName;
 	}
 
 	return NOERROR;
@@ -278,42 +275,37 @@ CBasePin * RtspSourceFilter::GetPin( int n )
 	return m_vOutputPins[n];
 }
 
-STDMETHODIMP RtspSourceFilter::FindPin( LPCWSTR Id, IPin **ppPin )
+
+STDMETHODIMP RtspSourceFilter::FindPin(LPCWSTR Id, IPin **ppPin)
 {
 	//Find pin according to it's name
-	CheckPointer(ppPin,E_POINTER);
-	ValidateReadWritePtr(ppPin,sizeof(IPin *));
+  CheckPointer(ppPin,E_POINTER);
+  ValidateReadWritePtr(ppPin,sizeof(IPin *));
 	//Todo: Modify for this MUX: Check what ids this method is called with
 
-	const char* szInput = StringUtil::wideToStl(Id).c_str();
+  std::string szInput(StringUtil::wideStringToString(Id));
+  if (0==strncmp(szInput.c_str(), "Output",6)) 
+  {		
+    int nId = atoi(szInput.c_str()+7);
+    *ppPin = GetPin(nId);
+  } 
+  else 
+  {
+    *ppPin = NULL;
+    return VFW_E_NOT_FOUND;
+  }
 
-	char szTemp[10];
-	ZeroMemory(szTemp, 10);
-	memcpy(szTemp, szInput, 6);
-	szTemp[6] = '\0';
-	if (0==strcmp(szTemp, "Output")) 
-	{
-		const char* szID = szInput + 7;
-		int nId = atoi(szID);
-		*ppPin = GetPin(nId);
-	} 
-	else 
-	{
-		*ppPin = NULL;
-		return VFW_E_NOT_FOUND;
-	}
-
-	HRESULT hr = NOERROR;
+  HRESULT hr = NOERROR;
 	//  AddRef() returned pointer - but GetPin could fail if memory is low.
-	if (*ppPin) 
-	{
-		(*ppPin)->AddRef();
-	} 
-	else 
-	{
-		hr = E_OUTOFMEMORY;  // probably.  There's no pin anyway.
-	}
-	return hr;
+  if (*ppPin) 
+  {
+    (*ppPin)->AddRef();
+  } 
+  else 
+  {
+    hr = E_OUTOFMEMORY;  // probably.  There's no pin anyway.
+  }
+  return hr;
 }
 
 STDMETHODIMP RtspSourceFilter::Stop()

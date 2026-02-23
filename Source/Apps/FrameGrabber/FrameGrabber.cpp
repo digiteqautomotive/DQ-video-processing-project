@@ -13,7 +13,6 @@
 #include "DirectShow/DirectShowHelper.h"
 #include "Shared/CommonDefs.h"
 
-#define _CONVERT_WITH_ATL
 #include "GeneralUtils/StringUtil.h"
 #include "Shared/TimerUtil.h"
 
@@ -57,10 +56,10 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  std::string sFilename(argv[1]);
+  std::string sFilename(argv[1]);  
   // Check file name
-  wchar_t* pwszFileName = new wchar_t[sFilename.length()];
-  pwszFileName = StringUtil::stlToWide(sFilename);
+  std::wstring wFilename(StringUtil::stringToWideString(sFilename));
+  
   bool bEraseTimeStamps = true;
   // TODO: check if file exists
 
@@ -155,8 +154,8 @@ int main(int argc, char** argv)
   }
 
   // Build the graph. IMPORTANT: Change this string to a file on your system.
-  hr = pGraph->RenderFile(pwszFileName, NULL);
-  delete[] pwszFileName;
+  hr = pGraph->RenderFile(wFilename.c_str(), NULL);
+  wFilename.clear();
 
   // Get media type of sample grabber
   IPinPtr pPin;

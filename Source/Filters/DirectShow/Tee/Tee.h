@@ -37,21 +37,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DirectShow/MultiIOBaseFilter.h>
 
+#define PARAM_COPY "copy"
+
 
 // {4CCD08A1-0C4E-4367-BED1-38B7D92D24E7}
 static const GUID CLSID_VPP_Tee = 
 { 0x4ccd08a1, 0xc4e, 0x4367, { 0xbe, 0xd1, 0x38, 0xb7, 0xd9, 0x2d, 0x24, 0xe7 } };
 
+// {D482DD89-752F-44e5-AF4F-DF02D4E81C00}
+DEFINE_GUID(CLSID_VPP_TeeProperties, 
+0xd482dd89, 0x752f, 0x44e5, 0xaf, 0x4f, 0xdf, 0x2, 0xd4, 0xe8, 0x1c, 0x0);
 
-/**
- * \ingroup DirectShowFilters
+
+/** \ingroup DirectShowFilters
  * Basic Tee filter implementation demonstrating how the usage of the CMultiIOBaseFilter class
  * NOTE: This filter will not handle ALL media types and has been created for demonstration purposes.
  * Use the standard DirectShow tee in applications.
  */
-class RtvcTee : public CMultiIOBaseFilter
+class RtvcTee: public CMultiIOBaseFilter, public ISpecifyPropertyPages
 {
 public:
+	DECLARE_IUNKNOWN
+
 	/// Constructor
 	RtvcTee();
 	/// Destructor
@@ -68,7 +75,7 @@ public:
 	virtual bool OnFullCreateMoreOutputs() const {return true;}
 	virtual void InitialiseInputTypes();
 	virtual void InitialiseOutputTypes();
-	void initParameters(void) {};
+	void initParameters(void);
 
 	///  From CBasePin
 	virtual HRESULT CheckOutputType(const CMediaType* pMediaType);
@@ -80,13 +87,12 @@ public:
 	/// To Check media type
 	virtual HRESULT GetMediaType(int iPosition, CMediaType* pmt, int nOutputPinIndex);
 
-	STDMETHODIMP GetClassID(CLSID *pClassID)
-	{
-	  if(pClassID==NULL) return E_POINTER;
-	  *pClassID = CLSID_VPP_Tee;
-	  return S_OK;
-	}
+	STDMETHODIMP GetClassID(CLSID *pClassID);
+
+	STDMETHODIMP GetPages(CAUUID *pPages);
+
+        STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
 protected:
-
+        bool m_bCopy;
 };

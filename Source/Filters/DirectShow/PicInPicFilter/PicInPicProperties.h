@@ -32,8 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #pragma once
 
-#include <DirectShow/CommonDefs.h>
-#include <DirectShow/FilterPropertiesBase.h>
+#include "DirectShow/CommonDefs.h"
+#include "DirectShow/FilterPropertiesBase.h"
 #include "../FilterParameterStringConstants.h"
 #include "GeneralUtils/StringUtil.h"
 

@@ -28,11 +28,10 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "Tee.h"
+#include "TeeProperties.h"
 
 //////////////////////////////////////////////////////////////////////////
 //###############################  Standard Filter DLL Code ###############################
@@ -48,7 +47,7 @@ AMOVIESETUP_FILTER FilterInfo =
   NULL              // Pin registration information.
 };
 
-CFactoryTemplate g_Templates[1] =
+CFactoryTemplate g_Templates[2] =
 {
   {
     g_wszName,                // Name
@@ -56,6 +55,13 @@ CFactoryTemplate g_Templates[1] =
     RtvcTee::CreateInstance,  // Method to create an instance of MyComponent
     NULL,                     // Initialization function
     &FilterInfo               // Set-up information (for filters)
+  },
+		// This entry is for the property page.
+  {
+    L"DQ VPP Tee Properties",
+    &CLSID_VPP_TeeProperties,
+    TeeProperties::CreateInstance,
+    NULL, NULL
   }
 };
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);
@@ -79,3 +85,31 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 {
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
+
+
+/////////////////////////////////////////////////////////////////////////
+
+
+CUnknown * WINAPI TeeProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr) 
+{
+  TeeProperties *pNewObject = new TeeProperties(pUnk);
+  if(pHr) *pHr = (pNewObject==NULL) ? E_OUTOFMEMORY : S_OK;
+  return pNewObject;
+}
+
+
+HRESULT TeeProperties::ReadSettings(void)
+{
+	    // invert
+  HRESULT hr = setCheckBoxFromBoolFilterParameter(PARAM_COPY, IDC_CHECK_COPY_CONTENT);
+  return hr;
+}
+
+
+HRESULT TeeProperties::OnApplyChanges(void)
+{
+		// invert
+  HRESULT hr = setBoolFilterParameterFromCheckBox(PARAM_COPY, IDC_CHECK_COPY_CONTENT);
+  return hr;
+} 
+

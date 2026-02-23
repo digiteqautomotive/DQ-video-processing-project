@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PicRotateBPP16Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
-#include "DirectShow/VariantTools.cpp"
+#include "DirectShow/VariantTools.h"
 
 
 const OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
