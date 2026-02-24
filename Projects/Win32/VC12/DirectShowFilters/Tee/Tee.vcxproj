@@ -224,6 +224,7 @@
     <None Include="Tee.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\Tee\resource.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\Tee\stdafx.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\Tee\Tee.h" />
   </ItemGroup>

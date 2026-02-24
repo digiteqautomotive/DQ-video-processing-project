@@ -211,9 +211,9 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 			// be sent.
       if (S_FALSE == hr) 
       {
-				//  Release the sample before calling notify to avoid
-				//  deadlocks if the sample holds a lock on the system
-				//  such as DirectDraw buffers do
+			//  Release the sample before calling notify to avoid
+			//  deadlocks if the sample holds a lock on the system
+			//  such as DirectDraw buffers do
         pOutSample->Release();
         return NOERROR;
       }
@@ -231,13 +231,18 @@ HRESULT VideoMixingFilter::ReceiveFirstSample(IMediaSample *pSample)
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
   if(!m_vInputPins[1]->IsConnected())			// Do not modify anything  when input1 is not connected.
-      return m_vOutputPins[0]->GetInputPin()->Receive(pSample);
+  {
+    HRESULT hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);
+    if(FAILED(hr)) DbgLog((EVENTLOG_WARNING_TYPE, 0, TEXT("VideoMixingFilter::ReceiveFirstSample(): m_vOutputPins[0]->GetInputPin()->Receive(pSample) Code: %X"), hr));
+    return hr;
+  }
 
 	// Copy the secondary sample into our buffer
   BYTE *pBuffer = NULL;
   HRESULT hr = pSample->GetPointer(&pBuffer);
   if(FAILED(hr))
   {
+    DbgLog((EVENTLOG_ERROR_TYPE, 0, TEXT("VideoMixingFilter::ReceiveFirstSample(): pSample->GetPointer(&pBuffer) Code: %X"), hr));
     return hr;
   }
   if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
@@ -254,13 +259,18 @@ HRESULT VideoMixingFilter::ReceiveSecondSample(IMediaSample *pSample)
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
   if(!m_vInputPins[0]->IsConnected())			// Do not modify anything  when input0 is not connected.
-      return m_vOutputPins[0]->GetInputPin()->Receive(pSample);
+  {
+    HRESULT hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);
+    if(FAILED(hr)) DbgLog((EVENTLOG_WARNING_TYPE, 0, TEXT("VideoMixingFilter::ReceiveSecondSample(): m_vOutputPins[0]->GetInputPin()->Receive(pSample) Code: %X"), hr));
+    return hr;
+  }
 
 	// Copy the secondary sample into our buffer  
   BYTE *pBuffer = NULL;
   HRESULT hr = pSample->GetPointer(&pBuffer);
   if(FAILED(hr))
   {
+    DbgLog((EVENTLOG_ERROR_TYPE, 0, TEXT("VideoMixingFilter::ReceiveSecondSample(): pSample->GetPointer(&pBuffer) Code: %X"), hr));
     return hr;
   }
   if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
