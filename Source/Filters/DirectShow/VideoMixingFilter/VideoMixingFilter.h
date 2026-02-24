@@ -50,7 +50,7 @@ class PicConcatBase;
 
 /**\ingroup DirectShowFilters
  * Video Mixing Filter for RGB24 and RGB32 Media */
-class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages                         
+class VideoMixingFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {
 public:
 	DECLARE_IUNKNOWN;
@@ -85,24 +85,18 @@ public:
 
         HRESULT StartStreaming(void);
 
-	/// For configuration dialog
+		// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages);
 
-	/// For configuration dialog
+		// For configuration dialog
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-	// IPersistPropertyBag
+		// IPersistPropertyBag
         virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);
         virtual HRESULT STDMETHODCALLTYPE InitNew(void) {return VideoMixingBase::InitNew();}
-        virtual HRESULT STDMETHODCALLTYPE Load(__RPC__in_opt IPropertyBag *pPropBag, __RPC__in_opt IErrorLog *pErrorLog);
-        virtual HRESULT STDMETHODCALLTYPE Save(__RPC__in_opt IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties);
-
-	// IPropertyBag
-       STDMETHODIMP Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog);
-       STDMETHODIMP Write(LPCOLESTR pszPropName, VARIANT *pVar);
 
 protected:		
-	BYTE* m_pSampleBuffers[2];	///< Pointers to our last received Media Sample.
+	BYTE *m_pSampleBuffers[2];	///< Pointers to our last received Media Sample.
 	int m_nSampleSizes[2];		///< Sizes
 
 	int m_nOrientation;		///< 0 = horizontal, 1 = vertical

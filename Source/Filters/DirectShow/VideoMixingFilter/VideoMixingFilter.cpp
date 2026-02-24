@@ -43,6 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #define MAX(a,b) ((a>b)?(a):(b))
 #endif
 
+OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
+
 
 VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
 	m_pPicConcat(NULL),
@@ -90,7 +92,7 @@ CUnknown * WINAPI VideoMixingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr
 
 void VideoMixingFilter::initParameters(void)
 {
-  addParameter(FILTER_PARAM_ORIENTATION, &m_nOrientation, 0);
+  addParameter(FILTER_PARAM_ORIENTATION, OLE_PARAM_ORIENTATION, &m_nOrientation, 0);
 }
 
 
@@ -644,84 +646,4 @@ HRESULT VideoMixingFilter::GetClassID(CLSID *pClassID)
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_VideoMixingFilter;
   return S_OK;
-}
-
-
-OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
-
-
-HRESULT VideoMixingFilter::Load(IPropertyBag *pPropBag, IErrorLog *pErrorLog)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  memset(&var,0,sizeof(var));
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ORIENTATION));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_ORIENTATION,sizeof(OLE_PARAM_ORIENTATION));
-    if(SUCCEEDED(pPropBag->Read(PropName,&var,NULL)))
-    {
-      getFromVariant(m_nOrientation,&var);
-    }
-    CoTaskMemFree((void*)PropName);
-  }
-
-  VariantClear(&var);
-return S_OK;
-}
-
-
-HRESULT VideoMixingFilter::Save(IPropertyBag *pPropBag, BOOL fClearDirty, BOOL fSaveAllProperties)
-{
-LPCOLESTR PropName;
-VARIANT var;
-  if(pPropBag==NULL) return E_POINTER;
-
-  PropName = (LPCOLESTR)CoTaskMemAlloc(sizeof(OLE_PARAM_ORIENTATION));
-  if(PropName)
-  {
-    memcpy((void*)PropName,OLE_PARAM_ORIENTATION,sizeof(OLE_PARAM_ORIENTATION));
-    var.vt = VT_INT;
-    var.intVal = m_nOrientation;
-    pPropBag->Write(PropName,&var);
-    CoTaskMemFree((void*)PropName);
-  }
-
-return S_OK;
-}
-
-
-//----------------- IPropertyBag------------------
-
-
-HRESULT VideoMixingFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  VariantClear(pVar);
-
-  if(oleicmp(pszPropName, OLE_PARAM_ORIENTATION) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nOrientation;
-    return S_OK;
-  }
-
-  return E_INVALIDARG;
-}
-
-
-HRESULT VideoMixingFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
-{
-CheckPointer(pszPropName, E_INVALIDARG);
-CheckPointer(pVar, E_INVALIDARG);
-  if(oleicmp(pszPropName, OLE_PARAM_ORIENTATION) == 0)
-  {   
-    if(getFromVariant(m_nOrientation,pVar)) return S_OK;
-  }
-  return E_INVALIDARG;
 }

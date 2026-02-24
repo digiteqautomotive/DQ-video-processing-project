@@ -55,7 +55,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Copy frame contents",IDC_CHECK_COPY_CONTENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,21,140,10
-    LTEXT           "Unchecking this causes faster processing, but problems with allocator might occur. Renderers typically needs special GDI allocator.",IDC_STATIC,15,38,152,37
+    LTEXT           "Unchecking this causes faster processing, but problems with allocator might occur. Renderers typically needs special GDI allocator.",IDC_STATIC,15,38,157,37
 END
 
 
