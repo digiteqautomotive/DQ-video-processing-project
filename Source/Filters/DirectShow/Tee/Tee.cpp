@@ -57,10 +57,6 @@ void RtvcTee::initParameters(void)
 }
 
 
-RtvcTee::~RtvcTee()
-{}
-
-
 CUnknown * WINAPI RtvcTee::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   RtvcTee *pFilter = new RtvcTee();

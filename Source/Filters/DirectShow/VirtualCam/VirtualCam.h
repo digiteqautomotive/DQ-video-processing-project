@@ -32,8 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 NOTE: The original code was written by Vivek.
 Adapted from http://tmhare.mvps.org/downloads/vcam.zip
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #define DECLARE_PTR(type, ptr, expr) type* ptr = (type*)(expr);
@@ -46,7 +45,7 @@ static const GUID CLSID_VPP_VirtualCam =
 { 0x8e14549a, 0xdb61, 0x4309, { 0xaf, 0xa1, 0x35, 0x78, 0xe9, 0x27, 0xe9, 0x33 } };
 
 
-class CVCam : public CSource
+class CVCam: public CSource
 {
 public:
   //////////////////////////////////////////////////////////////////////////
@@ -61,7 +60,8 @@ private:
   CVCam(LPUNKNOWN lpunk, HRESULT *phr);
 };
 
-class CVCamStream : public CSourceStream, public IAMStreamConfig, public IKsPropertySet
+
+class CVCamStream: public CSourceStream, public IAMStreamConfig, public IKsPropertySet
 {
 public:
 

@@ -32,8 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 NOTE: The original code was written by Vivek.
 Adapted from http://tmhare.mvps.org/downloads/vcam.zip
-===========================================================================
-*/
+===========================================================================*/
 #pragma warning(disable:4244)
 #pragma warning(disable:4711)
 
@@ -69,8 +68,7 @@ CUnknown * WINAPI CVCam::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr)
   return punk;
 }
 
-CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr)
-  :CSource(NAME("DQ VPP Virtual Cam"), lpunk, CLSID_VPP_VirtualCam)
+CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr): CSource(NAME("DQ VPP Virtual Cam"), lpunk, CLSID_VPP_VirtualCam)
 {
   ASSERT(phr);
   CAutoLock cAutoLock(&m_cStateLock);
@@ -87,6 +85,7 @@ HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
   else
     return CSource::QueryInterface(riid, ppv);
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 // CVCamStream is the one and only output pin of CVCam which handles 
@@ -113,9 +112,11 @@ CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pPa
   m_uiFrameCount = 0;
 }
 
+
 CVCamStream::~CVCamStream()
 {
 }
+
 
 HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
 {
@@ -241,13 +242,13 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
 } // FillBuffer
 
 
-//
 // Notify
 // Ignore quality management messages sent from the downstream filter
 STDMETHODIMP CVCamStream::Notify(IBaseFilter * pSender, Quality q)
 {
   return E_NOTIMPL;
 } // Notify
+
 
 //////////////////////////////////////////////////////////////////////////
 // This is called when the output format has been negotiated
@@ -259,7 +260,8 @@ HRESULT CVCamStream::SetMediaType(const CMediaType *pmt)
   return hr;
 }
 
-// See Directshow help topic for IAMStreamConfig for details on this method
+
+/// See Directshow help topic for IAMStreamConfig for details on this method
 HRESULT CVCamStream::GetMediaType(int iPosition, CMediaType *pmt)
 {
   if (iPosition < 0) return E_INVALIDARG;
@@ -285,8 +287,8 @@ HRESULT CVCamStream::GetMediaType(int iPosition, CMediaType *pmt)
 
   pvi->AvgTimePerFrame = 1000000;
 
-  SetRectEmpty(&(pvi->rcSource)); // we want the whole image area rendered.
-  SetRectEmpty(&(pvi->rcTarget)); // no particular destination rectangle
+  SetRectEmpty(&(pvi->rcSource));		// we want the whole image area rendered.
+  SetRectEmpty(&(pvi->rcTarget));		// no particular destination rectangle
 
   pmt->SetType(&MEDIATYPE_Video);
   pmt->SetFormatType(&FORMAT_VideoInfo);
@@ -298,8 +300,8 @@ HRESULT CVCamStream::GetMediaType(int iPosition, CMediaType *pmt)
   pmt->SetSampleSize(pvi->bmiHeader.biSizeImage);
 
   return NOERROR;
-
 } // GetMediaType
+
 
 // This method is called to see if a given output format is supported
 HRESULT CVCamStream::CheckMediaType(const CMediaType *pMediaType)
@@ -309,6 +311,7 @@ HRESULT CVCamStream::CheckMediaType(const CMediaType *pMediaType)
     return E_INVALIDARG;
   return S_OK;
 } // CheckMediaType
+
 
 // This method is called after the pins are connected to allocate buffers to stream data
 HRESULT CVCamStream::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProperties)
@@ -329,6 +332,7 @@ HRESULT CVCamStream::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIE
   return NOERROR;
 } // DecideBufferSize
 
+
 // Called when graph is run
 HRESULT CVCamStream::OnThreadCreate()
 {
@@ -341,19 +345,21 @@ HRESULT CVCamStream::OnThreadCreate()
 //  IAMStreamConfig
 //////////////////////////////////////////////////////////////////////////
 
+
 HRESULT STDMETHODCALLTYPE CVCamStream::SetFormat(AM_MEDIA_TYPE *pmt)
 {
   DECLARE_PTR(VIDEOINFOHEADER, pvi, m_mt.pbFormat);
   m_mt = *pmt;
   IPin* pin;
   ConnectedTo(&pin);
-  if (pin)
+  if(pin)
   {
     IFilterGraph *pGraph = m_pParent->GetGraph();
     pGraph->Reconnect(this);
   }
   return S_OK;
 }
+
 
 HRESULT STDMETHODCALLTYPE CVCamStream::GetFormat(AM_MEDIA_TYPE **ppmt)
 {

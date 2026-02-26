@@ -61,8 +61,6 @@ public:
 
 	/// Constructor
 	RtvcTee();
-	/// Destructor
-	~RtvcTee();
 
 	/// Static object-creation method (for the class factory)
 	static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 

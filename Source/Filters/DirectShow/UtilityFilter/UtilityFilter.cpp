@@ -48,6 +48,9 @@ const OLECHAR OLE_UF_PARAM_X[] = olestr(UF_PARAM_X);
 const OLECHAR OLE_UF_PARAM_Y[] = olestr(UF_PARAM_Y);
 const OLECHAR OLE_UF_MODE[] = olestr(UF_MODE);
 const OLECHAR OLE_UF_FONT_SIZE[] = olestr(UF_FONT_SIZE);
+const OLECHAR OLE_UF_WRITE_ON_FRAME[] = olestr(UF_WRITE_ON_FRAME);
+const OLECHAR OLE_UF_HISTORY_SIZE[] = olestr(UF_HISTORY_SIZE);
+const OLECHAR OLE_UF_PRECISION[] = olestr(UF_PRECISION);
 
 
 using namespace Gdiplus;
@@ -80,9 +83,9 @@ void UtilityFilter::initParameters(void)
   addParameter(UF_PARAM_Y, OLE_UF_PARAM_Y, &m_uiY, 0);
   addParameter(UF_MODE, OLE_UF_MODE, &m_uiFramerateEstimationMode, 1);
   addParameter(UF_FONT_SIZE, OLE_UF_FONT_SIZE, &m_FontSize, 16);
-  addParameter(UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
-  addParameter(UF_HISTORY_SIZE, &m_uiHistorySize, 200);
-  addParameter(UF_PRECISION, &m_uiPrecision, 1);
+  addParameter(UF_WRITE_ON_FRAME, OLE_UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
+  addParameter(UF_HISTORY_SIZE, OLE_UF_HISTORY_SIZE, &m_uiHistorySize, 200);
+  addParameter(UF_PRECISION, OLE_UF_PRECISION, &m_uiPrecision, 1);
 
   addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0, true);
   addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0, true);    
