@@ -48,18 +48,18 @@ static const GUID CLSID_H264Properties =
 
 
 class H264EncoderFilter: public CCustomBaseFilter,
-			 public CStatusInterface,
                          public ISpecifyPropertyPages,
                          public ICodecControlInterface
 {
 public:
   DECLARE_IUNKNOWN
 
-	/// Constructor
+		// Constructor
 	H264EncoderFilter();
-	/// Destructor
+		// Destructor
 	~H264EncoderFilter();
-	/// Static object-creation method (for the class factory)
+
+		// Static object-creation method (for the class factory)
 	static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
 	/**
 	 * Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter

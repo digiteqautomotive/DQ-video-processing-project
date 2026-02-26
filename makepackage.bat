@@ -1,3 +1,3 @@
 cd ..
-pkzip25 -add -recurse -dir -max -excl=@videoprocessing\zip_exclude.txt DQ_videoprocessing-1.7.1.zip videoprocessing\*.*
+pkzip25 -add -recurse -dir -max -excl=@videoprocessing\zip_exclude.txt DQ_videoprocessing-1.7.2.zip videoprocessing\*.*
 cd videoprocessing

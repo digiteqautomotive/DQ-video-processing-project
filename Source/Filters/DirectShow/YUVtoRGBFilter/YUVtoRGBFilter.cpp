@@ -91,7 +91,7 @@ void YUVtoRGBFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
  
 	/////////////////////////////////////////////////
-/*
+
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo2);
 
@@ -103,7 +103,9 @@ void YUVtoRGBFilter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo2);
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo2);
-*/
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo2);
 }
 
 
@@ -216,38 +218,31 @@ HRESULT YUVtoRGBFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
         if(pVih) {pbmi=&(pVih->bmiHeader);}
   }
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
-  {
-    VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
-    if(pVih2)
+  {    
+    if(pMediaType->pbFormat != NULL)
     {
       if(pMediaType->cbFormat >= sizeof(VIDEOINFOHEADER2))
       {
-        pbmi = &(pVih2->bmiHeader);
-		// This does not work properly, needs to be investigated.
-/*
-        VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)CoTaskMemAlloc(sizeof(VIDEOINFOHEADER));
+        VIDEOINFOHEADER2 tempVINF2;
+	memcpy(&tempVINF2,pMediaType->pbFormat,sizeof(VIDEOINFOHEADER2));
+        
+	pMediaType->ResetFormatBuffer();
+        pMediaType->AllocFormatBuffer(sizeof(VIDEOINFOHEADER));
+
+        VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
         if(pVih)
         {
-          //memset(pVih,0,sizeof(VIDEOINFOHEADER));
-          pVih->rcSource = pVih2->rcSource;
-          pVih->rcTarget = pVih2->rcTarget;
-          pVih->dwBitRate = pVih2->dwBitRate;
-          pVih->AvgTimePerFrame = pVih2->AvgTimePerFrame;
-          pVih->dwBitErrorRate = pVih2->dwBitErrorRate;
-          memcpy(&pVih->bmiHeader, pbmi, sizeof(BITMAPINFOHEADER));        
-
-//          AM_MEDIA_TYPE amt;
-//	  memcpy(&amt, (AM_MEDIA_TYPE*)pMediaType, sizeof(AM_MEDIA_TYPE));
-//          amt.pbFormat = (BYTE*)pVih;
-//          amt.cbFormat = sizeof(VIDEOINFOHEADER);
-//          pMediaType->Set(amt);
-              
-          CoTaskMemFree(pMediaType->pbFormat);
-          pMediaType->pbFormat = (BYTE*)pVih;
-          pMediaType->cbFormat = sizeof(VIDEOINFOHEADER);
           pMediaType->formattype = FORMAT_VideoInfo;
-        }
-*/
+
+          pbmi = &(pVih->bmiHeader);
+          memset(pVih,0,sizeof(VIDEOINFOHEADER));
+          pVih->rcSource = tempVINF2.rcSource;
+          pVih->rcTarget = tempVINF2.rcTarget;
+          pVih->dwBitRate = tempVINF2.dwBitRate;
+          pVih->AvgTimePerFrame = tempVINF2.AvgTimePerFrame;
+          pVih->dwBitErrorRate = tempVINF2.dwBitErrorRate;
+          memcpy(pbmi, &tempVINF2.bmiHeader, sizeof(BITMAPINFOHEADER));
+        }	
       }
     }
   }

@@ -67,7 +67,7 @@ RGBtoYUV420Filter::~RGBtoYUV420Filter()
 }
 
 
-CUnknown * WINAPI RGBtoYUV420Filter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr )
+CUnknown * WINAPI RGBtoYUV420Filter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   RGBtoYUV420Filter *pFilter = new RGBtoYUV420Filter();
   if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
@@ -81,6 +81,10 @@ void RGBtoYUV420Filter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo2);
 }
 
 
@@ -186,8 +190,32 @@ HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
     }
     else if(pMediaType->formattype==FORMAT_VideoInfo2)
     {
-      VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
-      if(pVih2) pBmi = &pVih2->bmiHeader;
+      if(pMediaType->pbFormat != NULL)
+      {
+        if(pMediaType->cbFormat >= sizeof(VIDEOINFOHEADER2))
+        {
+          VIDEOINFOHEADER2 tempVINF2;
+	  memcpy(&tempVINF2,pMediaType->pbFormat,sizeof(VIDEOINFOHEADER2));
+        
+	  pMediaType->ResetFormatBuffer();
+          pMediaType->AllocFormatBuffer(sizeof(VIDEOINFOHEADER));
+
+          VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+          if(pVih)
+          {
+            pMediaType->formattype = FORMAT_VideoInfo;
+
+            pBmi = &(pVih->bmiHeader);
+            memset(pVih,0,sizeof(VIDEOINFOHEADER));
+            pVih->rcSource = tempVINF2.rcSource;
+            pVih->rcTarget = tempVINF2.rcTarget;
+            pVih->dwBitRate = tempVINF2.dwBitRate;
+            pVih->AvgTimePerFrame = tempVINF2.AvgTimePerFrame;
+            pVih->dwBitErrorRate = tempVINF2.dwBitErrorRate;
+            memcpy(pBmi, &tempVINF2.bmiHeader, sizeof(BITMAPINFOHEADER));
+          }	
+        }
+      }
     }
     
     if(pBmi==NULL) return E_FAIL;    
