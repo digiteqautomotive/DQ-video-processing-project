@@ -66,6 +66,7 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 const OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 const OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
@@ -75,25 +76,29 @@ class ScaleFilterInputPin: public CTransformInputPin
 {
 public: ScaleFilterInputPin(__in_opt LPCTSTR pObjectName, __inout ScaleFilter *pTransformFilter,  __inout HRESULT * phr, __in_opt LPCWSTR pName):        
             CTransformInputPin(pObjectName,pTransformFilter,phr,pName)
-	{
-        }
+	{}
 
-        STDMETHODIMP ReceiveConnection(IPin * pConnector, const AM_MEDIA_TYPE *pmt)
-        {
-          if(m_Connected && pConnector==m_Connected && m_pTransformFilter!=NULL && pmt!=NULL)
-          {
-            if(m_mt.subtype == pmt->subtype)
-                if(SUCCEEDED(((ScaleFilter*)m_pTransformFilter)->ReceiveConnection(pmt)))
-                {
-		  CMediaType * pcmt = (CMediaType*)pmt;
-                  return(SetMediaType(pcmt));
-                  //return CompleteConnect(pConnector);
-                }
-          }
-          return CTransformInputPin::ReceiveConnection(pConnector,pmt);
-        }
+        STDMETHODIMP ReceiveConnection(IPin * pConnector, const AM_MEDIA_TYPE *pmt);
 };
 
+
+HRESULT ScaleFilterInputPin::ReceiveConnection(IPin * pConnector, const AM_MEDIA_TYPE *pmt)
+{
+  if(m_Connected && pConnector==m_Connected && m_pTransformFilter!=NULL && pmt!=NULL)
+  {
+    if(m_mt.subtype == pmt->subtype)
+    if(SUCCEEDED(((ScaleFilter*)m_pTransformFilter)->ReceiveConnection(pmt)))
+    {
+      CMediaType * pcmt = (CMediaType*)pmt;
+      return(SetMediaType(pcmt));
+                  //return CompleteConnect(pConnector);
+    }
+  }
+  return CTransformInputPin::ReceiveConnection(pConnector,pmt);
+}
+
+
+/////////////////////////////////////////////////////////////
 
 
 PicScalerBase *GetPicScallerRGB32(void)
@@ -109,6 +114,9 @@ PicScalerBase *GetPicScallerRGB32(void)
 #endif
   return new PicScalerRGB32Impl();
 }
+
+
+/////////////////////////////////////////////////////////////
 
 
 ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("DQ VPP Scale Filter"), 0, CLSID_VPP_ScaleFilter),
@@ -142,6 +150,7 @@ ScaleFilter::~ScaleFilter()
   }
 }
 
+
 CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   ScaleFilter *pFilter = new ScaleFilter();
@@ -150,22 +159,20 @@ CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 }
 
 
-void ScaleFilter::InitialiseInputTypes()
+static const GUID *ScalleSupportedFormats[] = {
+	&MEDIASUBTYPE_RGB24,&MEDIASUBTYPE_RGB32,&MEDIASUBTYPE_ARGB32,
+	&MEDIASUBTYPE_YUY2, &MEDIASUBTYPE_YUYV, &MEDIASUBTYPE_YVYU, &MEDIASUBTYPE_UYVY, &MEDIASUBTYPE_HDYC,
+	&MEDIASUBTYPE_YUV420P_S, &MEDIASUBTYPE_I420, &MEDIASUBTYPE_YV12, // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
+	&MEDIASUBTYPE_AYUV, &MEDIASUBTYPE_YV24,
+	&MEDIASUBTYPE_RGB565, &MEDIASUBTYPE_RGB555};
+
+void ScaleFilter::InitialiseInputTypes(void)
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo); // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  for(int i=0; i<sizeof(ScalleSupportedFormats)/sizeof(GUID*); i++)
+  {
+    AddInputType(&MEDIATYPE_Video, ScalleSupportedFormats[i], &FORMAT_VideoInfo);
+    AddInputType(&MEDIATYPE_Video, ScalleSupportedFormats[i], &FORMAT_VideoInfo2);
+  }
 }
 
 
@@ -217,10 +224,10 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         if(m_pScaler==NULL) m_pScaler = new PicScalerYUYVImpl();		// YVYU and YUYV are different, but the can use a same scaller.
         m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_UYVY)
+      else if(pmt->subtype==MEDIASUBTYPE_UYVY || pmt->subtype==MEDIASUBTYPE_HDYC)
       {
         if(m_pScaler==NULL) m_pScaler = new PicScalerUYVYImpl();
-        m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;		// Same bpp as UYVY
+        m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;					// Same bpp as YUYV
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB565)
       {
@@ -261,9 +268,33 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
       if(pVih) {pBi=&(pVih->bmiHeader); rcSource=&(pVih->rcSource); rcTarget=&(pVih->rcTarget);}
     }
     else if(pMediaType->formattype==FORMAT_VideoInfo2)
-    {
-      VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
-      if(pVih2) {pBi=&(pVih2->bmiHeader); rcSource=&(pVih2->rcSource); rcTarget=&(pVih2->rcTarget);}
+    {    
+      if(pMediaType->pbFormat != NULL)
+      {
+        if(pMediaType->cbFormat >= sizeof(VIDEOINFOHEADER2))
+        {
+          VIDEOINFOHEADER2 tempVINF2;
+	  memcpy(&tempVINF2,pMediaType->pbFormat,sizeof(VIDEOINFOHEADER2));
+        
+	  pMediaType->ResetFormatBuffer();
+          pMediaType->AllocFormatBuffer(sizeof(VIDEOINFOHEADER));
+
+          VIDEOINFOHEADER *pVih = (VIDEOINFOHEADER*)pMediaType->pbFormat;
+          if(pVih)
+          {
+            pMediaType->formattype = FORMAT_VideoInfo;
+
+            pBi = &(pVih->bmiHeader);
+            memset(pVih,0,sizeof(VIDEOINFOHEADER));
+            pVih->rcSource = tempVINF2.rcSource;
+            pVih->rcTarget = tempVINF2.rcTarget;
+            pVih->dwBitRate = tempVINF2.dwBitRate;
+            pVih->AvgTimePerFrame = tempVINF2.AvgTimePerFrame;
+            pVih->dwBitErrorRate = tempVINF2.dwBitErrorRate;
+            memcpy(pBi, &tempVINF2.bmiHeader, sizeof(BITMAPINFOHEADER));
+          }	
+        }
+      }
     }
     if(pBi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
@@ -290,7 +321,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
         pBi->biSizeImage = (labs(pBi->biWidth*pBi->biHeight) * BITS_PER_PIXEL_YUV420P) / 8;
       }
       else if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
-             pMediaType->subtype==MEDIASUBTYPE_UYVY)
+             pMediaType->subtype==MEDIASUBTYPE_UYVY || pMediaType->subtype==MEDIASUBTYPE_HDYC)
       {
         if((pBi->biWidth & 1)==1)
             pBi->biWidth &= ~1;			// Odd values cannot be used for YUYV encoding.
@@ -441,9 +472,9 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     }
     return S_OK;
   }
-  if (mtIn->subtype == MEDIASUBTYPE_UYVY)
+  if(mtIn->subtype==MEDIASUBTYPE_UYVY || mtIn->subtype==MEDIASUBTYPE_HDYC)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_UYVY)
+    if (mtOut->subtype!=MEDIASUBTYPE_UYVY && mtOut->subtype!=MEDIASUBTYPE_HDYC)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -590,47 +621,4 @@ HRESULT ScaleFilter::GetClassID(CLSID *pClassID)
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_ScaleFilter;
   return S_OK;
-}
-
-
-//----------------- IPropertyBag------------------
-
-
-HRESULT ScaleFilter::Read(LPCOLESTR pszPropName, VARIANT *pVar, IErrorLog *pErrorLog)
-{
-  CheckPointer(pszPropName, E_INVALIDARG);
-  CheckPointer(pVar, E_INVALIDARG);
-
-  VariantClear(pVar);
-
-  if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nReqOutWidth;
-    return S_OK;
-  }
-  if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
-  {   
-    pVar->vt = VT_INT;
-    pVar->intVal = m_nReqOutHeight;
-    return S_OK;
-  }
-
-  return E_INVALIDARG;
-}
-
-
-HRESULT ScaleFilter::Write(LPCOLESTR pszPropName, VARIANT *pVar)
-{
-CheckPointer(pszPropName, E_INVALIDARG);
-CheckPointer(pVar, E_INVALIDARG);
-  if(oleicmp(pszPropName, OLE_PARAM_TARGET_WIDTH) == 0)
-  {   
-    if(getFromVariant(m_nReqOutWidth,pVar)) return S_OK;
-  }
-  else if(oleicmp(pszPropName, OLE_PARAM_TARGET_HEIGHT) == 0)
-  {
-    if(getFromVariant(m_nReqOutHeight,pVar)) return S_OK;    
-  }
-  return E_INVALIDARG;
 }

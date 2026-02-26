@@ -68,12 +68,13 @@ HRESULT CCustomBaseFilter::BreakConnect(PIN_DIRECTION dir)
 }
 
 
-void CCustomBaseFilter::AddInputType( const GUID* pType, const GUID* pSubType, const GUID* pFormat )
+void CCustomBaseFilter::AddInputType(const GUID* pType, const GUID* pSubType, const GUID* pFormat)
 {
-	m_vInTypes.push_back((GUID*)pType);
-	m_vInSubTypes.push_back((GUID*)pSubType);
-	m_vInFormats.push_back((GUID*)pFormat);
+  m_vInTypes.push_back((GUID*)pType);
+  m_vInSubTypes.push_back((GUID*)pSubType);
+  m_vInFormats.push_back((GUID*)pFormat);
 }
+
 
 HRESULT CCustomBaseFilter::CheckInputType( const CMediaType *pMediaType )
 {
