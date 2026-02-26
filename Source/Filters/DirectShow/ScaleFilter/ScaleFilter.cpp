@@ -131,7 +131,7 @@ ScaleFilter::ScaleFilter(): CCustomBaseFilter(NAME("DQ VPP Scale Filter"), 0, CL
 }
 
 
-void ScaleFilter::initParameters()
+void ScaleFilter::initParameters(void)
 {
   addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nReqOutWidth, 0);
   addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nReqOutHeight, 0);
