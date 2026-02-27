@@ -233,14 +233,14 @@ private:
 
     // set spin box ranges
     // Frame bit limit
-    setSpinBoxRange(IDC_SPIN1, 0, UINT_MAX);
+    setSpinBoxRange(IDC_SPIN1, 0, SHRT_MAX);
     // I-frame period
-    setSpinBoxRange(IDC_SPIN2, 0, UINT_MAX);
+    setSpinBoxRange(IDC_SPIN2, 0, SHRT_MAX);
     // Quality
     setSpinBoxRange(IDC_SPIN3, 0, D_MAX_QUALITY_H264);
-    setSpinBoxRange(IDC_SPIN4, 0, INT_MAX);
+    setSpinBoxRange(IDC_SPIN4, 0, SHRT_MAX);
     setSpinBoxRange(IDC_SPIN5, 0, 9999); 
-    setSpinBoxRange(IDC_SPIN6, 0, INT_MAX);
+    setSpinBoxRange(IDC_SPIN6, 0, SHRT_MAX);
     // DMAX
     setSpinBoxRange(IDC_SPIN7, 0, 9);
     setSpinBoxRange(IDC_SPIN8, 0, 9);
