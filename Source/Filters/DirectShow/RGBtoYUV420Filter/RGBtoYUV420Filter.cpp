@@ -142,14 +142,14 @@ HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new ConvRGB24toYUYV_FixP(m_nInWidth,m_nInHeight);
-        else
+        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
           m_pConverter = new ConvRGB24toYUV420FixP(m_nInWidth,m_nInHeight);
       }
       else if(in_MediaType==MEDIASUBTYPE_RGB32 || in_MediaType==MEDIASUBTYPE_ARGB32)
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new ConvRGB32toYUYV_FixP(m_nInWidth,m_nInHeight);
-        else
+        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
           m_pConverter = new ConvRGB32toYUV420FixP(m_nInWidth,m_nInHeight);
       }
       if(m_pConverter==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
@@ -347,7 +347,7 @@ HRESULT RGBtoYUV420Filter::CheckTransform(const CMediaType *mtIn, const CMediaTy
 	// Adding advert media type to this method
   if(mtIn->subtype==MEDIASUBTYPE_RGB24 || mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
-    if(mtOut->subtype==MEDIASUBTYPE_YUV420P_S || mtOut->subtype==MEDIASUBTYPE_I420 || mtOut->subtype==MEDIASUBTYPE_YV12)
+    if(mtOut->subtype==MEDIASUBTYPE_YUV420P_S || mtOut->subtype==MEDIASUBTYPE_I420 || mtOut->subtype==MEDIASUBTYPE_YV12 || mtOut->subtype==MEDIASUBTYPE_IYUV)
     {
       TransformOK = true;
     } 

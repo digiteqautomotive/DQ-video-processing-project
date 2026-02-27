@@ -162,7 +162,7 @@ CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 static const GUID *ScalleSupportedFormats[] = {
 	&MEDIASUBTYPE_RGB24,&MEDIASUBTYPE_RGB32,&MEDIASUBTYPE_ARGB32,
 	&MEDIASUBTYPE_YUY2, &MEDIASUBTYPE_YUYV, &MEDIASUBTYPE_YVYU, &MEDIASUBTYPE_UYVY, &MEDIASUBTYPE_HDYC,
-	&MEDIASUBTYPE_YUV420P_S, &MEDIASUBTYPE_I420, &MEDIASUBTYPE_YV12, // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
+	&MEDIASUBTYPE_YUV420P_S, &MEDIASUBTYPE_I420, &MEDIASUBTYPE_YV12, &MEDIASUBTYPE_IYUV,  // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb
 	&MEDIASUBTYPE_AYUV, &MEDIASUBTYPE_YV24,
 	&MEDIASUBTYPE_RGB565, &MEDIASUBTYPE_RGB555};
 
@@ -214,7 +214,7 @@ HRESULT ScaleFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt
         if(m_pScaler==NULL) m_pScaler = GetPicScallerRGB32();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_YUV420P_S || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12)
+      else if(pmt->subtype==MEDIASUBTYPE_YUV420P_S || pmt->subtype==MEDIASUBTYPE_I420 || pmt->subtype==MEDIASUBTYPE_YV12 || pmt->subtype==MEDIASUBTYPE_IYUV)
       {
         if(m_pScaler==NULL) m_pScaler = new PicScalerYUV420PImpl();
         m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
@@ -312,7 +312,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 	// Set size
       if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
           pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
-      else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12)
+      else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12 || pMediaType->subtype==MEDIASUBTYPE_IYUV)
       {
         if((pBi->biWidth & 1)==1)
             pBi->biWidth &= ~1;			// Odd width values cannot be used for I420 encoding.
@@ -480,9 +480,9 @@ HRESULT ScaleFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mt
     }
     return S_OK;
   } 
-  if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12)
+  if(mtIn->subtype==MEDIASUBTYPE_YUV420P_S || mtIn->subtype==MEDIASUBTYPE_I420 || mtIn->subtype==MEDIASUBTYPE_YV12 || mtIn->subtype==MEDIASUBTYPE_IYUV)
   {
-    if(mtOut->subtype!=MEDIASUBTYPE_YUV420P_S && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12)
+    if(mtOut->subtype!=MEDIASUBTYPE_YUV420P_S && mtOut->subtype!=MEDIASUBTYPE_I420 && mtOut->subtype!=MEDIASUBTYPE_YV12 && mtOut->subtype!=MEDIASUBTYPE_IYUV)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

@@ -1,0 +1,347 @@
+/** @file
+
+MODULE:			ConvNV12toRGB
+                        
+FILE NAME:		ConvNV12toRGB.cpp
+
+DESCRIPTION:		Integer implementation of YUV420 (8 bpp) to RGB 24 bit 
+			colour conversion derived from the NV12toRGBConverter base 	class.
+					  
+LICENSE: Software License Agreement (BSD License)
+
+Copyright (c) 2025, Digiteq Automotive All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* Neither the name of the CSIR nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+==========================================================================*/
+#include "ConvNV12toRGB.h"
+
+#include "typedfs.h"
+
+#include <uuids.h>
+
+
+/*===========================================================================
+	Private Methods.
+==========================================================================*/
+
+
+bool ConvNV12toRGB24::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return (VideoFormatOut==MEDIASUBTYPE_RGB24) &&
+         (VideoFormatIn==MEDIASUBTYPE_NV12);
+}
+
+
+void ConvNV12toRGB24::Convert(const void* pInputBuffer, void *pBufferOut) const
+{
+int32_t X;
+const unsigned char *y = (const unsigned char *)pInputBuffer;
+const signed char *uv = (const signed char *)y + _width*_height;
+unsigned char *pRgb = (unsigned char *)pBufferOut;
+const int width3 = 3*_width;
+
+if(_flip)
+  {
+  pRgb += width3*(_height-1);
+  for(int row=0; row<_height; row++)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *uv++ - 128;
+      const signed char V = *uv++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
+
+      int32_t Y = 256 * *(y++);
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+
+      Y = 256 * *(y++);
+
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) pRgb[3]=255;
+      else if(X<0) pRgb[3]=0;
+      else pRgb[3] = X;
+
+      pRgb += 6;
+    }
+    pRgb -= 6*_width;
+    if((row&1) == 0)
+    {
+      uv -= _width;
+    }  
+  }
+}
+else
+{  
+  for(int row=0; row<_height; row+=2)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *uv++ - 128;
+      const signed char V = *uv++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
+
+      int32_t Y = 256 * *y;
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+
+      Y = 256 * y[1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) pRgb[3]=255;
+      else if(X<0) pRgb[3]=0;
+      else pRgb[3] = X;
+
+      pRgb += width3;
+
+      Y = 256 * y[_width];
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+
+      Y = 256 * y[_width+1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) pRgb[3]=255;
+      else if(X<0) pRgb[3]=0;
+      else pRgb[3] = X;
+
+      pRgb = pRgb - width3 + 6;
+      y += 2;
+    }
+    pRgb += width3;
+    y += _width;
+  }
+}
+
+} //end FlipConvert
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+bool ConvNV12toRGB32::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32) &&
+         (VideoFormatIn==MEDIASUBTYPE_NV12);
+}
+
+
+void ConvNV12toRGB32::Convert(const void* pInputBuffer, void *pBufferOut) const
+{
+int32_t X;
+const unsigned char *y = (const unsigned char *)pInputBuffer;
+const signed char *uv = (const signed char *)y + _width*_height;
+unsigned char *pRgb = (unsigned char *)pBufferOut;
+const int width4 = 4*_width;
+
+if(_flip)
+{
+  pRgb += 4*_width*(_height-1);
+  for(int row=0; row<_height; row++)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *uv++ - 128;
+      const signed char V = *uv++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
+      int32_t Y = 256 * *(y++);
+
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+      pRgb[3] = 0;			// A
+
+      Y = 256 * *(y++);
+
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) pRgb[6]=255;
+      else if(X<0) pRgb[6]=0;
+      else pRgb[6] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+      pRgb[7] = 0;			// A
+
+      pRgb += 8;
+    }
+    pRgb -= 8*_width;
+    if((row&1) == 0)
+    {
+      uv -= _width;
+    }  
+  }
+} //end FlipConvert
+else
+{
+  for(int row=0; row<_height; row+=2)
+  {
+    int Pixel2Count = (_width+1) / 2;
+    while(Pixel2Count-->0)		//converts to RGB
+    {
+      const signed char U = *uv++ - 128;
+      const signed char V = *uv++ - 128;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
+
+      int32_t Y = 256 * *y;
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+
+      pRgb[3] = 0;			// A
+
+      Y = 256 * y[1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) pRgb[6]=255;
+      else if(X<0) pRgb[6]=0;
+      else pRgb[6] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+
+      pRgb[7] = 0;			// A
+
+      pRgb += width4;
+
+      Y = 256 * y[_width];
+      X = (Y + cc) >> 8;		// B: Y + 2.032*U
+      if(X>255) pRgb[2]=255;
+      else if(X<0) pRgb[2]=0;
+      else pRgb[2] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[1]=255;
+      else if(X<0) pRgb[1]=0;
+      else pRgb[1] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+      if(X>255) pRgb[0]=255;
+      else if(X<0) pRgb[0]=0;
+      else pRgb[0] = X;
+
+      pRgb[3] = 0;			// A
+
+      Y = 256 * y[_width+1];
+      X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+      if(X>255) pRgb[6]=255;
+      else if(X<0) pRgb[6]=0;
+      else pRgb[6] = X;
+      X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+      if(X>255) pRgb[5]=255;
+      else if(X<0) pRgb[5]=0;
+      else pRgb[5] = X;
+      X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+      if(X>255) pRgb[4]=255;
+      else if(X<0) pRgb[4]=0;
+      else pRgb[4] = X;
+
+      pRgb[7] = 0;			// A
+
+      pRgb = pRgb - width4 + 8;
+      y += 2;
+    }
+    pRgb += width4;
+    y += _width;
+  }
+}
+}

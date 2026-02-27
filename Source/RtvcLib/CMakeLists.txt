@@ -17,9 +17,12 @@ DirectShow/VersionInfo.cpp
 
 SET(GU_SRCS
 GeneralUtils/MeasurementTable.cpp
+GeneralUtils/StringUtil.cpp 
 )
 
 SET(IU_SRCS
+../libs/VppLib/src/ConvUYVYtoRGB.cpp
+../libs/VppLib/src/ConvNV12toRGB.cpp 
 ../libs/VppLib/src/ConvRGBtoYUYV_FixP.cpp
 ../libs/VppLib/src/ConvRGB24toYUV420_FixP.cpp
 ../libs/VppLib/src/ConvRGB32toYUV420_FixP.cpp
@@ -120,8 +123,11 @@ DirectShow/VideoMixingBase.h
 )
 SET(GU_HEADERS
 GeneralUtils/MeasurementTable.h
+GeneralUtils/StringUtil.h
 )
 SET(IU_HEADERS
+../libs/VppLib/include/ConvUYVYtoRGB.h
+../libs/VppLib/include/ConvNV12toRGB.h
 ../libs/VppLib/include/ConvAYUV444toRGB.h
 ../libs/VppLib/include/ConvRGB24toYUV420.h
 ../libs/VppLib/include/ConvRGB24toYUV420CCIR601Real.h
