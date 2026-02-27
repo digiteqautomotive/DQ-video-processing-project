@@ -295,6 +295,11 @@ int RGB24toRGB32compare(const char *Alg, int Width, int Height, const unsigned c
         printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Alg, Width,Height, x,y, BlobRef24[pos],BlobTest[pos2], BlobRef24[pos+1],BlobTest[pos2+1], BlobRef24[pos+2],BlobTest[pos2+2]);
         return 10000;
       }
+      if(BlobTest[pos2+3]!=0)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d A=%d.", Alg, Width,Height, x,y, BlobRef24[pos],BlobTest[pos2], BlobRef24[pos+1],BlobTest[pos2+1], BlobRef24[pos+2],BlobTest[pos2+2],BlobTest[pos2+3]);
+        return 10000;
+      }
     }
 #ifdef _DEBUG
   if(diffs1 > 0)
@@ -1301,7 +1306,12 @@ bool Pause = false;
       PicScalerRGB32Impl picScalerRGB32(1920,1080,800,600);
       DurationMin = BenchScaller(picScalerRGB32, BlobIn, BlobOut);
     }
-    printf("\nScale RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+    printf("\nScale RGB32 from 1920,1080->800,600 time %.3f[ms]", DurationMin/1000.0);
+    {
+      OrigScalerRGB32Impl origScalerRGB32(1920,1080,800,600);
+      DurationMin = BenchScaller(origScalerRGB32, BlobIn, BlobOut);
+    }
+    printf(" Orig %.3f[ms].", DurationMin/1000.0);
 
     {
       PicScalerARGB32Impl picScalerARGB32(1920,1080,800,600);     
@@ -1326,12 +1336,6 @@ bool Pause = false;
       printf("\nScale ARGB32_SSE from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
     }
 #endif
-
-    {
-      OrigScalerRGB32Impl origScalerRGB32(1920,1080,800,600);
-      DurationMin = BenchScaller(origScalerRGB32, BlobIn, BlobOut);
-    }
-    printf("\nScale Orig RGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
 
     {
       PicScalerYUYVImpl PicScalerYUYV(1920,1080,800,600);
