@@ -1,10 +1,10 @@
 /** @file
 
-MODULE				: RGBtoYUV420Filter
+MODULE:			RGBtoYUV420Filter
 
-FILE NAME			: RGBtoYUV420Filter.cpp
+FILE NAME:		RGBtoYUV420Filter.cpp
 
-DESCRIPTION			: 
+DESCRIPTION:
 					  
 LICENSE: Software License Agreement (BSD License)
 

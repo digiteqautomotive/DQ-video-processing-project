@@ -70,34 +70,31 @@ HRESULT CCustomBaseFilter::BreakConnect(PIN_DIRECTION dir)
 
 void CCustomBaseFilter::AddInputType(const GUID* pType, const GUID* pSubType, const GUID* pFormat)
 {
-  m_vInTypes.push_back((GUID*)pType);
-  m_vInSubTypes.push_back((GUID*)pSubType);
-  m_vInFormats.push_back((GUID*)pFormat);
+GuidTriplet NewFormat;
+  NewFormat.Formats = pFormat;
+  NewFormat.Types = pType;
+  NewFormat.SubTypes = pSubType;
+  m_vIn.push_back(NewFormat);
 }
 
 
-HRESULT CCustomBaseFilter::CheckInputType( const CMediaType *pMediaType )
+HRESULT CCustomBaseFilter::CheckInputType(const CMediaType *pMediaType)
 {
-	for (size_t i = 0; i < m_vInTypes.size(); i++)
-	{
-		if (((pMediaType->majortype == *m_vInTypes[i]) && (m_vInTypes[i]))||(!m_vInTypes[i]))
-		{
-			//Compare sub type
-			if (((pMediaType->subtype == *m_vInSubTypes[i]) && (m_vInSubTypes[i]))||(!m_vInSubTypes[i]))
-			{
-				//Compare formats
-				if (((pMediaType->formattype == *m_vInFormats[i])&&(m_vInFormats[i]))||(!m_vInFormats[i]))
-				{
-					return S_OK;
-				}
-			}
-		}
+  for(size_t i = 0; i<m_vIn.size(); i++)
+  {
+    const GuidTriplet * const vf = &m_vIn[i];
+    if(vf->Types==NULL ||  pMediaType->majortype==*vf->Types)			//Compare type
+      if(vf->SubTypes==NULL ||  pMediaType->subtype==*vf->SubTypes)		//Compare sub type
+        if(vf->Formats==NULL ||  pMediaType->formattype==*vf->Formats)		//Compare formats
+ 	{
+	  return S_OK;
 	}
-	return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+  return VFW_E_TYPE_NOT_ACCEPTED;
 }
 
 
-HRESULT CCustomBaseFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt)
+HRESULT CCustomBaseFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 {
   if(direction == PINDIR_INPUT)
   {

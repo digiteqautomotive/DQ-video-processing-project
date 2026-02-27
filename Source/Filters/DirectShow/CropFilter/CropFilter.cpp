@@ -376,6 +376,10 @@ HRESULT CropFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, lo
 {
   //make sure we were able to initialise our cropper
   ASSERT(m_pCropper);
+
+  lOutActualDataLength = labs(m_nOutWidth*m_nOutHeight*m_nBitsPerPixel) / 8;
+  if(lOutBufferSize < lOutActualDataLength) return E_INVALIDARG;		// Output buffer is too small.
+
   // TODO: Add stride parameter for crop class to avoid this extra mem alloc
   //Call cropping conversion code
   m_pCropper->SetInDimensions(m_nInWidth, m_nInHeight);
@@ -383,28 +387,6 @@ HRESULT CropFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, lo
   m_pCropper->SetCrop(m_nLeftCrop, m_nRightCrop, m_nTopCrop, m_nBottomCrop);
   int res = m_pCropper->Crop(pBufferIn, pBufferOut, m_Vflip);
 
-/*
-  int res = m_pCropper->Crop(pBufferIn, m_pCropBuffer, m_Vflip);
-  ASSERT(res == 1);
-  // Copy the cropped image with stride padding
-  BYTE* pFrom = m_pCropBuffer;
-  BYTE* pTo = pBufferOut;
-
-  int nBytesPerLine = (m_nOutWidth * m_nBitsPerPixel) / 8;
-  for (size_t i = 0; i < (size_t)m_nOutHeight; i++)
-  {
-    memcpy(pTo, pFrom, nBytesPerLine);
-    pFrom += nBytesPerLine;
-    pTo += nBytesPerLine;
-//    for (size_t j = 0; j < (size_t)m_nPadding; j++)
-//    {
-//      *pTo = 0;
-//      pTo++;
-//    }
-//  }
-*/
-  //lOutActualDataLength = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
-  lOutActualDataLength = labs(m_nOutWidth*m_nOutHeight*m_nBitsPerPixel) / 8;
   return S_OK;
 }
 
@@ -440,6 +422,7 @@ HRESULT CropFilter::SetCropIfValid(int nTotalDimensionImage, int nNewCrop, int& 
     return E_FAIL;
   }
 }
+
 
 HRESULT CropFilter::GetPages(CAUUID *pPages)
 {

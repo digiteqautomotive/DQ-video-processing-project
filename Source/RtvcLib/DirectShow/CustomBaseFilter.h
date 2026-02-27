@@ -35,13 +35,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <vector>
 
-typedef std::vector<GUID*> GUIDList_t;
+typedef struct
+{
+  const GUID *Types;
+  const GUID *SubTypes;
+  const GUID *Formats;
+} GuidTriplet;
 
-/**
- * \defgroup DirectShowFilters DirectShow Filters
+typedef std::vector<GuidTriplet> GUID3List_t;
+
+
+/** \defgroup DirectShowFilters DirectShow Filters
  * \defgroup DirectShowLib DirectShow Library
- * \defgroup ImageLib Image Library
- */
+ * \defgroup ImageLib Image Library */
 
 
 /** \ingroup DirectShowLib
@@ -105,7 +111,5 @@ protected:
 
 private:
 	// Used for storing and checking connection types
-  GUIDList_t m_vInTypes;
-  GUIDList_t m_vInSubTypes;
-  GUIDList_t m_vInFormats;
+  GUID3List_t m_vIn;  
 };
