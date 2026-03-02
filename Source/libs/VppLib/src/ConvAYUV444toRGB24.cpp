@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: AYUV444toRGB24Converter
+MODULE				: ConvAYUV444toRGB24
 
 FILE NAME			: ConvAYUV444toRGB24.cpp
 
@@ -55,14 +55,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 
-bool AYUV444toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvAYUV444toRGB24::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_AYUV &&
 	 VideoFormatOut==MEDIASUBTYPE_RGB24;
 }
 
 
-void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void ConvAYUV444toRGB24::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;

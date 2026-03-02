@@ -29,8 +29,8 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==========================================================================*/
-#ifndef _AYUV444TORGB24CONVERTER_H
-#define _AYUV444TORGB24CONVERTER_H
+#ifndef _ConvAYUV444toRGB24_H
+#define _ConvAYUV444toRGB24_H
 #include <DirectShow/stdafx.h>
 #include "ConvYUVtoRGB.h"
 
@@ -38,20 +38,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 * colour convertion derived from the CVideoConverter base class. */
-class AYUV444toRGB24Converter: public CVideoConverter
+class ConvAYUV444toRGB24: public CVideoConverter
 {
 public:
 	 // Construction and destruction.
-  AYUV444toRGB24Converter(void) { }
-  AYUV444toRGB24Converter(int width, int height): CVideoConverter(width,height) {}
+  ConvAYUV444toRGB24(void) { }
+  ConvAYUV444toRGB24(int width, int height): CVideoConverter(width,height) {}
 
-  virtual ~AYUV444toRGB24Converter(void) {}
+  virtual ~ConvAYUV444toRGB24(void) {}
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 	// Interface.
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
-};//end AYUV444toRGB24Converter.
+};//end ConvAYUV444toRGB24.
 
 
 /** \ingroup ImageLib
@@ -60,42 +60,40 @@ public:
 class AYUV444toARGB32Converter: public CVideoConverter
 {
 public:
-  // Construction and destruction.
-  AYUV444toARGB32Converter(void) { }
+	// Construction and destruction.
+  AYUV444toARGB32Converter(void) {}
   AYUV444toARGB32Converter(int width, int height): CVideoConverter(width,height) {}
-
 
 	// Interface
   //virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
-};//end AYUV444toARGB32Converter.
+}; //end AYUV444toARGB32Converter.
 
 
 //////////////////////////////////////////////////////////////
 
 
-class YV24toRGB24Converter: public CVideoConverter
+class ConvYV24toRGB24: public CVideoConverter
 {
 public:
 	// Construction and destruction.
-  YV24toRGB24Converter(void) {}
-  YV24toRGB24Converter(int width, int height): CVideoConverter(width,height) {}
+  ConvYV24toRGB24(void) {}
+  ConvYV24toRGB24(int width, int height): CVideoConverter(width,height) {}
 
 	// Interface
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
-}; //end YV24toRGB24Converter.
+}; //end ConvYV24toRGB24.
 
 
-class YV24toRGB32Converter: public CVideoConverter
+class ConvYV24toRGB32: public CVideoConverter
 {
 public:
   // Construction and destruction.
-  YV24toRGB32Converter(void) { }
-  YV24toRGB32Converter(int width, int height): CVideoConverter(width,height) {}
-  virtual ~YV24toRGB32Converter(void) {}
+  ConvYV24toRGB32(void) {}
+  ConvYV24toRGB32(int width, int height): CVideoConverter(width,height) {}  
 
   // Interface.
   virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
@@ -103,7 +101,7 @@ public:
 
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
-};	//end YV24toRGB24Converter.
+};	//end ConvYV24toRGB24.
 
 
-#endif	// _AYUV444TORGB24CONVERTER_H
+#endif	// _ConvAYUV444toRGB24_H

@@ -1,6 +1,6 @@
 /** @file
 
-MODULE:			AYUV444toRGB24Converter
+MODULE:			ConvAYUV444toRGB24
 
 FILE NAME:		ConvAYUV444toRGB24_ASM.cpp
 
@@ -44,7 +44,7 @@ extern "C"
 }
 
 
-bool AYUV444toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvAYUV444toRGB24::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_AYUV &&
 	 VideoFormatOut==MEDIASUBTYPE_RGB24;
@@ -60,7 +60,7 @@ bool AYUV444toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, 
 // A0 Y0 U0 V0 A1 Y1 U1 V1 ... 
 
 
-void AYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void ConvAYUV444toRGB24::Convert(const void* pInputBuffer, void* pRgb) const
 {
   if(_flip)
   {
@@ -99,7 +99,7 @@ void AYUV444toARGB32Converter::Convert(const void* pInputBuffer, void* pRgb) con
 
 
 /*
-void YV24toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void ConvYV24toRGB24::Convert(const void* pInputBuffer, void* pRgb) const
 {
   if(_flip)
   {
@@ -129,7 +129,7 @@ bool AYUV444toARGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn,
 }
 
 /*
-void YV24toRGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void ConvYV24toRGB32::Convert(const void* pInputBuffer, void* pRgb) const
 {
   if(_flip)
   {

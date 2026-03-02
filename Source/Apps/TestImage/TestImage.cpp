@@ -869,7 +869,7 @@ bool Pause = false;
  for(int Width=35; Width<39; Width++)
    for(int Height=35; Height<39; Height++)
    {
-     AYUV444toRGB24Converter picConvertedAYUV2RGB24(Width,Height);
+     ConvAYUV444toRGB24 picConvertedAYUV2RGB24(Width,Height);
      OrigRealYUV444toRGB24Converter OrigPicConvertedAYUVtoRGB24(Width,Height);
 
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
@@ -1202,7 +1202,7 @@ bool Pause = false;
 
 	/////////////////////////////////////////////////////////////////////////////
     {
-      AYUV444toRGB24Converter picConverterAYUV2RGB24(1920,1080);
+      ConvAYUV444toRGB24 picConverterAYUV2RGB24(1920,1080);
       DurationMin = BenchConverter(picConverterAYUV2RGB24, BlobIn, BlobOut);
       printf("\nConvert AYUV to RGB24 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
       picConverterAYUV2RGB24.SetFlip(true);
@@ -1213,7 +1213,7 @@ bool Pause = false;
       OrigRealYUV444toRGB24Converter picConvertedAYUV2RGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedAYUV2RGB24, BlobIn, BlobOut);
     }
-    printf("\nConvert Orig AYUV to RGB24 resolution 1920,1080 time %.3f[ms].", DurationMin/1000.0);
+    printf(" orig %.3f[ms].", DurationMin/1000.0);
 
    {
       AYUV444toARGB32Converter picConvertedAYUV2ARGB32(1920,1080);

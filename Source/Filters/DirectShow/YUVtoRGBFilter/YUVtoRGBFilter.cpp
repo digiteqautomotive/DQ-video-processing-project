@@ -139,7 +139,7 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
       if(in_MediaType == MEDIASUBTYPE_AYUV)
           m_pConverter = new AYUV444toARGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType == MEDIASUBTYPE_YV24)
-          m_pConverter = new YV24toRGB32Converter(m_nInWidth, m_nInHeight);
+          m_pConverter = new ConvYV24toRGB32(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12 || in_MediaType==MEDIASUBTYPE_IYUV)
           m_pConverter = new YUV420toRGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
@@ -154,9 +154,9 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
     if(out_MediaType == MEDIASUBTYPE_RGB24)
     {
       if(in_MediaType == MEDIASUBTYPE_AYUV)
-          m_pConverter = new AYUV444toRGB24Converter(m_nInWidth, m_nInHeight);
+          m_pConverter = new ConvAYUV444toRGB24(m_nInWidth, m_nInHeight);
       if(in_MediaType == MEDIASUBTYPE_YV24)
-          m_pConverter = new YV24toRGB24Converter(m_nInWidth, m_nInHeight);
+          m_pConverter = new ConvYV24toRGB24(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12 || in_MediaType==MEDIASUBTYPE_IYUV)
       {
 #ifdef USE_ASM

@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: YV24toRGB24Converter
+MODULE				: ConvYV24toRGB24
 
-FILE NAME			: YV24toRGB24Converter.cpp
+FILE NAME			: ConvYV24toRGB24.cpp
 
 DESCRIPTION			: Implementation of YV24 (24 bpp) to RGB 24 bit 
 					  
@@ -47,14 +47,14 @@ DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xA
 ===========================================================================*/
 
 
-bool YV24toRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvYV24toRGB24::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_YV24 &&
          VideoFormatOut==MEDIASUBTYPE_RGB24;
 }
 
 
-void YV24toRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void ConvYV24toRGB24::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * InY = (const unsigned char *)pInputBuffer;
@@ -125,20 +125,20 @@ int32_t X;
 //////////////////////////////////////////////////////////////////////////////
 
 
-bool YV24toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormat) const
+bool ConvYV24toRGB32::isVideoFormatSupported(const GUID &VideoFormat) const
 {
   return VideoFormat==MEDIASUBTYPE_YV24;
 }
 
 
-bool YV24toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool ConvYV24toRGB32::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatIn==MEDIASUBTYPE_YV24 &&
          (VideoFormatOut==MEDIASUBTYPE_RGB32 || VideoFormatOut==MEDIASUBTYPE_ARGB32);
 }
 
 
-void YV24toRGB32Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void ConvYV24toRGB32::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * InY = (const unsigned char *)pInputBuffer;
