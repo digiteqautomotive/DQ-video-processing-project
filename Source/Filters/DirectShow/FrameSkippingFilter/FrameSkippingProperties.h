@@ -129,9 +129,9 @@ public:
     return hr;
   }
 
+
   HRESULT OnApplyChanges(void)
   {
-
     int nLength = 0;
     char szBuffer[BUFFER_SIZE];
 

@@ -52,8 +52,7 @@ DEFINE_GUID(CLSID_VPP_TeeProperties,
 /** \ingroup DirectShowFilters
  * Basic Tee filter implementation demonstrating how the usage of the CMultiIOBaseFilter class
  * NOTE: This filter will not handle ALL media types and has been created for demonstration purposes.
- * Use the standard DirectShow tee in applications.
- */
+ * Use the standard DirectShow tee in applications. */
 class RtvcTee: public CMultiIOBaseFilter, public ISpecifyPropertyPages
 {
 public:

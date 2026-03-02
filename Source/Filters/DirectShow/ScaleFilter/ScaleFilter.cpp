@@ -284,7 +284,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
           {
             pMediaType->formattype = FORMAT_VideoInfo;
 
-            pBi = &(pVih->bmiHeader);
+            pBi = &(pVih->bmiHeader); rcSource=&(pVih->rcSource); rcTarget=&(pVih->rcTarget);
             memset(pVih,0,sizeof(VIDEOINFOHEADER));
             pVih->rcSource = tempVINF2.rcSource;
             pVih->rcTarget = tempVINF2.rcTarget;

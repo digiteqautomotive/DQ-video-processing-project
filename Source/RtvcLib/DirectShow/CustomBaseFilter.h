@@ -110,6 +110,5 @@ protected:
   bool m_Vflip;
 
 private:
-	// Used for storing and checking connection types
-  GUID3List_t m_vIn;  
+  GUID3List_t m_vIn;			///< Used for storing and checking connection types.
 };

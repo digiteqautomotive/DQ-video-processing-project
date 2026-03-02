@@ -35,6 +35,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 const int MAX_MESSAGE_LENGTH = 512;
 
+#ifndef E_NOT_SUFFICIENT_BUFFER
+ #define E_NOT_SUFFICIENT_BUFFER  HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER)
+#endif
+
 CStatusInterface::CStatusInterface(): m_sLastError(""),
 	m_pMediaEventSink(NULL)
 //	,m_lFriendlyId(-1)
@@ -115,6 +119,7 @@ STDMETHODIMP CStatusInterface::SetMediaEventSink( IMediaEventSink* pEventSink )
 */
 
 /*
+/// This is a total nonsense. The only unique identification should be pointer to IUnknown
 STDMETHODIMP CStatusInterface::SetFriendlyID( long lId )
 {
 	m_lFriendlyId = lId;

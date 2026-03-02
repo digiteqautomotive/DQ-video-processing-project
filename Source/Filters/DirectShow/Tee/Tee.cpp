@@ -38,6 +38,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
+DEFINE_GUID(WMFORMAT_MPEG2Video, 0xE06D80E3, 0xDB46, 0x11CF, 0xB4, 0xD1, 0x00, 0x80, 0x5F, 0x6C, 0xBB, 0xEA);
+
 
 const OLECHAR OLE_PARAM_COPY[] =  olestr(PARAM_COPY);
 
@@ -76,20 +78,22 @@ HRESULT RtvcTee::Receive(IMediaSample *pSample, int nIndex)
 		//We have a live stream - display it
     CAutoLock lck(&m_csReceive);
     AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[0]->SampleProps();
+
+/* This seems to be completelly wrong.
     if (pProps->dwStreamId != AM_STREAM_MEDIA) 
     {
 	return m_vInputPins[0]->Receive(pSample);		// JFO: Why to call Receive from input pin????
     }
+*/
 
-    const int nSize = pSample->GetActualDataLength();
-    BYTE *pBufferIn  = NULL;
-    hr = pSample->GetPointer(&pBufferIn);
-    if(FAILED(hr)) return hr;
-    if(pBufferIn==NULL) return E_POINTER;
-
-
-    if(m_bCopy)
+    if(m_bCopy && pProps->dwStreamId==AM_STREAM_MEDIA)
     {			// Copy the input sample to all outputs
+      const int nSize = pSample->GetActualDataLength();
+      BYTE *pBufferIn  = NULL;
+      hr = pSample->GetPointer(&pBufferIn);
+      if(FAILED(hr)) return hr;
+      if(pBufferIn==NULL) return E_POINTER;
+
       for(size_t i=0;  i<m_vOutputPins.size(); i++)
       {
         if(m_vOutputPins[i]->IsConnected())
@@ -159,6 +163,7 @@ HRESULT RtvcTee::Receive(IMediaSample *pSample, int nIndex)
     }
     else
     {
+      hr = S_OK;
       for(size_t i=0; i<m_vOutputPins.size(); i++)
       {
         if(m_vOutputPins[i]->IsConnected())
@@ -202,18 +207,20 @@ void RtvcTee::InitialiseOutputTypes()
 }
 
 
-HRESULT RtvcTee::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex )
+HRESULT RtvcTee::DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex)
 {
+  if(pRequestProperties==NULL) return E_INVALIDARG;
 	// Get media type of the output pin
   AM_MEDIA_TYPE mt;
   HRESULT hr = m_vInputPins[0]->ConnectionMediaType(&mt);
   if(FAILED(hr)) return hr;
 
 	// This simple tee will only cater for the following types
-  assert(mt.formattype==FORMAT_VideoInfo || mt.formattype==FORMAT_VideoInfo2 || mt.formattype==FORMAT_WaveFormatEx);
+  assert(mt.formattype==FORMAT_VideoInfo || mt.formattype==FORMAT_VideoInfo2 || mt.formattype==FORMAT_WaveFormatEx || mt.formattype==WMFORMAT_MPEG2Video);
 
-  if(mt.formattype == FORMAT_VideoInfo)
+  if(mt.formattype==FORMAT_VideoInfo || mt.formattype==WMFORMAT_MPEG2Video)
   {
+	//TOREVISE: WMFORMAT_MPEG2Video: Should actually change mode and see what the maximum size is per frame?
     if(mt.pbFormat!=NULL)
     {
 	BITMAPINFOHEADER *pbmi = HEADER(mt.pbFormat);
@@ -230,6 +237,8 @@ HRESULT RtvcTee::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* 
     WAVEFORMATEX *pWavHeader = (WAVEFORMATEX*)mt.pbFormat;
     pRequestProperties->cbBuffer = pWavHeader->nSamplesPerSec * pWavHeader->nChannels * (pWavHeader->wBitsPerSample >> 3);
   }
+  else
+    m_bCopy = false;		// Do not copy contents for unknown formattype.
 
   if(pRequestProperties->cbAlign == 0)
   {

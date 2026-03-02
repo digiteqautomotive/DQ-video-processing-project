@@ -238,10 +238,14 @@ HRESULT FrameSkippingFilter::Run(REFERENCE_TIME tStart)
         }
 
         // populate to be played
-        for (size_t iCount = 1; iCount <= m_uiTotalFrames; ++iCount)
+        for(size_t iCount = 1; iCount <= m_uiTotalFrames; ++iCount)
         {
+#if _MSC_VER > 1600
           auto found = toBeSkipped.find(iCount);
-          if (found == toBeSkipped.end())
+#else
+	  std::set<int>::iterator found;
+#endif
+          if(found == toBeSkipped.end())
           {
             toBePlayed.insert(iCount);
             m_vFramesToBeSkipped.push_back(0);

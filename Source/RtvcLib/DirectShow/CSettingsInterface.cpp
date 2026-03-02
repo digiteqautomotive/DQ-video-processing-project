@@ -37,6 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sstream>
 
+#include "GeneralUtils/StringUtil.h"	// compatiblitity for older MSVC
+
 
 CSettingsInterface::CSettingsInterface(void): m_DirtyProps(false)
 {

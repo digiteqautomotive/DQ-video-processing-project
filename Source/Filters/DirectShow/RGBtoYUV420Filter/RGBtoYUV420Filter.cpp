@@ -235,7 +235,7 @@ HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
     {
       pMediaType->SetSubtype(&MEDIASUBTYPE_YUYV);
       pBmi->biBitCount = 16;
-      //pBmi->biCompression = MAKEFOURCC('I', '4', '2', '0');
+      pBmi->biCompression = MAKEFOURCC('Y','U','Y','2');	// https://learn.microsoft.com/en-us/windows/win32/medfound/video-fourccs
     }
 
 

@@ -513,7 +513,7 @@ inline unsigned H264EncoderFilter::getParameterSetLength() const
   return m_uiSeqParamSetLen + m_uiPicParamSetLen;
 }
 
-inline unsigned H264EncoderFilter::copySequenceAndPictureParameterSetsIntoBuffer( BYTE* pBuffer )
+inline unsigned H264EncoderFilter::copySequenceAndPictureParameterSetsIntoBuffer(BYTE* pBuffer)
 {
   // The SPS and PPS contain start code
   assert (m_uiSeqParamSetLen > 0 && m_uiPicParamSetLen > 0);
