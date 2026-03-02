@@ -56,7 +56,7 @@ Name: "FramerateDisplayFilter"; Description: "FramerateDisplayFilter Direct Show
 Name: "FrameSkippingFilter"; Description: "FrameSkippingFilter Direct Show filter"; Types: full custom
 Name: "H264filters"; Description: "H264 related Direct Show filters"; Types: full custom
 Name: "PicInPicFilter"; Description: "PicInPicFilter Direct Show filter"; Types: full normal custom
-Name: "RGBtoYUV420Filter"; Description: "RGBtoYUV420Filter Direct Show filter"; Types: full custom
+Name: "RGBtoYUVFilter"; Description: "RGBtoYUVFilter Direct Show filter"; Types: full custom
 Name: "RotateFilter"; Description: "RotateFilter Direct Show filter"; Types: full normal custom
 Name: "RtspSourceFilter"; Description: "RtspSourceFilter Direct Show filter"; Types: full custom
 Name: "ScaleFilter"; Description: "ScaleFilter Direct Show filter"; Types: full normal custom
@@ -99,8 +99,8 @@ Source: ".\Projects\Win32\VC12\Win32\Release\H264DecoderFilter.dll"; DestDir: "{
 Source: ".\Projects\Win32\VC12\x64\Release\H264DecoderFilter.dll"; DestDir: "{app}\Win64"; Components: H264filters; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\PicInPicFilter.dll"; DestDir: "{app}\Win32"; Components: PicInPicFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\PicInPicFilter.dll"; DestDir: "{app}\Win64"; Components: PicInPicFilter; Flags: ignoreversion; Check: IsWin64;
-Source: ".\Projects\Win32\VC12\Win32\Release\RGBtoYUV420Filter.dll"; DestDir: "{app}\Win32"; Components: RGBtoYUV420Filter; Flags: ignoreversion
-Source: ".\Projects\Win32\VC12\x64\Release\RGBtoYUV420Filter.dll"; DestDir: "{app}\Win64"; Components: RGBtoYUV420Filter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\RGBtoYUVFilter.dll"; DestDir: "{app}\Win32"; Components: RGBtoYUVFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\RGBtoYUVFilter.dll"; DestDir: "{app}\Win64"; Components: RGBtoYUVFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\RotateFilter.dll"; DestDir: "{app}\Win32"; Components: RotateFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\RotateFilter.dll"; DestDir: "{app}\Win64"; Components: RotateFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\RtspSourceFilter.dll"; DestDir: "{app}\Win32"; Components: RtspSourceFilter; Flags: ignoreversion
@@ -134,6 +134,8 @@ Type: files; name: "{app}\Win32\YUV420toRGBFilter.dll";
 Type: files; name: "{app}\Win32\YUV444toRGBFilter.dll";
 Type: files; name: "{app}\Win64\YUV420toRGBFilter.dll";
 Type: files; name: "{app}\Win64\YUV444toRGBFilter.dll";
+Type: files; name: "{app}\Win32\RGBtoYUV420Filter.dll";
+Type: files; name: "{app}\Win64\RGBtoYUV420Filter.dll";
 
 
 [Run]
@@ -157,8 +159,8 @@ Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\H264DecoderFilter.dll"""
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\H264DecoderFilter.dll"""; Components: H264filters; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\PicInPicFilter.dll"""; Components: PicInPicFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\PicInPicFilter.dll"""; Components: PicInPicFilter; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RGBtoYUV420Filter.dll"""; Components: RGBtoYUV420Filter
-Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RGBtoYUV420Filter.dll"""; Components: RGBtoYUV420Filter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RGBtoYUVFilter.dll"""; Components: RGBtoYUVFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RGBtoYUVFilter.dll"""; Components: RGBtoYUVFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RotateFilter.dll"""; Components: RotateFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\RotateFilter.dll"""; Components: RotateFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\RtspSourceFilter.dll"""; Components: RtspSourceFilter
@@ -201,8 +203,8 @@ Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\H264DecoderFilter.dll
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\H264DecoderFilter.dll\"""; Components: H264filters; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\PicInPicFilter.dll\"""; Components: PicInPicFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\PicInPicFilter.dll\"""; Components: PicInPicFilter; Check: IsWin64;
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RGBtoYUV420Filter.dll\"""; Components: RGBtoYUV420Filter
-Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RGBtoYUV420Filter.dll\"""; Components: RGBtoYUV420Filter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RGBtoYUVFilter.dll\"""; Components: RGBtoYUVFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RGBtoYUVFilter.dll\"""; Components: RGBtoYUVFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RotateFilter.dll\"""; Components: RotateFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\RotateFilter.dll\"""; Components: RotateFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\RtspSourceFilter.dll\"""; Components: RtspSourceFilter

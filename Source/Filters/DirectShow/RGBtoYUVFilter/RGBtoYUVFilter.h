@@ -2,7 +2,7 @@
 
 MODULE				: RGBtoYUV420Filter
 
-FILE NAME			: RGBtoYUV420Filter.h
+FILE NAME			: RGBtoYUVFilter.h
 
 DESCRIPTION			: DirectShow Filter that converts RGB24 or RGB32 media to our custom packet YUV 420 format.
 

@@ -24,7 +24,7 @@ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR B
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "RGBtoYUV420Filter.h"
+#include "RGBtoYUVFilter.h"
 #include "DirectShow/CommonDefs.h"
 #include "DirectShow/CustomMediaTypes.h"
 #include "DirectShow/VariantTools.h"

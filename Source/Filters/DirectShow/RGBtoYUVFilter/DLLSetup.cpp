@@ -30,7 +30,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "stdafx.h"
-#include "RGBtoYUV420Filter.h"
+#include "RGBtoYUVFilter.h"
 #include "RGB2YUVProperties.h"
 
 

@@ -1,10 +1,10 @@
 /** @file
 
-MODULE				: PicInPicFilter
+MODULE:			PicInPicFilter
 
-FILE NAME			: PicInPicFilter.cpp
+FILE NAME:		PicInPicFilter.cpp
 
-DESCRIPTION			: 
+DESCRIPTION: 
 					  
 LICENSE: Software License Agreement (BSD License)
 
