@@ -1,0 +1,148 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (South Africa) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENS)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SOUTH_AFRICA
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PIC_IN_PIC_DIALOG DIALOGEX 0, 0, 220, 190
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Target Width:",IDC_STATIC,17,22,56,8
+    LTEXT           "Target Height:",IDC_STATIC,16,37,59,8
+    EDITTEXT        IDC_EDIT_TARGET_WIDTH,78,18,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,18,10,14
+    EDITTEXT        IDC_EDIT_TARGET_HEIGHT,78,34,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,34,10,14
+    LTEXT           "Subpicture Width:",IDC_STATIC,16,59,58,8
+    LTEXT           "Subpicture Height:",IDC_STATIC,16,75,60,8
+    EDITTEXT        IDC_EDIT_SUBPICTURE_WIDTH,78,58,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,58,11,14
+    EDITTEXT        IDC_EDIT_SUBPICTURE_HEIGHT,78,74,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN4,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,74,11,14
+    LTEXT           "Offset X:",IDC_STATIC,19,100,56,8
+    LTEXT           "Offset Y:",IDC_STATIC,20,115,52,8
+    EDITTEXT        IDC_EDIT_SUBPICTURE_OFFSET_X,78,96,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN5,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,96,11,14
+    EDITTEXT        IDC_EDIT_SUBPICTURE_OFFSET_Y,78,112,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN6,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,112,11,14
+    LTEXT           "Border width:",IDC_STATIC,16,138,60,8
+    EDITTEXT        IDC_EDIT_BORDER_WIDTH,78,136,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN7,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,136,11,14
+    LTEXT           "Use 0 for populating input2 video size.",IDC_STATIC,139,60,66,25
+    LTEXT           "Use 0 for populating input video size.",IDC_STATIC,137,22,66,25
+    CONTROL         "Throttle output 2",IDC_CHECK_THROTTLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,155,178,10
+    CONTROL         "Always duplicate frames on output",IDC_CHECK_DUPLICATE_FRAMES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,168,187,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_PIC_IN_PIC_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 213
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 183
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+#define ORIGINAL_FILENAME	"PicInPicFilter.dll"
+
+#include "../VersionResInfo.h"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_PIC_IN_PIC_CAPTION  "DQ Pic in Pic Properties"
+END
+
+#endif    // English (South Africa) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
