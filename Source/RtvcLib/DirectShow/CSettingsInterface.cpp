@@ -362,8 +362,13 @@ ParameterBase::ParameterBase(const char *NewName, const OLECHAR *NewOleName, boo
 {
   if(NewOleName==NULL || *NewOleName==0)
       OleName = NULL;
-  else 
-      OleName = (OLECHAR*)CoTaskMemAlloc(sizeof(OLECHAR)*(olelen(NewOleName)+1));
+  else
+  {
+      int len = sizeof(OLECHAR)*(olelen(NewOleName)+1);
+      OleName = (OLECHAR*)CoTaskMemAlloc(len);
+      if(OleName)
+          memcpy(OleName,NewOleName,len);
+  }
 }
 
 
