@@ -34,7 +34,7 @@ DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00,
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
-const OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
+const OLECHAR OLE_INVERT[] =  olestr(INVERT);
 
 
 YUVtoRGBFilter::YUVtoRGBFilter():
@@ -52,7 +52,7 @@ YUVtoRGBFilter::YUVtoRGBFilter():
 
 void YUVtoRGBFilter::initParameters(void)
 {
-  addParameter(INVERT, OLE_PARAM_FLIP, &m_bInvert,  m_bInvert);
+  addParameter(INVERT, OLE_INVERT, &m_bInvert,  m_bInvert);
 }
 
 
