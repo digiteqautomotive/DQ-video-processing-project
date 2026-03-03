@@ -1,10 +1,10 @@
 /** @file
 
-MODULE:			PicInPicFilter
+MODULE				: PicInPicFilter
 
-FILE NAME:		PicInPicFilter.cpp
+FILE NAME			: PicInPicFilter.cpp
 
-DESCRIPTION: 
+DESCRIPTION			: 
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -854,7 +854,8 @@ void PicInPicFilter::reconfigure(void)
   }
   else		// No source or target image resize.
   {
-    m_pPicInPic->SetDimensions(pBmih1->biWidth, pBmih1->biHeight);
+    if(m_pPicInPic)
+        m_pPicInPic->SetDimensions(pBmih1->biWidth, pBmih1->biHeight);
 	// recreate 2nd picture buffer
     m_szBufferForScaledSecondaryImage = labs(iSecondaryWidth*iSecondaryHeight*m_nBitsPerPixel) / 8;
     if(m_szBufferForScaledSecondaryImage>0)
