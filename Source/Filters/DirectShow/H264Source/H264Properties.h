@@ -122,8 +122,8 @@ private:
     //SendMessage(GetDlgItem(m_Dlg, IDC_CMB_DIMENSIONS), CB_SETMINVISIBLE, 5, 0);
 
     //// Init frames per second
-    //short lower = 1;
-    //short upper = 60;
+    //const short lower = 1;
+    //const short upper = 60;
 
     //// Init UI
     //long lResult = SendMessage(			// returns LRESULT in lResult

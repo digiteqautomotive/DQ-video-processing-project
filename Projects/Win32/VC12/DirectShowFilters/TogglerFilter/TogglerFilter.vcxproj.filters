@@ -43,6 +43,9 @@
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\TogglerFilter.rc">

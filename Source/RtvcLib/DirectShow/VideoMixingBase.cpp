@@ -181,9 +181,11 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       return hr;
     }
 
-    if(pOtherPin)
+    int NewOutputWidth = m_nOutputWidth;
+    int NewOutputHeight = m_nOutputHeight;
+    int NewOutputSize = m_nOutputSize;
     {		// We need to recalculate the new width and height
-      hr = SetOutputDimensions(&(m_VideoInHeader[0].bmiHeader), &(m_VideoInHeader[1].bmiHeader), m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
+      hr = SetOutputDimensions(&(m_VideoInHeader[0].bmiHeader), &(m_VideoInHeader[1].bmiHeader), NewOutputWidth, NewOutputHeight, NewOutputSize);
       if(FAILED(hr)) return hr;
     }
 
@@ -198,7 +200,7 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
         {
           pVih->AvgTimePerFrame = m_iRepeatTime*10;
           if(m_iRepeatTime>0)
-              pVih->dwBitRate = ((unsigned long long)m_nOutputSize*8*1000000)/m_iRepeatTime;
+              pVih->dwBitRate = ((unsigned long long)NewOutputSize*8*1000000)/m_iRepeatTime;
 	  bmh1 = &pVih->bmiHeader;
           rcSource = &pVih->rcSource;
           rcTarget = &pVih->rcTarget;
@@ -211,7 +213,7 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
         {
           pVih2->AvgTimePerFrame = m_iRepeatTime*10;
           if(m_iRepeatTime>0)
-              pVih2->dwBitRate = ((unsigned long long)m_nOutputSize*8*1000000)/m_iRepeatTime;
+              pVih2->dwBitRate = ((unsigned long long)NewOutputSize*8*1000000)/m_iRepeatTime;
 	  bmh1 = &pVih2->bmiHeader;
           rcSource = &pVih2->rcSource;
           rcTarget = &pVih2->rcTarget;
@@ -220,12 +222,12 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       if(bmh1 == NULL) return VFW_S_NO_MORE_ITEMS;
 
 			// Adjust media parameters
-      bmh1->biWidth = m_nOutputWidth;
-      bmh1->biHeight = m_nOutputHeight;
+      bmh1->biWidth = NewOutputWidth;
+      bmh1->biHeight = NewOutputHeight;
 
-      bmh1->biSizeImage = m_nOutputSize;
+      bmh1->biSizeImage = NewOutputSize;
 			//Set sample size
-      pMediaType->SetSampleSize(m_nOutputSize);
+      pMediaType->SetSampleSize(NewOutputSize);
  
       bmh1->biCompression = BI_RGB;
 
@@ -234,8 +236,8 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       {
         rcSource->left = 0;
         rcSource->top = 0;
-        rcSource->right = m_nOutputWidth;
-        rcSource->bottom = m_nOutputHeight;
+        rcSource->right = NewOutputWidth;
+        rcSource->bottom = NewOutputHeight;
       }
 
 			// Set target rect
@@ -243,11 +245,17 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       {
         rcTarget->left = 0;
         rcTarget->top = 0;
-        rcTarget->right = m_nOutputWidth;
-        rcTarget->bottom = m_nOutputHeight;
+        rcTarget->right = NewOutputWidth;
+        rcTarget->bottom = NewOutputHeight;
       }
     }
 
+    if(!m_vOutputPins[0]->IsConnected())
+    {
+      m_nOutputWidth = NewOutputWidth;
+      m_nOutputHeight = NewOutputHeight;
+      m_nOutputSize = NewOutputSize;
+    }
     return S_OK;
   }
   return VFW_S_NO_MORE_ITEMS;
@@ -257,14 +265,14 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
 HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt, int nIndex )
 {
 	// Check if our base class accepts the connection
-	HRESULT hr = CMultiIOBaseFilter::SetMediaType(direction, pmt, nIndex);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+  HRESULT hr = CMultiIOBaseFilter::SetMediaType(direction, pmt, nIndex);
+  if (FAILED(hr))
+  {
+    return hr;
+  }
 	//TODO: Check if the sizes match: The images must correlate in dimension!!!!!!!!!!!
-	if (direction == PINDIR_INPUT)
-	{
+  if(direction == PINDIR_INPUT)
+  {
 	  const BITMAPINFOHEADER *bmih;
 	  if(pmt->formattype==FORMAT_VideoInfo)
 	  {
@@ -342,62 +350,61 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 	  {
 	    return hr;
 	  }
+  }
 
 		// Get first input dimensions
-		AM_MEDIA_TYPE mediaType1;
-		BITMAPINFOHEADER* pBmih1 = NULL;
-		if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
-		{
-			hr = m_vInputPins[0]->ConnectionMediaType(&mediaType1);
-			if (FAILED(hr))
-			{
-			  return hr;
-			}
-			if(mediaType1.formattype==FORMAT_VideoInfo)
-			{
-			  VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType1.pbFormat;
-			  pBmih1 = &pVih->bmiHeader;
-                        }
-		        if(mediaType1.formattype==FORMAT_VideoInfo2)
-			{
-			  VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*) mediaType1.pbFormat;
-			  pBmih1 = &pVih2->bmiHeader;
-                        }
-		}
+  AM_MEDIA_TYPE mediaType1;
+  BITMAPINFOHEADER* pBmih1 = NULL;
+  if(m_vInputPins[0]!=NULL && m_vInputPins[0]->IsConnected())
+  {
+	hr = m_vInputPins[0]->ConnectionMediaType(&mediaType1);
+	if (FAILED(hr))
+ 	{
+	  return hr;
+	}
+	if(mediaType1.formattype==FORMAT_VideoInfo)
+	{
+	  VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*) mediaType1.pbFormat;
+	  pBmih1 = &pVih->bmiHeader;
+        }
+	if(mediaType1.formattype==FORMAT_VideoInfo2)
+	{
+	  VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*) mediaType1.pbFormat;
+	  pBmih1 = &pVih2->bmiHeader;
+        }
+  }
 
 		// Get second input dimensions
-		BITMAPINFOHEADER* pBmih2 = NULL;
-		AM_MEDIA_TYPE mediaType2;
-		if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
-		{
-			hr = m_vInputPins[1]->ConnectionMediaType(&mediaType2);
-			if (FAILED(hr))
-			{
-				return hr;
-			}			
-			if(mediaType2.formattype==FORMAT_VideoInfo)
-			{
-			  VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*) mediaType2.pbFormat;
-			  pBmih2 = &pVih->bmiHeader;
-                        }
-		        if(mediaType2.formattype==FORMAT_VideoInfo2)
-			{
-			  VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*) mediaType2.pbFormat;
-			  pBmih2 = &pVih2->bmiHeader;
-                        }
-		}
+  BITMAPINFOHEADER* pBmih2 = NULL;
+  AM_MEDIA_TYPE mediaType2;
+  if(m_vInputPins[1]!=NULL && m_vInputPins[1]->IsConnected())
+  {
+    hr = m_vInputPins[1]->ConnectionMediaType(&mediaType2);
+    if(FAILED(hr))
+    {
+      return hr;
+    }			
+    if(mediaType2.formattype==FORMAT_VideoInfo)
+    {
+      VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*) mediaType2.pbFormat;
+      pBmih2 = &pVih->bmiHeader;
+    }
+    if(mediaType2.formattype==FORMAT_VideoInfo2)
+    {
+      VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*) mediaType2.pbFormat;
+      pBmih2 = &pVih2->bmiHeader;
+    }
+  }
 
 		// Leave the output dimensions up to the sub class
-		HRESULT hr = SetOutputDimensions(pBmih1, pBmih2, m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
+  hr = SetOutputDimensions(pBmih1, pBmih2, m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
 
 		// Free format blocks
-		if (pBmih1)
-			FreeMediaType(mediaType1);
-		if (pBmih2)
-			FreeMediaType(mediaType2);
-		return hr;
-	}
-	return S_OK;
+  if(pBmih1)
+	FreeMediaType(mediaType1);
+  if(pBmih2)
+	FreeMediaType(mediaType2);
+  return hr;
 }
 
 
@@ -408,7 +415,7 @@ STDMETHODIMP VideoMixingBase::Run(REFERENCE_TIME tStart)
 }
 
 
-STDMETHODIMP VideoMixingBase::Stop()
+STDMETHODIMP VideoMixingBase::Stop(void)
 {
   CAutoLock lck1(&m_csFilter);
   if(m_State == State_Stopped) {

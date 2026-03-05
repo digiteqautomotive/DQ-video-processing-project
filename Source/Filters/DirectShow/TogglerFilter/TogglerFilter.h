@@ -28,21 +28,10 @@ static const GUID CLSID_TogglerProperties =
 { 0x3d1ef8a8, 0x22d6, 0x4474, { 0x83, 0x43, 0x4c, 0x4c, 0x6b, 0x9, 0x77, 0xcc } };
 
 
-class FrameQueue
-{
-public:
-  FrameQueue(void) {}
-  ~FrameQueue();
-
-  mutable CCritSec m_csFrame2Queue;
-  std::list<IMediaSample*> q;
-
-  void AddFrame(IMediaSample*pFrame);
-  void Erase(void);
-  IMediaSample *PeekFrame(void) const;
-  IMediaSample *PeekFrame(REFERENCE_TIME &tStart, REFERENCE_TIME &tStop);
-  void PopFrame(void);
-};
+#define FILTER_PARAM_CHOOSE_INPUT	"Choose Input"
+#define FILTER_PARAM_DURATION		"Duration"
+#define FILTER_PARAM_ACT_WIDTH		"Actual width"
+#define FILTER_PARAM_ACT_HEIGHT		"Actual height"
 
 
 // Forward declarations
@@ -121,5 +110,5 @@ private:
   bool m_DuplicateFrame;
   bool m_bToggle;
   REFERENCE_TIME m_duration;
-  REFERENCE_TIME m_MaxInterval;
+  unsigned m_MaxInterval;
 };

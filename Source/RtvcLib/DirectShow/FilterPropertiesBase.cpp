@@ -93,7 +93,7 @@ void FilterPropertiesBase::setSpinBoxRange(int iSpinBoxId, short lower, short up
 }
 
 
-HRESULT FilterPropertiesBase::setEditTextFromIntFilterParameter(const char* szParam, int iEditId)
+HRESULT FilterPropertiesBase::setEditTextFromIntFilterParameter(const char* szParam, const int iEditId)
 {
   int nLength = 0;
   char szBuffer[BUFFER_SIZE];
@@ -110,7 +110,7 @@ HRESULT FilterPropertiesBase::setEditTextFromIntFilterParameter(const char* szPa
 }
 
 
-HRESULT FilterPropertiesBase::setComboTextFromFilterParameter(const char* szParam, int iCmbId)
+HRESULT FilterPropertiesBase::setComboTextFromFilterParameter(const char* szParam, const int iCmbId)
 {
   int nLength = 0;
   char szBuffer[BUFFER_SIZE];
@@ -123,7 +123,7 @@ HRESULT FilterPropertiesBase::setComboTextFromFilterParameter(const char* szPara
 }
 
 
-HRESULT FilterPropertiesBase::setIntFilterParameterFromEditText(const char* szParam, int iEditId)
+HRESULT FilterPropertiesBase::setIntFilterParameterFromEditText(const char* szParam, const int iEditId)
 {
   int nLength = 0;
   char szBuffer[BUFFER_SIZE];
@@ -132,7 +132,7 @@ HRESULT FilterPropertiesBase::setIntFilterParameterFromEditText(const char* szPa
 }
 
 
-HRESULT FilterPropertiesBase::setCheckBoxFromBoolFilterParameter(const char* szParam, int iCheckBoxId)
+HRESULT FilterPropertiesBase::setCheckBoxFromBoolFilterParameter(const char* szParam, const int iCheckBoxId)
 {
   int nLength = 0;
   char szBuffer[BUFFER_SIZE];
@@ -144,8 +144,7 @@ HRESULT FilterPropertiesBase::setCheckBoxFromBoolFilterParameter(const char* szP
 				GetDlgItem(m_Dlg, iCheckBoxId),	// handle to destination control
 				(UINT) BM_SETCHECK,		// message ID
 				(WPARAM) wParam,		// = 0; not used, must be zero
-				(LPARAM) 0			// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-				);
+				(LPARAM) 0);			// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)				
     return S_OK;
   }
   else
@@ -155,7 +154,7 @@ HRESULT FilterPropertiesBase::setCheckBoxFromBoolFilterParameter(const char* szP
 }
 
 
-HRESULT FilterPropertiesBase::setBoolFilterParameterFromCheckBox(const char* szParam, int iCheckBoxId)
+HRESULT FilterPropertiesBase::setBoolFilterParameterFromCheckBox(const char* szParam, const int iCheckBoxId)
 {
   HRESULT hr(S_OK);
   int iCheck = SendMessage( GetDlgItem(m_Dlg, iCheckBoxId),	(UINT) BM_GETCHECK,	0, 0);

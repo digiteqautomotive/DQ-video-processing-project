@@ -62,8 +62,9 @@ Name: "RtspSourceFilter"; Description: "RtspSourceFilter Direct Show filter"; Ty
 Name: "ScaleFilter"; Description: "ScaleFilter Direct Show filter"; Types: full normal custom
 Name: "SkewingFilter"; Description: "SkewingFilter Direct Show filter"; Types: full custom
 Name: "Stereo2MonoFilter"; Description: "Stereo2MonoFilter Direct Show filter"; Types: full custom
-Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types: full
+Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types: full custom
 Name: "TimestampLoggerFilter"; Description: "TimestampLoggerFilter Direct Show filter"; Types: full custom
+Name: "TogglerFilter"; Description: "Toggle Direct Show filter"; Types: full normal custom
 Name: "UtilityFilter"; Description: "Utility Direct Show filter"; Types: full normal custom
 Name: "VideoMixingFilter"; Description: "VideoMixingFilter Direct Show filter"; Types: full normal custom
 Name: "YUV420ToRGBFilter"; Description: "YUV420ToRGBFilter Direct Show filter"; Types: full custom
@@ -115,6 +116,8 @@ Source: ".\Projects\Win32\VC12\Win32\Release\Tee.dll"; DestDir: "{app}\Win32"; C
 Source: ".\Projects\Win32\VC12\x64\Release\Tee.dll"; DestDir: "{app}\Win64"; Components: TeeFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\TimestampLoggerFilter.dll"; DestDir: "{app}\Win32"; Components: TimestampLoggerFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\TimestampLoggerFilter.dll"; DestDir: "{app}\Win64"; Components: TimestampLoggerFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\TogglerFilter.dll"; DestDir: "{app}\Win32"; Components: TogglerFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\TogglerFilter.dll"; DestDir: "{app}\Win64"; Components: TogglerFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\UtilityFilter.dll"; DestDir: "{app}\Win32"; Components: UtilityFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\UtilityFilter.dll"; DestDir: "{app}\Win64"; Components: UtilityFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win32"; Components: VideoMixingFilter; Flags: ignoreversion
@@ -175,6 +178,8 @@ Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\Tee.dll"""; Components: 
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\Tee.dll"""; Components: TeeFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\TimestampLoggerFilter.dll"""; Components: TimestampLoggerFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\TimestampLoggerFilter.dll"""; Components: TimestampLoggerFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\TogglerFilter.dll"""; Components: TogglerFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\TogglerFilter.dll"""; Components: TogglerFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\UtilityFilter.dll"""; Components: UtilityFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\UtilityFilter.dll"""; Components: UtilityFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VideoMixingFilter.dll"""; Components: VideoMixingFilter
@@ -219,6 +224,8 @@ Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\Tee.dll\"""; Componen
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\Tee.dll\"""; Components: TeeFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\TimestampLoggerFilter.dll\"""; Components: TimestampLoggerFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\TimestampLoggerFilter.dll\"""; Components: TimestampLoggerFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\TogglerFilter.dll\"""; Components: TogglerFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\TogglerFilter.dll\"""; Components: TogglerFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\UtilityFilter.dll\"""; Components: UtilityFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\UtilityFilter.dll\"""; Components: UtilityFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VideoMixingFilter.dll\"""; Components: VideoMixingFilter

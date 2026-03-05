@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MultiIOBaseFilter.h"
 
+
 /** \ingroup DirectShowLib
  * Base class for video mixing renderers. 
  * Implements common video mixing functionality for RGB24/32 mixers with two inputs and one output. */
@@ -42,14 +43,10 @@ public:
 	/// Destructor
 	~VideoMixingBase();
 
-  /**
-   * @brief Getter for output width
-   */
-        int getOutputWidth() const { return m_nOutputWidth; }
-  /**
-   * @brief Getter for output height
-   */
-        int getOutputHeight() const { return m_nOutputHeight; }
+	//// Getter for output width.
+        int getOutputWidth() const {return m_nOutputWidth;}
+	//// Getter for output height.
+        int getOutputHeight() const {return m_nOutputHeight;}
 
 	/// Subclass must override these methods: it is up to the implementer whether the samples should be copied
 	/// to a temporary buffer etc.

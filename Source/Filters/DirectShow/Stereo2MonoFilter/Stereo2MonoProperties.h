@@ -70,8 +70,8 @@ public:
 
 	HRESULT ReadSettings()
 	{
-		short lower = 0;
-		short upper = SHRT_MAX;
+		const short lower = 0;
+		const short upper = SHRT_MAX;
 
 		 //Init UI
 		long lResult = SendMessage(			// returns LRESULT in lResult

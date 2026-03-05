@@ -83,8 +83,8 @@ void PicInPicProperties::initialiseControls()
 {
   InitCommonControls();
 
-  short lower = 0;
-  short upper = SHRT_MAX;
+  const short lower = 0;
+  const short upper = SHRT_MAX;
   setSpinBoxRange(IDC_SPIN1, lower, upper);
   setSpinBoxRange(IDC_SPIN2, lower, upper);
   setSpinBoxRange(IDC_SPIN3, lower, upper);

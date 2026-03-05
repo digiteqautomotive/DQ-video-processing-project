@@ -87,15 +87,15 @@ protected:
 
 	void setSpinBoxRange(int iSpinBoxId, short lower, short upper);
 
-	HRESULT setEditTextFromIntFilterParameter(const char* szParam, int iEditId);
+	HRESULT setEditTextFromIntFilterParameter(const char* szParam, const int iEditId);
 
-	HRESULT setComboTextFromFilterParameter(const char* szParam, int iCmbId);
+	HRESULT setComboTextFromFilterParameter(const char* szParam, const int iCmbId);
 
-	HRESULT setIntFilterParameterFromEditText(const char* szParam, int iEditId);
+	HRESULT setIntFilterParameterFromEditText(const char* szParam, const int iEditId);
 
-	HRESULT setCheckBoxFromBoolFilterParameter(const char* szParam, int iCheckBoxId);
+	HRESULT setCheckBoxFromBoolFilterParameter(const char* szParam, const int iCheckBoxId);
 
-	HRESULT setBoolFilterParameterFromCheckBox(const char* szParam, int iCheckBoxId);
+	HRESULT setBoolFilterParameterFromCheckBox(const char* szParam, const int iCheckBoxId);
 
 	/// Pointer to the filter's custom interface.
 	/// This pointer allows subclasses access to the filter for setting configuration.

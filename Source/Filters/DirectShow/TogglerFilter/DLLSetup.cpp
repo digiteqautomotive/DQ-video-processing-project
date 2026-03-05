@@ -13,7 +13,8 @@ Copyright (c) 2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rig
 #include "stdafx.h"
 #include "TogglerFilter.h"
 #include "TogglerProperties.h"
-//////////////////////////////////////////////////////////////////////////
+
+
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"DQ VPP Toggle Filter";   /// A name for the filter 
 

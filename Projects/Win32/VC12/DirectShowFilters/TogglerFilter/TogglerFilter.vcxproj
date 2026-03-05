@@ -230,6 +230,7 @@
     <None Include="TogglerFilter.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\resource.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\TogglerFilter.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\TogglerProperties.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\TogglerFilter\stdafx.h" />

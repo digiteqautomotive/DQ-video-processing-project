@@ -105,9 +105,8 @@ public:
     }
 
 
-    short lower = 0;
-    short upper = SHRT_MAX;
-
+    const short lower = 0;
+    const short upper = SHRT_MAX;
     setSpinBoxRange(IDC_SPIN1, lower, upper);
     setSpinBoxRange(IDC_SPIN2, lower, upper);
     setSpinBoxRange(IDC_SPIN3, lower, upper);
@@ -165,8 +164,8 @@ public:
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_INSERTSTRING, 1, (LPARAM)"Target Fps based");
     SendMessage(GetDlgItem(m_Dlg, IDC_CMB_MODE), CB_SETMINVISIBLE, 9, 0);
 
-    short lower = 0;
-    short upper = SHRT_MAX;
+    const short lower = 0;
+    const short upper = SHRT_MAX;
 
     // Init UI
     long lResult = SendMessage(			// returns LRESULT in lResult
