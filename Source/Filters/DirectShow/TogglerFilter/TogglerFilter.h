@@ -50,22 +50,11 @@ class PicInPicBase;
 class PicScalerBase;
 
 
-/**
- * @brief TogglerFilter that accepts two RGB24 inputs.
+/** @brief TogglerFilter that accepts two RGB24 inputs.
  * The filter should only be confgured after the inputs have been connected. */
 class TogglerFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {
-public:
-	typedef enum
-	{
-	  THREAD_NOT_INITIALISED =0,
-          THREAD_INITIALISING,
-          THREAD_RUNNING,
-          THREAD_STOPPING,
-          THREAD_STOPPED,
-          THREAD_ABORTED
-        } E_THR_STATUS;
-
+public:	
 	DECLARE_IUNKNOWN;
 
 	/// Constructor
@@ -107,69 +96,30 @@ public:
 
 private:
         void VFlipImg1(const BYTE* pSrc, BYTE* pDest);
-	bool parameterChangeAffectsOutput( const char* szParam );
+        void VFlipImg2(const BYTE* pSrc, BYTE* pDest);
+	bool parameterChangeAffectsOutput( const char* szParam);
 	void reconfigure();
-
-/*
-        volatile char ThreadStatus;
-#ifdef _WIN32
-	//HANDLE        StopEvent;	///< stop signal for log thread
-	HANDLE        MsgWakeUp;	///< new log entry signal for log thread
-	HANDLE        WriteThread;	///< log thread
-	static UINT WINAPI WorkerThread(void*);
-#else
-	volatile int StopEvent;
-	pthread_cond_t MsgWakeUp;
-	pthread_mutex_t mtx_MsgWakeUp;
-	pthread_t WriteThread;
-	static void *WorkerThread(void*);
-#endif
-        HRESULT InitializeOutputSample(IMediaSample **ppOutSample, int nInputIndex, int nOutputIndex);
-        LONGLONG m_MediaStart,m_MediaEnd;
-*/
 
 	/// Pointers to our last received Media Sample
 	//BYTE* m_pSampleBuffers[2];
 	/// Sizes
 	int m_nSampleSizes[2];
 
-	enum SUB_PIC_POSITION
-	{
-		SUB_PIC_POSITION_1		= 0,
-		SUB_PIC_POSITION_2		= 1,
-		SUB_PIC_POSITION_3		= 2,
-		SUB_PIC_POSITION_4		= 3,
-		SUB_PIC_POSITION_CUSTOM = 4
-	};
-
 	/// Position where subvideo is inserted
 	//int m_nPosition;
-	/// target width: if zero the width of the primary picture is used
-  int m_nTargetWidth;
-  /// target height: if zero the height of the primary picture is used
-  int m_nTargetHeight;
-	/// target width of sub pic: if zero the width of the secondary picture is used
-  int m_nSubPictureWidth;
-  /// target height of sub pic: if zero the width of the secondary picture is used
-  int m_nSubPictureHeight;
-	/// custom X offset from bottom left corner used when position = SUB_PIC_POSITION_CUSTOM
-  int m_nCustomOffsetX;
-  /// custom Y offset from bottom left corner used when position = SUB_PIC_POSITION_CUSTOM
-  int m_nCustomOffsetY;
-	/// picture in pic class
-  PicInPicBase* m_pPicInPic;
-	/// target picture scaler used if primary picture output dimensions != input picture dimensions
-  PicScalerBase* m_pTargetPicScaler;
-  /// target picture scaler used if secondary picture output dimensions != input picture dimensions
-  PicScalerBase* m_pSubPicScaler;
+  int m_nTargetWidth;			///< target width: if zero the width of the primary picture is used
+  int m_nTargetHeight;			///< target height: if zero the height of the primary picture is used
+  PicScalerBase* m_PicScaler1;		///< target picture scaler used if primary picture output dimensions != input picture dimensions
+  PicScalerBase* m_PicScaler2;		///< target picture scaler used if secondary picture output dimensions != input picture dimensions
 	/// Stores bytes per needed to store pixel according to media type
   unsigned m_nBitsPerPixel;
   /// buffer to scale secondary image into if required
   BYTE* m_pBufferForScaledSecondaryImage;
-  REFERENCE_TIME TimeStart2, TimeEnd2;
   unsigned m_szBufferForScaledSecondaryImage;
   bool m_Vflip;
   bool m_bThrottling;
   bool m_DuplicateFrame;
-  FrameQueue FQ;
+  bool m_bToggle;
+  REFERENCE_TIME m_duration;
+  REFERENCE_TIME m_MaxInterval;
 };

@@ -14,7 +14,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommand>D:\Program Files\graphstudionext\graphstudionext64-0.7.3.2.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand>D:\Program Files\graphstudionext\graphstudionext64-0.7.4.1.exe</LocalDebuggerCommand>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>
     </LocalDebuggerCommandArguments>

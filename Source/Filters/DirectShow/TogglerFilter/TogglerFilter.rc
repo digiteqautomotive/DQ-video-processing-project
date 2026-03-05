@@ -116,7 +116,7 @@ END
 //
 // Version
 //
-#define ORIGINAL_FILENAME	"PicInPicFilter.dll"
+#define ORIGINAL_FILENAME	"ToggleFilter.dll"
 
 #include "../VersionResInfo.h"
 
@@ -128,7 +128,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PIC_IN_PIC_CAPTION  "DQ Pic in Pic Properties"
+    IDS_PIC_IN_PIC_CAPTION  "DQ Toggle Properties"
 END
 
 #endif    // English (South Africa) resources

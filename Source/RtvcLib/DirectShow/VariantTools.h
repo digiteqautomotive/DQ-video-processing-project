@@ -11,7 +11,7 @@
  #define olecmp(__str1,__str2) strcmp(__str1,__str2)
  #define oleicmp(__str1,__str2) stricmp(__str1,__str2)
  #define olelen(__str) strlen(__str)
- #define sstr(s) #s
+ #define sstr(s) s
 #endif
 
 

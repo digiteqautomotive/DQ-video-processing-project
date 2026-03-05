@@ -15,7 +15,7 @@ FilterPropertiesBase(NAME("Pic in pic Properties"), pUnk, IDD_PIC_IN_PIC_DIALOG,
 }
 
 
-HRESULT TogglerProperties::ReadSettings()
+HRESULT TogglerProperties::ReadSettings(void)
 {
   initialiseControls();
 
@@ -25,24 +25,24 @@ HRESULT TogglerProperties::ReadSettings()
   hr = setEditTextFromIntFilterParameter(FILTER_PARAM_TARGET_WIDTH, IDC_EDIT_TARGET_WIDTH);
   if(FAILED(hr)) return hr;
 
-  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_SUB_PIC_WIDTH, IDC_EDIT_SUBPICTURE_WIDTH);
-  if(FAILED(hr)) return hr;
+  //hr = setEditTextFromIntFilterParameter(FILTER_PARAM_SUB_PIC_WIDTH, IDC_EDIT_SUBPICTURE_WIDTH);
+  //if(FAILED(hr)) return hr;
 
-  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_SUB_PIC_HEIGHT, IDC_EDIT_SUBPICTURE_HEIGHT);
-  if(FAILED(hr)) return hr;
+  //hr = setEditTextFromIntFilterParameter(FILTER_PARAM_SUB_PIC_HEIGHT, IDC_EDIT_SUBPICTURE_HEIGHT);
+  //if(FAILED(hr)) return hr;
 
-  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_OFFSET_X, IDC_EDIT_SUBPICTURE_OFFSET_X);
-  if(FAILED(hr)) return hr;
+  //hr = setEditTextFromIntFilterParameter(FILTER_PARAM_OFFSET_X, IDC_EDIT_SUBPICTURE_OFFSET_X);
+  //if(FAILED(hr)) return hr;
 
-  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
-  if(FAILED(hr)) return hr;
+  //hr = setEditTextFromIntFilterParameter(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
+  //if(FAILED(hr)) return hr;
 
   hr = setCheckBoxFromBoolFilterParameter(FILTER_THROTTLE, IDC_CHECK_THROTTLE);  
   if(FAILED(hr)) return hr;
   hr = setCheckBoxFromBoolFilterParameter(FILTER_DUPLICATE_FRAMES, IDC_CHECK_DUPLICATE_FRAMES);  
   if(FAILED(hr)) return hr;
   
-  hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
+  //hr = setEditTextFromIntFilterParameter(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
   return hr;
 }
 
@@ -56,24 +56,24 @@ HRESULT TogglerProperties::OnApplyChanges(void)
   if(FAILED(hr)) return hr;
 
   // Subpicture dimensions
-  hr = setIntFilterParameterFromEditText(FILTER_PARAM_SUB_PIC_WIDTH, IDC_EDIT_SUBPICTURE_WIDTH);
-  if(FAILED(hr)) return hr;
+  //hr = setIntFilterParameterFromEditText(FILTER_PARAM_SUB_PIC_WIDTH, IDC_EDIT_SUBPICTURE_WIDTH);
+  //if(FAILED(hr)) return hr;
 
-  hr = setIntFilterParameterFromEditText(FILTER_PARAM_SUB_PIC_HEIGHT, IDC_EDIT_SUBPICTURE_HEIGHT);
-  if(FAILED(hr)) return hr;
+  //hr = setIntFilterParameterFromEditText(FILTER_PARAM_SUB_PIC_HEIGHT, IDC_EDIT_SUBPICTURE_HEIGHT);
+  //if(FAILED(hr)) return hr;
 
   // Use custom offset
-  hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_X, IDC_EDIT_SUBPICTURE_OFFSET_X);
-  if(FAILED(hr)) return hr;
-  hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
-  if(FAILED(hr)) return hr;
+  //hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_X, IDC_EDIT_SUBPICTURE_OFFSET_X);
+  //if(FAILED(hr)) return hr;
+  //hr = setIntFilterParameterFromEditText(FILTER_PARAM_OFFSET_Y, IDC_EDIT_SUBPICTURE_OFFSET_Y);
+  //if(FAILED(hr)) return hr;
 
   hr = setBoolFilterParameterFromCheckBox(FILTER_THROTTLE, IDC_CHECK_THROTTLE);
   if(FAILED(hr)) return hr;
   hr = setBoolFilterParameterFromCheckBox(FILTER_DUPLICATE_FRAMES, IDC_CHECK_DUPLICATE_FRAMES);
   if(FAILED(hr)) return hr;
 
-  hr = setIntFilterParameterFromEditText(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
+  //hr = setIntFilterParameterFromEditText(FILTER_PARAM_BORDER_WIDTH, IDC_EDIT_BORDER_WIDTH);
   
   return hr;
 }

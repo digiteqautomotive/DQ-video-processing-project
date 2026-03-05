@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: PicInPicFilter
+MODULE:			PicInPicFilter
 
-FILE NAME			: PicInPicFilter.cpp
+FILE NAME:		PicInPicFilter.cpp
 
 DESCRIPTION			: 
 					  
@@ -325,7 +325,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
   HRESULT hr = pSample->GetPointer(&pBufferIn1);
   if(FAILED(hr)) return hr;
   if(pBufferIn1==NULL) return E_POINTER;
-  long SampleSize1 = pSample->GetSize();
+  const long SampleSize1 = pSample->GetSize();
 
   if(SampleSize1 < m_nSampleSizes[0]) return E_INVALIDARG;		// Check buffer size for frame 0.
 

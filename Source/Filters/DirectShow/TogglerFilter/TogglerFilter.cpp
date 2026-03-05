@@ -1,24 +1,19 @@
 /** @file
 
-MODULE				: TogglerFilter
+MODULE:			TogglerFilter
 
-FILE NAME			: TogglerFilter.cpp
+FILE NAME:		TogglerFilter.cpp
 
-DESCRIPTION			: 
+DESCRIPTION: 
 					  
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rights reserved.
-
 ===========================================================================*/
 #include "stdafx.h"
 #include "TogglerFilter.h"
 #include <DirectShow/CommonDefs.h>
 
-#include "PicInPicRGB24Impl.h"
-#include "PicInPicRGB32Impl.h"
-#include "PicInPicYV24Impl.h"
-#include "PicInPicRGB565Impl.h"
 #include "PicScalerRGB24Impl.h"
 #include "PicScalerRGB32Impl.h"
 #include "PicScalerYV24Impl.h"
@@ -42,103 +37,6 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 #include "DirectShow/VariantTools.h"
 
 #include <process.h>
-
-
-///////////////////////////////////////////////////////////
-
-
-FrameQueue::~FrameQueue()
-{
-  while(!q.empty())
-  {
-    IMediaSample *pFrame = q.front();
-    q.pop_front();
-    if(pFrame) pFrame->Release();
-  }
-}
-
-
-void FrameQueue::Erase(void)
-{
-IMediaSample *pFrame;
-  while(!q.empty())
-  {
-    {		// locked scope
-      CAutoLock lck(&m_csFrame2Queue);
-      pFrame = q.front();
-      q.pop_front();
-    }
-    if(pFrame) pFrame->Release();
-  }
-}
-
-void FrameQueue::AddFrame(IMediaSample*pFrame)
-{
-  if(pFrame)
-  {
-    pFrame->AddRef();
-    CAutoLock lck(&m_csFrame2Queue);
-    q.push_back(pFrame);
-  }
-}
-
-
-IMediaSample *FrameQueue::PeekFrame(void) const
-{
-CAutoLock lck(&m_csFrame2Queue);
-  if(q.empty()) return NULL;
-  IMediaSample *IS = q.front();
-  if(IS) IS->AddRef();
-return IS;
-}
-
-
-IMediaSample *FrameQueue::PeekFrame(REFERENCE_TIME &tStart, REFERENCE_TIME &tStop)
-{
-//LONGLONG tStart2, tStop2;
-REFERENCE_TIME TimeStart2, TimeEnd2;
-IMediaSample *IS = NULL;
-CAutoLock lck(&m_csFrame2Queue);
-
-  while(!q.empty())
-  {
-    std::list<IMediaSample*>::iterator it = q.begin();
-    IS = *it;
-    if(IS!=NULL)
-    {
-      it++;
-      if(it==q.end()) 
-      {
-        q.pop_front();
-        return(IS);		// IS is the last element in queue.
-      }
-      //IS->GetMediaTime(&tStart2,&tStop2);
-      IS->GetTime(&TimeStart2,&TimeEnd2);
-      if(TimeStart2>=tStart || TimeEnd2>=tStart)
-      {
-        q.pop_front();
-        return(IS);
-      }
-    }
-    q.pop_front();
-  }
-
-  if(IS) IS->AddRef();
-return IS;
-}
-
-
-void FrameQueue::PopFrame(void)
-{
-  IMediaSample *pFrame;
-  {
-    CAutoLock lck(&m_csFrame2Queue);
-    if(q.empty()) return;
-    pFrame = q.front();
-    q.pop_front();
-  }
-  if(pFrame) pFrame->Release();		// It is better to unlock queue here.
-}
 
 
 //////////////////////////////////////////////////////////
@@ -170,7 +68,7 @@ PicScalerBase *GetPicScallerRGB32(void)
 }
 
 
-TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Picture in Picture Filter"), 0, CLSID_VPP_TogglerFilter),
+TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Toggle Filter"), 0, CLSID_VPP_TogglerFilter),
   //m_nTargetWidth(0),		// Initialised in initParameters(), no need to initialise twice.
   //m_nTargetHeight(0),
   //m_nSubPictureWidth(0),
@@ -179,12 +77,14 @@ TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Picture in Picture 
   //m_nCustomOffsetY(0),
   //m_bThrottling(false),
   //m_DuplicateFrame(false),
-  m_pPicInPic(NULL),
-  m_pTargetPicScaler(NULL),
-  m_pSubPicScaler(NULL),
+  m_PicScaler1(NULL),
+  m_PicScaler2(NULL),
   m_nBitsPerPixel(0),
   m_pBufferForScaledSecondaryImage(NULL),
-  m_Vflip(false)
+  m_Vflip(false),
+  m_bToggle(false),
+  m_duration(0),
+  m_MaxInterval(50000000)
 {
   m_nSampleSizes[0] = 0;
   m_nSampleSizes[1] = 0;
@@ -199,16 +99,6 @@ void TogglerFilter::initParameters(void)
   addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);		// width output picture is scaled to
   addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);	// height output picture is scaled to
 
-  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, OLE_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);	// width inner picture is scaled to
-  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, OLE_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);	// height inner picture is scaled to
-
-  // currently unused: supposed to be one of the standard positions to insert 
-  // the picture i.e. top left or top right corner.
-  // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
-
-  addParameter(FILTER_PARAM_OFFSET_X, OLE_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
-  addParameter(FILTER_PARAM_OFFSET_Y, OLE_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
-
   addParameter(FILTER_THROTTLE, OLE_PARAM_THROTTLE, &m_bThrottling, false);
   addParameter(FILTER_DUPLICATE_FRAMES, OLE_PARAM_DUPLICATE_FRAMES, &m_DuplicateFrame, false);
 }
@@ -216,20 +106,15 @@ void TogglerFilter::initParameters(void)
 
 TogglerFilter::~TogglerFilter()
 {
-  if(m_pPicInPic)
+  if (m_PicScaler1)
   {
-    delete m_pPicInPic;
-    m_pPicInPic = NULL;
+    delete m_PicScaler1;
+    m_PicScaler1 = NULL;
   }
-  if (m_pTargetPicScaler)
+  if(m_PicScaler2)
   {
-    delete m_pTargetPicScaler;
-    m_pTargetPicScaler = NULL;
-  }
-  if(m_pSubPicScaler)
-  {
-    delete m_pSubPicScaler;
-    m_pSubPicScaler = NULL;
+    delete m_PicScaler2;
+    m_PicScaler2 = NULL;
   }
   if(m_pBufferForScaledSecondaryImage)
   {
@@ -239,7 +124,7 @@ TogglerFilter::~TogglerFilter()
 }
 
 
-CUnknown * WINAPI TogglerFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
+CUnknown * WINAPI TogglerFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
   TogglerFilter* pFilter = new TogglerFilter();
   if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
@@ -249,11 +134,26 @@ CUnknown * WINAPI TogglerFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 
 void TogglerFilter::VFlipImg1(const BYTE* pSrc, BYTE* pDest)
 {
-const int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
+const int nRowLength = (labs(m_VideoInHeader[0].bmiHeader.biWidth) * m_nBitsPerPixel)/8;
  ASSERT(pSrc!=NULL);
  ASSERT(pDest!=NULL);
- pDest += ((labs(m_pPicInPic->GetHeight()) - 1) * nRowLength);
- int i = m_pPicInPic->GetHeight();
+ pDest += ((labs(m_VideoInHeader[0].bmiHeader.biHeight) - 1) * nRowLength);
+ int i = m_nOutputHeight;
+ while(i-- > 0)
+ {
+   memcpy(pDest, pSrc, nRowLength);
+   pSrc+=nRowLength; pDest-=nRowLength;
+ }
+}
+
+
+void TogglerFilter::VFlipImg2(const BYTE* pSrc, BYTE* pDest)
+{
+const int nRowLength = (labs(m_VideoInHeader[1].bmiHeader.biWidth) * m_nBitsPerPixel)/8;
+ ASSERT(pSrc!=NULL);
+ ASSERT(pDest!=NULL);
+ pDest += ((labs(m_VideoInHeader[0].bmiHeader.biHeight) - 1) * nRowLength);
+ int i = m_nOutputHeight;
  while(i-- > 0)
  {
    memcpy(pDest, pSrc, nRowLength);
@@ -264,62 +164,26 @@ const int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
 
 HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
 {
-
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
 
   if(!m_vOutputPins[0]->IsConnected())
   {
-    FQ.Erase();
     return S_FALSE;	// Do nothing when no output is connected.
   }
 
-  if(m_bThrottling)
+  HRESULT hr = S_OK;
+  if(!m_bToggle || !m_vInputPins[1]->IsConnected())
   {
-    REFERENCE_TIME TimeStart1, TimeEnd1;
-    pSample->GetTime(&TimeStart1,&TimeEnd1);
-    if(TimeStart1 > TimeEnd2)
-    {
-      IMediaSample *pSample2 = FQ.PeekFrame(TimeStart1,TimeEnd1);
-      if(pSample2)
-      {
-        pSample2->GetTime(&TimeStart2,&TimeEnd2);
-        BYTE *pBuffer = NULL;
-        if(SUCCEEDED(pSample2->GetPointer(&pBuffer)))
-        {        
-          if(pBuffer!=NULL && m_pBufferForScaledSecondaryImage!=NULL)
-          {
-            if(m_pSubPicScaler)
-            {
-              m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
-            }
-            else		// copy direct from buffer
-            {
-              memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
-            }
-          }
-        }
-        pSample2->Release();
-      }
-    }
-  }
-
-  BYTE *pBufferIn1 = NULL;
-  HRESULT hr = pSample->GetPointer(&pBufferIn1);
-  if(FAILED(hr)) return hr;
-  if(pBufferIn1==NULL) return E_POINTER;
-  long SampleSize1 = pSample->GetSize();
-
-  if(SampleSize1 < m_nSampleSizes[0]) return E_INVALIDARG;		// Check buffer size for frame 0.
-
-  // TODO: UsingDifferentAllocators InputPin()->PeekAllocator() != OutputPin()->PeekAllocator();
-
-	// When only input1 is connected, do not cache anything.
-  if(!m_vInputPins[1]->IsConnected() || m_pBufferForScaledSecondaryImage==NULL)
-  {
-    if(m_pTargetPicScaler==NULL && !m_Vflip)    
+    if(m_PicScaler1==NULL && !m_Vflip && !m_DuplicateFrame)    
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);		// Populate intact sample to the output.
     else
     {
+      BYTE *pBufferIn1 = NULL;
+      hr = pSample->GetPointer(&pBufferIn1);
+      if(FAILED(hr)) return hr;
+      if(pBufferIn1==NULL) return E_POINTER;
+      const long SampleSize1 = pSample->GetSize();
+
       IMediaSample *pOutSample = NULL;
       {
         CAutoLock lck(&m_csReceive);
@@ -329,57 +193,33 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
         if(FAILED(hr)) return hr;
         BYTE *pBufferOut = NULL;
         hr = pOutSample->GetPointer(&pBufferOut);
-        if(FAILED(hr)) return hr;
-        if(m_pTargetPicScaler)
-            m_pTargetPicScaler->Scale(pBufferOut, pBufferIn1, m_Vflip);
+        if(FAILED(hr))
+        {
+          DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - CMultiIOBaseFilter::InitializeOutputSample(0) returned empty frame")));
+	  pOutSample->Release();
+	  return hr;
+        }
+        if(m_PicScaler1)
+            m_PicScaler1->Scale(pBufferOut, pBufferIn1, m_Vflip);
         else
+        {
+          if(m_Vflip)
             VFlipImg1(pBufferIn1,pBufferOut);
+          else
+            memcpy(pBufferOut,pBufferIn1,m_nOutputSize);
+        }
       }
       pOutSample->SetSyncPoint(TRUE);
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
       pOutSample->Release();
     }
-    m_LastFrame_us += m_iRepeatTime;
-    return hr;   
-  }
 
-  if(m_pTargetPicScaler==NULL && !m_Vflip && !m_DuplicateFrame)
-  {
-    m_pPicInPic->Insert(m_pBufferForScaledSecondaryImage, pBufferIn1, m_Vflip);
-    //pOutSample->SetSyncPoint(TRUE);
-    hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);
-    m_LastFrame_us += m_iRepeatTime;
-  }
-  else
-  {    
-    IMediaSample *pOutSample = NULL;
+    REFERENCE_TIME TimeStart1, TimeEnd1;
+    if(SUCCEEDED(pSample->GetTime(&TimeStart1,&TimeEnd1)))
     {
-      CAutoLock lck(&m_csReceive);		// There is questionable wchich part of a code should be locked. I guess InitializeOutputSample should be sufficient.
-      hr = CMultiIOBaseFilter::InitializeOutputSample(pSample, &pOutSample, 0, 0);
-      if(FAILED(hr) || pOutSample==NULL) return hr;
-      hr = pOutSample->SetActualDataLength(m_nOutputSize);
-      if(FAILED(hr)) return hr;
-      BYTE *pBufferOut = NULL;
-      hr = pOutSample->GetPointer(&pBufferOut);
-      if (FAILED(hr)) return hr;  
-      if(m_pTargetPicScaler)	// the target scaler is only created if the input dimensions of the primary picture don't match the target dimensions
-      {
-        m_pTargetPicScaler->Scale((void*)pBufferOut, pBufferIn1, m_Vflip);
-      }
-      else
-      {
-        if(m_Vflip)	// Code to flip image vertically
-          VFlipImg1(pBufferIn1,pBufferOut);
-        else
-          memcpy(pBufferOut, pBufferIn1, m_nSampleSizes[0]);
-      }
-
-      m_pPicInPic->Insert(m_pBufferForScaledSecondaryImage, pBufferOut, m_Vflip);
+      m_duration += TimeEnd1 - TimeStart1;
+      if(m_duration > m_MaxInterval) {m_bToggle=!m_bToggle;m_duration=0;}
     }
-    pOutSample->SetSyncPoint(TRUE);
-    hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);		// Call downstream pin callback outside lock.
-    m_LastFrame_us += m_iRepeatTime;
-    pOutSample->Release();
   }
   return hr;
 }
@@ -392,34 +232,70 @@ HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
   if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
  
 	// Copy the secondary sample into our buffer  
-  BYTE *pBuffer = NULL;
-  HRESULT hr = pSample->GetPointer(&pBuffer);
-  if(FAILED(hr)) return hr;
-  if(pBuffer==NULL) return E_POINTER;
-  long SampleSize2 = pSample->GetSize();
-  if(SampleSize2 < m_nSampleSizes[1]) return E_INVALIDARG;		// Check buffer size for frame 1.
-
-  //if(!m_vInputPins[0]->IsConnected())		// No video 1 is present.
-  //{
-  //}
-
-  if(m_bThrottling)
+  HRESULT hr = S_OK;
+  if(m_bToggle || !m_vInputPins[0]->IsConnected())
   {
-    FQ.AddFrame(pSample);
-  }
-  else
-  {  
-    if(m_pBufferForScaledSecondaryImage==NULL) return E_UNEXPECTED;	// This should not occur, buffer should be allocated when 2nd video is attached.
-    if(m_pSubPicScaler)
+    if(m_PicScaler2==NULL && !m_Vflip && !m_DuplicateFrame)
     {
-      m_pSubPicScaler->Scale(m_pBufferForScaledSecondaryImage, pBuffer);
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);		// Populate intact sample to the output.
     }
-    else		// copy direct from buffer
+    else
     {
-      memcpy(m_pBufferForScaledSecondaryImage, pBuffer, m_nSampleSizes[1]);	// Copy the buffer
-    }    
+      BYTE *pBufferIn2 = NULL;
+      hr = pSample->GetPointer(&pBufferIn2);
+      if(FAILED(hr))
+      {
+        DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - cannot get pointer to pSample2 data, error %Xh"), hr));
+        return hr;
+      }
+      if(pBufferIn2==NULL)
+      {
+        DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - NULL pointer in 2nd sample input data.")));
+        return E_POINTER;
+      }
+      const long SampleSize1 = pSample->GetSize();
+
+      IMediaSample *pOutSample = NULL;
+      {
+        CAutoLock lck(&m_csReceive);
+        HRESULT hr = CMultiIOBaseFilter::InitializeOutputSample(pSample, &pOutSample, 1, 0);	// Set up the output sample
+        if(FAILED(hr))
+        {
+           DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - CMultiIOBaseFilter::InitializeOutputSample(1) failed hr=%Xh"),hr));
+           return hr;
+        }
+        hr = pOutSample->SetActualDataLength(m_nOutputSize);
+        if(FAILED(hr)) return hr;
+        BYTE *pBufferOut = NULL;
+        hr = pOutSample->GetPointer(&pBufferOut);
+        if(FAILED(hr))
+	{
+          DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - CMultiIOBaseFilter::InitializeOutputSample(1) returned empty frame")));
+	  pOutSample->Release();
+	  return hr;
+        }
+        if(m_PicScaler2)
+            m_PicScaler2->Scale(pBufferOut, pBufferIn2, m_Vflip);
+        else
+        {
+          if(m_Vflip)
+            VFlipImg2(pBufferIn2,pBufferOut);
+          else
+            memcpy(pBufferOut,pBufferIn2,m_nOutputSize);
+        }
+      }
+      pOutSample->SetSyncPoint(TRUE);
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
+      pOutSample->Release();
+    }
+
+    REFERENCE_TIME TimeStart1, TimeEnd1;
+    if(SUCCEEDED(pSample->GetTime(&TimeStart1,&TimeEnd1)))
+    {
+      m_duration += TimeEnd1 - TimeStart1;
+      if(m_duration > m_MaxInterval) {m_bToggle=!m_bToggle;m_duration=0;}
+    }
   }
-  return S_OK;
 }
 
 
@@ -427,15 +303,13 @@ HRESULT TogglerFilter::StartStreaming(void)
 {
   if(m_pBufferForScaledSecondaryImage!=NULL && m_szBufferForScaledSecondaryImage>0)
       memset(m_pBufferForScaledSecondaryImage, 0, m_szBufferForScaledSecondaryImage);
-  FQ.Erase();
-  TimeStart2 = TimeEnd2 = 0;
+  m_duration = 0;
   return VideoMixingBase::StartStreaming();
 }
 
 
 HRESULT TogglerFilter::StopStreaming(void)
 {
-  FQ.Erase();
   return VideoMixingBase::StopStreaming();
 }
 
@@ -467,58 +341,42 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
   if(nIndex>=2) return E_INVALIDARG;
   m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
 
-  if(m_pPicInPic!=NULL)
+  if(m_PicScaler1)
   {
-    if(!m_pPicInPic->isVideoFormatSupported(pMediaType->subtype))
+    if(!m_PicScaler1->isVideoFormatSupported(pMediaType->subtype))
     {
-      delete m_pPicInPic;
-      m_pPicInPic = NULL;      
+      delete m_PicScaler1;
+      m_PicScaler1 = NULL;
     }
   }
-  if(m_pTargetPicScaler)
+  if(m_PicScaler2)
   {
-    if(!m_pTargetPicScaler->isVideoFormatSupported(pMediaType->subtype))
+    if(!m_PicScaler2->isVideoFormatSupported(pMediaType->subtype))
     {
-      delete m_pTargetPicScaler;
-      m_pTargetPicScaler = NULL;
+      delete m_PicScaler2;
+      m_PicScaler2 = NULL;
     }
   }
 
 	// Create appropriate picture concatenator
   if(pMediaType->subtype==MEDIASUBTYPE_YV24)
   {    
-    if(m_pPicInPic==NULL)
-    {
-      m_pPicInPic = new PicInPicYV24Impl();
-      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-    }
+    m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;    
     return S_OK;
   }
   if(pMediaType->subtype==MEDIASUBTYPE_RGB24)
   {    
-    if(m_pPicInPic==NULL)
-    {
-      m_pPicInPic = new PicInPicRGB24Impl();
-      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-    }
+    m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     return S_OK;
   }
   if(pMediaType->subtype==MEDIASUBTYPE_RGB565)
   {    
-    if(m_pPicInPic==NULL)
-    {
-      m_pPicInPic = new PicInPicRGB565Impl();
-      m_nBitsPerPixel = 16;
-    }
+    m_nBitsPerPixel = 16;    
     return S_OK;
   }
   else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
   {
-    if(m_pPicInPic==NULL)
-    {
-      m_pPicInPic = new PicInPicRGB32Impl();
-      m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
-    }
+    m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;    
     return S_OK;
   }
 
@@ -696,152 +554,89 @@ void TogglerFilter::reconfigure(void)
   else memset(&VideoFormat,0,sizeof(GUID));
 
 	// target picture scaler
-  if(m_nTargetWidth > 0 && m_nTargetHeight > 0)
+  if(m_nTargetWidth>0 && m_nTargetHeight>0)
   {
-    if(m_pTargetPicScaler)
+    if(labs(pBmih1->biWidth)!=m_nTargetWidth && labs(pBmih1->biHeight)!=m_nTargetHeight)
     {
-      if(!m_pTargetPicScaler->isVideoFormatSupported(VideoFormat))
+      if(m_PicScaler1)
       {
-	delete m_pTargetPicScaler;
-	m_pTargetPicScaler = NULL;
-      }
-    }
-    if(!m_pTargetPicScaler)
-    {
-      switch(m_nBitsPerPixel)
-      {
-        case 16:                   m_pTargetPicScaler = new PicScalerRGB565Impl();
-				   break;
-        case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
-				     m_pTargetPicScaler = new PicScalerYV24Impl();
-				   else
-				     m_pTargetPicScaler = new PicScalerRGB24Impl();
-				   break;
-        case BITS_PER_PIXEL_RGB32: m_pTargetPicScaler = GetPicScallerRGB32();
-				   break;
-        default: return;
-      }
-    }
-    m_pTargetPicScaler->SetInDimensions(pBmih1->biWidth, pBmih1->biHeight);
-    m_pTargetPicScaler->SetOutDimensions(m_nTargetWidth, m_nTargetHeight);
-  }
-  else
-  {
-    if(m_pTargetPicScaler)
-    {
-      PicScalerBase *PSB = m_pTargetPicScaler;
-      m_pTargetPicScaler = NULL;
-      delete PSB;
-    }
-  }
-
-	// Check sub picture dimensions.
-  int iSecondaryWidth = pBmih2->biWidth;
-  int iSecondaryHeight = pBmih2->biHeight;
-	// check if pin of subpicture has been connected
-	// we can only configure the pip once both pins have been connected
-  if(iSecondaryWidth>0 || iSecondaryHeight>0)
-  {
-    if(m_nSubPictureWidth>getOutputWidth() || m_nSubPictureHeight>getOutputHeight() ||
-       (m_nSubPictureWidth==0 && iSecondaryWidth>getOutputWidth()) ||
-       (m_nSubPictureHeight==0 && iSecondaryHeight>getOutputHeight()))
-    {
-      m_nSubPictureWidth = iSecondaryWidth;
-      m_nSubPictureHeight = iSecondaryHeight;
-
-	// If the inner picture is bigger than half the target picture
-      if(m_nSubPictureWidth>getOutputWidth())
-	  m_nSubPictureWidth = getOutputWidth()/2;
-      if(m_nSubPictureHeight>getOutputHeight())
-	  m_nSubPictureHeight = getOutputHeight()/2;
-    }
-
-    m_pPicInPic->SetDimensions(getOutputWidth(), getOutputHeight());
-
-    if((m_nSubPictureWidth!=0 && iSecondaryWidth!=m_nSubPictureWidth) || 
-       (m_nSubPictureHeight!=0 && iSecondaryHeight!=m_nSubPictureHeight))
-    {
-      if(m_pSubPicScaler)
-      {
-        if(!m_pSubPicScaler->isVideoFormatSupported(VideoFormat))
+        if(!m_PicScaler1->isVideoFormatSupported(VideoFormat))
         {
-          PicScalerBase *PSB = m_pSubPicScaler;
-          m_pSubPicScaler = NULL;
+          PicScalerBase *PSB = m_PicScaler1;
+          m_PicScaler1 = NULL;
 	  delete PSB;
         }
       }
-      if(!m_pSubPicScaler)
+      if(!m_PicScaler1)
       {
         switch(m_nBitsPerPixel)
         {
-          case 16:		     m_pSubPicScaler = new PicScalerRGB565Impl();
-				     break;	
+          case 16:                   m_PicScaler1 = new PicScalerRGB565Impl();
+				     break;
           case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
-                                       m_pSubPicScaler = new PicScalerYV24Impl();
-                                     else
-                                       m_pSubPicScaler = new PicScalerRGB24Impl();
-				     break;
-          case BITS_PER_PIXEL_RGB32: m_pSubPicScaler = GetPicScallerRGB32();
-				     break;
-          default:		     return;
+				     m_PicScaler1 = new PicScalerYV24Impl();
+				   else
+				     m_PicScaler1 = new PicScalerRGB24Impl();
+				   break;
+          case BITS_PER_PIXEL_RGB32: m_PicScaler1 = GetPicScallerRGB32();
+				   break;
+          default: return;
         }
       }
-      m_pSubPicScaler->SetInDimensions(iSecondaryWidth, iSecondaryHeight);
-      m_pSubPicScaler->SetOutDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
-
-	// recreate 2nd picture buffer
-      m_szBufferForScaledSecondaryImage = labs(m_nSubPictureWidth * m_nSubPictureHeight * m_nBitsPerPixel) / 8;
-      if(m_szBufferForScaledSecondaryImage>0)
-          m_pBufferForScaledSecondaryImage = (BYTE*)malloc(m_szBufferForScaledSecondaryImage);
-
-	// Check validity of sub picture position
-      if(m_nCustomOffsetX + m_nSubPictureWidth > getOutputWidth())
-      {
-        m_nCustomOffsetX = getOutputWidth() - m_nSubPictureWidth;
-      }
-      if(m_nCustomOffsetY + m_nSubPictureHeight > getOutputHeight())
-      {
-        m_nCustomOffsetY = getOutputHeight() - m_nSubPictureHeight;
-      }
-      m_pPicInPic->SetSubDimensions(m_nSubPictureWidth, m_nSubPictureHeight);
+      m_PicScaler1->SetInDimensions(pBmih1->biWidth, pBmih1->biHeight);
+      m_PicScaler1->SetOutDimensions(m_nTargetWidth, m_nTargetHeight);
     }
     else
     {
-      if (m_pSubPicScaler)
+      if(m_PicScaler1)
       {
-        delete m_pSubPicScaler;
-        m_pSubPicScaler = NULL;
+        PicScalerBase *PSB = m_PicScaler1;
+        m_PicScaler1 = NULL;
+        delete PSB;
       }
-	// recreate 2nd picture buffer
-      m_szBufferForScaledSecondaryImage = labs(iSecondaryWidth*iSecondaryHeight*m_nBitsPerPixel) / 8;
-      if(m_szBufferForScaledSecondaryImage>0)
-          m_pBufferForScaledSecondaryImage = (BYTE*)malloc(m_szBufferForScaledSecondaryImage);
-
-      if(m_nCustomOffsetX + iSecondaryWidth > getOutputWidth())
-      {
-        m_nCustomOffsetX = getOutputWidth() - iSecondaryWidth;
-      }
-      if(m_nCustomOffsetY + iSecondaryHeight > getOutputHeight())
-      {
-        m_nCustomOffsetY = getOutputHeight() - iSecondaryHeight;
-      }
-      m_pPicInPic->SetSubDimensions(iSecondaryWidth, iSecondaryHeight);
     }
 
-    if(m_nCustomOffsetX<0) m_nCustomOffsetX=0;
-    if(m_nCustomOffsetY<0) m_nCustomOffsetY=0;
+    if(labs(pBmih2->biWidth)!=m_nTargetWidth && labs(pBmih2->biHeight)!=m_nTargetHeight)
+    {
+      if(m_PicScaler2)
+      {
+        if(!m_PicScaler2->isVideoFormatSupported(VideoFormat))
+        {
+          PicScalerBase *PSB = m_PicScaler2;
+          m_PicScaler2 = NULL;
+	  delete PSB;
+        }
+      }
+      if(!m_PicScaler2)
+      {
+        switch(m_nBitsPerPixel)
+        {
+          case 16:                   m_PicScaler2 = new PicScalerRGB565Impl();
+				     break;
+          case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
+				     m_PicScaler2 = new PicScalerYV24Impl();
+				   else
+				     m_PicScaler2 = new PicScalerRGB24Impl();
+				   break;
+          case BITS_PER_PIXEL_RGB32: m_PicScaler2 = GetPicScallerRGB32();
+				   break;
+          default: return;
+        }
+      }
+      m_PicScaler2->SetInDimensions(pBmih2->biWidth, pBmih2->biHeight);
+      m_PicScaler2->SetOutDimensions(m_nTargetWidth, m_nTargetHeight);
+    }
+    else
+    {
+      if(m_PicScaler2)
+      {
+        PicScalerBase *PSB = m_PicScaler2;
+        m_PicScaler2 = NULL;
+        delete PSB;
+      }
+    }
+  }
 
-	// Setup the picture in picture
-    m_pPicInPic->SetPos(m_nCustomOffsetX, m_nCustomOffsetY);
-  }
-  else		// No source or target image resize.
-  {
-    m_pPicInPic->SetDimensions(pBmih1->biWidth, pBmih1->biHeight);
-	// recreate 2nd picture buffer
-    m_szBufferForScaledSecondaryImage = labs(iSecondaryWidth*iSecondaryHeight*m_nBitsPerPixel) / 8;
-    if(m_szBufferForScaledSecondaryImage>0)
-      m_pBufferForScaledSecondaryImage = (BYTE*)malloc(m_szBufferForScaledSecondaryImage);
-  }
 }
 
 
