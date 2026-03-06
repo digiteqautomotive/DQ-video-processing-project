@@ -67,8 +67,13 @@ UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr):
   m_iPerformanceFrequency(0),
   m_gdiplusStartupInput(new Gdiplus::GdiplusStartupInput()),
   m_pGdiToken(NULL),
-  m_hrInterfaceAquired(S_OK)
-  //m_FontSize(16)
+  m_hrInterfaceAquired(S_OK),
+  m_uiX(0), m_uiY(0),
+  m_FontSize(16),
+  m_uiFramerateEstimationMode(1),
+  m_uiHistorySize(200),
+  m_uiPrecision(1)
+  //m_dEstimatedFramerate(-1.0), m_dEstimatedBitrate(-1)
 {
   GdiplusStartup(&m_pGdiToken, m_gdiplusStartupInput, NULL); //gdi+ init
   QueryPerformanceFrequency((LARGE_INTEGER*)&m_iPerformanceFrequency);
@@ -79,13 +84,13 @@ UtilityFilter::UtilityFilter(LPUNKNOWN pUnk, HRESULT *pHr):
 
 void UtilityFilter::initParameters(void) 
 {
-  addParameter(UF_PARAM_X, OLE_UF_PARAM_X, &m_uiX, 0);
-  addParameter(UF_PARAM_Y, OLE_UF_PARAM_Y, &m_uiY, 0);
-  addParameter(UF_MODE, OLE_UF_MODE, &m_uiFramerateEstimationMode, 1);
-  addParameter(UF_FONT_SIZE, OLE_UF_FONT_SIZE, &m_FontSize, 16);
+  addParameter(UF_PARAM_X, OLE_UF_PARAM_X, &m_uiX);
+  addParameter(UF_PARAM_Y, OLE_UF_PARAM_Y, &m_uiY);
+  addParameter(UF_MODE, OLE_UF_MODE, &m_uiFramerateEstimationMode);
+  addParameter(UF_FONT_SIZE, OLE_UF_FONT_SIZE, &m_FontSize);
   addParameter(UF_WRITE_ON_FRAME, OLE_UF_WRITE_ON_FRAME, &m_bWriteOnFrame, true);
-  addParameter(UF_HISTORY_SIZE, OLE_UF_HISTORY_SIZE, &m_uiHistorySize, 200);
-  addParameter(UF_PRECISION, OLE_UF_PRECISION, &m_uiPrecision, 1);
+  addParameter(UF_HISTORY_SIZE, OLE_UF_HISTORY_SIZE, &m_uiHistorySize);
+  addParameter(UF_PRECISION, OLE_UF_PRECISION, &m_uiPrecision);
 
   addParameter(UF_ESTIMATED_FRAMERATE, &m_dEstimatedFramerate, -1.0, true);
   addParameter(UF_ESTIMATED_BITRATE, &m_dEstimatedBitrate, -1.0, true);    

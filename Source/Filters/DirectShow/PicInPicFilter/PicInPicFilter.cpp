@@ -571,8 +571,17 @@ HRESULT PicInPicFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, cons
     }
   }  
 
-  reconfigure();
+  //reconfigure();
   return S_OK;
+}
+
+
+STDMETHODIMP PicInPicFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
+{
+HRESULT hr = VideoMixingBase::SetMediaType(direction,pmt,nIndex);
+  if(SUCCEEDED(hr))
+      reconfigure();
+  return hr; 
 }
 
 

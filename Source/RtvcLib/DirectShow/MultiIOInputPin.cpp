@@ -8,8 +8,8 @@ DESCRIPTION			:
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+              2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -81,7 +81,8 @@ STDMETHODIMP CMultiIOInputPin::Receive( IMediaSample *pSample )
 	return hr;
 }
 
-HRESULT CMultiIOInputPin::SetMediaType( const CMediaType* mtIn )
+
+HRESULT CMultiIOInputPin::SetMediaType(const CMediaType* mtIn)
 {
 	// Set the base class media type (should always succeed)
 	HRESULT hr = CBasePin::SetMediaType(mtIn);
@@ -94,6 +95,7 @@ HRESULT CMultiIOInputPin::SetMediaType( const CMediaType* mtIn )
 
 	return m_pFilter->SetMediaType(PINDIR_INPUT, mtIn, m_nIndex);
 }
+
 
 STDMETHODIMP CMultiIOInputPin::EndOfStream()
 {

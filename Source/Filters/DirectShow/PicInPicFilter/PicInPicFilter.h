@@ -107,6 +107,8 @@ public:
 	/// Overridden from VideoMixingBase 
         virtual HRESULT SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
+        virtual HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
+
 	//HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
 	void initParameters();
@@ -119,7 +121,7 @@ public:
 	/// For configuration dialog
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-	STDMETHODIMP SetParameter( const char* type, const char* value);
+	STDMETHODIMP SetParameter(const char* type, const char* value);
 
 		// IPersistPropertyBag
 	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);	

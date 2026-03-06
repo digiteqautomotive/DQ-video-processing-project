@@ -91,11 +91,11 @@ TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Toggle Filter"), 0,
 
 void TogglerFilter::initParameters(void)
 {
-  addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nTargetWidth, m_nTargetWidth);	// width output picture is scaled to
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nTargetHeight, m_nTargetHeight);	// height output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nTargetWidth);	// width output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nTargetHeight);	// height output picture is scaled to
 
-  addParameter(FILTER_PARAM_ACT_WIDTH, &m_nOutputWidth, m_nOutputWidth, true);
-  addParameter(FILTER_PARAM_ACT_HEIGHT, &m_nOutputHeight, m_nOutputHeight, true);
+  addParameter(FILTER_PARAM_ACT_WIDTH, &m_nOutputWidth, true);
+  addParameter(FILTER_PARAM_ACT_HEIGHT, &m_nOutputHeight, true);
 
 
   addParameter(FILTER_PARAM_CHOOSE_INPUT,OLE_PARAM_CHOOSE_INPUT, &m_bToggle, m_bToggle);
@@ -104,7 +104,7 @@ void TogglerFilter::initParameters(void)
   addParameter(FILTER_THROTTLE, OLE_PARAM_THROTTLE, &m_bThrottling, m_bThrottling);
   addParameter(FILTER_DUPLICATE_FRAMES, OLE_PARAM_DUPLICATE_FRAMES, &m_DuplicateFrame, m_DuplicateFrame);
 
-  addParameter(FILTER_PARAM_DURATION, OLE_PARAM_DURATION, &m_MaxInterval, m_MaxInterval);
+  addParameter(FILTER_PARAM_DURATION, OLE_PARAM_DURATION, &m_MaxInterval);
 }
 
 
@@ -444,8 +444,16 @@ HRESULT TogglerFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const
     }
   }
 
-  reconfigure();			// tohle je uplnì blbe, nesmi se to spustit na bezicim videu od SetParameter(), potøeba patchnout attempt_connect
   return S_OK;
+}
+
+
+STDMETHODIMP TogglerFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
+{
+HRESULT hr = VideoMixingBase::SetMediaType(direction,pmt,nIndex);
+  if(SUCCEEDED(hr))
+      reconfigure();
+  return hr; 
 }
 
 

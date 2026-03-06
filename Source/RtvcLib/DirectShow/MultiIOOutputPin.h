@@ -66,13 +66,15 @@ public:
 
 	HRESULT CompleteConnect(IPin *pReceivePin);
 	HRESULT BreakConnect(void);
+        //HRESULT AttemptConnection(IPin* pReceivePin, const CMediaType* pmt);
 
 	// From CBaseOutputPin
 	virtual HRESULT DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties);
 	// From CBasePin
 	virtual HRESULT CheckMediaType(const CMediaType* pMediaType);
 
-	HRESULT GetMediaType(int iPosition, CMediaType* pmt);
+	virtual HRESULT GetMediaType(int iPosition, CMediaType* pmt);
+        virtual HRESULT SetMediaType(const CMediaType *);
 
 	// inherited from IQualityControl via CBasePin
 	STDMETHODIMP Notify(IBaseFilter * pSender, Quality q);

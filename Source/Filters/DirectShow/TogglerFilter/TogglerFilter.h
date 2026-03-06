@@ -71,6 +71,7 @@ public:
 	void initParameters();
         virtual HRESULT StartStreaming(void);
         virtual HRESULT StopStreaming(void);
+        STDMETHODIMP SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
 
 	/// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages);
@@ -78,7 +79,7 @@ public:
 	/// For configuration dialog
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-	STDMETHODIMP SetParameter( const char* type, const char* value);
+	STDMETHODIMP SetParameter(const char* type, const char* value);
 
 		// IPersistPropertyBag
 	virtual HRESULT STDMETHODCALLTYPE GetClassID(CLSID *pClassID);	

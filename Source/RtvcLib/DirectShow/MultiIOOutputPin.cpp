@@ -9,8 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 	Copyright (c) 2008-2012, CSIR 
-	Copyright (c) 2025-2026, Jaroslav Fojtik
-All rights reserved.
+	Copyright (c) 2025-2026, Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -29,19 +28,17 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "MultiIOOutputPin.h"
 
 #include "MultiIOBaseFilter.h"
 #include "MultiIOInputPin.h"
 
-CMultiIOOutputPin::CMultiIOOutputPin(CMultiIOBaseFilter* pFilter, CCritSec* pLock, HRESULT* phr, LPCWSTR pName, int nIndex)
-: CBaseOutputPin(NAME("TM Multi Output Pin"), pFilter, pLock, phr, pName),
-m_pFilter(pFilter),
-m_nIndex(nIndex),
-m_pOutputQueue(NULL)
+CMultiIOOutputPin::CMultiIOOutputPin(CMultiIOBaseFilter* pFilter, CCritSec* pLock, HRESULT* phr, LPCWSTR pName, int nIndex):
+	CBaseOutputPin(NAME("TM Multi Output Pin"), pFilter, pLock, phr, pName),
+	m_pFilter(pFilter),
+	m_nIndex(nIndex),
+	m_pOutputQueue(NULL)
 {
 }
 
@@ -66,7 +63,6 @@ HRESULT CMultiIOOutputPin::BreakConnect(void)
     m_pFilter->OnDisconnect(m_nIndex, RTVC_OUT);
   return CBaseOutputPin::BreakConnect();
 }
-
 
 
 HRESULT CMultiIOOutputPin::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties )
@@ -222,3 +218,14 @@ HRESULT CMultiIOOutputPin::DeliverNewSegment(REFERENCE_TIME tStart,
 	return NOERROR;
 
 } // DeliverNewSegment
+
+
+HRESULT CMultiIOOutputPin::SetMediaType(const CMediaType* mtOut)
+{
+	// Set the base class media type (should always succeed)
+  HRESULT hr = CBasePin::SetMediaType(mtOut);
+  if(FAILED(hr)) {
+		return hr;
+		}
+  return m_pFilter->SetMediaType(PINDIR_OUTPUT, mtOut, m_nIndex);
+}
