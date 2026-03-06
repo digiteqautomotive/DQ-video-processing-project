@@ -261,6 +261,7 @@ protected:
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, int* pAddr, int nDefaultValue, bool bReadOnly=false);  //, std::vector<int> vAllowedValues = std::vector<int>());
         void addParameter(const char *sParamName, const OLECHAR *oleName, int* pAddr, int nDefaultValue, bool bReadOnly=false); //, std::vector<int> vAllowedValues)
+        void addParameter(const char *sParamName, const OLECHAR *oleName, int* pAddr, bool bReadOnly=false); //, std::vector<int> vAllowedValues)
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -269,6 +270,7 @@ protected:
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false); //, std::vector<unsigned> vAllowedValues = std::vector<unsigned>());
 	void addParameter(const char *sParamName, const OLECHAR *oleName, unsigned* pAddr, unsigned uiDefaultValue, bool bReadOnly=false);
+        void addParameter(const char *sParamName, const OLECHAR *oleName, unsigned* pAddr, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -277,6 +279,7 @@ protected:
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false); //, std::vector<std::string> vAllowedValues = std::vector<std::string>());
         void addParameter(const char *sParamName, const OLECHAR *oleName, std::string* pAddr, std::string szDefaultValue, bool bReadOnly=false);
+        void addParameter(const char *sParamName, const OLECHAR *oleName, std::string* pAddr, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -285,6 +288,7 @@ protected:
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false); //, std::vector<bool> vAllowedValues = std::vector<bool>());
         void addParameter(const char *sParamName, const OLECHAR *oleName, bool* pAddr, bool bDefaultValue, bool bReadOnly=false);
+        //void addParameter(const char *sParamName, const OLECHAR *oleName, bool* pAddr, bool bReadOnly=false);
 	/// The addParameter methods should be called from inside initParameters at start up
 	/// @param[in] sParamName The name of the parameter that should be reverted to its previous value
 	/// @param[in] pAddr A pointer to the member variable that will store the value
@@ -293,6 +297,7 @@ protected:
 	/// @param[in] vAllowedValues A vector of allowed values. If the size of this vector > 0 only the values in the vector are considered valid
 	void addParameter(const char *sParamName, double* pAddr, double dDefaultValue, bool bReadOnly=false); //, std::vector<double> vAllowedValues = std::vector<double>());
         void addParameter(const char *sParamName, const OLECHAR *oleName, double* pAddr, double dDefaultValue, bool bReadOnly=false);
+        void addParameter(const char *sParamName, const OLECHAR *oleName, double* pAddr, bool bReadOnly=false);
 
 	bool m_DirtyProps;
 
