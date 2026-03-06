@@ -50,11 +50,11 @@ const OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
 
  CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
   m_pCropper(NULL),
-  //m_pCropBuffer(NULL),
   m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
   //m_nStride(0),
   //m_nPadding(0),
-  m_DirtyPropsStream(true)
+  m_DirtyPropsStream(true),
+  m_nLeftCrop(0), m_nRightCrop(0), m_nTopCrop(0), m_nBottomCrop(0) 
 {
   //Call the initialise input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -82,10 +82,10 @@ CUnknown * WINAPI CropFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 
 void CropFilter::initParameters(void)
 {  
-  addParameter(FILTER_PARAM_LEFT_CROP, OLE_PARAM_LEFT_CROP, &m_nLeftCrop, 0);
-  addParameter(FILTER_PARAM_RIGHT_CROP, OLE_PARAM_RIGHT_CROP, &m_nRightCrop, 0);
-  addParameter(FILTER_PARAM_TOP_CROP, OLE_PARAM_TOP_CROP, &m_nTopCrop, 0);
-  addParameter(FILTER_PARAM_BOTTOM_CROP, OLE_PARAM_BOTTOM_CROP, &m_nBottomCrop, 0);
+  addParameter(FILTER_PARAM_LEFT_CROP, OLE_PARAM_LEFT_CROP, &m_nLeftCrop);
+  addParameter(FILTER_PARAM_RIGHT_CROP, OLE_PARAM_RIGHT_CROP, &m_nRightCrop);
+  addParameter(FILTER_PARAM_TOP_CROP, OLE_PARAM_TOP_CROP, &m_nTopCrop);
+  addParameter(FILTER_PARAM_BOTTOM_CROP, OLE_PARAM_BOTTOM_CROP, &m_nBottomCrop);
   addParameter(FILTER_PARAM_TARGET_WIDTH, &m_nOutWidth, -1, true);
   addParameter(FILTER_PARAM_TARGET_HEIGHT, &m_nOutHeight, -1, true);
   RecalculateFilterParameters();
@@ -146,13 +146,6 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
   else
   {
     m_Vflip = ((m_nInHeight>=0) ^ (m_nOutHeight>=0));
-/*    if(m_pCropBuffer)
-    {
-      delete m_pCropBuffer;
-      m_pCropBuffer = NULL;
-    }
-	// Create temp buffer for crop
-    m_pCropBuffer = new BYTE[(labs(m_nOutWidth*m_nOutHeight) * m_nBitsPerPixel)/8]; */
   }
   return hr;
 }

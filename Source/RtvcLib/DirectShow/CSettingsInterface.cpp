@@ -698,3 +698,51 @@ bool ParameterString::setVariant(const VARIANT &var)
   return false;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+ParameterRefTime::ParameterRefTime(const char *NewName, const OLECHAR *NewOleName, long long *ValueAddr, long long IniDefaultValue, bool NewReadOnly):
+        ParameterBase(NewName,NewOleName,NewReadOnly),
+	pValue(ValueAddr),
+	DefaultValue(IniDefaultValue),
+        PreviousValue(IniDefaultValue)
+{
+  if(pValue==NULL)
+    pValue = &PreviousValue;
+  else
+    *pValue = IniDefaultValue;
+}
+
+
+std::string ParameterRefTime::ToStr(void) const
+{
+ASSERT(pValue!=NULL);
+  const double Val_sec = *pValue / 10000000.0;
+  return std::to_string(Val_sec);
+}
+
+
+bool ParameterRefTime::FromStr(const char *str)
+{
+ASSERT(pValue!=NULL);
+  if(str==NULL) return false; 
+  PreviousValue = *pValue;
+  const double Val_sec = atof(str);
+  *pValue = Val_sec * 10000000.0;
+return true;
+}
+
+
+void ParameterRefTime::getVariant(VARIANT &var) const
+{
+  var.vt = VT_I8;
+  var.llVal = *pValue;
+}
+
+
+bool ParameterRefTime::setVariant(const VARIANT &var)
+{
+  return getFromVariant(*pValue,&var);
+}
+

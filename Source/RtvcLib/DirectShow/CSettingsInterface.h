@@ -46,7 +46,8 @@ enum RTVC_PARAM_TYPES
 	VPP_INT,
 	VPP_UINT,
 	VPP_BOOL,
-	VPP_DOUBLE
+	VPP_DOUBLE,
+	VPP_LONG_LONG
 };
 
 
@@ -185,6 +186,28 @@ public:
 };
 
 
+class ParameterRefTime: public ParameterBase
+{
+public:
+	ParameterRefTime(const char *Name, const OLECHAR *NewOleName, long long *ValueAddr, long long IniDefaultValue, bool ReadOnly=false);
+	long long *pValue;
+	long long DefaultValue;
+	long long PreviousValue;
+
+	virtual std::string ToStr(void) const;
+        virtual bool FromStr(const char *str);
+
+	virtual RTVC_PARAM_TYPES Type(void) const {return VPP_LONG_LONG;}
+        virtual size_t Size(void) const {return sizeof(long long);}
+	virtual void RevertToDefaultValue(void) {*pValue=DefaultValue;}
+        virtual void RevertToPreviousValue(void) {*pValue=PreviousValue;}
+        virtual HRESULT Save(IStream *pStm) const {return pStm->Write(pValue,sizeof(long long),NULL);};
+	virtual HRESULT Load(IStream *pStm)  {return pStm->Read(pValue,sizeof(long long),NULL);};
+        virtual void getVariant(VARIANT &var) const;
+        virtual bool setVariant(const VARIANT &var);
+};
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -301,7 +324,7 @@ protected:
 
 	bool m_DirtyProps;
 
-private:
+protected:
 	std::list<ParameterBase*> m_vParams;       
 };
 

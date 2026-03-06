@@ -189,14 +189,14 @@ PicScalerBase *GetPicScallerRGB32(void)
 
 
 PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Picture Filter"), 0, CLSID_VPP_PicInPicFilter),
-  //m_nTargetWidth(0),		// Initialised in initParameters(), no need to initialise twice.
-  //m_nTargetHeight(0),
-  //m_nSubPictureWidth(0),
-  //m_nSubPictureHeight(0),
-  //m_nCustomOffsetX(0),
-  //m_nCustomOffsetY(0),
-  //m_bThrottling(false),
-  //m_DuplicateFrame(false),
+  m_nTargetWidth(0),
+  m_nTargetHeight(0),
+  m_nSubPictureWidth(0),
+  m_nSubPictureHeight(0),
+  m_nCustomOffsetX(0),
+  m_nCustomOffsetY(0),
+  m_bThrottling(false),
+  m_DuplicateFrame(false),
   m_pPicInPic(NULL),
   m_pTargetPicScaler(NULL),
   m_pSubPicScaler(NULL),
@@ -214,18 +214,18 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
 
 void PicInPicFilter::initParameters(void)
 {
-  addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nTargetWidth, 0);		// width output picture is scaled to
-  addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nTargetHeight, 0);	// height output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_WIDTH, OLE_PARAM_TARGET_WIDTH, &m_nTargetWidth);		// width output picture is scaled to
+  addParameter(FILTER_PARAM_TARGET_HEIGHT, OLE_PARAM_TARGET_HEIGHT, &m_nTargetHeight);	// height output picture is scaled to
 
-  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, OLE_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth, 0);	// width inner picture is scaled to
-  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, OLE_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight, 0);	// height inner picture is scaled to
+  addParameter(FILTER_PARAM_SUB_PIC_WIDTH, OLE_PARAM_SUB_PIC_WIDTH, &m_nSubPictureWidth);	// width inner picture is scaled to
+  addParameter(FILTER_PARAM_SUB_PIC_HEIGHT, OLE_PARAM_SUB_PIC_HEIGHT, &m_nSubPictureHeight);	// height inner picture is scaled to
 
   // currently unused: supposed to be one of the standard positions to insert 
   // the picture i.e. top left or top right corner.
   // addParameter(SUB_PICTURE_POSITION, &m_nPosition, (int)SUB_PIC_POSITION_1);
 
-  addParameter(FILTER_PARAM_OFFSET_X, OLE_PARAM_OFFSET_X, &m_nCustomOffsetX, 0);		// x offset from bottom left corner
-  addParameter(FILTER_PARAM_OFFSET_Y, OLE_PARAM_OFFSET_Y, &m_nCustomOffsetY, 0);		// y offset from bottom left corner
+  addParameter(FILTER_PARAM_OFFSET_X, OLE_PARAM_OFFSET_X, &m_nCustomOffsetX);		// x offset from bottom left corner
+  addParameter(FILTER_PARAM_OFFSET_Y, OLE_PARAM_OFFSET_Y, &m_nCustomOffsetY);		// y offset from bottom left corner
 
   addParameter(FILTER_THROTTLE, OLE_PARAM_THROTTLE, &m_bThrottling, false);
   addParameter(FILTER_DUPLICATE_FRAMES, OLE_PARAM_DUPLICATE_FRAMES, &m_DuplicateFrame, false);
@@ -576,7 +576,7 @@ HRESULT PicInPicFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, cons
 }
 
 
-STDMETHODIMP PicInPicFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
+HRESULT PicInPicFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
 {
 HRESULT hr = VideoMixingBase::SetMediaType(direction,pmt,nIndex);
   if(SUCCEEDED(hr))

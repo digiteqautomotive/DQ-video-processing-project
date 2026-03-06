@@ -70,7 +70,7 @@ BEGIN
     CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,29,10,14
     EDITTEXT        IDC_EDIT_TARGET_HEIGHT,78,45,40,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,45,10,14
-    LTEXT           "Use 0 for disable toggling",IDC_STATIC,139,88,66,25
+    LTEXT           "[s]  Use 0 for disable toggling",IDC_STATIC,139,88,66,25
     LTEXT           "Use 0 for populating input video size.",IDC_STATIC,37,62,167,11
     CONTROL         "Throttle output 2",IDC_CHECK_THROTTLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,126,178,10
     CONTROL         "Always duplicate frames on output",IDC_CHECK_DUPLICATE_FRAMES,
@@ -103,6 +103,15 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+#define ORIGINAL_FILENAME	"ToggleFilter.dll"
+
+#include "../VersionResInfo.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

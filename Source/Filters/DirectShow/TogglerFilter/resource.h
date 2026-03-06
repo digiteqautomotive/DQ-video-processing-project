@@ -2,9 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by TogglerFilter.rc
 //
-#define MAJOR_VERSION                   1
-#define MINOR_VERSION                   7
-#define BUILD_VERSION                   7
 #define IDD_TOGGLE_DIALOG               9
 #define IDD_TOGGLE_CAPTION              102
 #define IDC_EDIT_TARGET_WIDTH           1001

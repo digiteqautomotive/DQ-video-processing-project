@@ -68,10 +68,10 @@ public:
 
 	//HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
-	void initParameters();
+	void initParameters(void);
         virtual HRESULT StartStreaming(void);
         virtual HRESULT StopStreaming(void);
-        STDMETHODIMP SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
+        virtual HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
 
 	/// For configuration dialog
 	STDMETHODIMP GetPages(CAUUID *pPages);
@@ -111,5 +111,5 @@ private:
   bool m_DuplicateFrame;
   bool m_bToggle;
   REFERENCE_TIME m_duration;
-  unsigned m_MaxInterval;
+  REFERENCE_TIME m_MaxInterval;
 };

@@ -104,7 +104,7 @@ void TogglerFilter::initParameters(void)
   addParameter(FILTER_THROTTLE, OLE_PARAM_THROTTLE, &m_bThrottling, m_bThrottling);
   addParameter(FILTER_DUPLICATE_FRAMES, OLE_PARAM_DUPLICATE_FRAMES, &m_DuplicateFrame, m_DuplicateFrame);
 
-  addParameter(FILTER_PARAM_DURATION, OLE_PARAM_DURATION, &m_MaxInterval);
+  m_vParams.push_back(new ParameterRefTime(FILTER_PARAM_DURATION, OLE_PARAM_DURATION, &m_MaxInterval, m_MaxInterval));
 }
 
 
@@ -448,7 +448,7 @@ HRESULT TogglerFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const
 }
 
 
-STDMETHODIMP TogglerFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
+HRESULT TogglerFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
 {
 HRESULT hr = VideoMixingBase::SetMediaType(direction,pmt,nIndex);
   if(SUCCEEDED(hr))
@@ -652,11 +652,11 @@ void TogglerFilter::reconfigure(void)
       switch(m_nBitsPerPixel)
       {
         case 16:                   m_PicScaler2 = new PicScalerRGB565Impl();
-				     break;
+				   break;
         case BITS_PER_PIXEL_RGB24: if(VideoFormat==MEDIASUBTYPE_YV24)
-				     m_PicScaler2 = new PicScalerYV24Impl();
+				   m_PicScaler2 = new PicScalerYV24Impl();
 				   else
-				     m_PicScaler2 = new PicScalerRGB24Impl();
+				   m_PicScaler2 = new PicScalerRGB24Impl();
 				   break;
         case BITS_PER_PIXEL_RGB32: m_PicScaler2 = GetPicScallerRGB32();
 				   break;
