@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph" clock="none">
+    <filter name="Video Renderer" index="0" clsid="{70E102B0-5556-11CE-97C0-00AA0055595A}"/>
+    <filter name="DQ VPP Timestamp Logger" index="1" clsid="{D04C9742-E0E8-43FB-967F-260EAA156F7E}">
+        <ifilesourcefilter source="D:\temp\log.txt"/>
+    </filter>
+    <filter name="AVObjects Video Generator" index="2" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}">
+        <ipersiststream encoding="base64" data="kMxvlnocw0Ki3/kfC+rdoQEAAAAAAAAAZAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAAaJwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADQAgAAQAIAAAAAAAAAADlApQAAAIC7AAAoAAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    </filter>
+    <connect out="AVObjects Video Generator/Video" in="DQ VPP Timestamp Logger/Input" outFilterIndex="2" outPinId="Video" outPinName="Video" outPinIndex="0" inFilterIndex="1" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1244160" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4NQOAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAYAAAAAAAA/BIAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="DQ VPP Timestamp Logger/Output" in="Video Renderer/Input" outFilterIndex="1" outPinId="Out" outPinName="Output" outPinIndex="0" inFilterIndex="0" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1244160" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4NQOAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAYAAAAAAAA/BIAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+</graph>

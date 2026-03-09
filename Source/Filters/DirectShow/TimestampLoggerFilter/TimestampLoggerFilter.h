@@ -50,13 +50,10 @@ static const GUID CLSID_VPP_TimeStampLoggerFilter =
 #endif
 
 
-// Forward declarations
-
 /** \ingroup DirectShowFilters
  * Filter that logs media sample timestamps and durations 
  * to file specified using IFileSourceFilter interface */
-class TimestampLoggerFilter: public CTransInPlaceFilter,
-			     public IFileSourceFilter
+class TimestampLoggerFilter: public CTransInPlaceFilter, public IFileSourceFilter
 {
 public:
 	typedef enum
@@ -82,19 +79,19 @@ public:
 	/// override this to publicize our interfaces
 	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
-	/// From IFileSourceFilter
+	// From IFileSourceFilter
 	STDMETHODIMP Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt);
-	/// From IFileSourceFilter
 	STDMETHODIMP GetCurFile(LPOLESTR * ppszFileName, AM_MEDIA_TYPE *pmt);
 
-	//Overriding various CTransInPlace methods
+	// Overriding various CTransInPlace methods
 	HRESULT Transform(IMediaSample *pSample);/* Overrriding the receive method. 
 	This method receives a media sample, processes it, and delivers it to the downstream filter.*/
 
 	HRESULT CheckInputType(const CMediaType* mtIn);
 
-	STDMETHODIMP Run(REFERENCE_TIME tStart);
-	STDMETHODIMP Stop(void);
+	virtual STDMETHODIMP Run(REFERENCE_TIME tStart);
+	virtual STDMETHODIMP Stop(void);
+        virtual STDMETHODIMP Pause(void);
 
 private:
 	std::string m_sFileName;	
