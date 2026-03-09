@@ -14,6 +14,7 @@ Copyright (c) 2025-2026 Digiteq Automotive; designed by Jaroslav Fojtik		All rig
 
 #include "DirectShow/VideoMixingBase.h"
 #include "DirectShow/CSettingsInterface.h"
+#include "DirectShow/FrameQueue.h"
 #include "../FilterParameterStringConstants.h"
 
 #include <list>
@@ -97,19 +98,19 @@ private:
 
 	/// Position where subvideo is inserted
 	//int m_nPosition;
-  int m_nTargetWidth;			///< target width: if zero the width of the primary picture is used
-  int m_nTargetHeight;			///< target height: if zero the height of the primary picture is used
-  PicScalerBase* m_PicScaler1;		///< target picture scaler used if primary picture output dimensions != input picture dimensions
-  PicScalerBase* m_PicScaler2;		///< target picture scaler used if secondary picture output dimensions != input picture dimensions
+    int m_nTargetWidth;			///< target width: if zero the width of the primary picture is used
+    int m_nTargetHeight;			///< target height: if zero the height of the primary picture is used
+    PicScalerBase* m_PicScaler1;		///< target picture scaler used if primary picture output dimensions != input picture dimensions
+    PicScalerBase* m_PicScaler2;		///< target picture scaler used if secondary picture output dimensions != input picture dimensions
 	/// Stores bytes per needed to store pixel according to media type
-  unsigned m_nBitsPerPixel;
-  /// buffer to scale secondary image into if required
-  BYTE* m_pBufferForScaledSecondaryImage;
-  unsigned m_szBufferForScaledSecondaryImage;
-  bool m_Vflip;
-  bool m_bThrottling;
-  bool m_DuplicateFrame;
-  bool m_bToggle;
-  REFERENCE_TIME m_duration;
-  REFERENCE_TIME m_MaxInterval;
+    unsigned m_nBitsPerPixel;
+    REFERENCE_TIME TimeStart1, TimeEnd1;
+    REFERENCE_TIME TimeStart2, TimeEnd2;
+    FrameQueue FQ1, FQ2;
+    bool m_Vflip;
+    bool m_bThrottling;
+    bool m_DuplicateFrame;
+    bool m_bToggle;
+    REFERENCE_TIME m_duration;
+    REFERENCE_TIME m_MaxInterval;
 };

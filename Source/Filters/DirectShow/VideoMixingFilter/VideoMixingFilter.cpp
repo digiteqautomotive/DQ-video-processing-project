@@ -108,10 +108,10 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 	}
 
 	// Provide frame rate limitation.
-  if(m_iRepeatTime > 0)
+  if(m_iRepeatTime_us > 0)
   {
     const unsigned CurrentTick = GetTickCount_us();
-    if(m_LastFrame_us+m_iRepeatTime - CurrentTick < (unsigned)0x8000000) return S_OK;
+    if(m_LastFrame_us+m_iRepeatTime_us - CurrentTick < (unsigned)0x8000000) return S_OK;
   }
 	
   IMediaSample * pOutSample;
@@ -203,7 +203,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
     if (hr == NOERROR) 
     {
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
-      m_LastFrame_us += m_iRepeatTime;
+      m_LastFrame_us += m_iRepeatTime_us;
     } 
     else 
     {
@@ -301,7 +301,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     const VIDEOINFOHEADER* const pVih = (const VIDEOINFOHEADER*) pMediaType->pbFormat;
     if(pVih)
     {
-      if(pVih->AvgTimePerFrame>0) m_iRepeatTime=pVih->AvgTimePerFrame/10;
+      if(pVih->AvgTimePerFrame>0) m_iRepeatTime_us=pVih->AvgTimePerFrame/10;
       bmih = &pVih->bmiHeader;
     }
   }
@@ -310,7 +310,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*) pMediaType->pbFormat;
     if(pVih2)
     {
-      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime=pVih2->AvgTimePerFrame/10;
+      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime_us=pVih2->AvgTimePerFrame/10;
       bmih = &pVih2->bmiHeader;
     }
   }

@@ -33,6 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DirectShow/VideoMixingBase.h"
 #include "DirectShow/CSettingsInterface.h"
+#include "DirectShow/FrameQueue.h"
 #include "../FilterParameterStringConstants.h"
 
 #include <list>
@@ -47,30 +48,12 @@ static const GUID CLSID_PicInPicProperties =
 { 0x44b81b95, 0x38b1, 0x49cc, { 0x88, 0x51, 0x73, 0xcc, 0x34, 0x71, 0xde, 0xa5 } };
 
 
-class FrameQueue
-{
-public:
-  FrameQueue(void) {}
-  ~FrameQueue();
-
-  mutable CCritSec m_csFrame2Queue;
-  std::list<IMediaSample*> q;
-
-  void AddFrame(IMediaSample*pFrame);
-  void Erase(void);
-  IMediaSample *PeekFrame(void) const;
-  IMediaSample *PeekFrame(REFERENCE_TIME &tStart, REFERENCE_TIME &tStop);
-  void PopFrame(void);
-};
-
-
 // Forward declarations
 class PicInPicBase;
 class PicScalerBase;
 
 
-/**
- * @brief PicInPicFilter that accepts two RGB24 inputs.
+/** PicInPicFilter that accepts two RGB24 inputs.
  * The filter should only be confgured after the inputs have been connected. */
 class PicInPicFilter: public VideoMixingBase, public ISpecifyPropertyPages
 {

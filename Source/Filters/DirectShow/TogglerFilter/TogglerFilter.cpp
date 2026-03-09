@@ -71,11 +71,11 @@ TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Toggle Filter"), 0,
   m_nTargetWidth(0),		// Initialised in initParameters(), no need to initialise twice.
   m_nTargetHeight(0),
   m_bThrottling(false),
-  m_DuplicateFrame(false),
+  m_DuplicateFrame(true),
   m_PicScaler1(NULL),
   m_PicScaler2(NULL),
   m_nBitsPerPixel(0),
-  m_pBufferForScaledSecondaryImage(NULL),
+  //m_pBufferForScaledSecondaryImage(NULL),
   m_Vflip(false),
   m_bToggle(false),
   m_duration(0),
@@ -119,11 +119,6 @@ TogglerFilter::~TogglerFilter()
   {
     delete m_PicScaler2;
     m_PicScaler2 = NULL;
-  }
-  if(m_pBufferForScaledSecondaryImage)
-  {
-    free(m_pBufferForScaledSecondaryImage);
-    m_pBufferForScaledSecondaryImage = NULL;
   }
 }
 
@@ -172,7 +167,26 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
 
   if(!m_vOutputPins[0]->IsConnected())
   {
+    FQ1.Erase(); FQ2.Erase();
     return S_FALSE;	// Do nothing when no output is connected.
+  }
+
+  if(m_bThrottling)
+  {
+    pSample->GetTime(&TimeStart1,&TimeEnd1);
+    if(TimeStart1 > TimeEnd2)
+    {
+      IMediaSample *pSample2 = FQ2.PeekFrame(TimeStart1,TimeEnd1);
+      if(pSample2)
+      {
+        pSample2->GetTime(&TimeStart2,&TimeEnd2);        
+        pSample2->Release();
+      }
+    }
+  }
+  else
+  {
+    FQ1.Erase(); FQ2.Erase();
   }
 
   HRESULT hr = S_OK;
@@ -182,6 +196,7 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);		// Populate intact sample to the output.
     else
     {
+      FQ1.Erase();
       BYTE *pBufferIn1 = NULL;
       hr = pSample->GetPointer(&pBufferIn1);
       if(FAILED(hr))
@@ -241,9 +256,17 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
       if(SUCCEEDED(pSample->GetTime(&TimeStart1,&TimeEnd1)))
       {
         m_duration += TimeEnd1 - TimeStart1;
-        if(m_duration > m_MaxInterval) {m_bToggle=!m_bToggle;m_duration=0;}
+        if(m_duration > m_MaxInterval)
+        {
+          m_bToggle=!m_bToggle;m_duration=0;
+          FQ2.Erase();				// unblock queue 2
+        }
       }
     }
+  }
+  else
+  {
+    if(m_bThrottling) FQ1.AddFrame(pSample);
   }
   return hr;
 }
@@ -253,8 +276,31 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
 HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
 {
   ASSERT(pSample!=NULL);				// Already tested in VideoMixingBase::Receive()
-  if(!m_vOutputPins[0]->IsConnected()) return S_FALSE;	// Do nothing when no output is connected.
- 
+  
+  if(!m_vOutputPins[0]->IsConnected())
+  {
+    FQ1.Erase(); FQ2.Erase();
+    return S_FALSE;	// Do nothing when no output is connected.
+  }
+
+  if(m_bThrottling)
+  {
+    pSample->GetTime(&TimeStart2,&TimeEnd2);
+    if(TimeStart2 > TimeEnd1)
+    {
+      IMediaSample *pSample1 = FQ1.PeekFrame(TimeStart2,TimeEnd2);
+      if(pSample1)
+      {
+        pSample1->GetTime(&TimeStart1,&TimeEnd1);
+        pSample1->Release();
+      }
+    }
+  }
+  else
+  {
+    FQ1.Erase(); FQ2.Erase();
+  }
+
 	// Copy the secondary sample into our buffer  
   HRESULT hr = S_OK;
   if(m_bToggle || !m_vInputPins[0]->IsConnected())
@@ -265,6 +311,7 @@ HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
     }
     else
     {
+      FQ2.Erase();
       BYTE *pBufferIn2 = NULL;
       hr = pSample->GetPointer(&pBufferIn2);
       if(FAILED(hr))
@@ -320,28 +367,37 @@ HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
 
     if(m_MaxInterval > 0)
     {
-      REFERENCE_TIME TimeStart1, TimeEnd1;
-      if(SUCCEEDED(pSample->GetTime(&TimeStart1,&TimeEnd1)))
+      if(SUCCEEDED(pSample->GetTime(&TimeStart2,&TimeEnd2)))
       {
-        m_duration += TimeEnd1 - TimeStart1;
-        if(m_duration > m_MaxInterval) {m_bToggle=!m_bToggle;m_duration=0;}
+        m_duration += TimeEnd2 - TimeStart2;
+        if(m_duration > m_MaxInterval)
+        {
+          m_bToggle=!m_bToggle;m_duration=0;
+          FQ1.Erase();				// unblock queue 1
+        }
       }
     }
   }
+  else
+  {
+    if(m_bThrottling) FQ2.AddFrame(pSample);
+  }
+  return hr;
 }
 
 
 HRESULT TogglerFilter::StartStreaming(void)
 {
-  if(m_pBufferForScaledSecondaryImage!=NULL && m_szBufferForScaledSecondaryImage>0)
-      memset(m_pBufferForScaledSecondaryImage, 0, m_szBufferForScaledSecondaryImage);
   m_duration = 0;
+  FQ1.Erase(); FQ2.Erase();
+  TimeStart2 = TimeEnd2 = TimeStart1 = TimeEnd1 = 0;
   return VideoMixingBase::StartStreaming();
 }
 
 
 HRESULT TogglerFilter::StopStreaming(void)
 {
+  FQ1.Erase(); FQ2.Erase();
   return VideoMixingBase::StopStreaming();
 }
 
@@ -355,7 +411,7 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
     const VIDEOINFOHEADER* const pVih = (const VIDEOINFOHEADER*) pMediaType->pbFormat;
     if(pVih)
     {
-      if(pVih->AvgTimePerFrame>0) m_iRepeatTime=pVih->AvgTimePerFrame/10;
+      if(pVih->AvgTimePerFrame>0) m_iRepeatTime_us=pVih->AvgTimePerFrame/10;
       bmih = &pVih->bmiHeader;
     }
   }
@@ -364,7 +420,7 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
     const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*) pMediaType->pbFormat;
     if(pVih2)
     {
-      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime=pVih2->AvgTimePerFrame/10;
+      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime_us=pVih2->AvgTimePerFrame/10;
       bmih = &pVih2->bmiHeader;
     }
   }
@@ -583,13 +639,6 @@ void TogglerFilter::reconfigure(void)
   const BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
   const BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;
 								///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if(m_pBufferForScaledSecondaryImage != NULL)
-  {
-    void *Buf2Delete = m_pBufferForScaledSecondaryImage;
-    m_pBufferForScaledSecondaryImage = NULL;
-    free(Buf2Delete);    
-  }
-
   GUID VideoFormat;
   if(m_vInputPins[0]->IsConnected()) VideoFormat=ConnectionFormat[0];
   else if(m_vInputPins[1]->IsConnected()) VideoFormat=ConnectionFormat[1];
@@ -624,7 +673,7 @@ void TogglerFilter::reconfigure(void)
       }
     }
     m_PicScaler1->SetInDimensions(pBmih1->biWidth, pBmih1->biHeight);
-    m_PicScaler1->SetOutDimensions(m_nTargetWidth, m_nTargetHeight);
+    m_PicScaler1->SetOutDimensions(m_nOutputWidth, m_nOutputHeight);
   }
   else
   {
@@ -664,7 +713,7 @@ void TogglerFilter::reconfigure(void)
       }
     }
     m_PicScaler2->SetInDimensions(pBmih2->biWidth, pBmih2->biHeight);
-    m_PicScaler2->SetOutDimensions(m_nTargetWidth, m_nTargetHeight);
+    m_PicScaler2->SetOutDimensions(m_nOutputWidth, m_nOutputHeight);
   }
   else
   {

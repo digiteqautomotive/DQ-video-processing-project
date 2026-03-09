@@ -141,7 +141,7 @@ protected:
         unsigned m_uiBeginFlushCount;
         unsigned m_uiEndFlushCount;
         unsigned m_LastFrame_us;
-        unsigned m_iRepeatTime;
+        unsigned m_iRepeatTime_us;
 };
 
 

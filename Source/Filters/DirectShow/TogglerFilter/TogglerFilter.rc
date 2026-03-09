@@ -72,7 +72,7 @@ BEGIN
     CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,45,10,14
     LTEXT           "[s]  Use 0 for disable toggling",IDC_STATIC,139,88,66,25
     LTEXT           "Use 0 for populating input video size.",IDC_STATIC,37,62,167,11
-    CONTROL         "Throttle output 2",IDC_CHECK_THROTTLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,126,178,10
+    CONTROL         "Synchronise video by throttling",IDC_CHECK_THROTTLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,126,178,10
     CONTROL         "Always duplicate frames on output",IDC_CHECK_DUPLICATE_FRAMES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,139,187,10
     LTEXT           "Input duration:",IDC_STATIC,16,94,59,8

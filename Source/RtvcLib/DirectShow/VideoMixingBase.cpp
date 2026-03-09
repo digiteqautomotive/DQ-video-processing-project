@@ -51,7 +51,7 @@ VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsi
     m_uiEndOfStreamCount(0),
     m_uiBeginFlushCount(0),
     m_uiEndFlushCount(0),
-    m_LastFrame_us(0), m_iRepeatTime(0)
+    m_LastFrame_us(0), m_iRepeatTime_us(0)
 {
   memset(&m_VideoInHeader, 0, sizeof(m_VideoInHeader));
   memset(&ConnectionFormat,0,sizeof(ConnectionFormat));
@@ -198,9 +198,9 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
         VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*) pMediaType->pbFormat;
         if(pVih)
         {
-          pVih->AvgTimePerFrame = m_iRepeatTime*10;
-          if(m_iRepeatTime>0)
-              pVih->dwBitRate = ((unsigned long long)NewOutputSize*8*1000000)/m_iRepeatTime;
+          pVih->AvgTimePerFrame = m_iRepeatTime_us*10;
+          if(m_iRepeatTime_us>0)
+              pVih->dwBitRate = ((unsigned long long)NewOutputSize*8*1000000)/m_iRepeatTime_us;
 	  bmh1 = &pVih->bmiHeader;
           rcSource = &pVih->rcSource;
           rcTarget = &pVih->rcTarget;
@@ -211,9 +211,9 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
 	VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pMediaType->pbFormat;
         if(pVih2)
         {
-          pVih2->AvgTimePerFrame = m_iRepeatTime*10;
-          if(m_iRepeatTime>0)
-              pVih2->dwBitRate = ((unsigned long long)NewOutputSize*8*1000000)/m_iRepeatTime;
+          pVih2->AvgTimePerFrame = m_iRepeatTime_us*10;
+          if(m_iRepeatTime_us>0)
+              pVih2->dwBitRate = ((unsigned long long)NewOutputSize*8*1000000)/m_iRepeatTime_us;
 	  bmh1 = &pVih2->bmiHeader;
           rcSource = &pVih2->rcSource;
           rcTarget = &pVih2->rcTarget;

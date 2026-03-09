@@ -62,102 +62,6 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 #include <process.h>
 
 
-///////////////////////////////////////////////////////////
-
-
-FrameQueue::~FrameQueue()
-{
-  while(!q.empty())
-  {
-    IMediaSample *pFrame = q.front();
-    q.pop_front();
-    if(pFrame) pFrame->Release();
-  }
-}
-
-
-void FrameQueue::Erase(void)
-{
-IMediaSample *pFrame;
-  while(!q.empty())
-  {
-    {		// locked scope
-      CAutoLock lck(&m_csFrame2Queue);
-      pFrame = q.front();
-      q.pop_front();
-    }
-    if(pFrame) pFrame->Release();
-  }
-}
-
-void FrameQueue::AddFrame(IMediaSample*pFrame)
-{
-  if(pFrame)
-  {
-    pFrame->AddRef();
-    CAutoLock lck(&m_csFrame2Queue);
-    q.push_back(pFrame);
-  }
-}
-
-
-IMediaSample *FrameQueue::PeekFrame(void) const
-{
-CAutoLock lck(&m_csFrame2Queue);
-  if(q.empty()) return NULL;
-  IMediaSample *IS = q.front();
-  if(IS) IS->AddRef();
-return IS;
-}
-
-
-IMediaSample *FrameQueue::PeekFrame(REFERENCE_TIME &tStart, REFERENCE_TIME &tStop)
-{
-//LONGLONG tStart2, tStop2;
-REFERENCE_TIME TimeStart2, TimeEnd2;
-IMediaSample *IS = NULL;
-CAutoLock lck(&m_csFrame2Queue);
-
-  while(!q.empty())
-  {
-    std::list<IMediaSample*>::iterator it = q.begin();
-    IS = *it;
-    if(IS!=NULL)
-    {
-      it++;
-      if(it==q.end()) 
-      {
-        q.pop_front();
-        return(IS);		// IS is the last element in queue.
-      }
-      //IS->GetMediaTime(&tStart2,&tStop2);
-      IS->GetTime(&TimeStart2,&TimeEnd2);
-      if(TimeStart2>=tStart || TimeEnd2>=tStart)
-      {
-        q.pop_front();
-        return(IS);
-      }
-    }
-    q.pop_front();
-  }
-
-  if(IS) IS->AddRef();
-return IS;
-}
-
-
-void FrameQueue::PopFrame(void)
-{
-  IMediaSample *pFrame;
-  {
-    CAutoLock lck(&m_csFrame2Queue);
-    if(q.empty()) return;
-    pFrame = q.front();
-    q.pop_front();
-  }
-  if(pFrame) pFrame->Release();		// It is better to unlock queue here.
-}
-
 
 //////////////////////////////////////////////////////////
 
@@ -357,8 +261,8 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
       pOutSample->Release();
     }
-    m_LastFrame_us += m_iRepeatTime;
-    return hr;   
+    m_LastFrame_us += m_iRepeatTime_us;
+    return hr;
   }
 
   if(m_pTargetPicScaler==NULL && !m_Vflip && !m_DuplicateFrame)
@@ -366,7 +270,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
     m_pPicInPic->Insert(m_pBufferForScaledSecondaryImage, pBufferIn1, m_Vflip);
     //pOutSample->SetSyncPoint(TRUE);
     hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);
-    m_LastFrame_us += m_iRepeatTime;
+    m_LastFrame_us += m_iRepeatTime_us;
   }
   else
   {    
@@ -396,7 +300,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
     }
     pOutSample->SetSyncPoint(TRUE);
     hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);		// Call downstream pin callback outside lock.
-    m_LastFrame_us += m_iRepeatTime;
+    m_LastFrame_us += m_iRepeatTime_us;
     pOutSample->Release();
   }
   return hr;
@@ -467,7 +371,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
     const VIDEOINFOHEADER* const pVih = (const VIDEOINFOHEADER*) pMediaType->pbFormat;
     if(pVih)
     {
-      if(pVih->AvgTimePerFrame>0) m_iRepeatTime=pVih->AvgTimePerFrame/10;
+      if(pVih->AvgTimePerFrame>0) m_iRepeatTime_us=pVih->AvgTimePerFrame/10;
       bmih = &pVih->bmiHeader;
     }
   }
@@ -476,7 +380,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
     const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*) pMediaType->pbFormat;
     if(pVih2)
     {
-      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime=pVih2->AvgTimePerFrame/10;
+      if(pVih2->AvgTimePerFrame>0) m_iRepeatTime_us=pVih2->AvgTimePerFrame/10;
       bmih = &pVih2->bmiHeader;
     }
   }
