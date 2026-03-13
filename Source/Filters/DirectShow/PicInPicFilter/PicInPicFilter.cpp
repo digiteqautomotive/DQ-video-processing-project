@@ -484,7 +484,29 @@ HRESULT PicInPicFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
 {
 HRESULT hr = VideoMixingBase::SetMediaType(direction,pmt,nIndex);
   if(SUCCEEDED(hr))
-      reconfigure();
+  {
+    reconfigure();
+    if(pmt)
+    {
+      const BITMAPINFOHEADER *pBiOut = NULL;
+      if(pmt->formattype==FORMAT_VideoInfo)
+      {
+        const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)pmt->pbFormat;
+        if(pVihOut) pBiOut = &(pVihOut->bmiHeader);
+      }
+      else if(pmt->formattype==FORMAT_VideoInfo2)
+      {
+        const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)pmt->pbFormat;
+        if(pVihOut) pBiOut = &(pVihOut->bmiHeader);
+      }
+      m_Vflip = false;
+      if(pBiOut)
+      {
+        if(labs(pBiOut->biHeight) < 0)
+            m_Vflip = true;
+      }
+    }
+  }
   return hr; 
 }
 
@@ -498,16 +520,13 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   }
 
   	// Video format
-  m_Vflip = false;
   if(pMediaType->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)pMediaType->pbFormat;
     const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
     if(pBiOut->biHeight != m_nOutputHeight)
     {
-      if(labs(pBiOut->biHeight) == labs(m_nOutputHeight))
-        m_Vflip = true;
-      else
+      if(labs(pBiOut->biHeight) != labs(m_nOutputHeight))
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
     if(pBiOut->biWidth != m_nOutputWidth)
@@ -519,9 +538,7 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
     const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
     if(pBiOut->biHeight != m_nTargetHeight)
     {
-      if(labs(pBiOut->biHeight) == labs(m_nOutputHeight))
-        m_Vflip = true;
-      else
+      if(labs(pBiOut->biHeight) != labs(m_nOutputHeight))
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
     if(pBiOut->biWidth != m_nOutputWidth)
@@ -576,7 +593,7 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
 
 
 /// Override to control state dependent behaviour
-STDMETHODIMP PicInPicFilter::SetParameter( const char* type, const char* value )
+STDMETHODIMP PicInPicFilter::SetParameter(const char* type, const char* value)
 {
 HRESULT hr;
 	// For now, one cannot set any parameters once the output has been connected -> this will affect the buffersize
@@ -585,7 +602,7 @@ HRESULT hr;
     if(parameterChangeAffectsOutput(type))
     {
       bool Ok;
-      std::string Str(CSettingsInterface::GetParameter(type,&Ok));
+      const std::string Str(CSettingsInterface::GetParameter(type,&Ok));
       if(!Ok) return E_FAIL;
       if(Str != value) return E_FAIL;
       return S_FALSE;			// Nothing to change, parameter is identical.
@@ -613,8 +630,8 @@ void PicInPicFilter::reconfigure(void)
 {
   const BITMAPINFOHEADER* pBmih1 = &m_VideoInHeader[0].bmiHeader;
   const BITMAPINFOHEADER* pBmih2 = &m_VideoInHeader[1].bmiHeader;
-								///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if(m_pBufferForScaledSecondaryImage != NULL)			// tohle je uplnì blbe, nesmi se to spustit na bezicim videu od SetParameter()
+
+  if(m_pBufferForScaledSecondaryImage != NULL)
   {
     void *Buf2Delete = m_pBufferForScaledSecondaryImage;
     m_pBufferForScaledSecondaryImage = NULL;
