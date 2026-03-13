@@ -4,7 +4,7 @@ MODULE:			PicInPicFilter
 
 FILE NAME:		PicInPicFilter.cpp
 
-DESCRIPTION			: 
+DESCRIPTION:
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -17,16 +17,11 @@ Redistribution and use in source and binary forms, with or without modification,
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 * Neither the name of the CSIR nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "stdafx.h"
@@ -174,8 +169,8 @@ void PicInPicFilter::VFlipImg1(const BYTE* pSrc, BYTE* pDest)
 const int nRowLength = (m_pPicInPic->GetWidth() * m_nBitsPerPixel)/8;
  ASSERT(pSrc!=NULL);
  ASSERT(pDest!=NULL);
- pDest += ((labs(m_pPicInPic->GetHeight()) - 1) * nRowLength);
  int i = m_pPicInPic->GetHeight();
+ pDest += ((i - 1) * nRowLength);
  while(i-- > 0)
  {
    memcpy(pDest, pSrc, nRowLength);
@@ -238,7 +233,7 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
 	// When only input1 is connected, do not cache anything.
   if(!m_vInputPins[1]->IsConnected() || m_pBufferForScaledSecondaryImage==NULL)
   {
-    if(m_pTargetPicScaler==NULL && !m_Vflip)    
+    if(m_pTargetPicScaler==NULL && !m_Vflip && !m_DuplicateFrame)    
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pSample);		// Populate intact sample to the output.
     else
     {
@@ -255,7 +250,12 @@ HRESULT PicInPicFilter::ReceiveFirstSample(IMediaSample *pSample)
         if(m_pTargetPicScaler)
             m_pTargetPicScaler->Scale(pBufferOut, pBufferIn1, m_Vflip);
         else
-            VFlipImg1(pBufferIn1,pBufferOut);
+        {
+          if(m_Vflip)
+              VFlipImg1(pBufferIn1,pBufferOut);
+          else
+              memcpy(pBufferOut, pBufferIn1, m_nSampleSizes[0]);
+        } 
       }
       pOutSample->SetSyncPoint(TRUE);
       hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
@@ -486,26 +486,6 @@ HRESULT hr = VideoMixingBase::SetMediaType(direction,pmt,nIndex);
   if(SUCCEEDED(hr))
   {
     reconfigure();
-    if(pmt)
-    {
-      const BITMAPINFOHEADER *pBiOut = NULL;
-      if(pmt->formattype==FORMAT_VideoInfo)
-      {
-        const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)pmt->pbFormat;
-        if(pVihOut) pBiOut = &(pVihOut->bmiHeader);
-      }
-      else if(pmt->formattype==FORMAT_VideoInfo2)
-      {
-        const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)pmt->pbFormat;
-        if(pVihOut) pBiOut = &(pVihOut->bmiHeader);
-      }
-      m_Vflip = false;
-      if(pBiOut)
-      {
-        if(labs(pBiOut->biHeight) < 0)
-            m_Vflip = true;
-      }
-    }
   }
   return hr; 
 }
@@ -639,9 +619,24 @@ void PicInPicFilter::reconfigure(void)
   }
 
   GUID VideoFormat;
-  if(m_vInputPins[0]->IsConnected()) VideoFormat=ConnectionFormat[0];
-  else if(m_vInputPins[1]->IsConnected()) VideoFormat=ConnectionFormat[1];
+  bool InputNegSign = false;
+  if(m_vInputPins[0]->IsConnected())
+  {
+    VideoFormat = ConnectionFormat[0];
+    if(m_VideoInHeader[0].bmiHeader.biHeight < 0) InputNegSign=true;
+  }
+  else if(m_vInputPins[1]->IsConnected())
+  {
+    VideoFormat = ConnectionFormat[1];
+    if(m_VideoInHeader[1].bmiHeader.biHeight < 0) InputNegSign=true;
+  }
   else memset(&VideoFormat,0,sizeof(GUID));
+
+  m_Vflip = false;
+  if(VideoFormat==MEDIASUBTYPE_ARGB32 || VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_RGB24)
+  {
+    m_Vflip = InputNegSign ^ (m_nOutputWidth<0);
+  }
 
 	// target picture scaler
   if(m_nTargetWidth > 0 && m_nTargetHeight > 0)

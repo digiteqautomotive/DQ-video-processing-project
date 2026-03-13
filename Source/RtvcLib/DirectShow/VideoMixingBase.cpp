@@ -273,83 +273,63 @@ HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType
 	//TODO: Check if the sizes match: The images must correlate in dimension!!!!!!!!!!!
   if(direction == PINDIR_INPUT)
   {
-	  const BITMAPINFOHEADER *bmih;
-	  if(pmt->formattype==FORMAT_VideoInfo)
-	  {
-		// Copy the video info header
-	    const VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
-	    bmih = &pVih->bmiHeader;
+    const BITMAPINFOHEADER *bmih = NULL;
+    if(pmt->formattype==FORMAT_VideoInfo)
+    {		// Copy the video info header
+      const VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
+      if(pVih)
+      {
+        bmih = &pVih->bmiHeader;
+        memcpy(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
+      }
+    }
+    else if(pmt->formattype==FORMAT_VideoInfo2)
+    {	  		// Copy the video info header
+      const VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
+      if(pVih2)
+      {
+        bmih = &pVih2->bmiHeader;
+        m_VideoInHeader[nIndex].AvgTimePerFrame = pVih2->AvgTimePerFrame;
+        memcpy(&m_VideoInHeader[nIndex].bmiHeader, &pVih2->bmiHeader, sizeof(BITMAPINFOHEADER));
+        m_VideoInHeader[nIndex].dwBitErrorRate = pVih2->dwBitErrorRate;
+        m_VideoInHeader[nIndex].dwBitRate = pVih2->dwBitRate;
+        m_VideoInHeader[nIndex].rcSource = pVih2->rcSource;
+        m_VideoInHeader[nIndex].rcTarget = pVih2->rcTarget;
+      }
+    }
+    else
+        return VFW_E_INVALID_MEDIA_TYPE;
 
 		// Reject different formats on input
-	    if(nIndex==0)
-	    {
-	      if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1])
-		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
-	      if(m_vOutputPins[0]->IsConnected())
-	      {			// Reject different connection if output is already connected.
-		    if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
-                       (bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight && m_VideoInHeader[0].bmiHeader.biHeight!=0))
-			  return E_FAIL;
-		  }
-		}
-		if(nIndex==1)
-		{
-		  if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0])
-		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
-		  if(m_vOutputPins[0]->IsConnected())
-		  {			// Reject different connection if output is already connected.
-		    if((bmih->biWidth!=m_VideoInHeader[1].bmiHeader.biWidth && m_VideoInHeader[1].bmiHeader.biWidth!=0) ||
-                       (bmih->biHeight!=m_VideoInHeader[1].bmiHeader.biHeight && m_VideoInHeader[1].bmiHeader.biHeight!=0))
-			  return E_FAIL;
-	      }
-	    }
-	    CopyMemory(&m_VideoInHeader[nIndex], pVih, sizeof(VIDEOINFOHEADER));
-	  }
-	  else if(pmt->formattype==FORMAT_VideoInfo2)
-	  {
-		  		// Copy the video info header
-	    const VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
-	    bmih = &pVih2->bmiHeader;
-	    		// Reject different formats on input
-	    if(nIndex==0)
-	    {
-	      if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1])
-		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
-	      if(m_vOutputPins[0]->IsConnected())
-	      {			// Reject different connection if output is already connected.
-		    if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
-                       (bmih->biHeight!=m_VideoInHeader[0].bmiHeader.biHeight && m_VideoInHeader[0].bmiHeader.biHeight!=0))
-			  return E_FAIL;
-		  }
-		}
-		if(nIndex==1)
-		{
-		  if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0])
-		      return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
-		  if(m_vOutputPins[0]->IsConnected())
-		  {			// Reject different connection if output is already connected.
-		    if((bmih->biWidth!=m_VideoInHeader[1].bmiHeader.biWidth && m_VideoInHeader[1].bmiHeader.biWidth!=0) ||
-                       (bmih->biHeight!=m_VideoInHeader[1].bmiHeader.biHeight && m_VideoInHeader[1].bmiHeader.biHeight!=0))
-			  return E_FAIL;
-	      }
-	    }
-	    m_VideoInHeader[nIndex].AvgTimePerFrame = pVih2->AvgTimePerFrame;
-	    memcpy(&m_VideoInHeader[nIndex].bmiHeader, &pVih2->bmiHeader, sizeof(BITMAPINFOHEADER));
-            m_VideoInHeader[nIndex].dwBitErrorRate = pVih2->dwBitErrorRate;
-	    m_VideoInHeader[nIndex].dwBitRate = pVih2->dwBitRate;
-	    m_VideoInHeader[nIndex].rcSource = pVih2->rcSource;
-	    m_VideoInHeader[nIndex].rcTarget = pVih2->rcTarget;
-	  }
-	  else
-              return VFW_E_INVALID_MEDIA_TYPE;
+    if(nIndex==0)
+    {
+      if(ConnectionFormat[1]!=GUID_NULL && pmt->subtype!=ConnectionFormat[1])
+		return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
+      if(m_vOutputPins[0]->IsConnected())
+      {			// Reject different connection if output is already connected.
+        if((bmih->biWidth!=m_VideoInHeader[0].bmiHeader.biWidth && m_VideoInHeader[0].bmiHeader.biWidth!=0) ||
+           (labs(bmih->biHeight)!=labs(m_VideoInHeader[0].bmiHeader.biHeight) && m_VideoInHeader[0].bmiHeader.biHeight!=0))
+		     return E_FAIL;
+      }
+    }
+    if(nIndex==1)
+    {
+      if(ConnectionFormat[0]!=GUID_NULL && pmt->subtype!=ConnectionFormat[0])
+          return VFW_E_INVALID_MEDIA_TYPE;		// Reject different videoformats on both inputs.
+      if(m_vOutputPins[0]->IsConnected())
+      {			// Reject different connection if output is already connected.
+        if((bmih->biWidth!=m_VideoInHeader[1].bmiHeader.biWidth && m_VideoInHeader[1].bmiHeader.biWidth!=0) ||
+           (labs(bmih->biHeight)!=labs(m_VideoInHeader[1].bmiHeader.biHeight) && m_VideoInHeader[1].bmiHeader.biHeight!=0))
+	             return E_FAIL;
+      }
+    }
 
-	  ConnectionFormat[nIndex] = pmt->subtype;
-
-	  hr = CreateVideoMixer(pmt, nIndex);
-	  if(FAILED(hr))
-	  {
-	    return hr;
-	  }
+    ConnectionFormat[nIndex] = pmt->subtype;
+    hr = CreateVideoMixer(pmt, nIndex);
+    if(FAILED(hr))
+    {
+      return hr;
+    }
   }
 
 		// Get first input dimensions

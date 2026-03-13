@@ -48,6 +48,7 @@ RESTRICTIONS			: Redistribution and use in source and binary forms, with or with
 #define _PICINPICBASE_H
 
 #include <Guiddef.h>
+#include <math.h>
 
 
 /** \ingroup ImageLib
@@ -64,7 +65,7 @@ public:
 	// Construction and destruction.
         PicInPicBase(void) {_width=0; _height=0; _subWidth=0; _subHeight=0; _xPos=0; _yPos=0; _writeWidth=0; _writeHeight=0; _borderWidth=0;}
 	PicInPicBase(int width, int height, int subWidth, int subHeight, int xPos, int yPos) 
-	  {_width=width; _height=height; _subWidth=subWidth; _subHeight=subHeight; _xPos=xPos; _yPos=yPos; _borderWidth=0; SetActualSubDimensions();}
+	  {_width=labs(width); _height=labs(height); _subWidth=labs(subWidth); _subHeight=labs(subHeight); _xPos=xPos; _yPos=yPos; _borderWidth=0; SetActualSubDimensions();}
 	virtual ~PicInPicBase(void) {}
 
 	// Interface.
@@ -87,8 +88,8 @@ public:
         int GetYPos(void) const			{ return(_yPos); }
         int GetBorderWidth(void) const		{ return _borderWidth; }
   
-	void SetDimensions(int width, int height) {_width = width; _height = height; SetActualSubDimensions(); }
-	void SetSubDimensions(int subWidth, int subHeight)	{_subWidth = subWidth; _subHeight = subHeight; SetActualSubDimensions(); }
+	void SetDimensions(int width, int height) {_width=labs(width); _height=labs(height); SetActualSubDimensions(); }
+	void SetSubDimensions(int subWidth, int subHeight)	{_subWidth=labs(subWidth); _subHeight=labs(subHeight); SetActualSubDimensions(); }
         void SetPos(int x, int y)		{ _xPos = x; _yPos = y; SetActualSubDimensions(); }    
         void SetBorderWidth(int val)		{ _borderWidth = val; }
 
