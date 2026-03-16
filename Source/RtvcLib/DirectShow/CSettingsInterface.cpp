@@ -544,7 +544,7 @@ HRESULT hr;
 void ParameterBool::getVariant(VARIANT &var) const
 {
   var.vt = VT_BOOL;
-  var.boolVal = *pValue;
+  var.boolVal = (*pValue) ? VARIANT_TRUE : VARIANT_FALSE;
 }
 
 
