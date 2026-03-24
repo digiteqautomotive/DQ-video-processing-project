@@ -102,7 +102,7 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 {
 	// Prepare output sample
   const AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
-  DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
+  DbgLog((LOG_TRACE,0,TEXT("Video Mixer: Sample Received from input %d: start time: %I64d end time: %I64d"), nIndex, pProps->tStart, pProps->tStop));
   if (pProps->dwStreamId != AM_STREAM_MEDIA) {
   	return m_vInputPins[nIndex]->Receive(pSample);
 	}
@@ -288,7 +288,17 @@ HRESULT VideoMixingFilter::StartStreaming(void)
 {
   if(m_pSampleBuffers[0]!=NULL) memset(m_pSampleBuffers[0], 0, m_nSampleSizes[0]);
   if(m_pSampleBuffers[1]!=NULL) memset(m_pSampleBuffers[1], 0, m_nSampleSizes[1]);
+  m_FQ[0].Erase();
+  m_FQ[1].Erase();
   return VideoMixingBase::StartStreaming();
+}
+
+
+HRESULT VideoMixingFilter::StopStreaming(void)
+{
+  m_FQ[0].Erase();
+  m_FQ[1].Erase();
+  return VideoMixingBase::StopStreaming();
 }
 
 
