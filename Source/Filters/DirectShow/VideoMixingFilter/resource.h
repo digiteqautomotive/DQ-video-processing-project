@@ -2,11 +2,19 @@
 // Microsoft Visual C++ generated include file.
 // Used by VideoMixingFilter.rc
 //
+#define MAJOR_VERSION                   1
+#define MINOR_VERSION                   7
+#define BUILD_VERSION                   13
 #define IDD_VIDEO_MIXING_DIALOG         101
 #define IDS_VM_CAPTION                  102
 #define IDC_CHECK_TCP                   1001
 #define IDC_HORIZONTAL                  1002
 #define IDC_VERTICAL                    1003
+#define IDC_RAD_INPUT1                  1004
+#define IDC_RAD_INPUT2                  1005
+#define IDC_RADIO3                      1006
+#define IDC_RAD_BOTH                    1006
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
@@ -14,7 +22,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1004
+#define _APS_NEXT_CONTROL_VALUE         1007
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

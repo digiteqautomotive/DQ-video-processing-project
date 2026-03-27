@@ -64,11 +64,8 @@ public:
 
 		/// Overridden from VideoMixingBase 
 	virtual HRESULT ReceiveFirstSample(IMediaSample *pSample);
-	/// Overridden from VideoMixingBase 
 	virtual HRESULT ReceiveSecondSample(IMediaSample *pSample);
-	/// Overridden from VideoMixingBase 
 	virtual HRESULT CreateVideoMixer(const CMediaType *pMediaType, int nIndex);
-	/// Overridden from VideoMixingBase 
         virtual HRESULT SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize);
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex, const BYTE *pSampleBuffer0, const BYTE *pSampleBuffer1);
