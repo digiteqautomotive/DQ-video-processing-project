@@ -54,11 +54,11 @@ IDD_VIDEO_MIXING_DIALOG DIALOGEX 0, 0, 179, 105
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Vertical",IDC_VERTICAL,"Button",BS_AUTORADIOBUTTON,19,41,39,10
     GROUPBOX        "Stacking:",IDC_STATIC,14,12,63,48
-    CONTROL         "Horizontal",IDC_HORIZONTAL,"Button",BS_AUTORADIOBUTTON,19,26,48,10
+    CONTROL         "Horizontal",IDC_HORIZONTAL,"Button",BS_AUTORADIOBUTTON | WS_GROUP,19,26,48,10
+    CONTROL         "Vertical",IDC_VERTICAL,"Button",BS_AUTORADIOBUTTON,19,41,39,10
     GROUPBOX        "Synchronisation:",IDC_STATIC,83,13,82,63
-    CONTROL         "Input 1",IDC_RAD_INPUT1,"Button",BS_AUTORADIOBUTTON,93,26,39,10
+    CONTROL         "Input 1",IDC_RAD_INPUT1,"Button",BS_AUTORADIOBUTTON | WS_GROUP,93,26,39,10
     CONTROL         "Input 2",IDC_RAD_INPUT2,"Button",BS_AUTORADIOBUTTON,93,40,39,10
     CONTROL         "Both / Mixed",IDC_RAD_BOTH,"Button",BS_AUTORADIOBUTTON,93,55,57,10
 END
@@ -92,7 +92,10 @@ END
 #include "../VersionResInfo.h"
 
 
-/////////////////////////////////////////////////////////////////////////////// String Table
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
 //
 
 STRINGTABLE

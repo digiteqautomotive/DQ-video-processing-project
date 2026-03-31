@@ -93,8 +93,10 @@ protected:
         FrameQueue m_FQ[2];
 	BYTE *m_pSampleBuffers[2];	///< Pointers to our last received Media Sample.
 	int m_nSampleSizes[2];		///< Sizes
+        REFERENCE_TIME TimeStart1, TimeEnd1, TimeStart2, TimeEnd2;
 
 	int m_nOrientation;		///< 0 = horizontal, 1 = vertical
+	int m_nSynchronisation;		///< 0-channel 1; 1-channel 2; 2-mix
 
 	PicConcatBase *m_pPicConcat;	///< Picture concatenation class
 

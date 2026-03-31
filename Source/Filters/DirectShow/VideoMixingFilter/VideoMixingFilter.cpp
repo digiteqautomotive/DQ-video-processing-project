@@ -43,20 +43,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #define MAX(a,b) ((a>b)?(a):(b))
 #endif
 
+
 OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
+OLECHAR OLE_PARAM_SYNCHRONISATION[] = olestr(FILTER_PARAM_SYNCHRONISATION);
 
 
 VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer"), 0, CLSID_VPP_VideoMixingFilter),
 	m_pPicConcat(NULL),
         m_Vflip(false),
         m_FeedHeight(0), m_FeedWidth(0),
-	m_Feed_xPos(0), m_Feed_yPos(0)
+	m_Feed_xPos(0), m_Feed_yPos(0),
+        m_nSynchronisation(0),
+        m_nOrientation(0)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
 
   m_nSampleSizes[0] = 0;
   m_nSampleSizes[1] = 0;
+
+  TimeStart1 = TimeEnd1 = TimeStart2 = TimeEnd2 = 0;
 
 	// Init parameters
   initParameters();
@@ -92,7 +98,8 @@ CUnknown * WINAPI VideoMixingFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr
 
 void VideoMixingFilter::initParameters(void)
 {
-  addParameter(FILTER_PARAM_ORIENTATION, OLE_PARAM_ORIENTATION, &m_nOrientation, 0);
+  addParameter(FILTER_PARAM_ORIENTATION, OLE_PARAM_ORIENTATION, &m_nOrientation);
+  addParameter(FILTER_PARAM_SYNCHRONISATION, OLE_PARAM_SYNCHRONISATION, &m_nSynchronisation);
 }
 
 
@@ -108,10 +115,13 @@ HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nInde
 	}
 
 	// Provide frame rate limitation.
-  if(m_iRepeatTime_us > 0)
+  if(m_nSynchronisation >= 2)
   {
-    const unsigned CurrentTick = GetTickCount_us();
-    if(m_LastFrame_us+m_iRepeatTime_us - CurrentTick < (unsigned)0x8000000) return S_OK;
+    if(m_iRepeatTime_us > 0)
+    {
+      const unsigned CurrentTick = GetTickCount_us();
+      if(m_LastFrame_us+m_iRepeatTime_us - CurrentTick < (unsigned)0x8000000) return S_OK;
+    }
   }
 	
   IMediaSample * pOutSample;
@@ -249,8 +259,35 @@ HRESULT VideoMixingFilter::ReceiveFirstSample(IMediaSample *pSample)
   }
   if(pBuffer==NULL || m_pSampleBuffers[0]==NULL) return E_POINTER;
 
+
+  switch(m_nSynchronisation)
+  {
+    case 0:{ 
+           pSample->GetTime(&TimeStart1,&TimeEnd1);
+           if(TimeStart1 > TimeEnd2)
+           {
+             IMediaSample *pSample2 = m_FQ[1].PeekFrame(TimeStart1,TimeEnd1);
+             if(pSample2)
+             {
+               pSample2->GetTime(&TimeStart2,&TimeEnd2);
+               BYTE *pBuffer2 = NULL;
+               if(SUCCEEDED(pSample2->GetPointer(&pBuffer2)))
+               {
+                 memcpy(m_pSampleBuffers[1], pBuffer2, m_nSampleSizes[1]);
+               }
+               pSample2->Release();
+             } 
+           }
+           return GenerateOutputSample(pSample, 0, pBuffer,m_pSampleBuffers[1]);
+          }
+    case 1: m_FQ[1].Erase();
+            m_FQ[0].AddFrame(pSample);
+	    return S_OK;
+  }
+
+  m_FQ[0].Erase();
+  m_FQ[1].Erase();
   CAutoLock lck(&m_csReceive);
-		// Copy the buffer
   memcpy(m_pSampleBuffers[0], pBuffer, m_nSampleSizes[0]);
   return GenerateOutputSample(pSample, 0, m_pSampleBuffers[0], m_pSampleBuffers[1]);
 }
@@ -277,10 +314,36 @@ HRESULT VideoMixingFilter::ReceiveSecondSample(IMediaSample *pSample)
   }
   if(pBuffer==NULL || m_pSampleBuffers[1]==NULL) return E_POINTER;
 
+  switch(m_nSynchronisation)
+  {
+    case 0: m_FQ[0].Erase();
+            m_FQ[1].AddFrame(pSample);
+	    return S_OK;
+    case 1:{ 
+           pSample->GetTime(&TimeStart2,&TimeEnd2);
+           if(TimeStart2 > TimeEnd1)
+           {
+             IMediaSample *pSample1 = m_FQ[0].PeekFrame(TimeStart2,TimeEnd2);
+             if(pSample1)
+             {
+               pSample1->GetTime(&TimeStart1,&TimeEnd1);
+               BYTE *pBuffer1 = NULL;
+               if(SUCCEEDED(pSample1->GetPointer(&pBuffer1)))
+               {
+                 memcpy(m_pSampleBuffers[0], pBuffer1, m_nSampleSizes[0]);           
+               }
+               pSample1->Release();		// PSample1 cannot be kept, because some filters have only one buffer :(.
+             } 
+           }
+           return GenerateOutputSample(pSample, 0, m_pSampleBuffers[0],pBuffer);
+          }
+  }
+
+  m_FQ[0].Erase();
+  m_FQ[1].Erase();
   CAutoLock lck(&m_csReceive);
-		// Copy the buffer
-  memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);  
-  return GenerateOutputSample(pSample, 1, m_pSampleBuffers[0], m_pSampleBuffers[1]);
+  memcpy(m_pSampleBuffers[1], pBuffer, m_nSampleSizes[1]);
+  return GenerateOutputSample(pSample, 0, m_pSampleBuffers[0], m_pSampleBuffers[1]);
 }
 
 
@@ -290,6 +353,7 @@ HRESULT VideoMixingFilter::StartStreaming(void)
   if(m_pSampleBuffers[1]!=NULL) memset(m_pSampleBuffers[1], 0, m_nSampleSizes[1]);
   m_FQ[0].Erase();
   m_FQ[1].Erase();
+  TimeStart1 = TimeEnd1 = TimeStart2 = TimeEnd2 = 0;
   return VideoMixingBase::StartStreaming();
 }
 

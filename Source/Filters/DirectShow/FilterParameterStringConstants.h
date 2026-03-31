@@ -53,6 +53,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FILTER_PARAM_ORIENTATION	      "orientation"
 #define FILTER_PARAM_ROTATION_MODE	      "rotationmode"
 #define FILTER_PARAM_SUB_PICTURE_POSITIO      "position"
+#define FILTER_PARAM_SYNCHRONISATION	      "synchronisation"
 
 #define FILTER_PARAM_TARGET_WIDTH             "target_width"
 #define FILTER_PARAM_TARGET_HEIGHT            "target_height"

@@ -39,12 +39,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BUFFER_SIZE 256
 
 const int RADIO_BUTTON_IDS[] = {IDC_HORIZONTAL, IDC_VERTICAL};
+const int RADIO_BTN_SYNC_IDS[] = {IDC_RAD_INPUT1, IDC_RAD_INPUT2, IDC_RAD_BOTH};
 
-/**
- * \ingroup DirectShowFilters
- * Video mixing filter property dialog
- */
-class VideoMixingProperties : public FilterPropertiesBase
+
+/** \ingroup DirectShowFilters Video mixing filter property dialog */
+class VideoMixingProperties: public FilterPropertiesBase
 {
 public:
 
@@ -63,45 +62,8 @@ public:
 	{}
 
 
-	HRESULT ReadSettings()
-	{
-		int nLength = 0;
-		char szBuffer[BUFFER_SIZE];
-		HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ORIENTATION, sizeof(szBuffer), szBuffer, &nLength);
-		if (SUCCEEDED(hr))
-		{
-			int nMixingMode = atoi(szBuffer);
-			int nRadioID = RADIO_BUTTON_IDS[nMixingMode];
-			long lResult = SendMessage(				// returns LRESULT in lResult
-				GetDlgItem(m_Dlg, nRadioID),		// handle to destination control
-				(UINT) BM_SETCHECK,					// message ID
-				(WPARAM) 1,							// = 0; not used, must be zero
-				(LPARAM) 0							// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-				);
-			return S_OK;
-		}
-		else
-		{
-			return E_FAIL;
-		}
-		return hr;
-	}
+	HRESULT ReadSettings(void);
 
-
-	HRESULT OnApplyChanges(void)
-	{
-		for (int i = 0; i < 2; ++i)
-		{
-			int nRadioID = RADIO_BUTTON_IDS[i];
-			int iCheck = SendMessage( GetDlgItem(m_Dlg, nRadioID),	(UINT) BM_GETCHECK,	0, 0);
-			if (iCheck != 0)
-			{
-				std::string sID = toString(i);
-				HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_ORIENTATION, sID.c_str());
-				break;
-			}
-		}
-		return S_OK;
-	} 
+	HRESULT OnApplyChanges(void);
 };
 
