@@ -98,6 +98,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YUVtoRGBFilter", "DirectSho
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TogglerFilter", "DirectShowFilters\TogglerFilter\TogglerFilter.vcxproj", "{E6483896-FCFE-4459-8243-A6A41523C8F3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoCompareFilter", "DirectShowFilters\VideoCompareFilter\VideoCompareFilter.vcxproj", "{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -338,6 +340,14 @@ Global
 		{E6483896-FCFE-4459-8243-A6A41523C8F3}.Release|Win32.Build.0 = Release|Win32
 		{E6483896-FCFE-4459-8243-A6A41523C8F3}.Release|x64.ActiveCfg = Release|x64
 		{E6483896-FCFE-4459-8243-A6A41523C8F3}.Release|x64.Build.0 = Release|x64
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Debug|Win32.Build.0 = Debug|Win32
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Debug|x64.ActiveCfg = Debug|x64
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Debug|x64.Build.0 = Debug|x64
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Release|Win32.ActiveCfg = Release|Win32
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Release|Win32.Build.0 = Release|Win32
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Release|x64.ActiveCfg = Release|x64
+		{8445F40E-64A6-4F11-8A9A-735BDB4CA9EB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

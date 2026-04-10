@@ -9,7 +9,7 @@ DESCRIPTION			: Video Mixing Filter for AYUV, RGB24 and RGB32 Media
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2014, CSIR
-Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik, All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
