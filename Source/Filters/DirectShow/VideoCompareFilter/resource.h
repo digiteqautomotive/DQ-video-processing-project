@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by VideoMixingFilter.rc
+// Used by VideoCompareFilter.rc
 //
 #define MAJOR_VERSION                   1
 #define MINOR_VERSION                   7
@@ -14,7 +14,6 @@
 #define IDC_RAD_INPUT2                  1005
 #define IDC_RADIO3                      1006
 #define IDC_RAD_BOTH                    1006
-#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 

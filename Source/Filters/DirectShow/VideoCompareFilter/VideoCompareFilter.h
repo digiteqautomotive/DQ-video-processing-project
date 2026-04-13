@@ -17,6 +17,7 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 #include <DirectShow/CSettingsInterface.h>
 #include "../FilterParameterStringConstants.h"
 #include "DirectShow/FrameQueue.h"
+#include "PicCompareBase.h"
 
 
 // {598FB8F7-C4C5-47B8-8461-95962919A7D1}
@@ -83,10 +84,9 @@ protected:
 	int m_nSampleSizes[2];		///< Sizes
         REFERENCE_TIME TimeStart1, TimeEnd1, TimeStart2, TimeEnd2;
 
-	int m_nOrientation;		///< 0 = horizontal, 1 = vertical
 	int m_nSynchronisation;		///< 0-channel 1; 1-channel 2; 2-mix
 
-	PicConcatBase *m_pPicConcat;	///< Picture concatenation class
+	PicCompareBase *m_pPicCompare;	///< Picture concatenation class
 
 		/// Stores bytes per needed to store pixel according to media type
 	unsigned m_nBitsPerPixel;

@@ -14,8 +14,8 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 #include "stdafx.h"
 #include "VideoCompareFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <PicConcatRGB24Impl.h>
-#include <PicConcatRGB32Impl.h>
+#include <PicCompRGB24Impl.h>
+#include <PicCompRGB32Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
@@ -30,13 +30,12 @@ OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
 OLECHAR OLE_PARAM_SYNCHRONISATION[] = olestr(FILTER_PARAM_SYNCHRONISATION);
 
 
-VideoCompareFilter::VideoCompareFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer"), 0, CLSID_VPP_VideoCompareFilter),
-	m_pPicConcat(NULL),
+VideoCompareFilter::VideoCompareFilter(): VideoMixingBase(NAME("DQ VPP Video Compare"), 0, CLSID_VPP_VideoCompareFilter),
+	m_pPicCompare(NULL),
         m_Vflip(false),
         m_FeedHeight(0), m_FeedWidth(0),
 	m_Feed_xPos(0), m_Feed_yPos(0),
-        m_nSynchronisation(0),
-        m_nOrientation(0)
+        m_nSynchronisation(0)
 {
   m_pSampleBuffers[0] = NULL;
   m_pSampleBuffers[1] = NULL;
@@ -53,10 +52,10 @@ VideoCompareFilter::VideoCompareFilter(): VideoMixingBase(NAME("DQ VPP Video Mix
 
 VideoCompareFilter::~VideoCompareFilter()
 {
-  if(m_pPicConcat)
+  if(m_pPicCompare)
   {
-    delete m_pPicConcat;
-    m_pPicConcat = NULL;
+    delete m_pPicCompare;
+    m_pPicCompare = NULL;
   }
 
   for(int i=0; i<2; i++)
@@ -80,7 +79,6 @@ CUnknown * WINAPI VideoCompareFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pH
 
 void VideoCompareFilter::initParameters(void)
 {
-  addParameter(FILTER_PARAM_ORIENTATION, OLE_PARAM_ORIENTATION, &m_nOrientation);
   addParameter(FILTER_PARAM_SYNCHRONISATION, OLE_PARAM_SYNCHRONISATION, &m_nSynchronisation);
 }
 
@@ -119,28 +117,16 @@ HRESULT VideoCompareFilter::GenerateOutputSample(IMediaSample *pSample, int nInd
     return hr;
   }
 
-	////Set orientation
-  if (m_nOrientation == 0)
-  {
-		// Horizontal 3 (RIGHT)
-    m_pPicConcat->SetOrientation(PicConcatBase::RIGHT);
-  }
-  else
-  {
-		// Vertical = 1 (BOTTOM)
-    m_pPicConcat->SetOrientation(PicConcatBase::BOTTOM);
-  }
-
 	// Concat the pictures
   if(pSampleBuffer0 && pSampleBuffer1)
   {
     if(m_FeedHeight>0 && m_FeedWidth>0) FeedRegion(pBufferOut);
-    m_pPicConcat->Concat(pSampleBuffer0, pSampleBuffer1, pBufferOut, m_Vflip);    
+    m_pPicCompare->Compare(pSampleBuffer0, pSampleBuffer1, pBufferOut, m_Vflip);    
   }
   else if(pSampleBuffer0)
   {
-    const int nWidth = labs(m_pPicConcat->Get1stWidth());
-    const int nHeight = labs(m_pPicConcat->Get1stHeight());
+    const int nWidth = labs(m_pPicCompare->Get1stWidth());
+    const int nHeight = labs(m_pPicCompare->Get1stHeight());
     if(m_Vflip)
     {
       const int RowLen = (nWidth*m_nBitsPerPixel)/8;
@@ -159,8 +145,8 @@ HRESULT VideoCompareFilter::GenerateOutputSample(IMediaSample *pSample, int nInd
   }
   else if(pSampleBuffer1)
   {
-    const int nWidth = labs(m_pPicConcat->Get2ndWidth());
-    const int nHeight = labs(m_pPicConcat->Get2ndHeight());
+    const int nWidth = labs(m_pPicCompare->Get2ndWidth());
+    const int nHeight = labs(m_pPicCompare->Get2ndHeight());
     if(m_Vflip)
     {
       const int RowLen = (nWidth*m_nBitsPerPixel)/8;
@@ -385,16 +371,16 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
 	// Create appropriate picture concatenator
   if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
   {
-    if(m_pPicConcat!=NULL)
+    if(m_pPicCompare!=NULL)
     {
-      if(m_pPicConcat->GetVideoFormat()!=24) 
+      if(m_pPicCompare->GetVideoFormat()!=24) 
       {
-        delete m_pPicConcat; m_pPicConcat=NULL;
+        delete m_pPicCompare; m_pPicCompare=NULL;
       }
     }
-    if(m_pPicConcat==NULL)
+    if(m_pPicCompare==NULL)
     {
-      m_pPicConcat = new PicConcatRGB24Impl();
+      m_pPicCompare = new PicCompareRGB24Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     }
     return S_OK;
@@ -402,16 +388,16 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
 
   if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
   {
-    if(m_pPicConcat!=NULL)
+    if(m_pPicCompare!=NULL)
     {
-      if(m_pPicConcat->GetVideoFormat()!=32) 
+      if(m_pPicCompare->GetVideoFormat()!=32) 
       {
-        delete m_pPicConcat; m_pPicConcat=NULL;
+        delete m_pPicCompare; m_pPicCompare=NULL;
       }
     }
-    if(m_pPicConcat==NULL)
+    if(m_pPicCompare==NULL)
     {
-      m_pPicConcat = new PicConcatRGB32Impl();
+      m_pPicCompare = new PicCompareRGB32Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
     }
     return S_OK;
@@ -493,78 +479,41 @@ HRESULT VideoCompareFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, 
   if(pBmih1 && pBmih2)
   {
 		// Verify that the dimensions match and set output width and height
-    switch(m_nOrientation)
-    {
-	case 0: nOutputWidth = labs(pBmih1->biWidth) + labs(pBmih2->biWidth);
-		nOutputHeight = MAX(labs(pBmih1->biHeight),labs(pBmih2->biHeight));
-		if(labs(pBmih1->biHeight) != labs(pBmih2->biHeight)) 
-		{
-	          if(labs(pBmih1->biHeight) < labs(pBmih2->biHeight)) 
-		  {
-		    m_FeedWidth = labs(pBmih1->biWidth);
-		    m_FeedHeight = nOutputHeight - labs(pBmih1->biHeight);
-		  }
-		  else
-		  {
-		    m_FeedWidth = labs(pBmih2->biWidth);
-		    m_FeedHeight = nOutputHeight - labs(pBmih2->biHeight);
-		    m_Feed_xPos = labs(pBmih1->biWidth);
-		  }
-		}
-		break;
-	case 1:
-		nOutputWidth = MAX(labs(pBmih1->biWidth), labs(pBmih2->biWidth));
-		nOutputHeight = labs(pBmih1->biHeight) + labs(pBmih2->biHeight);
-	        if(labs(pBmih1->biWidth) != labs(pBmih2->biWidth))
-		{                  
-		  if(labs(pBmih1->biWidth) < labs(pBmih2->biWidth))
-		  {
-                    m_Feed_xPos = labs(pBmih1->biWidth);
-		    m_FeedHeight = labs(pBmih1->biHeight);
-		    m_Feed_yPos = nOutputHeight - m_FeedHeight;
-		  }
-		  else
-		  {
-                    m_Feed_xPos = labs(pBmih2->biWidth);
-		    m_FeedHeight = labs(pBmih2->biHeight);
-		  }
-		  m_FeedWidth = nOutputWidth - m_Feed_xPos;
-		}
-		break;		
-    }
+    nOutputWidth = MAX(labs(pBmih1->biWidth), labs(pBmih2->biWidth));
+    nOutputHeight = MAX(labs(pBmih1->biHeight),labs(pBmih2->biHeight));
     nOutputSize =  (nOutputWidth*nOutputHeight*m_nBitsPerPixel)/8;;
 
 		// Setup the picture concatenator
-    if(m_pPicConcat)
+    if(m_pPicCompare)
     {
-	m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-	m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+	m_pPicCompare->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
+	m_pPicCompare->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
     }
   }
   else
   {
     if(pBmih1)
     {
-	m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
+	m_pPicCompare->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
 	nOutputWidth = pBmih1->biWidth;
 	nOutputHeight = pBmih1->biHeight;
         nOutputSize =  m_nSampleSizes[0];
-        if(m_pPicConcat)
+        if(m_pPicCompare)
         {
-	  m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-	  m_pPicConcat->Set2ndDimensions(0, 0);
+	  m_pPicCompare->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
+	  m_pPicCompare->Set2ndDimensions(0, 0);
         }
     }
     else if(pBmih2)
     {
-      m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+      m_pPicCompare->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
       nOutputWidth = pBmih2->biWidth;
       nOutputHeight = pBmih2->biHeight;
       nOutputSize =  m_nSampleSizes[1];
-      if(m_pPicConcat)
+      if(m_pPicCompare)
       {
-	m_pPicConcat->Set1stDimensions(0, 0);
-	m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+	m_pPicCompare->Set1stDimensions(0, 0);
+	m_pPicCompare->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
       }
     }
     else
@@ -572,15 +521,15 @@ HRESULT VideoCompareFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, 
       nOutputWidth = 0;
       nOutputHeight = 0;
       nOutputSize =  0;
-      if(m_pPicConcat)
+      if(m_pPicCompare)
       {
-        m_pPicConcat->Set1stDimensions(0, 0);
-        m_pPicConcat->Set2ndDimensions(0, 0);
+        m_pPicCompare->Set1stDimensions(0, 0);
+        m_pPicCompare->Set2ndDimensions(0, 0);
       }      
     }
   }
-  if(m_pPicConcat)
-    m_pPicConcat->SetOutDimensions(nOutputWidth, nOutputHeight);
+  if(m_pPicCompare)
+    m_pPicCompare->SetOutDimensions(nOutputWidth, nOutputHeight);
 
 return S_OK;
 }
@@ -595,7 +544,7 @@ HRESULT VideoCompareFilter::CheckOutputType(const CMediaType* pMediaType)
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
 
-  if(m_pPicConcat==NULL) return E_POINTER;
+  if(m_pPicCompare==NULL) return E_POINTER;
 
   	// Video format
   m_Vflip = false;
@@ -614,14 +563,14 @@ HRESULT VideoCompareFilter::CheckOutputType(const CMediaType* pMediaType)
 
   if(pBiOut)
   {
-    if(pBiOut->biHeight != m_pPicConcat->GetOutHeight())
+    if(pBiOut->biHeight != m_pPicCompare->GetOutHeight())
     {
-      if(labs(pBiOut->biHeight) == labs(m_pPicConcat->GetOutHeight()))
+      if(labs(pBiOut->biHeight) == labs(m_pPicCompare->GetOutHeight()))
         m_Vflip = true;
       else
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
-    if(pBiOut->biWidth != m_pPicConcat->GetOutWidth())
+    if(pBiOut->biWidth != m_pPicCompare->GetOutWidth())
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
   }
   else
