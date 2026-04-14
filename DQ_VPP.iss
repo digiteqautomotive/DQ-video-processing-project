@@ -5,7 +5,7 @@
 
 #define MyAppName "DQ VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.7.15"
+#define MyAppVersion "1.7.16"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "DQ VPP video processing filters"
 #define MyAppURL "https://sourceforge.net/projects/direct-show-demo-filters/files/DQ_VPP_VIDEOPROCESSING/"
@@ -66,6 +66,7 @@ Name: "TeeFilter"; Description: "TeeFilter Direct Show filter"; Types: full cust
 Name: "TimestampLoggerFilter"; Description: "TimestampLoggerFilter Direct Show filter"; Types: full custom
 Name: "TogglerFilter"; Description: "Toggle Direct Show filter"; Types: full normal custom
 Name: "UtilityFilter"; Description: "Utility Direct Show filter"; Types: full normal custom
+Name: "VideoCompareFilter"; Description: "VideoCompareFilter Direct Show filter"; Types: full normal custom
 Name: "VideoMixingFilter"; Description: "VideoMixingFilter Direct Show filter"; Types: full normal custom
 Name: "YUV420ToRGBFilter"; Description: "YUV420ToRGBFilter Direct Show filter"; Types: full custom
 Name: "YuvSource"; Description: "YuvSource Direct Show filter"; Types: full custom
@@ -120,6 +121,8 @@ Source: ".\Projects\Win32\VC12\Win32\Release\TogglerFilter.dll"; DestDir: "{app}
 Source: ".\Projects\Win32\VC12\x64\Release\TogglerFilter.dll"; DestDir: "{app}\Win64"; Components: TogglerFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\UtilityFilter.dll"; DestDir: "{app}\Win32"; Components: UtilityFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\UtilityFilter.dll"; DestDir: "{app}\Win64"; Components: UtilityFilter; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\VideoCompareFilter.dll"; DestDir: "{app}\Win32"; Components: VideoCompareFilter; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\VideoCompareFilter.dll"; DestDir: "{app}\Win64"; Components: VideoCompareFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win32"; Components: VideoMixingFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win64"; Components: VideoMixingFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\YUVtoRGBFilter.dll"; DestDir: "{app}\Win32"; Components: YUV420ToRGBFilter; Flags: ignoreversion

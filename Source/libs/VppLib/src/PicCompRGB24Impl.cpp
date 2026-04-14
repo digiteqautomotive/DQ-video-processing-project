@@ -32,42 +32,29 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+#include <stdio.h>
 #include "PicCompRGB24Impl.h"
 
-/*
-===========================================================================
+
+/*===========================================================================
 	Construction and Destruction.
-===========================================================================
-*/
+===========================================================================*/
+
 
 PicCompareRGB24Impl::PicCompareRGB24Impl(void) 
 {
-	Create();
-}//end default constuctor.
+} //end default constuctor.
 
 
-PicCompareRGB24Impl::PicCompareRGB24Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd): 
-	PicCompareBase(width,height,width1st,height1st,width2nd,height2nd)
+PicCompareRGB24Impl::PicCompareRGB24Impl(int width, int height): 
+	PicCompareBase(width,height)
 {
-	Create();
-}//end constructor.
+} //end constructor.
 
 
 PicCompareRGB24Impl::~PicCompareRGB24Impl(void)
 {
-	if(_pPicInPic != NULL)
-		delete _pPicInPic;
-}//end destructor.
-
-
-int PicCompareRGB24Impl::Create(void)
-{
-	_pPicInPic = NULL;
-	_pPicInPic = new PicInPicRGB24Impl();
-	if(_pPicInPic == NULL)
-		return(0);
-	return(1);
-}//end Create.
+} //end destructor.
 
 
 /*=========================================================================
@@ -84,18 +71,31 @@ in this method and must be handled by the calling process.
 @return				: 0 = failed, 1 = success. */
 int PicCompareRGB24Impl::Compare(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip)
 {
-  if( (pImg == NULL) || (pImg1st == NULL) || (pImg2nd == NULL) || (_pPicInPic == NULL) )
+  if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
       return(0);
 
+  const unsigned char *Img1 = (const unsigned char *)pImg1st;
+  const unsigned char *Img2 = (const unsigned char *)pImg2nd;
+  unsigned char *ImgOut = (unsigned char *)pImg;
   if(VFlip)
   {
-    
+
+    ImgOut += 3 * _width * (_height-1);
+    for(int y=0; y<_height; y++)
+    {
+      unsigned values =  3 * _width;
+      while(values-- > 0)
+      {
+        int i = *Img1++ - *Img2++ + 127;
+        if(i<=0) *ImgOut=0;
+        else if(i>=255) *ImgOut=255;
+        else *ImgOut=i;
+        ImgOut++;
+      }
+    }
   }
   else
   {
-    const unsigned char *Img1 = (const unsigned char *)pImg1st;
-    const unsigned char *Img2 = (const unsigned char *)pImg2nd;
-    unsigned char *ImgOut = (unsigned char *)pImg;
     unsigned values =  3 * _width * _height;
     while(values-- > 0)
     {
@@ -109,4 +109,3 @@ int PicCompareRGB24Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
 
   return(1);
 } //end Compare
-

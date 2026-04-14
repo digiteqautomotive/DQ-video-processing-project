@@ -21,7 +21,7 @@ LICENSE:	Software License Agreement (BSD License)
 #define _PICCOMPARERGB24IMPL_H
 
 #include "PicCompareBase.h"
-#include "PicInPicRGB24Impl.h"
+
 
 /** \ingroup ImageLib
  * An RGB24 implementation derived from the general
@@ -32,7 +32,7 @@ class PicCompareRGB24Impl: public PicCompareBase
 public:
 	// Construction and destruction.
 	PicCompareRGB24Impl(void);
-	PicCompareRGB24Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd);
+	PicCompareRGB24Impl(int width, int height);
 	virtual ~PicCompareRGB24Impl(void);
 
 	// Interface.
@@ -41,11 +41,8 @@ public:
 
 protected:
 	// Support methods.
-	virtual int Create(void);
 
-protected:
 	// Members.
-	PicInPicRGB24Impl* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
 
 }; //end PicCompareRGB24Impl.
 

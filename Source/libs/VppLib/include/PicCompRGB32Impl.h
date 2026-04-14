@@ -32,7 +32,7 @@ class PicCompareRGB32Impl: public PicCompareBase
 public:
 	// Construction and destruction.
 	PicCompareRGB32Impl(void);
-	PicCompareRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd);
+	PicCompareRGB32Impl(int width, int height);
 	virtual ~PicCompareRGB32Impl(void);
 
 	// Interface.
@@ -41,11 +41,8 @@ public:
 
 protected:
 	// Support methods.
-	virtual int Create(void);
 
-protected:
 	// Members.
-	PicInPicRGB32Impl* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
 
 }; //end PicCompareRGB32Impl.
 

@@ -563,7 +563,6 @@ HRESULT VideoMixingFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, c
   {
     if(pBmih1)
     {
-	m_pPicConcat->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
 	nOutputWidth = pBmih1->biWidth;
 	nOutputHeight = pBmih1->biHeight;
         nOutputSize =  m_nSampleSizes[0];
@@ -575,7 +574,6 @@ HRESULT VideoMixingFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, c
     }
     else if(pBmih2)
     {
-      m_pPicConcat->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
       nOutputWidth = pBmih2->biWidth;
       nOutputHeight = pBmih2->biHeight;
       nOutputSize =  m_nSampleSizes[1];

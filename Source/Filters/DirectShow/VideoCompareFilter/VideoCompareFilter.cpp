@@ -125,8 +125,8 @@ HRESULT VideoCompareFilter::GenerateOutputSample(IMediaSample *pSample, int nInd
   }
   else if(pSampleBuffer0)
   {
-    const int nWidth = labs(m_pPicCompare->Get1stWidth());
-    const int nHeight = labs(m_pPicCompare->Get1stHeight());
+    const int nWidth = labs(m_pPicCompare->GetOutWidth());
+    const int nHeight = labs(m_pPicCompare->GetOutHeight());
     if(m_Vflip)
     {
       const int RowLen = (nWidth*m_nBitsPerPixel)/8;
@@ -145,8 +145,8 @@ HRESULT VideoCompareFilter::GenerateOutputSample(IMediaSample *pSample, int nInd
   }
   else if(pSampleBuffer1)
   {
-    const int nWidth = labs(m_pPicCompare->Get2ndWidth());
-    const int nHeight = labs(m_pPicCompare->Get2ndHeight());
+    const int nWidth = labs(m_pPicCompare->GetOutHeight());
+    const int nHeight = labs(m_pPicCompare->GetOutHeight());
     if(m_Vflip)
     {
       const int RowLen = (nWidth*m_nBitsPerPixel)/8;
@@ -479,57 +479,37 @@ HRESULT VideoCompareFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, 
   if(pBmih1 && pBmih2)
   {
 		// Verify that the dimensions match and set output width and height
-    nOutputWidth = MAX(labs(pBmih1->biWidth), labs(pBmih2->biWidth));
-    nOutputHeight = MAX(labs(pBmih1->biHeight),labs(pBmih2->biHeight));
-    nOutputSize =  (nOutputWidth*nOutputHeight*m_nBitsPerPixel)/8;;
-
-		// Setup the picture concatenator
-    if(m_pPicCompare)
-    {
-	m_pPicCompare->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-	m_pPicCompare->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
-    }
+    if(labs(pBmih1->biWidth) != labs(pBmih2->biWidth))
+        return VFW_E_TYPE_NOT_ACCEPTED;
+    if(labs(pBmih1->biHeight) != labs(pBmih2->biHeight))
+        return VFW_E_TYPE_NOT_ACCEPTED;
+    nOutputSize =  m_nSampleSizes[0];
+    nOutputWidth = pBmih1->biWidth;
+    nOutputHeight = pBmih1->biHeight;
   }
   else
   {
     if(pBmih1)
     {
-	m_pPicCompare->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-	nOutputWidth = pBmih1->biWidth;
-	nOutputHeight = pBmih1->biHeight;
-        nOutputSize =  m_nSampleSizes[0];
-        if(m_pPicCompare)
-        {
-	  m_pPicCompare->Set1stDimensions(pBmih1->biWidth, pBmih1->biHeight);
-	  m_pPicCompare->Set2ndDimensions(0, 0);
-        }
+      nOutputSize =  m_nSampleSizes[0];
+      nOutputWidth = pBmih1->biWidth;
+      nOutputHeight = pBmih1->biHeight;      
     }
     else if(pBmih2)
     {
-      m_pPicCompare->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
+      nOutputSize =  m_nSampleSizes[1];
       nOutputWidth = pBmih2->biWidth;
       nOutputHeight = pBmih2->biHeight;
-      nOutputSize =  m_nSampleSizes[1];
-      if(m_pPicCompare)
-      {
-	m_pPicCompare->Set1stDimensions(0, 0);
-	m_pPicCompare->Set2ndDimensions(pBmih2->biWidth, pBmih2->biHeight);
-      }
     }
     else
     {
       nOutputWidth = 0;
       nOutputHeight = 0;
       nOutputSize =  0;
-      if(m_pPicCompare)
-      {
-        m_pPicCompare->Set1stDimensions(0, 0);
-        m_pPicCompare->Set2ndDimensions(0, 0);
-      }      
     }
   }
   if(m_pPicCompare)
-    m_pPicCompare->SetOutDimensions(nOutputWidth, nOutputHeight);
+    m_pPicCompare->SetDimensions(nOutputWidth, nOutputHeight);
 
 return S_OK;
 }

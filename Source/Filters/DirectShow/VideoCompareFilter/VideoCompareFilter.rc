@@ -87,6 +87,8 @@ END
 #define ORIGINAL_FILENAME	"VideoCompareFilter.dll"
 
 #include "../VersionResInfo.h"
+
+
 // String Table
 //
 

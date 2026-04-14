@@ -2,9 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by VideoCompareFilter.rc
 //
-#define MAJOR_VERSION                   1
-#define MINOR_VERSION                   7
-#define BUILD_VERSION                   13
 #define IDD_VIDEO_COMPARE_DIALOG        101
 #define IDS_VM_CAPTION                  102
 #define IDC_CHECK_TCP                   1001

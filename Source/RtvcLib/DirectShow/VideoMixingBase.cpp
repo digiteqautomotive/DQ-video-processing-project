@@ -262,7 +262,7 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
 }
 
 
-HRESULT VideoMixingBase::SetMediaType( PIN_DIRECTION direction, const CMediaType *pmt, int nIndex )
+HRESULT VideoMixingBase::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex)
 {
 	// Check if our base class accepts the connection
   HRESULT hr = CMultiIOBaseFilter::SetMediaType(direction, pmt, nIndex);
