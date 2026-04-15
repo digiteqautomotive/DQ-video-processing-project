@@ -16,6 +16,7 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 #include <DirectShow/CommonDefs.h>
 #include <PicCompRGB24Impl.h>
 #include <PicCompRGB32Impl.h>
+#include <PicCompYUYV_Impl.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
@@ -74,6 +75,30 @@ CUnknown * WINAPI VideoCompareFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pH
   VideoCompareFilter* pFilter = new VideoCompareFilter();
   if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
+}
+
+
+void VideoCompareFilter::InitialiseInputTypes(void)
+{
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+}
+
+
+void VideoCompareFilter::InitialiseOutputTypes(void)
+{
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
 }
 
 
@@ -369,6 +394,23 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
 
 
 	// Create appropriate picture concatenator
+  if(pMediaType->subtype == MEDIASUBTYPE_YUY2 || pMediaType->subtype == MEDIASUBTYPE_YUYV || pMediaType->subtype == MEDIASUBTYPE_YVYU)
+  {
+    if(m_pPicCompare!=NULL)
+    {
+      if(m_pPicCompare->GetVideoFormat()!=16) 
+      {
+        delete m_pPicCompare; m_pPicCompare=NULL;
+      }
+    }
+    if(m_pPicCompare==NULL)
+    {
+      m_pPicCompare = new PicCompareYUYV_Impl();
+      m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;
+    }
+    return S_OK;
+  }
+
   if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
   {
     if(m_pPicCompare!=NULL)
@@ -507,6 +549,10 @@ HRESULT VideoCompareFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, 
       nOutputHeight = 0;
       nOutputSize =  0;
     }
+  }
+  if(m_nBitsPerPixel == BITS_PER_PIXEL_YUYV)
+  {
+    if(nOutputWidth & 1) return VFW_E_TYPE_NOT_ACCEPTED;
   }
   if(m_pPicCompare)
     m_pPicCompare->SetDimensions(nOutputWidth, nOutputHeight);

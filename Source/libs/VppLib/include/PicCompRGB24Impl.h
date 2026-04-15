@@ -37,7 +37,7 @@ public:
 
 	// Interface.
 	virtual int Compare(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
-        virtual int GetVideoFormat(void) const {return 32;}
+        virtual int GetVideoFormat(void) const {return 24;}
 
 protected:
 	// Support methods.

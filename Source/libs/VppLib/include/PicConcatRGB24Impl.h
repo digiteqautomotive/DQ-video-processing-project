@@ -45,12 +45,10 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 #include "PicConcatBase.h"
 #include "PicInPicRGB24Impl.h"
 
-/**
- * \ingroup ImageLib
- * An RGB24 implementation derived from the general
+
+/** \ingroup ImageLib An RGB24 implementation derived from the general
  * PicConcatBase() class. Concatenate a packed RGB24 
- * image	to another packed RGB24 image.
- */
+ * image	to another packed RGB24 image. */
 class PicConcatRGB24Impl: public PicConcatBase
 {
 public:
@@ -72,7 +70,7 @@ protected:
 	// Members.
 	PicInPicRGB24Impl* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
 
-};//end PicConcatRGB24Impl.
+}; //end PicConcatRGB24Impl.
 
 
 #endif _PICCONCATRGB24IMPL_H

@@ -103,6 +103,30 @@ void VideoMixingFilter::initParameters(void)
 }
 
 
+void VideoMixingFilter::InitialiseInputTypes(void)
+{
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+// AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+// AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+// AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+}
+
+
+void VideoMixingFilter::InitialiseOutputTypes(void)
+{
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+//  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+//  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+//  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+}
+
+
 /// This method renders output frame.
 /// @TODO: It looks like it is called twice time than necessary, must be limited framerate.
 HRESULT VideoMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex, const BYTE *pSampleBuffer0, const BYTE *pSampleBuffer1)
@@ -552,6 +576,11 @@ HRESULT VideoMixingFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, c
     }
     nOutputSize =  (nOutputWidth*nOutputHeight*m_nBitsPerPixel)/8;;
 
+    if(m_nBitsPerPixel == BITS_PER_PIXEL_YUYV)
+    {
+      if((pBmih1->biWidth & 1) || (pBmih2->biWidth & 1)) return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+
 		// Setup the picture concatenator
     if(m_pPicConcat)
     {
@@ -594,6 +623,10 @@ HRESULT VideoMixingFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, c
         m_pPicConcat->Set2ndDimensions(0, 0);
       }      
     }
+  }
+  if(m_nBitsPerPixel == BITS_PER_PIXEL_YUYV)
+  {
+    if(nOutputWidth & 1) return VFW_E_TYPE_NOT_ACCEPTED;
   }
   if(m_pPicConcat)
     m_pPicConcat->SetOutDimensions(nOutputWidth, nOutputHeight);

@@ -72,6 +72,9 @@ public:
 
 	void initParameters();
 
+	virtual void InitialiseInputTypes(void);
+	virtual void InitialiseOutputTypes(void);
+
         virtual void OnDisconnect(int nIndex);
 
         void FeedRegion(void* pImg) const;
