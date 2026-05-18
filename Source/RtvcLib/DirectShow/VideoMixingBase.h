@@ -44,9 +44,9 @@ public:
 	~VideoMixingBase();
 
 	//// Getter for output width.
-        int getOutputWidth() const {return m_nOutputWidth;}
+        int getOutputWidth(void) const {return m_nOutputWidth;}
 	//// Getter for output height.
-        int getOutputHeight() const {return m_nOutputHeight;}
+        int getOutputHeight(void) const {return m_nOutputHeight;}
 
 	/// Subclass must override these methods: it is up to the implementer whether the samples should be copied
 	/// to a temporary buffer etc.
@@ -111,7 +111,7 @@ public:
 	  }
 	}
 */
-	virtual void OnDisconnect(int nIndex);
+	virtual void OnDisconnect(int nIndex, RTVC_DIRECTION eDirection);
 
 
 	//virtual STDMETHODIMP NewSegment( REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate, int nIndex);

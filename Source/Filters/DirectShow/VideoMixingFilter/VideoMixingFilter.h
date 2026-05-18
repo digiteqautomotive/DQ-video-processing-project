@@ -75,7 +75,7 @@ public:
 	virtual void InitialiseInputTypes(void);
 	virtual void InitialiseOutputTypes(void);
 
-        virtual void OnDisconnect(int nIndex);
+        virtual void OnDisconnect(int nIndex, RTVC_DIRECTION eDirection);
 
         void FeedRegion(void* pImg) const;
 

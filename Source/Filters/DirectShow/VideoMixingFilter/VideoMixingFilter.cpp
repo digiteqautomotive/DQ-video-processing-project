@@ -464,67 +464,70 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
 
 
 /// Pin disconnection must reshedule output geometry.
-void VideoMixingFilter::OnDisconnect(int nIndex)
+void VideoMixingFilter::OnDisconnect(int nIndex, RTVC_DIRECTION eDirection)
 {
-  VideoMixingBase::OnDisconnect(nIndex);
+  VideoMixingBase::OnDisconnect(nIndex,eDirection);
 
-		// Get first input dimensions
-  AM_MEDIA_TYPE mediaType1;
-  BITMAPINFOHEADER* pBmih1 = NULL;
-  if(m_vInputPins[0]->IsConnected() && nIndex!=0)
+  if(eDirection == RTVC_IN)
   {
-    if(SUCCEEDED(m_vInputPins[0]->ConnectionMediaType(&mediaType1)))
+		// Get first input dimensions
+    AM_MEDIA_TYPE mediaType1;
+    BITMAPINFOHEADER* pBmih1 = NULL;
+    if(m_vInputPins[0]->IsConnected() && nIndex!=0)
     {
-      if(mediaType1.formattype==FORMAT_VideoInfo)
+      if(SUCCEEDED(m_vInputPins[0]->ConnectionMediaType(&mediaType1)))
       {
-	VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*)mediaType1.pbFormat;
-	pBmih1 = &pVih->bmiHeader;
-      }
-      if(mediaType1.formattype==FORMAT_VideoInfo2)
-      {
-	VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*)mediaType1.pbFormat;
-	pBmih1 = &pVih2->bmiHeader;
+        if(mediaType1.formattype==FORMAT_VideoInfo)
+        {
+	  VIDEOINFOHEADER* pVih = (VIDEOINFOHEADER*)mediaType1.pbFormat;
+	  pBmih1 = &pVih->bmiHeader;
+        }
+        if(mediaType1.formattype==FORMAT_VideoInfo2)
+        {
+	  VIDEOINFOHEADER2* pVih2 = (VIDEOINFOHEADER2*)mediaType1.pbFormat;
+	  pBmih1 = &pVih2->bmiHeader;
+        }
       }
     }
-  }
 
 		// Get second input dimensions
-  BITMAPINFOHEADER* pBmih2 = NULL;
-  AM_MEDIA_TYPE mediaType2;
-  if(m_vInputPins[1]->IsConnected() && nIndex!=1)
-  {
-    if(SUCCEEDED(m_vInputPins[1]->ConnectionMediaType(&mediaType2)))
+    BITMAPINFOHEADER* pBmih2 = NULL;
+    AM_MEDIA_TYPE mediaType2;
+    if(m_vInputPins[1]->IsConnected() && nIndex!=1)
     {
-      if(mediaType2.formattype==FORMAT_VideoInfo)
+      if(SUCCEEDED(m_vInputPins[1]->ConnectionMediaType(&mediaType2)))
       {
-	VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*)mediaType2.pbFormat;
-	pBmih2 = &pVih->bmiHeader;
-      }
-      if(mediaType2.formattype==FORMAT_VideoInfo2)
-      {
-	VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*)mediaType2.pbFormat;
-	pBmih2 = &pVih2->bmiHeader;
+        if(mediaType2.formattype==FORMAT_VideoInfo)
+        {
+	  VIDEOINFOHEADER* const pVih = (VIDEOINFOHEADER*)mediaType2.pbFormat;
+	  pBmih2 = &pVih->bmiHeader;
+        }
+        if(mediaType2.formattype==FORMAT_VideoInfo2)
+        {
+	  VIDEOINFOHEADER2* const pVih2 = (VIDEOINFOHEADER2*)mediaType2.pbFormat;
+	  pBmih2 = &pVih2->bmiHeader;
+        }
       }
     }
-  }
 		// Leave the output dimensions up to the sub class
-  int m_nOutputWidth, m_nOutputHeight, m_nOutputSize;
-  SetOutputDimensions(pBmih1, pBmih2, m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
+    int m_nOutputWidth, m_nOutputHeight, m_nOutputSize;
+    SetOutputDimensions(pBmih1, pBmih2, m_nOutputWidth, m_nOutputHeight, m_nOutputSize);
 
 		// Free format blocks
-  if(pBmih1)
-      FreeMediaType(mediaType1);
-  if(pBmih2)
-      FreeMediaType(mediaType2);
+    if(pBmih1)
+        FreeMediaType(mediaType1);
+    if(pBmih2)
+        FreeMediaType(mediaType2);
 
-  if(nIndex<=1)
-  {
-    if(m_pSampleBuffers[nIndex] != NULL)
+    if(nIndex<=1)
     {
-      free(m_pSampleBuffers[nIndex]);
-      m_pSampleBuffers[nIndex] = NULL;
+      if(m_pSampleBuffers[nIndex] != NULL)
+      {
+        free(m_pSampleBuffers[nIndex]);
+        m_pSampleBuffers[nIndex] = NULL;
+      }
+      m_nSampleSizes[nIndex] = 0;
     }
-    m_nSampleSizes[nIndex] = 0;
   }
 }
 

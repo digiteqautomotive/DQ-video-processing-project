@@ -537,10 +537,10 @@ HRESULT VideoMixingBase::StopStreaming()
 }
 
 
-void VideoMixingBase::OnDisconnect(int nIndex)
+void VideoMixingBase::OnDisconnect(int nIndex, RTVC_DIRECTION eDirection)
 {
-  CMultiIOBaseFilter::OnDisconnect(nIndex,RTVC_IN);
-  if(nIndex<=1)
+  CMultiIOBaseFilter::OnDisconnect(nIndex,eDirection);
+  if(nIndex<=1 && eDirection==RTVC_IN)
   {
     memset(&m_VideoInHeader[nIndex],0,sizeof(VIDEOINFOHEADER));
     memset(&ConnectionFormat[nIndex],0,sizeof(GUID));
