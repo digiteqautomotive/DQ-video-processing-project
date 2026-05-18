@@ -6,6 +6,7 @@ DirectShow/CStatusInterface.cpp
 DirectShow/CustomBaseFilter.cpp
 DirectShow/DirectShowHelper.cpp
 DirectShow/FilterPropertiesBase.cpp
+DirectShow/FrameQueue.cpp
 DirectShow/MultiIOBaseFilter.cpp
 DirectShow/MultiIOInputPin.cpp
 DirectShow/MultiIOOutputPin.cpp
@@ -34,6 +35,9 @@ SET(IU_SRCS
 ../libs/VppLib/src/ImageHandlerV2.cpp
 ../libs/VppLib/src/OverlayExtMem2Dv2.cpp
 ../libs/VppLib/src/OverlayMem2Dv2.cpp
+../libs/VppLib/src/PicCompRGB24Impl.cpp
+../libs/VppLib/src/PicCompRGB32Impl.cpp
+../libs/VppLib/src/PicCompYUYV_Impl.cpp
 ../libs/VppLib/src/PicConcatRGB24Impl.cpp
 ../libs/VppLib/src/PicConcatRGB32Impl.cpp
 ../libs/VppLib/src/PicCropperRGB24Impl.cpp
@@ -111,6 +115,7 @@ DirectShow/CustomBaseFilter.h
 DirectShow/CustomMediaTypes.h
 DirectShow/DirectShowHelper.h
 DirectShow/FilterPropertiesBase.h
+DirectShow/FrameQueue.h
 DirectShow/MultiIOBaseFilter.h
 DirectShow/MultiIOInputPin.h
 DirectShow/MultiIOOutputPin.h
@@ -148,6 +153,10 @@ SET(IU_HEADERS
 ../libs/VppLib/include/ImageHandlerV2.h
 ../libs/VppLib/include/OverlayExtMem2Dv2.h
 ../libs/VppLib/include/OverlayMem2Dv2.h
+../libs/VppLib/include/PicCompareBase.h
+../libs/VppLib/include/PicCompRGB24Impl.h
+../libs/VppLib/include/PicCompRGB32Impl.h
+../libs/VppLib/include/PicCompYUYV_Impl.h
 ../libs/VppLib/include/PicConcatBase.h
 ../libs/VppLib/include/PicConcatRGB24Impl.h
 ../libs/VppLib/include/PicConcatRGB32Impl.h

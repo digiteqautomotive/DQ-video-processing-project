@@ -1,4 +1,4 @@
-# CMakeLists.txt for <RGBtoYUV420Filter> 
+# CMakeLists.txt for <RGBtoYUVFilter> 
 
 # SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_BUILD_FOR_SHORT")
 
@@ -14,36 +14,36 @@ ${vppLink}
 SET(FLT_HDRS
 resource.h
 RGB2YUVProperties.h
-RGBtoYUV420Filter.h
+RGBtoYUVFilter.h
 stdafx.h
 )
 
 SET(FLT_SRCS 
 DLLSetup.cpp
-RGBtoYUV420Filter.cpp
-RGBtoYUV420Filter.def
-RGBtoYUV420Filter.rc
+RGBtoYUVFilter.cpp
+RGBtoYUVFilter.def
+RGBtoYUVFilter.rc
 stdafx.cpp
 )
 
 ADD_LIBRARY(
-RGBtoYUV420Filter SHARED ${FLT_SRCS} ${FLT_HDRS})
+RGBtoYUVFilter SHARED ${FLT_SRCS} ${FLT_HDRS})
 
 TARGET_LINK_LIBRARIES (
-RGBtoYUV420Filter
+RGBtoYUVFilter
 ${vppLibs}
 vpp
 ) 
 
 INSTALL(
-  TARGETS RGBtoYUV420Filter
+  TARGETS RGBtoYUVFilter
   ARCHIVE DESTINATION bin
   LIBRARY DESTINATION bin
 )
 
 IF (REGISTER_DS_FILTERS)
 ADD_CUSTOM_COMMAND(
-TARGET RGBtoYUV420Filter 
+TARGET RGBtoYUVFilter 
 POST_BUILD COMMAND 
 regsvr32 /s \"$(TargetPath)\"
 )

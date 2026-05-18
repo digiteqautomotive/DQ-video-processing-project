@@ -16,7 +16,7 @@ ADD_SUBDIRECTORY(OpusDecoderFilter)
 #ADD_SUBDIRECTORY(OpusEncoderFilter)
 ENDIF (OPUS_SUPPORT)
 ADD_SUBDIRECTORY(PicInPicFilter)
-ADD_SUBDIRECTORY(RGBtoYUV420Filter)
+ADD_SUBDIRECTORY(RGBtoYUVFilter)
 ADD_SUBDIRECTORY(RotateFilter)
 # NOTE: this has many additional dependencies such as boost, glog, LiveMediaExt, cpp-util
 IF (BUILD_RTSP_SINK_FILTER)
