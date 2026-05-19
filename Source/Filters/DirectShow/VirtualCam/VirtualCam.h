@@ -54,7 +54,7 @@ public:
   static CUnknown * WINAPI CreateInstance(LPUNKNOWN lpunk, HRESULT *phr);
   STDMETHODIMP QueryInterface(REFIID riid, void **ppv);
 
-  IFilterGraph *GetGraph() { return m_pGraph; }
+  IFilterGraph *GetGraph() {return m_pGraph;}
 
 private:
   CVCam(LPUNKNOWN lpunk, HRESULT *phr);
@@ -105,7 +105,7 @@ public:
   HRESULT SetMediaType(const CMediaType *pmt);
   HRESULT OnThreadCreate(void);
 
-private:
+protected:
   CVCam *m_pParent;
   REFERENCE_TIME m_rtLastTime;
   HBITMAP m_hLogoBmp;
@@ -116,6 +116,7 @@ private:
   unsigned m_uiCurrentColorIndex;
   unsigned m_uiFrameCount;
   unsigned m_uiChangeRate;
+  unsigned char m_Effect;
 };
 
 

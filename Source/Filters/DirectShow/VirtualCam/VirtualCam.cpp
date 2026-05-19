@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: VirtualCam
+MODULE:		VirtualCam
 
-FILE NAME			: VirtualCam.cpp
+FILE NAME:	VirtualCam.cpp
 
-DESCRIPTION			: VirtualCam source
+DESCRIPTION:	VirtualCam source
 
-LICENSE: Software License Agreement (BSD License)
+LICENSE:	Software License Agreement (BSD License)
 
 Copyright (c) 2015, CSIR
 All rights reserved.
@@ -58,6 +58,9 @@ RGBTRIPLE black = { 0, 0, 0 };
 RGBTRIPLE white = { 255, 255, 255 };
 RGBTRIPLE lineColors[MAX_COLORS] = { white, yellow, cyan, green, magenta, red, blue, black };
 
+#define NUMBER_OF_CAPABILITIES 8
+
+
 //////////////////////////////////////////////////////////////////////////
 //  CVCam is the source filter which masquerades as a capture device
 //////////////////////////////////////////////////////////////////////////
@@ -77,6 +80,7 @@ CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr): CSource(NAME("DQ VPP Virtual Cam"),
   m_paStreams[0] = new CVCamStream(phr, this, L"DQ VPP Virtual Cam");
 }
 
+
 HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 {
   //Forward request for IAMStreamConfig & IKsPropertySet to the pin
@@ -92,9 +96,9 @@ HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 // all the stuff.
 //////////////////////////////////////////////////////////////////////////
 CVCamStream::CVCamStream(HRESULT *phr, CVCam *pParent, LPCWSTR pPinName) :
-CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent)
+CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent), m_Effect(0)
 {
-  // Set the default media type as 320x240x24@15
+	// Set the default media type as 320x240x24@15
   GetMediaType(4, &m_mt);
 
   lineColors[0] = white;
@@ -158,81 +162,84 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
   pms->GetPointer(&pData);
   lDataLen = pms->GetSize();
 
-#if 1
-  unsigned uiOffset = 0;
-
-  BYTE* pRow = new BYTE[uiWidth * 3];
-
-  unsigned uiRowsCompleted = 0;
-  unsigned uiLeftOfCol = m_uiThickness;
-  unsigned uiCurrentColorIndex = m_uiCurrentColorIndex;
-  while (uiRowsCompleted < uiHeight)
+  if(m_Effect == 0)
   {
-    // Current color
-    RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
-    //create a single row and copy it uiThickness times
-    for (size_t j = 0; j < uiWidth * 3; j += 3)
+    unsigned uiOffset = 0;
+    BYTE* pRow = new BYTE[uiWidth * 3];
+
+    unsigned uiRowsCompleted = 0;
+    unsigned uiLeftOfCol = m_uiThickness;
+    unsigned uiCurrentColorIndex = m_uiCurrentColorIndex;
+    while (uiRowsCompleted < uiHeight)
     {
-      memcpy(pRow + j, pColor, sizeof(RGBTRIPLE));
+	// Current color
+      RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
+	//create a single row and copy it uiThickness times
+      for (size_t j = 0; j < uiWidth * 3; j += 3)
+      {
+        memcpy(pRow + j, pColor, sizeof(RGBTRIPLE));
+      }
+
+      while ((uiLeftOfCol > 0) && (uiRowsCompleted < uiHeight))
+      {
+        memcpy(pData + uiOffset, pRow, uiWidth * 3);
+        uiOffset += uiWidth * 3;
+        ++uiRowsCompleted;
+
+        --uiLeftOfCol;
+      }
+
+	// Next thickness
+      uiLeftOfCol = THICKNESS;
+	// Next color
+      uiCurrentColorIndex = (++uiCurrentColorIndex) % MAX_COLORS;
     }
 
-    while ((uiLeftOfCol > 0) && (uiRowsCompleted < uiHeight))
+    ++m_uiFrameCount;
+	// Update thickness for rolling effect
+
+    if(m_uiFrameCount%m_uiChangeRate == 0)
     {
-      memcpy(pData + uiOffset, pRow, uiWidth * 3);
-      uiOffset += uiWidth * 3;
-      ++uiRowsCompleted;
-
-      --uiLeftOfCol;
-    }
-
-    // Next thickness
-    uiLeftOfCol = THICKNESS;
-    // Next color
-    uiCurrentColorIndex = (++uiCurrentColorIndex) % MAX_COLORS;
-  }
-
-  ++m_uiFrameCount;
-  // Update thickness for rolling effect
-
-#if 1
-  if (m_uiFrameCount%m_uiChangeRate == 0)
-  {
-    if (m_uiThickness == 1)
+      if (m_uiThickness == 1)
       //if (m_uiThickness == 2)
-    {
-      // Next color
-      m_uiCurrentColorIndex = (++m_uiCurrentColorIndex) % MAX_COLORS;
-      m_uiThickness = THICKNESS;
+      {
+        // Next color
+        m_uiCurrentColorIndex = (++m_uiCurrentColorIndex) % MAX_COLORS;
+        m_uiThickness = THICKNESS;
+      }
+      else --m_uiThickness;
+      //else m_uiThickness -= 2;
     }
-    else --m_uiThickness;
-    //else m_uiThickness -= 2;
-
+    delete pRow;
   }
-#endif
-#if 0
-  unsigned uiCurrentColorIndex = 0;
-  unsigned uiColorRows = uiHeight/THICKNESS;
 
-  for (size_t iRow = 0; iRow < uiColorRows; ++iRow)
+  if(m_Effect == 1)
   {
-    RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
-    //create a single row and copy it uiThickness times
-    for (size_t j = 0; j < uiWidth*3; j = j + 3)
-    {
-      memcpy(pRow + j, pColor, sizeof(RGBTRIPLE));
-    }
+    unsigned uiOffset = 0;    
+    unsigned uiCurrentColorIndex = 0;
+    unsigned uiColorRows = uiHeight/m_uiThickness;
+    BYTE* pRow = new BYTE[uiWidth*3];
 
-    for (size_t k = 0; k < uiThickness; ++k)
+    for(size_t iRow = 0; iRow < uiColorRows; ++iRow)
     {
-      memcpy(pData + uiOffset, pRow, uiWidth*3);
-      uiOffset += uiWidth*3;
+      RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
+      //create a single row and copy it uiThickness times
+      for(size_t j=0; j<uiWidth*3; j=j+3)
+      {
+        memcpy(pRow + j, pColor, sizeof(RGBTRIPLE));
+      }
+
+      for(size_t k=0; k<m_uiThickness; ++k)
+      {
+        memcpy(pData + uiOffset, pRow, uiWidth*3);
+        uiOffset += uiWidth*3;
+      }
+	// get next color
+      uiCurrentColorIndex = (uiCurrentColorIndex+1) % MAX_COLORS;
     }
-    // get next color
-    uiCurrentColorIndex = (uiCurrentColorIndex + 1)%MAX_COLORS;
+    delete pRow;
   }
-#endif
-  delete pRow;
-#endif
+
 #if 0
   for(int i = 0; i < lDataLen; ++i)
     pData[i] = rand();
@@ -255,6 +262,7 @@ STDMETHODIMP CVCamStream::Notify(IBaseFilter * pSender, Quality q)
 //////////////////////////////////////////////////////////////////////////
 HRESULT CVCamStream::SetMediaType(const CMediaType *pmt)
 {
+  if(pmt==NULL) return E_INVALIDARG;
   DECLARE_PTR(VIDEOINFOHEADER, pvi, pmt->Format());
   HRESULT hr = CSourceStream::SetMediaType(pmt);
   return hr;
@@ -264,10 +272,10 @@ HRESULT CVCamStream::SetMediaType(const CMediaType *pmt)
 /// See Directshow help topic for IAMStreamConfig for details on this method
 HRESULT CVCamStream::GetMediaType(int iPosition, CMediaType *pmt)
 {
-  if (iPosition < 0) return E_INVALIDARG;
-  if (iPosition > 8) return VFW_S_NO_MORE_ITEMS;
+  if(iPosition<0 || pmt==NULL) return E_INVALIDARG;
+  if(iPosition > NUMBER_OF_CAPABILITIES) return VFW_S_NO_MORE_ITEMS;
 
-  if (iPosition == 0)
+  if(iPosition == 0)
   {
     *pmt = m_mt;
     return S_OK;
@@ -303,17 +311,23 @@ HRESULT CVCamStream::GetMediaType(int iPosition, CMediaType *pmt)
 } // GetMediaType
 
 
-// This method is called to see if a given output format is supported
+/// This method is called to see if a given output format is supported
 HRESULT CVCamStream::CheckMediaType(const CMediaType *pMediaType)
 {
-  VIDEOINFOHEADER *pvi = (VIDEOINFOHEADER *)(pMediaType->Format());
-  if (*pMediaType != m_mt)
-    return E_INVALIDARG;
-  return S_OK;
+  if(pMediaType==NULL) return E_INVALIDARG;
+  if(pMediaType->majortype!=MEDIATYPE_Video || pMediaType->subtype!=MEDIASUBTYPE_RGB24 || pMediaType->formattype!=FORMAT_VideoInfo)
+      return VFW_E_TYPE_NOT_ACCEPTED;
+  const VIDEOINFOHEADER *pvi = (const VIDEOINFOHEADER *)(pMediaType->Format());
+  if(pvi->bmiHeader.biWidth==0 || pvi->bmiHeader.biHeight==0) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(labs(pvi->bmiHeader.biWidth)==1560 && labs(pvi->bmiHeader.biHeight)==700) return S_OK;
+  if(labs(pvi->bmiHeader.biWidth)%80==0 && labs(pvi->bmiHeader.biHeight)%60==0) return S_OK;
+
+  return VFW_E_TYPE_NOT_ACCEPTED;
 } // CheckMediaType
 
 
-// This method is called after the pins are connected to allocate buffers to stream data
+/// This method is called after the pins are connected to allocate buffers to stream data
 HRESULT CVCamStream::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProperties)
 {
   CAutoLock cAutoLock(m_pFilter->pStateLock());
@@ -334,7 +348,7 @@ HRESULT CVCamStream::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIE
 
 
 // Called when graph is run
-HRESULT CVCamStream::OnThreadCreate()
+HRESULT CVCamStream::OnThreadCreate(void)
 {
   m_rtLastTime = 0;
   return NOERROR;
@@ -348,6 +362,7 @@ HRESULT CVCamStream::OnThreadCreate()
 
 HRESULT STDMETHODCALLTYPE CVCamStream::SetFormat(AM_MEDIA_TYPE *pmt)
 {
+  if(pmt==NULL) return E_INVALIDARG;
   DECLARE_PTR(VIDEOINFOHEADER, pvi, m_mt.pbFormat);
   m_mt = *pmt;
   IPin* pin;
@@ -363,35 +378,43 @@ HRESULT STDMETHODCALLTYPE CVCamStream::SetFormat(AM_MEDIA_TYPE *pmt)
 
 HRESULT STDMETHODCALLTYPE CVCamStream::GetFormat(AM_MEDIA_TYPE **ppmt)
 {
+  if(ppmt==NULL) return E_INVALIDARG;
   *ppmt = CreateMediaType(&m_mt);
   return S_OK;
 }
 
+
 HRESULT STDMETHODCALLTYPE CVCamStream::GetNumberOfCapabilities(int *piCount, int *piSize)
 {
-  *piCount = 8;
+  *piCount = NUMBER_OF_CAPABILITIES;
   *piSize = sizeof(VIDEO_STREAM_CONFIG_CAPS);
   return S_OK;
 }
 
+
 HRESULT STDMETHODCALLTYPE CVCamStream::GetStreamCaps(int iIndex, AM_MEDIA_TYPE **pmt, BYTE *pSCC)
 {
+  if(pmt==NULL) return E_INVALIDARG;
   *pmt = CreateMediaType(&m_mt);
   DECLARE_PTR(VIDEOINFOHEADER, pvi, (*pmt)->pbFormat);
 
-  if (iIndex == 0) iIndex = 4;
+  switch(iIndex)
+  {
+    case 0: iIndex=4; break;
+    case 4: iIndex=0; break;
+  }
 
   pvi->bmiHeader.biCompression = BI_RGB;
   pvi->bmiHeader.biBitCount = 24;
   pvi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  pvi->bmiHeader.biWidth = 80 * iIndex;
-  pvi->bmiHeader.biHeight = 60 * iIndex;
+  pvi->bmiHeader.biWidth = 80 * (iIndex+1);
+  pvi->bmiHeader.biHeight = 60 * (iIndex+1);  
   pvi->bmiHeader.biPlanes = 1;
   pvi->bmiHeader.biSizeImage = GetBitmapSize(&pvi->bmiHeader);
   pvi->bmiHeader.biClrImportant = 0;
 
-  SetRectEmpty(&(pvi->rcSource)); // we want the whole image area rendered.
-  SetRectEmpty(&(pvi->rcTarget)); // no particular destination rectangle
+  SetRectEmpty(&(pvi->rcSource));	// we want the whole image area rendered.
+  SetRectEmpty(&(pvi->rcTarget));	// no particular destination rectangle
 
   (*pmt)->majortype = MEDIATYPE_Video;
   (*pmt)->subtype = MEDIASUBTYPE_RGB24;
@@ -401,35 +424,38 @@ HRESULT STDMETHODCALLTYPE CVCamStream::GetStreamCaps(int iIndex, AM_MEDIA_TYPE *
   (*pmt)->lSampleSize = pvi->bmiHeader.biSizeImage;
   (*pmt)->cbFormat = sizeof(VIDEOINFOHEADER);
 
-  DECLARE_PTR(VIDEO_STREAM_CONFIG_CAPS, pvscc, pSCC);
+  if(pSCC)
+  {
+    DECLARE_PTR(VIDEO_STREAM_CONFIG_CAPS, pvscc, pSCC);
 
-  pvscc->guid = FORMAT_VideoInfo;
-  pvscc->VideoStandard = AnalogVideo_None;
-  pvscc->InputSize.cx = 640;
-  pvscc->InputSize.cy = 480;
-  pvscc->MinCroppingSize.cx = 80;
-  pvscc->MinCroppingSize.cy = 60;
-  pvscc->MaxCroppingSize.cx = 640;
-  pvscc->MaxCroppingSize.cy = 480;
-  pvscc->CropGranularityX = 80;
-  pvscc->CropGranularityY = 60;
-  pvscc->CropAlignX = 0;
-  pvscc->CropAlignY = 0;
+    pvscc->guid = FORMAT_VideoInfo;
+    pvscc->VideoStandard = AnalogVideo_None;
+    pvscc->InputSize.cx = 640;
+    pvscc->InputSize.cy = 480;
+    pvscc->MinCroppingSize.cx = 80;
+    pvscc->MinCroppingSize.cy = 60;
+    pvscc->MaxCroppingSize.cx = 640;
+    pvscc->MaxCroppingSize.cy = 480;
+    pvscc->CropGranularityX = 80;
+    pvscc->CropGranularityY = 60;
+    pvscc->CropAlignX = 0;
+    pvscc->CropAlignY = 0;
 
-  pvscc->MinOutputSize.cx = 80;
-  pvscc->MinOutputSize.cy = 60;
-  pvscc->MaxOutputSize.cx = 640;
-  pvscc->MaxOutputSize.cy = 480;
-  pvscc->OutputGranularityX = 0;
-  pvscc->OutputGranularityY = 0;
-  pvscc->StretchTapsX = 0;
-  pvscc->StretchTapsY = 0;
-  pvscc->ShrinkTapsX = 0;
-  pvscc->ShrinkTapsY = 0;
-  pvscc->MinFrameInterval = 200000;   //50 fps
-  pvscc->MaxFrameInterval = 50000000; // 0.2 fps
-  pvscc->MinBitsPerSecond = (80 * 60 * 3 * 8) / 5;
-  pvscc->MaxBitsPerSecond = 640 * 480 * 3 * 8 * 50;
+    pvscc->MinOutputSize.cx = 80;
+    pvscc->MinOutputSize.cy = 60;
+    pvscc->MaxOutputSize.cx = 640;
+    pvscc->MaxOutputSize.cy = 480;
+    pvscc->OutputGranularityX = 0;
+    pvscc->OutputGranularityY = 0;
+    pvscc->StretchTapsX = 0;
+    pvscc->StretchTapsY = 0;
+    pvscc->ShrinkTapsX = 0;
+    pvscc->ShrinkTapsY = 0;
+    pvscc->MinFrameInterval = 200000;   //50 fps
+    pvscc->MaxFrameInterval = 50000000; // 0.2 fps
+    pvscc->MinBitsPerSecond = (80 * 60 * 3 * 8) / 5;
+    pvscc->MaxBitsPerSecond = 640 * 480 * 3 * 8 * 50;
+  }
 
   return S_OK;
 }
@@ -468,7 +494,8 @@ HRESULT CVCamStream::Get(
   return S_OK;
 }
 
-// QuerySupported: Query whether the pin supports the specified property.
+
+/// QuerySupported: Query whether the pin supports the specified property.
 HRESULT CVCamStream::QuerySupported(REFGUID guidPropSet, DWORD dwPropID, DWORD *pTypeSupport)
 {
   if (guidPropSet != AMPROPSETID_Pin) return E_PROP_SET_UNSUPPORTED;
