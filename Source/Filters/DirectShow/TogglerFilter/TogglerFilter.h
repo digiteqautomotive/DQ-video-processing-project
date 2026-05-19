@@ -91,6 +91,9 @@ private:
 	bool parameterChangeAffectsOutput( const char* szParam);
 	void reconfigure();
 
+        virtual void InitialiseInputTypes(void);	
+	virtual void InitialiseOutputTypes(void);
+
 	/// Pointers to our last received Media Sample
 	//BYTE* m_pSampleBuffers[2];
 	/// Sizes

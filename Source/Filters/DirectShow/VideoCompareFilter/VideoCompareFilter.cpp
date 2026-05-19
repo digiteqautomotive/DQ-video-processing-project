@@ -46,6 +46,8 @@ VideoCompareFilter::VideoCompareFilter(): VideoMixingBase(NAME("DQ VPP Video Com
 
   TimeStart1 = TimeEnd1 = TimeStart2 = TimeEnd2 = 0;
 
+	// Virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
+  Initialise();
 	// Init parameters
   initParameters();
 }
@@ -622,6 +624,15 @@ HRESULT VideoCompareFilter::CheckOutputType(const CMediaType* pMediaType)
     {
       if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
          ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
+        return S_OK;
+    }
+  }
+  else if(m_nBitsPerPixel == BITS_PER_PIXEL_YUYV)
+  {
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_YUYV || *(pMediaType->Subtype())==MEDIASUBTYPE_YUY2)
+    {
+      if(ConnectionFormat[0]==MEDIASUBTYPE_YUYV || ConnectionFormat[0]==MEDIASUBTYPE_YUY2 ||
+         ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2)
         return S_OK;
     }
   }

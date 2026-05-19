@@ -84,8 +84,8 @@ public:
 	virtual STDMETHODIMP Stop();
 	virtual STDMETHODIMP Pause();
 
-	virtual void InitialiseInputTypes();
-	virtual void InitialiseOutputTypes();
+	//virtual void InitialiseInputTypes();
+	//virtual void InitialiseOutputTypes();
 
 	virtual int InitialNumberOfInputPins() const	{ return 2; }
 	virtual int InitialNumberOfOutputPins() const	{ return 1; }

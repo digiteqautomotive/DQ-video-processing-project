@@ -87,8 +87,8 @@ public:
 	virtual CBasePin * GetPin(int n);
 	/// Method needed to connect pins based on their names
 	virtual STDMETHODIMP FindPin(LPCWSTR Id, IPin **ppPin);
-  /// Returns number of connected input pins
-  unsigned GetConnectedInputCount() const;
+	/// Returns number of connected input pins
+	unsigned GetConnectedInputCount() const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Input pin methods

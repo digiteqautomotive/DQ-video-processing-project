@@ -109,6 +109,9 @@ private:
 	bool parameterChangeAffectsOutput( const char* szParam );
 	void reconfigure();
 
+        virtual void InitialiseInputTypes(void);
+	virtual void InitialiseOutputTypes(void);
+
 /*
         volatile char ThreadStatus;
 #ifdef _WIN32

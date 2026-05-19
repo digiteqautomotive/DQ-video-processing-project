@@ -55,8 +55,6 @@ VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsi
 {
   memset(&m_VideoInHeader, 0, sizeof(m_VideoInHeader));
   memset(&ConnectionFormat,0,sizeof(ConnectionFormat));
-	//Hack virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
-  Initialise();
 }
 
 
@@ -76,30 +74,6 @@ HRESULT VideoMixingBase::Receive(IMediaSample *pSample, int nIndex)
     case 1: return ReceiveSecondSample(pSample);
   }
   return E_INVALIDARG;
-}
-
-
-void VideoMixingBase::InitialiseInputTypes(void)
-{
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);   
-/*
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo2);   
-*/
-}
-
-
-void VideoMixingBase::InitialiseOutputTypes(void)
-{
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
 }
 
 
