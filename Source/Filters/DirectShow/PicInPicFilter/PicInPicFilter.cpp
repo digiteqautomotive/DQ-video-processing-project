@@ -57,7 +57,6 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 #include <process.h>
 
 
-
 //////////////////////////////////////////////////////////
 
 
@@ -95,7 +94,7 @@ PicInPicFilter::PicInPicFilter(): VideoMixingBase(NAME("DQ VPP Picture in Pictur
   m_nCustomOffsetX(0),
   m_nCustomOffsetY(0),
   m_bThrottling(false),
-  m_DuplicateFrame(false),
+  m_DuplicateFrame(true),
   m_pPicInPic(NULL),
   m_pTargetPicScaler(NULL),
   m_pSubPicScaler(NULL),
