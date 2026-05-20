@@ -635,6 +635,11 @@ HRESULT VideoCompareFilter::CheckOutputType(const CMediaType* pMediaType)
          ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2)
         return S_OK;
     }
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_YVYU)
+    {
+      if(ConnectionFormat[0]==MEDIASUBTYPE_YVYU || ConnectionFormat[0]==MEDIASUBTYPE_YVYU)
+        return S_OK;
+    }
   }
   return S_FALSE;
 }

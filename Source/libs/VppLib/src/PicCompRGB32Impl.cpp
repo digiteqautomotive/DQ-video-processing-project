@@ -34,11 +34,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "PicCompRGB32Impl.h"
 
-/*
-===========================================================================
+#include "typedfs.h"
+
+/*===========================================================================
 	Construction and Destruction.
-===========================================================================
-*/
+===========================================================================*/
 
 PicCompareRGB32Impl::PicCompareRGB32Impl(void) 
 {
@@ -78,19 +78,19 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
   unsigned char *ImgOut = (unsigned char *)pImg;
   if(VFlip)
   {
-
     ImgOut += 4 * _width * (_height-1);
     for(int y=0; y<_height; y++)
     {
       unsigned values =  4 * _width;
       while(values-- > 0)
       {
-        int i = *Img1++ - *Img2++ + 127;
+        int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
         if(i<=0) *ImgOut=0;
         else if(i>=255) *ImgOut=255;
         else *ImgOut=i;
         ImgOut++;
       }
+      ImgOut -= 4*_width;
     }
   }
   else
@@ -98,7 +98,7 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
     unsigned values =  4 * _width * _height;
     while(values-- > 0)
     {
-      int i = *Img1++ - *Img2++ + 127;
+      int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
       if(i<=0) *ImgOut=0;
       else if(i>=255) *ImgOut=255;
       else *ImgOut=i;

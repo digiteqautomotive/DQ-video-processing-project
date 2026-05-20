@@ -68,12 +68,12 @@ HRESULT CMultiIOOutputPin::BreakConnect(void)
 HRESULT CMultiIOOutputPin::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties )
 {
 	//Pass the buffer allocation on to the mixer filter
-	return m_pFilter->DecideBufferSize(pAlloc, pRequestProperties, m_nIndex);
+  return m_pFilter->DecideBufferSize(pAlloc, pRequestProperties, m_nIndex);
 }
 
 HRESULT CMultiIOOutputPin::CheckMediaType( const CMediaType* pMediaType )
 {
-	return m_pFilter->CheckOutputType(pMediaType);
+  return m_pFilter->CheckOutputType(pMediaType);
 }
 
 HRESULT CMultiIOOutputPin::GetMediaType( int iPosition, CMediaType* pMediaType )
@@ -92,14 +92,16 @@ HRESULT CMultiIOOutputPin::GetMediaType( int iPosition, CMediaType* pMediaType )
   }
 }
 
-STDMETHODIMP CMultiIOOutputPin::Notify( IBaseFilter * pSender, Quality q )
+
+STDMETHODIMP CMultiIOOutputPin::Notify(IBaseFilter * pSender, Quality q)
 {
 	UNREFERENCED_PARAMETER(q);
 	UNREFERENCED_PARAMETER(pSender);
 	return E_NOTIMPL;
 }
 
-HRESULT CMultiIOOutputPin::Active()
+
+HRESULT CMultiIOOutputPin::Active(void)
 {
 	CAutoLock lock_it(m_pLock);
 	HRESULT hr = NOERROR;

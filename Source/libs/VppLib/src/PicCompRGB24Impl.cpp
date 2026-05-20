@@ -92,6 +92,7 @@ int PicCompareRGB24Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
         else *ImgOut=i;
         ImgOut++;
       }
+      ImgOut -= 3*_width;
     }
   }
   else

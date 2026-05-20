@@ -17,6 +17,8 @@ LICENSE:	Software License Agreement (BSD License)
 #include <stdio.h>
 #include "PicCompYUYV_Impl.h"
 
+#include "typedfs.h"
+
 
 /*===========================================================================
 	Construction and Destruction.
@@ -64,20 +66,21 @@ int PicCompareYUYV_Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
     ImgOut += 2 * _width * (_height-1);
     for(int y=0; y<_height; y++)
     {
-      unsigned values =  3 * _width;
+      unsigned values =  _width;
       while(values-- > 0)
       {
-        int i = (int)*Img1++ - (int)*Img2++ + 127;
+        int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
         if(i<=0) *ImgOut=0;
         else if(i>=255) *ImgOut=255;
         else *ImgOut=i;
         ImgOut++;
-        i = (int)*Img1++ - (int)*Img2++ + 127;
+        i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
         if(i<=0) *ImgOut=0;
         else if(i>=255) *ImgOut=255;
         else *ImgOut=i;
         ImgOut++;
       }
+      ImgOut -= 2*_width;
     }
   }
   else
@@ -85,12 +88,12 @@ int PicCompareYUYV_Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
     unsigned values =  _width * _height;
     while(values-- > 0)
     {
-      int i = (int)*Img1++ - (int)*Img2++ + 127;
+      int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
       if(i<=0) *ImgOut=0;
       else if(i>=255) *ImgOut=255;
       else *ImgOut=i;
       ImgOut++;
-      i = (int)*Img1++ - (int)*Img2++ + 127;
+      i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
       if(i<=0) *ImgOut=0;
       else if(i>=255) *ImgOut=255;
       else *ImgOut=i;

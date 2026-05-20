@@ -27,6 +27,10 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "PicRotateRGB24Impl.h"
 #include "RotateTesters.h"
 
+#include "PicCompRGB32Impl.h"
+#include "PicCompRGB24Impl.h"
+#include "PicCompYUYV_Impl.h"
+
 #include "ConvAYUV444toRGB.h"
 #include "ConvYUV420toRGB.h"
 #include "ConvRGB24toYUV420.h"
@@ -82,6 +86,22 @@ unsigned long BenchConverter(BaseVideoConverter &converter, const void *BlobIn, 
  return DurationMin;
 }
 
+
+unsigned long BenchCompare(PicCompareBase &compare, const void *BlobIn, const void *BlobIn2, void *BlobOut, bool VFlip=false)
+{
+ unsigned long long TimeStampB, TimeStampE;
+ unsigned long DurationMin = ~0;
+ unsigned long Duration = ~0;
+ for(int i=0; i<10; i++)
+ {
+   TimeStampB = GetTickCount_us();
+   compare.Compare(BlobIn,BlobIn2,BlobOut,VFlip);
+   TimeStampE = GetTickCount_us();
+   Duration = TimeStampE - TimeStampB;
+   if(DurationMin > Duration) DurationMin=Duration;
+ }
+ return DurationMin;
+}
 
 
 unsigned long BenchScaller(PicScalerBase &pScaller, const void *BlobIn, void *BlobOut)
@@ -336,7 +356,7 @@ int RGB24toRGB32compareFlip(const char *Alg, int Width, int Height, const unsign
 int main(int argc, char *argv[])
 {
 PicScalerRGB32Impl picScalerRGB32;
-unsigned char *BlobIn, *BlobOut, *BlobTest;
+unsigned char *BlobIn, *BlobIn2, *BlobOut, *BlobTest;
 int i;
 bool Pause = false;
 
@@ -352,8 +372,14 @@ bool Pause = false;
 
   FeaturesCPU = GetFeaturesCPU();
   BlobIn = (unsigned char *)malloc(16384);
+  BlobIn2 = (unsigned char *)malloc(16384);
   BlobOut = (unsigned char *)malloc(16384);
   BlobTest = (unsigned char *)malloc(16384);
+  if(BlobIn==NULL || BlobIn2==NULL || BlobOut==NULL || BlobTest==NULL)
+  {
+    printf("\nError: Memory allocation problem.");
+    goto ReturnErr;
+  }
   
   {
     BlobIn[0] = 0xFF;
@@ -1084,21 +1110,52 @@ bool Pause = false;
 
   printf("\nAll tests passed OK.");
   free(BlobIn);
+  free(BlobIn2);
   free(BlobOut);
   free(BlobTest);
 
   BlobIn = (unsigned char *)malloc(1920*1080*4);
+  BlobIn2 = (unsigned char *)malloc(1920*1080*4);
   BlobOut = (unsigned char *)malloc(1920*1080*4);
   BlobTest = NULL;
+  if(BlobIn==NULL || BlobIn2==NULL || BlobOut==NULL)
+  {
+    printf("\nError: Memory allocation problem.");
+    goto ReturnErr;
+  }
+
 
   for(int i=0; i<1920*1080*4; i++)
   {
     BlobIn[i] = rand() % 255;
+    BlobIn2[i] = rand() % 255;
   }
 
   printf("\n\nBenchmarks:");
   unsigned long long DurationMin;
   {
+    {
+      PicCompareRGB32Impl compareRGB32Impl(1920,1080);
+      DurationMin = BenchCompare(compareRGB32Impl,BlobIn,BlobIn2,BlobOut);
+      printf("\nCompare RGB32 compare 1920x1080 time %.3f[ms]", DurationMin/1000.0);
+      DurationMin = BenchCompare(compareRGB32Impl,BlobIn,BlobIn2,BlobOut,true);
+      printf(" VFlip %.3f[ms]", DurationMin/1000.0);
+    }
+    {
+      PicCompareRGB24Impl compareRGB24Impl(1920,1080);
+      DurationMin = BenchCompare(compareRGB24Impl,BlobIn,BlobIn2,BlobOut);
+      printf("\nCompare RGB24 compare 1920x1080 time %.3f[ms]", DurationMin/1000.0);
+      DurationMin = BenchCompare(compareRGB24Impl,BlobIn,BlobIn2,BlobOut,true);
+      printf(" VFlip %.3f[ms]", DurationMin/1000.0);
+    }
+    {
+      PicCompareYUYV_Impl compareYUYV_Impl(1920,1080);
+      DurationMin = BenchCompare(compareYUYV_Impl,BlobIn,BlobIn2,BlobOut);
+      printf("\nCompare YUYV compare 1920x1080 time %.3f[ms]", DurationMin/1000.0);
+      DurationMin = BenchCompare(compareYUYV_Impl,BlobIn,BlobIn2,BlobOut,true);
+      printf(" VFlip %.3f[ms]", DurationMin/1000.0);
+    }
+
     {
       RealRGB32toYUV420Converter picConverterRGB32toYUV420(1920,1080);
       DurationMin = BenchConverter(picConverterRGB32toYUV420, BlobIn, BlobOut);
@@ -1389,6 +1446,7 @@ bool Pause = false;
 
 ReturnErr:
   free(BlobIn);
+  free(BlobIn2);
   free(BlobOut);
   free(BlobTest);
   if(Pause)
