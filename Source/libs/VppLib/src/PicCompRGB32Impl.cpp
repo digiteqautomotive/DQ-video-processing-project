@@ -36,25 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "typedfs.h"
 
-/*===========================================================================
-	Construction and Destruction.
-===========================================================================*/
-
-PicCompareRGB32Impl::PicCompareRGB32Impl(void) 
-{
-} //end default constuctor.
-
-
-PicCompareRGB32Impl::PicCompareRGB32Impl(int width, int height): 
-	PicCompareBase(width,height)
-{
-} //end constructor.
-
-
-PicCompareRGB32Impl::~PicCompareRGB32Impl(void)
-{
-} //end destructor.
-
 
 /*=========================================================================
 	Interface Methods.
@@ -79,7 +60,8 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
   if(VFlip)
   {
     ImgOut += 4 * _width * (_height-1);
-    for(int y=0; y<_height; y++)
+    unsigned y = _height;
+    while(y-- > 0)    
     {
       unsigned values =  4 * _width;
       while(values-- > 0)
@@ -90,7 +72,7 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
         else *ImgOut=i;
         ImgOut++;
       }
-      ImgOut -= 4*_width;
+      ImgOut -= 8 * _width;
     }
   }
   else

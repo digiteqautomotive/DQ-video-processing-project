@@ -34,7 +34,7 @@ public:
 
 		// Construction and destruction.
 	PicCompareBase(void):  _width(0), _height(0) {}
-	PicCompareBase(int width, int height): _width(width), _height(height) {}
+	PicCompareBase(int width, int height);
 	virtual ~PicCompareBase(void) {}
 
 		// Interface.
@@ -42,17 +42,17 @@ public:
         virtual int GetVideoFormat(void) const = 0;
 
 		// Member interface.
-	int GetOutWidth(void) const	{ return(_width); }
-	int GetOutHeight(void) const 	{ return(_height); }
+	unsigned GetOutWidth(void) const	{ return(_width); }
+	unsigned GetOutHeight(void) const 	{ return(_height); }
   
-	void SetDimensions(int width, int height)		{_width = width; _height = height; }
+	void SetDimensions(int width, int height);
 
 protected:
 		// Private methods.
 
 		// Members.
-	int _width;		/// Of total output image that contains both input images.
-	int _height;
+	unsigned _width;		/// Of total output image that contains both input images.
+	unsigned _height;
 }; //end PicCompareBase.
 
 

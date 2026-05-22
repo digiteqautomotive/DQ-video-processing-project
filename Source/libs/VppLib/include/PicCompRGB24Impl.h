@@ -31,9 +31,9 @@ class PicCompareRGB24Impl: public PicCompareBase
 {
 public:
 	// Construction and destruction.
-	PicCompareRGB24Impl(void);
-	PicCompareRGB24Impl(int width, int height);
-	virtual ~PicCompareRGB24Impl(void);
+	PicCompareRGB24Impl(void) {}
+	PicCompareRGB24Impl(int width, int height): PicCompareBase(width,height) {}
+	virtual ~PicCompareRGB24Impl(void) {}
 
 	// Interface.
 	virtual int Compare(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);

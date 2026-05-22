@@ -275,7 +275,56 @@ int RGBcompareFlip(const char *Alg, int Width, int Height, const unsigned char *
 }
 
 
-int RGBcompare(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+int ARGB32compare(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{
+  int pos = memcmp(BlobTest, BlobOut, Width*Height*4+32);
+  if(pos==0) return 0;
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x++)
+    {
+      pos = 16 + 4*(x + Width*y);
+      if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
+int ARGB32compareFlip(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x++)
+    {
+      const int pos = 16 + 4*(x + Width*y);
+      const int pos2 = 16 + 4*(x + Width*(Height-y-1));
+      if(BlobOut[pos]!=BlobTest[pos2] || BlobOut[pos+1]!=BlobTest[pos2+1] || BlobOut[pos+2]!=BlobTest[pos2+2] || BlobOut[pos+3]!=BlobTest[pos2+3])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[pos2])>1 || labs(BlobOut[pos+1]-BlobTest[pos2+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos2+2])>1 || labs(BlobOut[pos+3]-BlobTest[pos2+3])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d A=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos2], BlobOut[pos+1],BlobTest[pos2+1], BlobOut[pos+2],BlobTest[pos2+2], BlobOut[pos+3],BlobTest[pos2+3]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
+int RGB24compare(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
 {
   int pos = memcmp(BlobTest, BlobOut, Width*Height*3+32);
   if(pos==0) return 0;
@@ -289,6 +338,30 @@ int RGBcompare(const char *Alg, int Width, int Height, const unsigned char *Blob
       if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1)
       {
         printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
+int RGB24compareVFlip(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x++)
+    {
+      const int pos = 16 + 3*(x + Width*y);
+      const int pos2 = 16 + 3*(x + Width*(Height-y-1));
+      if(BlobOut[pos]!=BlobTest[pos2] || BlobOut[pos+1]!=BlobTest[pos2+1] || BlobOut[pos+2]!=BlobTest[pos2+2])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[pos2])>1 || labs(BlobOut[pos+1]-BlobTest[pos2+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos2+2])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... R=%d|%d G=%d|%d B=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos2], BlobOut[pos+1],BlobTest[pos2+1], BlobOut[pos+2],BlobTest[pos2+2]);
         return 10000;
       }
     }
@@ -371,6 +444,7 @@ bool Pause = false;
   }
 
   FeaturesCPU = GetFeaturesCPU();
+
   BlobIn = (unsigned char *)malloc(16384);
   BlobIn2 = (unsigned char *)malloc(16384);
   BlobOut = (unsigned char *)malloc(16384);
@@ -380,7 +454,125 @@ bool Pause = false;
     printf("\nError: Memory allocation problem.");
     goto ReturnErr;
   }
-  
+
+  for(int i=0; i<16384; i++)
+  {
+    BlobIn[i] = rand() % 255;
+    BlobIn2[i] = rand() % 255;
+  }
+
+//-----------------------------Compare-RGB32---------------------------------------------
+
+  for(int With=0; With<33; With++)
+   for(int Height=0; Height<33; Height++)
+   {     
+     int InSize = 4 * With * Height;
+     int OutSize = InSize;
+     if(InSize==0) OutSize=0;
+     PicCompareRGB32Impl picCompareRGB32;
+     picCompareRGB32.SetDimensions(With,Height);
+
+     memcpy(BlobOut,BlobIn,16);
+     memcpy(BlobTest,BlobIn,16);
+     memset(BlobOut+16,0xFE,OutSize);
+     memset(BlobTest+16,0xFC,OutSize);
+     memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+     memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
+
+     picCompareRGB32.Compare(BlobIn+16,BlobIn2+16,BlobOut+16);
+
+     for(int x=0; x<With; x++)
+       for(int y=0; y<Height; y++)
+       {
+         unsigned offset = 16 + 4*((y*With)+x);
+         
+         int16_t val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+       }
+
+     if(ARGB32compare("picCompareRGB32",With,Height,BlobOut,BlobTest) != 0)
+         goto ReturnErr;
+
+     picCompareRGB32.Compare(BlobIn+16,BlobIn2+16,BlobOut+16,true);
+
+     if(ARGB32compareFlip("picCompareRGB32(Vflip)",With,Height,BlobOut,BlobTest) != 0)
+         goto ReturnErr;
+   }
+
+
+//-----------------------------Compare-RGB24---------------------------------------------
+
+  for(int With=0; With<33; With++)
+   for(int Height=0; Height<33; Height++)
+   {     
+     int InSize = 3 * With * Height;
+     int OutSize = InSize;
+     if(InSize==0) OutSize=0;
+     PicCompareRGB24Impl picCompareRGB24;
+     picCompareRGB24.SetDimensions(With,Height);
+
+     memcpy(BlobOut,BlobIn,16);
+     memcpy(BlobTest,BlobIn,16);
+     memset(BlobOut+16,0xFE,OutSize);
+     memset(BlobTest+16,0xFC,OutSize);
+     memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+     memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
+
+     picCompareRGB24.Compare(BlobIn+16,BlobIn2+16,BlobOut+16);
+
+     for(int x=0; x<With; x++)
+       for(int y=0; y<Height; y++)
+       {
+         unsigned offset = 16 + 3*((y*With)+x);
+         
+         int16_t val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+       }
+
+     if(RGB24compare("picCompareRGB24",With,Height,BlobOut,BlobTest) != 0)
+         goto ReturnErr;
+
+     picCompareRGB24.Compare(BlobIn+16,BlobIn2+16,BlobOut+16,true);
+
+     if(RGB24compareVFlip("picCompareRGB24(Vflip)",With,Height,BlobOut,BlobTest) != 0)
+         goto ReturnErr;
+   }
+
+//-----------------------------Scale-RGB24 & RGB32---------------------------------------
   {
     BlobIn[0] = 0xFF;
     BlobIn[1] = 0xFF;
@@ -579,7 +771,7 @@ bool Pause = false;
 
      }
 
-//-----------------------------------YUYV-----------------------------------------------
+//----------------------------------Scale-YUYV-----------------------------------------------
 
   for(int WithIn=0; WithIn<6; WithIn+=2)
    for(int HeightIn=0; HeightIn<5; HeightIn++)
@@ -646,7 +838,6 @@ bool Pause = false;
 
        }
      }
-
 
 //-----------------------------Rotate-RGB32---------------------------------------------
 
@@ -901,7 +1092,7 @@ bool Pause = false;
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
      OrigPicConvertedAYUVtoRGB24.Convert(BlobIn+16, BlobTest+16);
 
-     int pos = RGBcompare("AYUV444toRGB", Width,Height, BlobOut, BlobTest);
+     int pos = RGB24compare("AYUV444toRGB", Width,Height, BlobOut, BlobTest);
      if(pos >= 10000) goto ReturnErr;
 
      picConvertedAYUV2RGB24.SetFlip(true);
@@ -978,12 +1169,12 @@ bool Pause = false;
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
      OrigPicConvertedAYUV2RGB24.Convert(BlobIn+16, BlobTest+16);
 
-     int pos = RGBcompare("YUV420toRGB24", Width,Height, BlobTest, BlobOut);
+     int pos = RGB24compare("YUV420toRGB24", Width,Height, BlobTest, BlobOut);
      if(pos >= 10000) goto ReturnErr;
 
 #ifdef USE_ASM
     asmConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
-    pos = RGBcompare("YUV420toRGB24_ASM", Width,Height, BlobTest, BlobOut);
+    pos = RGB24compare("YUV420toRGB24_ASM", Width,Height, BlobTest, BlobOut);
     if(pos >= 10000) goto ReturnErr;
 #endif
 

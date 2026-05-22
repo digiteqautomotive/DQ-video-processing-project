@@ -35,30 +35,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include "PicCompRGB24Impl.h"
 
-
-/*===========================================================================
-	Construction and Destruction.
-===========================================================================*/
-
-
-PicCompareRGB24Impl::PicCompareRGB24Impl(void) 
-{
-} //end default constuctor.
-
-
-PicCompareRGB24Impl::PicCompareRGB24Impl(int width, int height): 
-	PicCompareBase(width,height)
-{
-} //end constructor.
-
-
-PicCompareRGB24Impl::~PicCompareRGB24Impl(void)
-{
-} //end destructor.
+#include "typedfs.h"
 
 
 /*=========================================================================
-	Interface Methods.
+			Interface Methods
 ==========================================================================*/
 
 /** Compare the 2nd img to the 1st img.
@@ -79,20 +60,20 @@ int PicCompareRGB24Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
   unsigned char *ImgOut = (unsigned char *)pImg;
   if(VFlip)
   {
-
     ImgOut += 3 * _width * (_height-1);
-    for(int y=0; y<_height; y++)
+    unsigned y = _height;
+    while(y-- > 0)
     {
       unsigned values =  3 * _width;
       while(values-- > 0)
       {
-        int i = *Img1++ - *Img2++ + 127;
+        int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
         if(i<=0) *ImgOut=0;
         else if(i>=255) *ImgOut=255;
         else *ImgOut=i;
         ImgOut++;
       }
-      ImgOut -= 3*_width;
+      ImgOut -= 6 * _width;
     }
   }
   else
@@ -100,7 +81,7 @@ int PicCompareRGB24Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
     unsigned values =  3 * _width * _height;
     while(values-- > 0)
     {
-      int i = *Img1++ - *Img2++ + 127;
+      int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
       if(i<=0) *ImgOut=0;
       else if(i>=255) *ImgOut=255;
       else *ImgOut=i;

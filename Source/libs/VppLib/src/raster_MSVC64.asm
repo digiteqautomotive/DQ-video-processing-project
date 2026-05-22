@@ -3,7 +3,7 @@
 ; purpose: general manipulation n dimensional matrices n = 1, 2 and 3.     *
 ;          Use this file or rasterc.c. You cannot link both files together *
 ; licency:     GPL or LGPL                                                 *
-; Copyright: (c) 2021-2025 Jaroslav Fojtik                                 *
+; Copyright: (c) 2021-2026 Jaroslav Fojtik                                 *
 ;***************************************************************************
 
 .CODE             ;Indicates the start of a code segment.
@@ -305,6 +305,48 @@ Rotate32_270	endp
 
 
 ;*************************************************************************************
+
+
+	public  CompareRowAsm
+CompareRowAsm	proc \
+	uses rbx
+;	_Width:DWORD,		; RCX	In1
+;	Height:DWORD,		; RDX	In2
+;	ptr_in:ptr byte,	; R8	Out
+;       ptr_out:ptr byte	; R9	count
+
+	or	R8,R8		; rdi=destination ptr
+	jz	ToEnd
+	or	rcx,rcx		; rcx=source ptr 1
+	jz	ToEnd
+	or	rdx,rdx		; rdx=source ptr 2
+	jz	ToEnd
+	or	R9,R9
+	jz	ToEnd
+	
+	mov	R10w,00FFh
+	mov	R11w,0000h
+LoopPx: movzx	eax,byte ptr [rcx]
+	movzx	ebx,byte ptr [rdx]
+	sub	ax,bx
+	inc	rcx
+	inc	rdx
+	add	ax,127
+	cmovs	ax,R11w
+	or	ah,ah
+	cmovnz	ax,R10w
+	mov	byte ptr [R8],al
+	inc	R8
+	dec	R9
+	jnz	LoopPx
+
+ToEnd:
+        ret                     ; _cdecl return                
+CompareRowAsm	endp
+
+
+;*************************************************************************************
+
 
 
         end

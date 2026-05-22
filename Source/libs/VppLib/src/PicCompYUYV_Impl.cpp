@@ -64,7 +64,8 @@ int PicCompareYUYV_Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
   if(VFlip)
   {
     ImgOut += 2 * _width * (_height-1);
-    for(int y=0; y<_height; y++)
+    unsigned y = _height;
+    while(y-- > 0)
     {
       unsigned values =  _width;
       while(values-- > 0)
@@ -80,7 +81,7 @@ int PicCompareYUYV_Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
         else *ImgOut=i;
         ImgOut++;
       }
-      ImgOut -= 2*_width;
+      ImgOut -= 2 * _width;
     }
   }
   else

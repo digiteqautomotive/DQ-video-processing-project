@@ -200,9 +200,21 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUYVtoRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYV24toRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYVYUtoRGB.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB32Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompYUYV_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompareBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB24Impl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB32Impl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB32ImplA.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompYUYV_Impl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicYV24Impl.cpp" />

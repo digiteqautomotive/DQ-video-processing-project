@@ -35,6 +35,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/ImageHandlerV2.cpp
 ../libs/VppLib/src/OverlayExtMem2Dv2.cpp
 ../libs/VppLib/src/OverlayMem2Dv2.cpp
+../libs/VppLib/src/PicCompareBase.cpp
 ../libs/VppLib/src/PicCompRGB24Impl.cpp
 ../libs/VppLib/src/PicCompRGB32Impl.cpp
 ../libs/VppLib/src/PicCompYUYV_Impl.cpp
