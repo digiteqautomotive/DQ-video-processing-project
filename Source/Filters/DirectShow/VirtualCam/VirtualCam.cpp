@@ -130,7 +130,7 @@ HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
     *ppv = (ISpecifyPropertyPages*)this;
   if(riid == _uuidof(IAMStreamConfig))
     *ppv = (IAMStreamConfig*)this;
-  else if (riid == _uuidof(IKsPropertySet))
+  else if(riid == _uuidof(IKsPropertySet))
     *ppv = (IKsPropertySet*)this;
   else
     return CSourceStream::QueryInterface(riid, ppv);

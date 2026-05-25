@@ -81,7 +81,7 @@ int PicCompareYUYV_Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
         else *ImgOut=i;
         ImgOut++;
       }
-      ImgOut -= 2 * _width;
+      ImgOut -= 4 * _width;
     }
   }
   else

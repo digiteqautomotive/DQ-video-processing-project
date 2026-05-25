@@ -275,6 +275,55 @@ int RGBcompareFlip(const char *Alg, int Width, int Height, const unsigned char *
 }
 
 
+int YUYVcompare(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{
+  int pos = memcmp(BlobTest, BlobOut, Width*Height*2+32);
+  if(pos==0) return 0;
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x+=2)
+    {
+      pos = 16 + 2*(x + Width*y);
+      if(BlobOut[pos]!=BlobTest[pos] || BlobOut[pos+1]!=BlobTest[pos+1] || BlobOut[pos+2]!=BlobTest[pos+2] || BlobOut[pos+3]!=BlobTest[pos+3])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[pos])>1 || labs(BlobOut[pos+1]-BlobTest[pos+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos+2])>1 || labs(BlobOut[pos+3]-BlobTest[pos+3])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... Y=%d|%d U=%d|%d Y=%d|%d V=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos], BlobOut[pos+1],BlobTest[pos+1], BlobOut[pos+2],BlobTest[pos+2], BlobOut[pos+3],BlobTest[pos+3]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
+int YUYVcompareFlip(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
+{
+  int diffs1 = 0;
+  for(int y=0; y<Height; y++)
+    for(int x=0; x<Width; x+=2)
+    {
+      const int pos = 16 + 2*(x + Width*y);
+      const int pos2 = 16 + 2*(x + Width*(Height-y-1));
+      if(BlobOut[pos]!=BlobTest[pos2] || BlobOut[pos+1]!=BlobTest[pos2+1] || BlobOut[pos+2]!=BlobTest[pos2+2] || BlobOut[pos+3]!=BlobTest[pos2+3])
+          diffs1++;
+      if(labs(BlobOut[pos]-BlobTest[pos2])>1 || labs(BlobOut[pos+1]-BlobTest[pos2+1])>1 || labs(BlobOut[pos+2]-BlobTest[pos2+2])>1 || labs(BlobOut[pos+3]-BlobTest[pos2+3])>1)
+      {
+        printf("\n%s %ux%u: x=%d y=%d ... Y=%d|%d U=%d|%d Y2=%d|%d V=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos2], BlobOut[pos+1],BlobTest[pos2+1], BlobOut[pos+2],BlobTest[pos2+2], BlobOut[pos+3],BlobTest[pos2+3]);
+        return 10000;
+      }
+    }
+#ifdef _DEBUG
+  if(diffs1 > 0)
+      printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, diffs1);
+#endif
+  return diffs1;
+}
+
+
 int ARGB32compare(const char *Alg, int Width, int Height, const unsigned char *BlobOut, const unsigned char *BlobTest)
 {
   int pos = memcmp(BlobTest, BlobOut, Width*Height*4+32);
@@ -569,6 +618,65 @@ bool Pause = false;
      picCompareRGB24.Compare(BlobIn+16,BlobIn2+16,BlobOut+16,true);
 
      if(RGB24compareVFlip("picCompareRGB24(Vflip)",With,Height,BlobOut,BlobTest) != 0)
+         goto ReturnErr;
+   }
+
+
+//-----------------------------Compare-YUYV---------------------------------------------
+
+  for(int With=0; With<43; With+=2)
+   for(int Height=0; Height<33; Height++)
+   {     
+     int InSize = 3 * With * Height;
+     int OutSize = InSize;
+     if(InSize==0) OutSize=0;
+     PicCompareYUYV_Impl picCompareYUYV;
+     picCompareYUYV.SetDimensions(With,Height);
+
+     memcpy(BlobOut,BlobIn,16);
+     memcpy(BlobTest,BlobIn,16);
+     memset(BlobOut+16,0xFE,OutSize);
+     memset(BlobTest+16,0xFC,OutSize);
+     memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+     memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
+
+     picCompareYUYV.Compare(BlobIn+16,BlobIn2+16,BlobOut+16);
+
+     for(int x=0; x<With; x+=2)
+       for(int y=0; y<Height; y++)
+       {
+         unsigned offset = 16 + 2*((y*With)+x);
+         
+         int16_t val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;	// Y
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;		// U
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;		// Y
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+
+         offset++;
+         val = (int16_t)BlobIn[offset] - (int16_t)BlobIn2[offset] + 127;		// V
+         if(val>=255) BlobTest[offset]=255;
+         else if(val<=0) BlobTest[offset]=0;
+         else BlobTest[offset]=val;
+       }
+
+     if(YUYVcompare("picCompareYUYV",With,Height,BlobOut,BlobTest) != 0)
+         goto ReturnErr;
+
+     picCompareYUYV.Compare(BlobIn+16,BlobIn2+16,BlobOut+16,true);
+
+     if(YUYVcompareFlip("picCompareYUYV(Vflip)",With,Height,BlobOut,BlobTest) != 0)
          goto ReturnErr;
    }
 
