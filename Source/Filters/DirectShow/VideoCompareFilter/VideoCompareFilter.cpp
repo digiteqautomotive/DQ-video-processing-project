@@ -21,6 +21,13 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 
 #include "DirectShow/VariantTools.h"
 
+//#if defined(USE_SSE)
+// #include "PicCompRGB32_SSE2.h"
+//extern "C" unsigned GetFeaturesCPU(void);
+//const unsigned FeaturesCPU = GetFeaturesCPU();
+//#endif
+
+
 
 #ifndef MAX
  #define MAX(a,b) ((a>b)?(a):(b))
@@ -441,7 +448,12 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
     }
     if(m_pPicCompare==NULL)
     {
-      m_pPicCompare = new PicCompareRGB32Impl();
+//#ifdef USE_SSE
+//      if(FeaturesCPU & 4)	// SSE2
+//          m_pPicCompare = new PicCompareRGB32_SSE2();
+//      else
+//#endif
+          m_pPicCompare = new PicCompareRGB32Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
     }
     return S_OK;

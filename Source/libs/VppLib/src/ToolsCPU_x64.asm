@@ -1,18 +1,18 @@
-;***************************************************************************************
-; Copyright: (c) 2021-2026 Jaroslav Fojtik                                             *
+;******************************************************************************
+;*                      Copyright: (c) 2021-2026 Jaroslav Fojtik
 ;* This code could be redistributed under LGPL licency.
-;***************************************************************************************/
-
+;******************************************************************************/
 .CODE _text             ;Indicates the start of a code segment.
 
 
-HasMMX	EQU	1
-HasSSE	EQU	2
-HasSSE2	EQU	4
-HasSSSE3 EQU	8
-HasSSE41 EQU	16
-HasSSE42 EQU	32
-HasCMOV	EQU	010000h
+HAS_MMX		equ	1
+HAS_SSE		equ	2
+HAS_SSE2	equ	4
+HAS_SSSE3	equ	8
+HAS_SSE41	equ	16
+HAS_SSE42	equ	32
+HAS_CMOV	equ	10000h
+
 
 
 ; https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eojdc/index.html
@@ -44,28 +44,28 @@ GetFeaturesCPU PROC \
 	mov	eax,1
 	cpuid
 
-	test	edx, 1000000000000000b
-	jz	NoCMOV
-	or	esi,HasCMOV	
-NoCMOV:	test	edx, 100000000000000000000000b
+	test	edx, 100000000000000000000000b
 	jz	NoMMX
-	or	esi,HasMMX
+	or	esi,HAS_MMX
 NoMMX:  test	edx, 10000000000000000000000000b
 	jz	NoSSE
-	or	esi,HasSSE
+	or	esi,HAS_SSE
 NoSSE:  test	edx, 100000000000000000000000000b
 	jz	NoSSE2
-	or	esi,HasSSE2
+	or	esi,HAS_SSE2
 NoSSE2: test	ecx, 1000000000b
 	jz	NoSSSE3
-	or	esi,HasSSSE3
+	or	esi,HAS_SSSE3
 NoSSSE3:test	ecx, 10000000000000000000b
 	jz	NoSSE41
-	or	esi,HasSSE41
+	or	esi,HAS_SSE41
 NoSSE41:test	ecx, 100000000000000000000b
 	jz	NoSSE42
-	or	esi,HasSSE42
-NoSSE42:
+	or	esi,HAS_SSE42
+NoSSE42:test	edx, 1000000000000000b
+	jz	NoCMOV
+	or	esi,HAS_CMOV
+NoCMOV:
 
 exit:	mov	eax,esi
 	ret
@@ -74,6 +74,7 @@ GetFeaturesCPU ENDP
 
 ;*************************************************************************************
 
+	public	EmitEMMS
 EmitEMMS PROC
 	emms
 	ret
@@ -83,11 +84,13 @@ EmitEMMS ENDP
 ;*************************************************************************************
 
 
+	public	EmitFSAVE
 EmitFSAVE PROC
 	fsave	[RCX]
 	ret
 EmitFSAVE ENDP
 
+	public	EmitFRSTOR
 EmitFRSTOR PROC
 	frstor	[RCX]
 	ret

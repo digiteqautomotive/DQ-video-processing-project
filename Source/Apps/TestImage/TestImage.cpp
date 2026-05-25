@@ -30,6 +30,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "PicCompRGB32Impl.h"
 #include "PicCompRGB24Impl.h"
 #include "PicCompYUYV_Impl.h"
+#include "PicCompRGB32_SSE2.h"
 
 #include "ConvAYUV444toRGB.h"
 #include "ConvYUV420toRGB.h"
@@ -1454,6 +1455,17 @@ bool Pause = false;
       DurationMin = BenchCompare(compareYUYV_Impl,BlobIn,BlobIn2,BlobOut,true);
       printf(" VFlip %.3f[ms]", DurationMin/1000.0);
     }
+
+#ifdef USE_SSE
+    if(FeaturesCPU & 2)
+    {
+      PicCompareRGB32Impl compareRGB32_SSE2(1920,1080);
+      DurationMin = BenchCompare(compareRGB32_SSE2,BlobIn,BlobIn2,BlobOut);
+      printf("\nCompare RGB32 SSE2 compare 1920x1080 time %.3f[ms]", DurationMin/1000.0);
+      DurationMin = BenchCompare(compareRGB32_SSE2,BlobIn,BlobIn2,BlobOut,true);
+      printf(" VFlip %.3f[ms]", DurationMin/1000.0);
+    }
+#endif
 
     {
       RealRGB32toYUV420Converter picConverterRGB32toYUV420(1920,1080);

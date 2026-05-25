@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph">
+    <filter name="Sample Video Renderer" index="0" clsid="{4D4B1600-33AC-11CF-BF30-00AA0055595A}"/>
+    <filter name="DQ VPP Video Compare" index="1" clsid="{598FB8F7-C4C5-47B8-8461-95962919A7D1}">
+        <ipersiststream encoding="base64" data="AAAAAA=="/>
+    </filter>
+    <filter name="AVObjects Video Transformer" index="2" clsid="{1C804950-2A3D-4190-B003-BAE68E95FC04}">
+        <ipersiststream encoding="base64" data="UEmAHD0qkEGwA7rmjpX8BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////AAAAAP////8AAAAAAAAAABonAADoAwAA"/>
+    </filter>
+    <filter name="DQ VPP RGB to YUV Converter" index="3" clsid="{D710F353-A342-4335-AA5F-4C9BE46F019A}">
+        <ipersiststream encoding="base64" data="AQ=="/>
+    </filter>
+    <filter name="Infinite Pin Tee Filter" index="4" clsid="{F8388A40-D5BB-11D0-BE5A-0080C706568E}"/>
+    <filter name="AVObjects Video Generator" index="5" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}" clock="1">
+        <ipersiststream encoding="base64" data="kMxvlnocw0Ki3/kfC+rdoQEAAAAAAAAAZAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAAaJwAAAAAAAAAAAAAAAAAAAAAAAICfWAVWw84RvwEAqgBVWVrUAgAAQAIAAAAAAAAAADlApQAAAIC7AAAoAAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    </filter>
+    <connect out="AVObjects Video Generator/Video" in="Infinite Pin Tee Filter/Input" outFilterIndex="5" outPinId="Video" outPinName="Video" outPinIndex="0" inFilterIndex="4" inPinId="Input" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="Infinite Pin Tee Filter/Output1" in="DQ VPP Video Compare/Input 0" outFilterIndex="4" outPinId="Output1" outPinName="Output1" outPinIndex="0" inFilterIndex="1" inPinId="Input 0" inPinName="Input 0" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="Infinite Pin Tee Filter/Output2" in="DQ VPP RGB to YUV Converter/XForm In" outFilterIndex="4" outPinId="Output2" outPinName="Output2" outPinIndex="1" inFilterIndex="3" inPinId="In" inPinName="XForm In" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="DQ VPP RGB to YUV Converter/XForm Out" in="AVObjects Video Transformer/In" outFilterIndex="3" outPinId="Out" outPinName="XForm Out" outPinIndex="0" inFilterIndex="2" inPinId="In" inPinName="In" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_YUYV" sampleSize="834048" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{56595559-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAQAFlVWTIAugwAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="AVObjects Video Transformer/Out" in="DQ VPP Video Compare/Input 1" outFilterIndex="2" outPinId="Out" outPinName="Out" outPinIndex="0" inFilterIndex="1" inPinId="Input 1" inPinName="Input 1" inPinIndex="1" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="DQ VPP Video Compare/Output 0" in="Sample Video Renderer/Input" outFilterIndex="1" outPinId="Output 0" outPinName="Output 0" outPinIndex="0" inFilterIndex="0" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="1251072" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAADUAgAAQAIAAAAAAAAAAAAA1AIAAEACAAAA+OkOAAAAAIAaBgAAAAAAKAAAANQCAABAAgAAAQAYAAAAAAAAFxMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+</graph>

@@ -180,6 +180,9 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompYUYV_ImplA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB32_SSE2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h">
@@ -380,6 +383,9 @@
       <Filter>Source Files</Filter>
     </MASM>
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win32_CMOV.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowCompareSSE2_64.asm">
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>
