@@ -56,7 +56,7 @@ public:
 		return pNewObject;
 	}
 
-	CropProperties::CropProperties(IUnknown *pUnk) : 
+	CropProperties(IUnknown *pUnk) : 
 		FilterPropertiesBase(NAME("Crop Properties"), pUnk, IDD_CROP_DIALOG, IDS_CROP_CAPTION)
 	{;}
 

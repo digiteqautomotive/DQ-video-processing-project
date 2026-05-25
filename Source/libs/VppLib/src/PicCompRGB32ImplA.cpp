@@ -36,7 +36,7 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void 
 {
   if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
       return(0);
-  
+
   if(VFlip)
   {
     const unsigned char *Img1 = (const unsigned char *)pImg1st;

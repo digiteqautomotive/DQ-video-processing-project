@@ -32,7 +32,7 @@
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VideoMixingProperties.h">
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCamProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

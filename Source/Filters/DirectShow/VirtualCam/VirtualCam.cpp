@@ -84,7 +84,8 @@ CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr): CSource(NAME("DQ VPP Virtual Cam"),
 HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 {
 	//Forward request for IAMStreamConfig & IKsPropertySet to the pin
-  if (riid == _uuidof(IAMStreamConfig) || riid == _uuidof(IKsPropertySet) || riid==_uuidof(ISpecifyPropertyPages))
+  if(riid == _uuidof(IAMStreamConfig) || riid == _uuidof(IKsPropertySet) || riid==_uuidof(ISpecifyPropertyPages) ||
+     riid==IID_ISettingsInterface)
     return m_paStreams[0]->QueryInterface(riid, ppv);
   else
     return CSource::QueryInterface(riid, ppv);
@@ -126,9 +127,11 @@ CVCamStream::~CVCamStream()
 HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
 {
   // Standard OLE stuff
-  if(riid == _uuidof(ISpecifyPropertyPages))
+  if(riid==IID_ISettingsInterface)
+    *ppv = (ISettingsInterface*)this;
+  else if(riid == _uuidof(ISpecifyPropertyPages))
     *ppv = (ISpecifyPropertyPages*)this;
-  if(riid == _uuidof(IAMStreamConfig))
+  else if(riid == _uuidof(IAMStreamConfig))
     *ppv = (IAMStreamConfig*)this;
   else if(riid == _uuidof(IKsPropertySet))
     *ppv = (IKsPropertySet*)this;
@@ -522,5 +525,14 @@ HRESULT CVCamStream::GetPages(CAUUID *pPages)
   pPages->pElems[0] = CLSID_VPP_VirtualCamProperties;
   return S_OK;
 }
+
+
+STDMETHODIMP CVCamStream::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_VirtualCam;
+  return S_OK;
+}
+
 
 

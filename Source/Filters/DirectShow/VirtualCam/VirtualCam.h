@@ -35,6 +35,9 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 ===========================================================================*/
 #pragma once
 
+#include "DirectShow/CSettingsInterface.h"
+
+
 #define DECLARE_PTR(type, ptr, expr) type* ptr = (type*)(expr);
 
 // fwd
@@ -67,7 +70,7 @@ private:
 };
 
 
-class CVCamStream: public CSourceStream, public IAMStreamConfig, public IKsPropertySet, public ISpecifyPropertyPages
+class CVCamStream: public CSourceStream, public CSettingsInterface, public IAMStreamConfig, public IKsPropertySet, public ISpecifyPropertyPages
 {
 public:
 
@@ -115,6 +118,8 @@ public:
   HRESULT GetMediaType(int iPosition, CMediaType *pmt);
   HRESULT SetMediaType(const CMediaType *pmt);
   HRESULT OnThreadCreate(void);
+
+  STDMETHODIMP GetClassID(CLSID *pClassID);
 
 protected:
   CVCam *m_pParent;

@@ -28,6 +28,8 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 //#endif
 
 
+DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
 
 #ifndef MAX
  #define MAX(a,b) ((a>b)?(a):(b))
@@ -96,6 +98,8 @@ void VideoCompareFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
 }
 
 
@@ -108,6 +112,8 @@ void VideoCompareFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
 }
 
 
@@ -403,7 +409,8 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
 
 
 	// Create appropriate picture concatenator
-  if(pMediaType->subtype == MEDIASUBTYPE_YUY2 || pMediaType->subtype == MEDIASUBTYPE_YUYV || pMediaType->subtype == MEDIASUBTYPE_YVYU)
+  if(pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
+     pMediaType->subtype==MEDIASUBTYPE_UYVY || pMediaType->subtype==MEDIASUBTYPE_HDYC)
   {
     if(m_pPicCompare!=NULL)
     {
@@ -645,6 +652,12 @@ HRESULT VideoCompareFilter::CheckOutputType(const CMediaType* pMediaType)
     {
       if(ConnectionFormat[0]==MEDIASUBTYPE_YUYV || ConnectionFormat[0]==MEDIASUBTYPE_YUY2 ||
          ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2)
+        return S_OK;
+    }
+    if(*(pMediaType->Subtype())==MEDIASUBTYPE_UYVY || *(pMediaType->Subtype())==MEDIASUBTYPE_HDYC)
+    {
+      if(ConnectionFormat[0]==MEDIASUBTYPE_UYVY || ConnectionFormat[0]==MEDIASUBTYPE_HDYC ||
+         ConnectionFormat[1]==MEDIASUBTYPE_UYVY || ConnectionFormat[1]==MEDIASUBTYPE_HDYC)
         return S_OK;
     }
     if(*(pMediaType->Subtype())==MEDIASUBTYPE_YVYU)

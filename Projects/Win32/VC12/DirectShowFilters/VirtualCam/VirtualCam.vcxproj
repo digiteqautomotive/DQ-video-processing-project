@@ -228,7 +228,7 @@
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\resource.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\stdafx.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.h" />
-    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VideoMixingProperties.h" />
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCamProperties.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.def" />

@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #pragma once
 
-#include <DirectShow/MultiIOBaseFilter.h>
-#include <DirectShow/CSettingsInterface.h>
+#include "DirectShow/MultiIOBaseFilter.h"
+#include "DirectShow/CSettingsInterface.h"
 
 #include <deque>
 

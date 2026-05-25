@@ -180,3 +180,65 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 {
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+CUnknown * WINAPI VirtualCamProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr) 
+{
+  ASSERT( pHr != NULL );
+  VirtualCamProperties *pNewObject = new VirtualCamProperties(pUnk);
+  if(pNewObject == NULL) 
+  {
+    *pHr = E_OUTOFMEMORY;
+  }
+  return pNewObject;
+}
+
+
+VirtualCamProperties::VirtualCamProperties(IUnknown *pUnk): 
+	        CBasePropertyPage(NAME("Virtual camera Properties"), pUnk, IDD_VIRTUAL_CAM_DIALOG, IDS_VCAM_CAPTION),
+		m_piConfig(NULL)
+{
+}
+
+
+// This routine is called when the property page is connected to the filter,
+// but before the property page is displayed. There is an implicit
+// design assumption that while we're connected the filter values being
+// manipulated through the property pages are not simultaneously being
+// manipulated via any of the filter's other interfaces.
+HRESULT VirtualCamProperties::OnConnect( IUnknown* piUnknown )
+{
+  ASSERT( piUnknown != NULL );
+
+  HRESULT hResult;
+  if(piUnknown == NULL)
+      hResult = VFW_E_NEED_OWNER;
+  else
+  {
+        // We should receive pointer to KS proxy for our driver.
+        // Make sure that we got what we expect
+    hResult = piUnknown->QueryInterface(IID_ISettingsInterface, reinterpret_cast<void**>(&m_piConfig));
+    if(FAILED(hResult))
+    {
+//        DbgLog((LOG_ERROR | LOG_TRACE, 0,
+//                _T( "CBallProxyPluginPage::OnConnect: owner doesn't support IBallProxySampleConfig" ) ));
+    }
+  }
+
+//  DbgLog(( LOG_TRACE, 5, _T( "CBallProxyPluginPage::OnConnect: return 0x%X" ), hResult ));
+  return hResult;
+}
+
+
+VirtualCamProperties::~VirtualCamProperties()
+{
+  if(m_piConfig)
+  {
+    m_piConfig->Release();
+    m_piConfig = NULL;
+  }
+}
+
