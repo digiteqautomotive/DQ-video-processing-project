@@ -1,15 +1,15 @@
 /** @file
 
-MODULE				: AudioMixingFilter
+MODULE:			AudioMixingFilter
 
-FILE NAME			: AudioMixingFilter.cpp
+FILE NAME:		AudioMixingFilter.cpp
 
-DESCRIPTION			: 
+DESCRIPTION: 
 					  
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2010, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 
 #include <numeric>
@@ -53,36 +51,36 @@ AudioMixingFilter::AudioMixingFilter()
   m_uiBeginFlushCount(0),
   m_uiEndFlushCount(0)
 {
-	m_pSampleBuffers[0] = NULL;
-	m_pSampleBuffers[1] = NULL;
+  m_pSampleBuffers[0] = NULL;
+  m_pSampleBuffers[1] = NULL;
 
-	m_nSampleSizes[0] = 0;
-	m_nSampleSizes[1] = 0;
+  m_nSampleSizes[0] = 0;
+  m_nSampleSizes[1] = 0;
 
 	// Init parameters
-	initParameters();
+  initParameters();
 
   Initialise();
 
   // Create Live Media Event loop handle - this will be used to notify the main thread that the live Media RTSP thread has finished
   m_hSyncEvent = CreateEvent(
-    NULL,                       // default security attributes
-    FALSE,                      // auto-reset event
-    FALSE,                      // initial state is nonsignaled
-    TEXT("SyncEvent")  // object name
-    );
+      NULL,                       // default security attributes
+      FALSE,                      // auto-reset event
+      FALSE,                      // initial state is nonsignaled
+      TEXT("SyncEvent")  // object name
+      );
 }
 
 AudioMixingFilter::~AudioMixingFilter()
 {
-	for (int i = 0; i < 2; i++)
-	{
-		if (m_pSampleBuffers[i])
-		{
-			delete[] m_pSampleBuffers[i];
-			m_pSampleBuffers[i] = NULL;
-		}
-	}
+  for(int i = 0; i < 2; i++)
+  {
+    if(m_pSampleBuffers[i])
+    {
+      delete[] m_pSampleBuffers[i];
+      m_pSampleBuffers[i] = NULL;
+    }
+  }
 }
 
 
@@ -102,80 +100,83 @@ void AudioMixingFilter::initParameters()
 HRESULT AudioMixingFilter::GenerateOutputSample(IMediaSample *pSample, int nIndex)
 {
 	// Prepare output sample
-	AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
-	DbgLog((LOG_TRACE,0,TEXT("Audio Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
-	if (pProps->dwStreamId != AM_STREAM_MEDIA) {
-		return m_vInputPins[nIndex]->Receive(pSample);
-	}
+  AM_SAMPLE2_PROPERTIES * const pProps = m_vInputPins[nIndex]->SampleProps();
+  DbgLog((LOG_TRACE,0,TEXT("Audio Mixer: Sample Received from input 0: start time: %I64d end time: %I64d"), pProps->tStart, pProps->tStop));
+  if(pProps->dwStreamId != AM_STREAM_MEDIA) {
+	return m_vInputPins[nIndex]->Receive(pSample);
+  }
 
-	IMediaSample * pOutSample;
+  IMediaSample * pOutSample;
 	// Set up the output sample
-	HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
+  HRESULT hr = InitializeOutputSample(pSample, &pOutSample, nIndex, 0);
 
-	if (FAILED(hr)) {
-		return hr;
-	}
+  if (FAILED(hr)) {
+	return hr;
+  }
 
-	BYTE *pBufferOut = NULL;
-	hr = pOutSample->GetPointer(&pBufferOut);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+  BYTE *pBufferOut = NULL;
+  hr = pOutSample->GetPointer(&pBufferOut);
+  if (FAILED(hr))
+  {
+    return hr;
+  }
 
-  // TODO: do transform!
+	// TODO: do transform!
 
-  // TODO: set size: use same size as input
-	pOutSample->SetActualDataLength( 0 );
-	pOutSample->SetSyncPoint(TRUE);
+	// TODO: set size: use same size as input
+  pOutSample->SetActualDataLength( 0 );
+  pOutSample->SetSyncPoint(TRUE);
 
 	// Stop the clock and log it (if PERF is defined)
-	MSR_STOP(m_idTransform);
+  MSR_STOP(m_idTransform);
 
-	if (FAILED(hr)) {
-		DbgLog((LOG_TRACE,1,TEXT("Error from transform")));
-	} 
-	else 
-	{
+  if (FAILED(hr)) {
+	DbgLog((LOG_TRACE,1,TEXT("Error from transform")));
+  } 
+  else 
+  {
 		// the Transform() function can return S_FALSE to indicate that the
 		// sample should not be delivered; we only deliver the sample if it's
 		// really S_OK (same as NOERROR, of course.)
-		if (hr == NOERROR) 
-		{
-			hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
-		} 
-		else 
-		{
+    if (hr == NOERROR) 
+    {
+      hr = m_vOutputPins[0]->GetInputPin()->Receive(pOutSample);
+    } 
+    else 
+    {
 			// S_FALSE returned from Transform is a PRIVATE agreement
 			// We should return NOERROR from Receive() in this cause because returning S_FALSE
 			// from Receive() means that this is the end of the stream and no more data should
 			// be sent.
-			if (S_FALSE == hr) 
-			{
+      if(S_FALSE == hr) 
+      {
 				//  Release the sample before calling notify to avoid
 				//  deadlocks if the sample holds a lock on the system
 				//  such as DirectDraw buffers do
-				pOutSample->Release();
-				return NOERROR;
-			}
-		}
-	}
+        pOutSample->Release();
+        return NOERROR;
+      }
+    }
+  }
 	// release the output buffer. If the connected pin still needs it,
 	// it will have addrefed it itself.
-	pOutSample->Release();
-	return hr;
+  pOutSample->Release();
+  return hr;
 }
 
-HRESULT AudioMixingFilter::CheckOutputType( const CMediaType* pMediaType )
+
+HRESULT AudioMixingFilter::CheckOutputType(const CMediaType* pMediaType)
 {
-	if (*(pMediaType->Subtype()) == MEDIASUBTYPE_PCM)
-	{
-		return S_OK;
-	}
-	return S_FALSE;
+  if(pMediaType==NULL) return E_POINTER;
+  if(*(pMediaType->Subtype()) == MEDIASUBTYPE_PCM)
+  {
+    return S_OK;
+  }
+  return S_FALSE;
 }
 
-HRESULT AudioMixingFilter::Receive( IMediaSample *pSample, int nIndex )
+
+HRESULT AudioMixingFilter::Receive(IMediaSample *pSample, int nIndex)
 {
   ASSERT(nIndex >= 0);
   ASSERT (nIndex < m_vInputPins.size());
@@ -691,4 +692,43 @@ STDMETHODIMP AudioMixingFilter::EndFlush( int nIndex )
   }
   return S_OK;
 }
+
+
+STDMETHODIMP AudioMixingFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+{
+#ifdef USE_PROPERTY_PAGE
+  if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
+#endif
+  if(riid == (IID_ISettingsInterface)) return GetInterface((ISettingsInterface*) this, ppv);
+		// Call the parent class.
+  return CMultiIOBaseFilter::NonDelegatingQueryInterface(riid, ppv);
+}
+
+
+STDMETHODIMP AudioMixingFilter::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_AudioMixingFilter;
+  return S_OK;
+}
+
+
+#ifdef USE_PROPERTY_PAGE
+/// For configuration dialog
+STDMETHODIMP AudioMixingFilter::GetPages(CAUUID *pPages)
+{
+  if(pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+    return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_AudioMixingProperties;
+  return S_OK;
+}
+#endif
+
+
+
 

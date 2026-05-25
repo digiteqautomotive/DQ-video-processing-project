@@ -9,7 +9,7 @@ DESCRIPTION			: Audio Mixing Filter for PCM
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2010, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #include <DirectShow/MultiIOBaseFilter.h>
@@ -38,22 +36,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <deque>
 
+// #define USE_PROPERTY_PAGE
+
 /// {1D91CA5C-C865-46BB-85F5-48ACFAB69585}
 static const GUID CLSID_VPP_AudioMixingFilter = 
 { 0x1d91ca5c, 0xc865, 0x46bb, { 0x85, 0xf5, 0x48, 0xac, 0xfa, 0xb6, 0x95, 0x85 } };
 
+#ifdef USE_PROPERTY_PAGE
 /// {4549F980-EE2D-4DB7-8603-3212C418CC2B}
 static const GUID CLSID_AudioMixingProperties = 
 { 0x4549f980, 0xee2d, 0x4db7, { 0x86, 0x3, 0x32, 0x12, 0xc4, 0x18, 0xcc, 0x2b } };
+#endif
 
 
 /**
  * \ingroup DirectShowFilters
  * Audio Mixing Filter for PCM Mono Media
  */
-class AudioMixingFilter: public CMultiIOBaseFilter,
-			 //public CSettingsInterface,
-			 public ISpecifyPropertyPages
+class AudioMixingFilter: public CMultiIOBaseFilter
+#ifdef USE_PROPERTY_PAGE
+			 ,public ISpecifyPropertyPages
+#endif
 {
   typedef std::deque<IMediaSample*> MediaSampleQueue_t; 
 public:
@@ -70,105 +73,76 @@ public:
 	///  From CBasePin
 	virtual HRESULT CheckOutputType(const CMediaType* pMediaType);
 
-  /// Delegates call to virtual ReceiveFirstSample and ReceiveSecondSample methods.
-  virtual HRESULT Receive(IMediaSample *pSample, int nIndex );
+	/// Delegates call to virtual ReceiveFirstSample and ReceiveSecondSample methods.
+	virtual HRESULT Receive(IMediaSample *pSample, int nIndex );
 
-  /// From CBaseOutputPin
-  virtual HRESULT DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex);
+	/// From CBaseOutputPin
+	virtual HRESULT DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex);
 
-  /// To Check media type
-  virtual HRESULT GetMediaType(int iPosition, CMediaType* pmt, int nOutputPinIndex) ;
+	/// To Check media type
+	virtual HRESULT GetMediaType(int iPosition, CMediaType* pmt, int nOutputPinIndex) ;
 
-  /// Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter and create
-  /// the picture concatenator dynamically. This method also tells us if the advert stream is tagged
-  HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
+	/// Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter and create
+	/// the picture concatenator dynamically. This method also tells us if the advert stream is tagged
+	HRESULT SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt, int nIndex);
 
-  STDMETHODIMP Stop();
-  STDMETHODIMP Pause();
+	STDMETHODIMP Stop(void);
+	STDMETHODIMP Pause(void);
   
-  virtual void InitialiseInputTypes()
-  {
-    AddInputType(&MEDIATYPE_Audio, &MEDIASUBTYPE_PCM, &FORMAT_WaveFormatEx);
-  }
-  virtual void InitialiseOutputTypes()
-  {
-    AddOutputType(&MEDIATYPE_Audio, &MEDIASUBTYPE_PCM, &FORMAT_WaveFormatEx);
-  }
+	virtual void InitialiseInputTypes(void)
+	{
+	  AddInputType(&MEDIATYPE_Audio, &MEDIASUBTYPE_PCM, &FORMAT_WaveFormatEx);
+	}
+	virtual void InitialiseOutputTypes()
+	{
+	  AddOutputType(&MEDIATYPE_Audio, &MEDIASUBTYPE_PCM, &FORMAT_WaveFormatEx);
+	}
 
-  virtual int InitialNumberOfInputPins()  const	{return 2;}
-  virtual int InitialNumberOfOutputPins() const {return 1;}
-  virtual bool OnFullCreateMoreInputs() const	{return false;}
-  virtual bool OnFullCreateMoreOutputs() const	{return false;}
+	virtual int InitialNumberOfInputPins()  const	{return 2;}
+	virtual int InitialNumberOfOutputPins() const {return 1;}
+	virtual bool OnFullCreateMoreInputs() const	{return false;}
+	virtual bool OnFullCreateMoreOutputs() const	{return false;}
 
-  // you can also override these if you want to know about streaming
-  virtual HRESULT StartStreaming();
-  virtual HRESULT StopStreaming();
+		// you can also override these if you want to know about streaming
+	virtual HRESULT StartStreaming();
+	virtual HRESULT StopStreaming();
 
-  // Streaming calls delegated from input pins
-  virtual STDMETHODIMP EndOfStream(int nIndex);
-  virtual STDMETHODIMP BeginFlush(int nIndex);
-  virtual STDMETHODIMP EndFlush(int nIndex);
+		// Streaming calls delegated from input pins
+	virtual STDMETHODIMP EndOfStream(int nIndex);
+	virtual STDMETHODIMP BeginFlush(int nIndex);
+	virtual STDMETHODIMP EndFlush(int nIndex);
 
 	HRESULT GenerateOutputSample(IMediaSample *pSample, int nIndex);
 
-	void initParameters();
+	void initParameters(void);
+
+#ifdef USE_PROPERTY_PAGE
+	/// For configuration dialog
+	STDMETHODIMP GetPages(CAUUID *pPages);
+#endif
+
+	virtual STDMETHODIMP GetClassID(CLSID *pClassID);
 
 	/// For configuration dialog
-	STDMETHODIMP GetPages(CAUUID *pPages)
-	{
-		if (pPages == NULL) return E_POINTER;
-		pPages->cElems = 1;
-		pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
-		if (pPages->pElems == NULL) 
-		{
-			return E_OUTOFMEMORY;
-		}
-		pPages->pElems[0] = CLSID_AudioMixingProperties;
-		return S_OK;
-	}
-
-	STDMETHODIMP GetClassID(CLSID *pClassID)
-	{
-	  if(pClassID==NULL) return E_POINTER;
-	  *pClassID = CLSID_VPP_AudioMixingFilter;
-	  return S_OK;
-	}
-
-	/// For configuration dialog
-	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv)
-	{
-		if (riid == IID_ISpecifyPropertyPages)
-		{
-			return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
-		}
-		else if(riid == (IID_ISettingsInterface))
-		{
-			return GetInterface((ISettingsInterface*) this, ppv);
-		}
-		else
-		{
-			// Call the parent class.
-			return CMultiIOBaseFilter::NonDelegatingQueryInterface(riid, ppv);
-		}
-	}
+	STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
 
 private:
 
-	/// Pointers to our last received Media Sample
+		/// Pointers to our last received Media Sample
 	BYTE* m_pSampleBuffers[2];
 	// Sizes
 	int m_nSampleSizes[2];
-  MediaSampleQueue_t m_qSamples1;
-  MediaSampleQueue_t m_qSamples2;
+	MediaSampleQueue_t m_qSamples1;
+	MediaSampleQueue_t m_qSamples2;
 
-  unsigned m_uiBitsPerSample;
-  unsigned m_uiSamplesPerSecond;
-  unsigned m_uiChannels;
+	unsigned m_uiBitsPerSample;
+	unsigned m_uiSamplesPerSecond;
+	unsigned m_uiChannels;
 
-  // Vars needed for eos behaviour
-  unsigned m_uiEndOfStreamCount;
-  unsigned m_uiBeginFlushCount;
-  unsigned m_uiEndFlushCount;
+		// Vars needed for eos behaviour
+	unsigned m_uiEndOfStreamCount;
+	unsigned m_uiBeginFlushCount;
+	unsigned m_uiEndFlushCount;
 
-  HANDLE m_hSyncEvent;
+	HANDLE m_hSyncEvent;
 };

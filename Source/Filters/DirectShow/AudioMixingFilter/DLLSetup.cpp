@@ -28,13 +28,11 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 #include "AudioMixingFilter.h"
 #include "AudioMixingProperties.h"
-//////////////////////////////////////////////////////////////////////////
+
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"DQ VPP Audio Mixer";   /// A name for the filter 
 
@@ -56,14 +54,16 @@ CFactoryTemplate g_Templates[] =
     AudioMixingFilter::CreateInstance,  // Method to create an instance of MyComponent
     NULL,                               // Initialization function
     &FilterInfo                         // Set-up information (for filters)
-  },
+  }
+#ifdef USE_PROPERTY_PAGE
   // This entry is for the property page.
-  { 
+  ,{ 
     L"Audio Mixing Properties",
     &CLSID_AudioMixingProperties,
     AudioMixingProperties::CreateInstance, 
     NULL, NULL
   }
+#endif
 };
 
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);   
@@ -73,17 +73,17 @@ int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);
 
 STDAPI DllRegisterServer(void)
 {
-	return AMovieDllRegisterServer2(TRUE);
+  return AMovieDllRegisterServer2(TRUE);
 }
 
 STDAPI DllUnregisterServer()
 {
-	return AMovieDllRegisterServer2(FALSE);
+  return AMovieDllRegisterServer2(FALSE);
 }
 
 //DLL Entry point
 extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE, ULONG, LPVOID);
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 {
-	return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
+  return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
