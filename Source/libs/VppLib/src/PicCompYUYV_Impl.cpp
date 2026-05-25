@@ -20,27 +20,6 @@ LICENSE:	Software License Agreement (BSD License)
 #include "typedfs.h"
 
 
-/*===========================================================================
-	Construction and Destruction.
-===========================================================================*/
-
-
-PicCompareYUYV_Impl::PicCompareYUYV_Impl(void) 
-{
-} //end default constuctor.
-
-
-PicCompareYUYV_Impl::PicCompareYUYV_Impl(int width, int height): 
-	PicCompareBase(width,height)
-{
-} //end constructor.
-
-
-PicCompareYUYV_Impl::~PicCompareYUYV_Impl(void)
-{
-} //end destructor.
-
-
 /*=========================================================================
 	Interface Methods.
 ==========================================================================*/

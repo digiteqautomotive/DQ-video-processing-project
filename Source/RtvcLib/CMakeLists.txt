@@ -36,9 +36,6 @@ SET(IU_SRCS
 ../libs/VppLib/src/OverlayExtMem2Dv2.cpp
 ../libs/VppLib/src/OverlayMem2Dv2.cpp
 ../libs/VppLib/src/PicCompareBase.cpp
-../libs/VppLib/src/PicCompRGB24Impl.cpp
-../libs/VppLib/src/PicCompRGB32Impl.cpp
-../libs/VppLib/src/PicCompYUYV_Impl.cpp
 ../libs/VppLib/src/PicConcatRGB24Impl.cpp
 ../libs/VppLib/src/PicConcatRGB32Impl.cpp
 ../libs/VppLib/src/PicCropperRGB24Impl.cpp
@@ -70,6 +67,9 @@ IF (MMX_SSE_ACCELERATORS)
   SET(IU_SRCS ${IU_SRCS}
       ../libs/VppLib/src/PicScalerRGB24ImplA.cpp
       ../libs/VppLib/src/PicScalerRGB32ImplA.cpp
+      ../libs/VppLib/src/PicCompRGB24ImplA.cpp
+      ../libs/VppLib/src/PicCompRGB32ImplA.cpp
+      ../libs/VppLib/src/PicCompYUYV_ImplA.cpp
       ../libs/VppLib/src/PicScalerARGB32MMX.cpp
       ../libs/VppLib/src/PicScalerARGB32SSE.cpp
       ../libs/VppLib/src/ConvAYUV444toRGB24_ASM.cpp
@@ -101,6 +101,9 @@ ELSE (MMX_SSE_ACCELERATORS)
       ../libs/VppLib/src/PicScalerRGB24Impl.cpp
       ../libs/VppLib/src/PicScalerRGB32Impl.cpp
       ../libs/VppLib/src/ConvAYUV444toRGB24.cpp
+      ../libs/VppLib/src/PicCompRGB24Impl.cpp
+      ../libs/VppLib/src/PicCompRGB32Impl.cpp
+      ../libs/VppLib/src/PicCompYUYV_Impl.cpp
   )
 ENDIF(MMX_SSE_ACCELERATORS)
 

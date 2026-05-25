@@ -31,9 +31,9 @@ class PicCompareYUYV_Impl: public PicCompareBase
 {
 public:
 	// Construction and destruction.
-	PicCompareYUYV_Impl(void);
-	PicCompareYUYV_Impl(int width, int height);
-	virtual ~PicCompareYUYV_Impl(void);
+	PicCompareYUYV_Impl(void) {}
+	PicCompareYUYV_Impl(int width, int height): PicCompareBase(width,height) {} 
+	virtual ~PicCompareYUYV_Impl(void) {}
 
 	// Interface.
 	virtual int Compare(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
