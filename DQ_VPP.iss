@@ -5,7 +5,7 @@
 
 #define MyAppName "DQ VPP Direct show video processing filters"
 #define MyAppPath ".\Projects\Win32\VC12\Win32\Release\ScaleFilter.dll"
-#define MyAppVersion "1.7.21"
+#define MyAppVersion "1.7.22"
 ;#define MyAppVersion GetFileVersion(MyAppPath)
 #define MyAppPublisher "DQ VPP video processing filters"
 #define MyAppURL "https://sourceforge.net/projects/direct-show-demo-filters/files/DQ_VPP_VIDEOPROCESSING/"
@@ -69,6 +69,7 @@ Name: "UtilityFilter"; Description: "Utility Direct Show filter"; Types: full no
 Name: "VideoCompareFilter"; Description: "VideoCompareFilter Direct Show filter"; Types: full normal custom
 Name: "VideoMixingFilter"; Description: "VideoMixingFilter Direct Show filter"; Types: full normal custom
 Name: "VirtualCam"; Description: "Virtual camera"; Types: full custom
+Name: "VirtualMic"; Description: "Virtual microphone"; Types: full custom
 Name: "YUV420ToRGBFilter"; Description: "YUV420ToRGBFilter Direct Show filter"; Types: full custom
 Name: "YuvSource"; Description: "YuvSource Direct Show filter"; Types: full custom
 ;lName: "examples"; Description: "Example files"; Types: full
@@ -128,6 +129,8 @@ Source: ".\Projects\Win32\VC12\Win32\Release\VideoMixingFilter.dll"; DestDir: "{
 Source: ".\Projects\Win32\VC12\x64\Release\VideoMixingFilter.dll"; DestDir: "{app}\Win64"; Components: VideoMixingFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\VirtualCam.dll"; DestDir: "{app}\Win32"; Components: VirtualCam; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\VirtualCam.dll"; DestDir: "{app}\Win64"; Components: VirtualCam; Flags: ignoreversion; Check: IsWin64;
+Source: ".\Projects\Win32\VC12\Win32\Release\VirtualMic.dll"; DestDir: "{app}\Win32"; Components: VirtualMic; Flags: ignoreversion
+Source: ".\Projects\Win32\VC12\x64\Release\VirtualMic.dll"; DestDir: "{app}\Win64"; Components: VirtualMic; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\YUVtoRGBFilter.dll"; DestDir: "{app}\Win32"; Components: YUV420ToRGBFilter; Flags: ignoreversion
 Source: ".\Projects\Win32\VC12\x64\Release\YUVtoRGBFilter.dll"; DestDir: "{app}\Win64"; Components: YUV420ToRGBFilter; Flags: ignoreversion; Check: IsWin64;
 Source: ".\Projects\Win32\VC12\Win32\Release\YuvSource.dll"; DestDir: "{app}\Win32"; Components: YuvSource; Flags: ignoreversion
@@ -188,10 +191,14 @@ Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\TogglerFilter.dll"""; Co
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\TogglerFilter.dll"""; Components: TogglerFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\UtilityFilter.dll"""; Components: UtilityFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\UtilityFilter.dll"""; Components: UtilityFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VideoCompareFilter.dll"""; Components: VideoCompareFilter
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\VideoCompareFilter.dll"""; Components: VideoCompareFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VideoMixingFilter.dll"""; Components: VideoMixingFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\VideoMixingFilter.dll"""; Components: VideoMixingFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VirtualCam.dll"""; Components: VirtualCam
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\VirtualCam.dll"""; Components: VirtualCam; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\VirtualMic.dll"""; Components: VirtualMic
+Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\VirtualMic.dll"""; Components: VirtualMic; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YUVtoRGBFilter.dll"""; Components: YUV420ToRGBFilter
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win64\YUVtoRGBFilter.dll"""; Components: YUV420ToRGBFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s ""{app}\Win32\YuvSource.dll"""; Components: YuvSource
@@ -236,10 +243,14 @@ Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\TogglerFilter.dll""";
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\TogglerFilter.dll"""; Components: TogglerFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\UtilityFilter.dll"""; Components: UtilityFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\UtilityFilter.dll"""; Components: UtilityFilter; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VideoCompareFilter.dll"""; Components: VideoCompareFilter
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\VideoCompareFilter.dll"""; Components: VideoCompareFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VideoMixingFilter.dll"""; Components: VideoMixingFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\VideoMixingFilter.dll"""; Components: VideoMixingFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VirtualCam.dll"""; Components: VirtualCam
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\VirtualCam.dll"""; Components: VirtualCam; Check: IsWin64;
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\VirtualMic.dll"""; Components: VirtualMic
+Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\VirtualMic.dll"""; Components: VirtualMic; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YUVtoRGBFilter.dll"""; Components: YUV420ToRGBFilter
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win64\YUVtoRGBFilter.dll"""; Components: YUV420ToRGBFilter; Check: IsWin64;
 Filename: "regsvr32.exe"; Parameters: "/s /u ""{app}\Win32\YuvSource.dll"""; Components: YuvSource

@@ -52,6 +52,8 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 #include <initguid.h>
 #include <dllsetup.h>
 #include "VirtualCam.h"
+#include "VirtualCamProperties.h"
+
 
 #define CreateComObject(clsid, iid, var) CoCreateInstance( clsid, NULL, CLSCTX_INPROC_SERVER, iid, (void **)&var);
 
@@ -95,6 +97,13 @@ CFactoryTemplate g_Templates[] =
     NULL,
     &AMSFilterVCam
   },
+	// This entry is for the property page.
+  { 
+    L"Virtual Camera Properties",
+    &CLSID_VPP_VirtualCamProperties,
+    VirtualCamProperties::CreateInstance, 
+    NULL, NULL
+  }
 
 };
 

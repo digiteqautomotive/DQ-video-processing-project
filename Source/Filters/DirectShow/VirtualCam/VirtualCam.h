@@ -44,24 +44,30 @@ class CVCamStream;
 static const GUID CLSID_VPP_VirtualCam =
 { 0x8e14549a, 0xdb61, 0x4309, { 0xaf, 0xa1, 0x35, 0x78, 0xe9, 0x27, 0xe9, 0x33 } };
 
+// {5FD97B62-9CE3-4d2e-97B6-D4B1C6A82628}
+static const GUID CLSID_VPP_VirtualCamProperties =
+{ 0x5fd97b62, 0x9ce3, 0x4d2e, { 0x97, 0xb6, 0xd4, 0xb1, 0xc6, 0xa8, 0x26, 0x28 } };
+
 
 class CVCam: public CSource
 {
 public:
   //////////////////////////////////////////////////////////////////////////
   //  IUnknown
-  //////////////////////////////////////////////////////////////////////////
-  static CUnknown * WINAPI CreateInstance(LPUNKNOWN lpunk, HRESULT *phr);
-  STDMETHODIMP QueryInterface(REFIID riid, void **ppv);
+  //////////////////////////////////////////////////////////////////////////    
 
-  IFilterGraph *GetGraph() {return m_pGraph;}
+    static CUnknown * WINAPI CreateInstance(LPUNKNOWN lpunk, HRESULT *phr);
+    virtual STDMETHODIMP QueryInterface(REFIID riid, void **ppv);
+
+    IFilterGraph *GetGraph() {return m_pGraph;}
 
 private:
-  CVCam(LPUNKNOWN lpunk, HRESULT *phr);
+    CVCam(LPUNKNOWN lpunk, HRESULT *phr);
+    LONG m_cRef;
 };
 
 
-class CVCamStream: public CSourceStream, public IAMStreamConfig, public IKsPropertySet
+class CVCamStream: public CSourceStream, public IAMStreamConfig, public IKsPropertySet, public ISpecifyPropertyPages
 {
 public:
 
@@ -93,6 +99,11 @@ public:
   HRESULT STDMETHODCALLTYPE QuerySupported(REFGUID guidPropSet, DWORD dwPropID, DWORD *pTypeSupport);
 
   //////////////////////////////////////////////////////////////////////////
+  //  ISpecifyPropertyPages
+  //////////////////////////////////////////////////////////////////////////
+    HRESULT STDMETHODCALLTYPE GetPages(CAUUID *pPages);
+
+  //////////////////////////////////////////////////////////////////////////
   //  CSourceStream
   //////////////////////////////////////////////////////////////////////////
   CVCamStream(HRESULT *phr, CVCam *pParent, LPCWSTR pPinName);
@@ -116,7 +127,7 @@ protected:
   unsigned m_uiCurrentColorIndex;
   unsigned m_uiFrameCount;
   unsigned m_uiChangeRate;
-  unsigned char m_Effect;
+  unsigned char m_Pattern;
 };
 
 

@@ -71,7 +71,7 @@ CUnknown * WINAPI CVCam::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr)
   return punk;
 }
 
-CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr): CSource(NAME("DQ VPP Virtual Cam"), lpunk, CLSID_VPP_VirtualCam)
+CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr): CSource(NAME("DQ VPP Virtual Cam"), lpunk, CLSID_VPP_VirtualCam), m_cRef(0)
 {
   ASSERT(phr);
   CAutoLock cAutoLock(&m_cStateLock);
@@ -83,11 +83,12 @@ CVCam::CVCam(LPUNKNOWN lpunk, HRESULT *phr): CSource(NAME("DQ VPP Virtual Cam"),
 
 HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 {
-  //Forward request for IAMStreamConfig & IKsPropertySet to the pin
-  if (riid == _uuidof(IAMStreamConfig) || riid == _uuidof(IKsPropertySet))
+	//Forward request for IAMStreamConfig & IKsPropertySet to the pin
+  if (riid == _uuidof(IAMStreamConfig) || riid == _uuidof(IKsPropertySet) || riid==_uuidof(ISpecifyPropertyPages))
     return m_paStreams[0]->QueryInterface(riid, ppv);
   else
     return CSource::QueryInterface(riid, ppv);
+
 }
 
 
@@ -96,7 +97,7 @@ HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 // all the stuff.
 //////////////////////////////////////////////////////////////////////////
 CVCamStream::CVCamStream(HRESULT *phr, CVCam *pParent, LPCWSTR pPinName) :
-CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent), m_Effect(0)
+CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent), m_Pattern(0)
 {
 	// Set the default media type as 320x240x24@15
   GetMediaType(4, &m_mt);
@@ -125,7 +126,9 @@ CVCamStream::~CVCamStream()
 HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
 {
   // Standard OLE stuff
-  if (riid == _uuidof(IAMStreamConfig))
+  if(riid == _uuidof(ISpecifyPropertyPages))
+    *ppv = (ISpecifyPropertyPages*)this;
+  if(riid == _uuidof(IAMStreamConfig))
     *ppv = (IAMStreamConfig*)this;
   else if (riid == _uuidof(IKsPropertySet))
     *ppv = (IKsPropertySet*)this;
@@ -162,7 +165,7 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
   pms->GetPointer(&pData);
   lDataLen = pms->GetSize();
 
-  if(m_Effect == 0)
+  if(m_Pattern == 0)
   {
     unsigned uiOffset = 0;
     BYTE* pRow = new BYTE[uiWidth * 3];
@@ -213,7 +216,7 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
     delete pRow;
   }
 
-  if(m_Effect == 1)
+  if(m_Pattern == 1)
   {
     unsigned uiOffset = 0;    
     unsigned uiCurrentColorIndex = 0;
@@ -504,3 +507,20 @@ HRESULT CVCamStream::QuerySupported(REFGUID guidPropSet, DWORD dwPropID, DWORD *
   if (pTypeSupport) *pTypeSupport = KSPROPERTY_SUPPORT_GET;
   return S_OK;
 }
+
+
+/// For configuration dialog
+HRESULT CVCamStream::GetPages(CAUUID *pPages)
+{
+  if(pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+    return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_VPP_VirtualCamProperties;
+  return S_OK;
+}
+
+

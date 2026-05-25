@@ -11,12 +11,14 @@ ${vppLink}
 
 SET(FLT_HDRS
 VirtualCam.h
+VirtualCamProperties.h
 )
 
 SET(FLT_SRCS 
 DllSetup.cpp
 VirtualCam.cpp
 VirtualCam.def
+AudioMixingFilter.rc
 )
 
 ADD_LIBRARY(

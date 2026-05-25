@@ -34,6 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "PicCompRGB32Impl.h"
 
+#include "typedfs.h"
+
 
 extern "C" void CompareRowAsm(const void *pSRC1, const void *pSRC2, void *pDST, unsigned count);
 
