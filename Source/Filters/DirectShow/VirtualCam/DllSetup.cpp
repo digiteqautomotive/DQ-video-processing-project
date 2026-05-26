@@ -242,3 +242,68 @@ VirtualCamProperties::~VirtualCamProperties()
   }
 }
 
+
+HRESULT VirtualCamProperties::ReadSettings(void)
+{
+  SendMessage(GetDlgItem(m_Dlg,IDC_SPIN1), (UINT)UDM_SETRANGE32, 0, 2);
+
+  if(m_piConfig)
+  {     
+    char szBuffer[BUFFER_SIZE];
+    int nLength = 0;
+    if(SUCCEEDED(m_piConfig->GetParameter(FILTER_PARAM_PATTERN,sizeof(szBuffer), szBuffer, &nLength)))
+      if(nLength>0)
+      {
+        SetDlgItemText(m_Dlg, IDC_EDIT_PATTERN, szBuffer);
+      }
+  }
+  
+  return S_OK;
+}
+
+
+HRESULT VirtualCamProperties::OnApplyChanges(void)
+{
+  if(m_piConfig==NULL) return E_UNEXPECTED;
+  int nLength = 0;
+  char szBuffer[BUFFER_SIZE];
+  nLength = GetDlgItemText(m_Dlg, IDC_EDIT_PATTERN, szBuffer, BUFFER_SIZE);
+  return m_piConfig->SetParameter(FILTER_PARAM_PATTERN, szBuffer);
+}
+
+
+HRESULT VirtualCamProperties::OnActivate(void)
+{
+  INITCOMMONCONTROLSEX icc;
+  icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
+  icc.dwICC = ICC_BAR_CLASSES;
+  if (InitCommonControlsEx(&icc) == FALSE)
+  {
+	return E_FAIL;
+  }
+
+//  ASSERT(m_pSettingsInterface != NULL);
+
+  return ReadSettings();
+}
+
+
+INT_PTR VirtualCamProperties::OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+		//TODO: only SetDirty if the spin message was intercepted
+  SetDirty();
+		// Let the parent class handle the message.
+  return CBasePropertyPage::OnReceiveMessage(hwnd,uMsg,wParam,lParam);
+}
+
+
+void VirtualCamProperties::SetDirty(void)
+{
+  m_bDirty = TRUE;
+  if (m_pPageSite)
+  {
+	m_pPageSite->OnStatusChange(PROPPAGESTATUS_DIRTY);
+  }
+}
+
+

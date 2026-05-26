@@ -45,6 +45,7 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 #include <olectl.h>
 #include <dvdmedia.h>
 #include "VirtualCam.h"
+#include "DirectShow/VariantTools.h"
 
 const unsigned MAX_COLORS = 8;
 const unsigned THICKNESS = 20;
@@ -59,6 +60,8 @@ RGBTRIPLE white = { 255, 255, 255 };
 RGBTRIPLE lineColors[MAX_COLORS] = { white, yellow, cyan, green, magenta, red, blue, black };
 
 #define NUMBER_OF_CAPABILITIES 8
+
+const OLECHAR OLE_FILTER_PARAM_PATTERN[] =  olestr(FILTER_PARAM_PATTERN);
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -98,7 +101,7 @@ HRESULT CVCam::QueryInterface(REFIID riid, void **ppv)
 // all the stuff.
 //////////////////////////////////////////////////////////////////////////
 CVCamStream::CVCamStream(HRESULT *phr, CVCam *pParent, LPCWSTR pPinName) :
-CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent), m_Pattern(0)
+	CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pParent), m_Pattern(0)
 {
 	// Set the default media type as 320x240x24@15
   GetMediaType(4, &m_mt);
@@ -116,6 +119,8 @@ CSourceStream(NAME("DQ VPP Virtual Cam"), phr, pParent, pPinName), m_pParent(pPa
   m_uiCurrentColorIndex = 0;
   m_uiChangeRate = 1;
   m_uiFrameCount = 0;
+
+  addParameter(FILTER_PARAM_PATTERN,OLE_FILTER_PARAM_PATTERN,&m_Pattern);
 }
 
 
@@ -128,15 +133,15 @@ HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
 {
   // Standard OLE stuff
   if(riid==IID_ISettingsInterface)
-    *ppv = (ISettingsInterface*)this;
+      *ppv = (ISettingsInterface*)this;
   else if(riid == _uuidof(ISpecifyPropertyPages))
-    *ppv = (ISpecifyPropertyPages*)this;
+      *ppv = (ISpecifyPropertyPages*)this;
   else if(riid == _uuidof(IAMStreamConfig))
-    *ppv = (IAMStreamConfig*)this;
+      *ppv = (IAMStreamConfig*)this;
   else if(riid == _uuidof(IKsPropertySet))
-    *ppv = (IKsPropertySet*)this;
+      *ppv = (IKsPropertySet*)this;
   else
-    return CSourceStream::QueryInterface(riid, ppv);
+      return CSourceStream::QueryInterface(riid, ppv);
 
   AddRef();
   return S_OK;
@@ -168,58 +173,59 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
   pms->GetPointer(&pData);
   lDataLen = pms->GetSize();
 
-  if(m_Pattern == 0)
+  switch(m_Pattern)
   {
-    unsigned uiOffset = 0;
-    BYTE* pRow = new BYTE[uiWidth * 3];
-
-    unsigned uiRowsCompleted = 0;
-    unsigned uiLeftOfCol = m_uiThickness;
-    unsigned uiCurrentColorIndex = m_uiCurrentColorIndex;
-    while (uiRowsCompleted < uiHeight)
-    {
+    case 0:
+      {
+      unsigned uiOffset = 0;
+      BYTE* pRow = new BYTE[uiWidth * 3];
+      unsigned uiRowsCompleted = 0;
+      unsigned uiLeftOfCol = m_uiThickness;
+      unsigned uiCurrentColorIndex = m_uiCurrentColorIndex;
+      while(uiRowsCompleted < uiHeight)
+      {
 	// Current color
-      RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
+        RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
 	//create a single row and copy it uiThickness times
-      for (size_t j = 0; j < uiWidth * 3; j += 3)
-      {
-        memcpy(pRow + j, pColor, sizeof(RGBTRIPLE));
-      }
+        for (size_t j = 0; j < uiWidth * 3; j += 3)
+        {
+          memcpy(pRow + j, pColor, sizeof(RGBTRIPLE));
+        }
 
-      while ((uiLeftOfCol > 0) && (uiRowsCompleted < uiHeight))
-      {
-        memcpy(pData + uiOffset, pRow, uiWidth * 3);
-        uiOffset += uiWidth * 3;
-        ++uiRowsCompleted;
+        while ((uiLeftOfCol > 0) && (uiRowsCompleted < uiHeight))
+        {
+          memcpy(pData + uiOffset, pRow, uiWidth * 3);
+          uiOffset += uiWidth * 3;
+          ++uiRowsCompleted;
 
-        --uiLeftOfCol;
-      }
+          --uiLeftOfCol;
+        }
 
 	// Next thickness
-      uiLeftOfCol = THICKNESS;
+        uiLeftOfCol = THICKNESS;
 	// Next color
-      uiCurrentColorIndex = (++uiCurrentColorIndex) % MAX_COLORS;
-    }
-
-    ++m_uiFrameCount;
-	// Update thickness for rolling effect
-
-    if(m_uiFrameCount%m_uiChangeRate == 0)
-    {
-      if (m_uiThickness == 1)
-      //if (m_uiThickness == 2)
-      {
-        // Next color
-        m_uiCurrentColorIndex = (++m_uiCurrentColorIndex) % MAX_COLORS;
-        m_uiThickness = THICKNESS;
+        uiCurrentColorIndex = (++uiCurrentColorIndex) % MAX_COLORS;
       }
-      else --m_uiThickness;
-      //else m_uiThickness -= 2;
-    }
-    delete pRow;
-  }
 
-  if(m_Pattern == 1)
+      ++m_uiFrameCount;
+	// Update thickness for rolling effect
+      delete pRow;
+      if(m_uiFrameCount%m_uiChangeRate == 0)
+      {
+        if (m_uiThickness == 1)
+        //if (m_uiThickness == 2)
+        {
+          // Next color
+          m_uiCurrentColorIndex = (++m_uiCurrentColorIndex) % MAX_COLORS;
+          m_uiThickness = THICKNESS;
+        }
+        else --m_uiThickness;
+        //else m_uiThickness -= 2;
+      }
+    break;
+    }
+
+  case 1:
   {
     unsigned uiOffset = 0;    
     unsigned uiCurrentColorIndex = 0;
@@ -244,12 +250,27 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
       uiCurrentColorIndex = (uiCurrentColorIndex+1) % MAX_COLORS;
     }
     delete pRow;
+    if(m_uiFrameCount%m_uiChangeRate == 0)
+    {
+      if (m_uiThickness == 1)
+      //if (m_uiThickness == 2)
+      {
+        // Next color
+        m_uiCurrentColorIndex = (++m_uiCurrentColorIndex) % MAX_COLORS;
+        m_uiThickness = THICKNESS;
+      }
+      else --m_uiThickness;
+      //else m_uiThickness -= 2;
+    }
+    break;
+    }
+
+  case 2: 
+    for(int i=0; i<lDataLen; ++i)
+      pData[i] = rand();  
+    break;
   }
 
-#if 0
-  for(int i = 0; i < lDataLen; ++i)
-    pData[i] = rand();
-#endif
 
   return NOERROR;
 } // FillBuffer

@@ -39,6 +39,7 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 
 
 #define DECLARE_PTR(type, ptr, expr) type* ptr = (type*)(expr);
+#define FILTER_PARAM_PATTERN		"Pattern"
 
 // fwd
 class CVCamStream;
@@ -132,7 +133,7 @@ protected:
   unsigned m_uiCurrentColorIndex;
   unsigned m_uiFrameCount;
   unsigned m_uiChangeRate;
-  unsigned char m_Pattern;
+  unsigned m_Pattern;
 };
 
 
