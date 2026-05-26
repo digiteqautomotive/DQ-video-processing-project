@@ -331,7 +331,7 @@ LoopPx: movzx	eax,byte ptr [rcx]
 	sub	ax,bx
 	inc	rcx
 	inc	rdx
-	add	ax,127
+	add	ax,128
 	cmovs	ax,R11w
 	or	ah,ah
 	cmovnz	ax,R10w

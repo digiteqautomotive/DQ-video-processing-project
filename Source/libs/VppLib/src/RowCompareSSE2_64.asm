@@ -19,30 +19,39 @@ CompareRowAsmSSE2 proc \
 	jz	ToEnd
 	or	rdx,rdx		; rdx=source ptr 2
 	jz	ToEnd
-	sub	R9,8
+	sub	R9,16
 	jb	Pix1_7
 
-	pxor	xmm3,xmm3	; = 0
-	mov	eax,7F7F7F7Fh
-	movd	xmm4,eax
-	punpcklbw xmm4,xmm4	; 7F7F7F7F7F7F7F7Fh
+	pxor	xmm4,xmm4	; = 0
+	mov	eax,80808080h
+	movd	xmm5,eax
+	punpcklbw xmm5,xmm5	; 8080808080808080h
+	punpcklbw xmm5,xmm5	; 80808080808080808080808080808080h
 
-Pix8:   movq	xmm0,qword ptr[rcx]
-	add	rcx,8
-	movq	xmm1,qword ptr[rdx]
-	add	rdx,8
+Pix8:   movdqu	xmm0,[rcx]
+	add	rcx,16
+	movdqu	xmm1,[rdx]
+	add	rdx,16
+	movhlps xmm2,xmm0
+	movhlps xmm3,xmm1
 
-	punpcklbw xmm0,xmm3
-	punpcklbw xmm1,xmm3
-	psubsw	xmm0,xmm1
-	packsswb xmm0,xmm3
-	paddsb	xmm0,xmm4
-	movq	qword ptr[R8],xmm0
-	add	R8,8
-	sub	R9,8
+	punpcklbw xmm0,xmm4
+	punpcklbw xmm1,xmm4
+	psubsw	xmm0,xmm1		; 8 numbers in range <255;-255>
+
+	punpcklbw xmm2,xmm4
+	punpcklbw xmm3,xmm4
+	psubsw	xmm2,xmm3		; 8 numbers in range <255;-255>
+
+	packsswb xmm0,xmm2		; merge all 16 numbers together	
+	paddb	xmm0,xmm5		; add without saturation
+	movdqu	[R8],xmm0
+
+	add	R8,16
+	sub	R9,16
 	jae	Pix8
 
-Pix1_7:	add	R9,8
+Pix1_7:	add	R9,16
 	jz	ToEnd	
 	mov	R10w,00FFh
 	mov	R11w,0000h
@@ -51,7 +60,7 @@ LoopPx: movzx	eax,byte ptr [rcx]
 	sub	ax,bx
 	inc	rcx
 	inc	rdx
-	add	ax,127
+	add	ax,128
 	cmovs	ax,R11w
 	or	ah,ah
 	cmovnz	ax,R10w

@@ -48,7 +48,7 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
       unsigned values =  4 * _width;
       while(values-- > 0)
       {
-        int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
+        int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 128;
         if(i<=0) *ImgOut=0;
         else if(i>=255) *ImgOut=255;
         else *ImgOut=i;
@@ -62,7 +62,7 @@ int PicCompareRGB32Impl::Compare(const void* pImg1st, const void* pImg2nd, void*
     unsigned values =  4 * _width * _height;
     while(values-- > 0)
     {
-      int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 127;
+      int16_t i = (int16_t)*Img1++ - (int16_t)*Img2++ + 128;
       if(i<=0) *ImgOut=0;
       else if(i>=255) *ImgOut=255;
       else *ImgOut=i;

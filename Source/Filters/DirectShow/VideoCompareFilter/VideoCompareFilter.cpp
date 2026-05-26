@@ -21,11 +21,11 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 
 #include "DirectShow/VariantTools.h"
 
-//#if defined(USE_SSE)
-// #include "PicCompRGB32_SSE2.h"
-//extern "C" unsigned GetFeaturesCPU(void);
-//const unsigned FeaturesCPU = GetFeaturesCPU();
-//#endif
+#if defined(USE_SSE)
+ #include "PicCompRGB32_SSE2.h"
+ extern "C" unsigned GetFeaturesCPU(void);
+ const unsigned FeaturesCPU = GetFeaturesCPU();
+#endif
 
 
 DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
@@ -421,6 +421,11 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
     }
     if(m_pPicCompare==NULL)
     {
+#ifdef USE_SSE
+      if(FeaturesCPU & 4)	// SSE2
+          m_pPicCompare = new PicCompareYUYV_SSE2();
+      else
+#endif
       m_pPicCompare = new PicCompareYUYV_Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_YUYV;
     }
@@ -438,6 +443,11 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
     }
     if(m_pPicCompare==NULL)
     {
+#ifdef USE_SSE
+      if(FeaturesCPU & 4)	// SSE2
+          m_pPicCompare = new PicCompareRGB24_SSE2();
+      else
+#endif
       m_pPicCompare = new PicCompareRGB24Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     }
@@ -455,11 +465,11 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
     }
     if(m_pPicCompare==NULL)
     {
-//#ifdef USE_SSE
-//      if(FeaturesCPU & 4)	// SSE2
-//          m_pPicCompare = new PicCompareRGB32_SSE2();
-//      else
-//#endif
+#ifdef USE_SSE
+      if(FeaturesCPU & 4)	// SSE2
+          m_pPicCompare = new PicCompareRGB32_SSE2();
+      else
+#endif
           m_pPicCompare = new PicCompareRGB32Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
     }

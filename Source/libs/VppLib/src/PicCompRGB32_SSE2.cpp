@@ -59,5 +59,65 @@ int PicCompareRGB32_SSE2::Compare(const void* pImg1st, const void* pImg2nd, void
   }
 
   return(1);
-} //end Compare
+} //end Compare RGB32
 
+
+
+int PicCompareRGB24_SSE2::Compare(const void* pImg1st, const void* pImg2nd, void *pImg, bool VFlip)
+{
+  if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
+      return(0);
+  
+  if(VFlip)
+  {
+    const unsigned char *Img1 = (const unsigned char *)pImg1st;
+    const unsigned char *Img2 = (const unsigned char *)pImg2nd;
+    unsigned char *ImgOut = (unsigned char *)pImg;
+
+    ImgOut += 3 * _width * (_height-1);
+    unsigned y = _height;
+    while(y-- > 0)  
+    {
+      CompareRowAsmSSE2(Img1, Img2, ImgOut, 3*_width);
+      Img1 += 3 * _width;
+      Img2 += 3 * _width;
+      ImgOut -= 3 * _width;
+    }
+  }
+  else
+  {
+    CompareRowAsmSSE2(pImg1st, pImg2nd, pImg, 3*_width*_height);
+  }
+
+  return(1);
+} //end Compare RGB24
+
+
+int PicCompareYUYV_SSE2::Compare(const void* pImg1st, const void* pImg2nd, void *pImg, bool VFlip)
+{
+  if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
+      return(0);
+  
+  if(VFlip)
+  {
+    const unsigned char *Img1 = (const unsigned char *)pImg1st;
+    const unsigned char *Img2 = (const unsigned char *)pImg2nd;
+    unsigned char *ImgOut = (unsigned char *)pImg;
+
+    ImgOut += 2 * _width * (_height-1);
+    unsigned y = _height;
+    while(y-- > 0)  
+    {
+      CompareRowAsmSSE2(Img1, Img2, ImgOut, 2*_width);
+      Img1 += 2 * _width;
+      Img2 += 2 * _width;
+      ImgOut -= 2 * _width;
+    }
+  }
+  else
+  {
+    CompareRowAsmSSE2(pImg1st, pImg2nd, pImg, 2*_width*_height);
+  }
+
+  return(1);
+} //end Compare YUYV
