@@ -28,7 +28,6 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================
 NOTE: The original code was written by Vivek.
 Adapted from http://tmhare.mvps.org/downloads/vcam.zip
@@ -47,21 +46,22 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 #include "VirtualCam.h"
 #include "DirectShow/VariantTools.h"
 
+
 const unsigned MAX_COLORS = 8;
 const unsigned THICKNESS = 20;
-RGBTRIPLE red = { 0, 0, 255 };
-RGBTRIPLE blue = { 255, 0, 0 };
-RGBTRIPLE green = { 0, 255, 0 };
-RGBTRIPLE yellow = { 0, 255, 255 };
-RGBTRIPLE magenta = { 255, 0, 255 };
-RGBTRIPLE cyan = { 255, 255, 0 };
-RGBTRIPLE black = { 0, 0, 0 };
-RGBTRIPLE white = { 255, 255, 255 };
-RGBTRIPLE lineColors[MAX_COLORS] = { white, yellow, cyan, green, magenta, red, blue, black };
+const RGBTRIPLE red = { 0, 0, 255 };
+const RGBTRIPLE blue = { 255, 0, 0 };
+const RGBTRIPLE green = { 0, 255, 0 };
+const RGBTRIPLE yellow = { 0, 255, 255 };
+const RGBTRIPLE magenta = { 255, 0, 255 };
+const RGBTRIPLE cyan = { 255, 255, 0 };
+const RGBTRIPLE black = { 0, 0, 0 };
+const RGBTRIPLE white = { 255, 255, 255 };
+RGBTRIPLE lineColors[MAX_COLORS] = {white, yellow, cyan, green, magenta, red, blue, black};
 
 #define NUMBER_OF_CAPABILITIES 8
 
-const OLECHAR OLE_FILTER_PARAM_PATTERN[] =  olestr(FILTER_PARAM_PATTERN);
+const OLECHAR OLE_FILTER_PARAM_PATTERN[] = olestr(FILTER_PARAM_PATTERN);
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ CVCamStream::~CVCamStream()
 
 HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
 {
-  // Standard OLE stuff
+	// Standard OLE stuff
   if(riid==IID_ISettingsInterface)
       *ppv = (ISettingsInterface*)this;
   else if(riid == _uuidof(ISpecifyPropertyPages))
@@ -185,7 +185,7 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
       while(uiRowsCompleted < uiHeight)
       {
 	// Current color
-        RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
+        const RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
 	//create a single row and copy it uiThickness times
         for (size_t j = 0; j < uiWidth * 3; j += 3)
         {
@@ -234,7 +234,7 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
 
     for(size_t iRow = 0; iRow < uiColorRows; ++iRow)
     {
-      RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
+      const RGBTRIPLE* pColor = &lineColors[uiCurrentColorIndex];
       //create a single row and copy it uiThickness times
       for(size_t j=0; j<uiWidth*3; j=j+3)
       {

@@ -223,6 +223,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\DLLSetup.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCamProperties.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\resource.h" />

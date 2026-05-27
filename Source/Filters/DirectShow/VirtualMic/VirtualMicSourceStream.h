@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #pragma warning(push)     // disable for this header only
@@ -39,10 +37,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <streams.h>
 #pragma warning(pop)      // restore original warning level
 
+#include "DirectShow/CSettingsInterface.h"
+
+
 /// fwd
 class VirtualMicSource;
 
-class VirtualMicSourceStream : public CSourceStream, public IAMStreamConfig, public IKsPropertySet
+
+class VirtualMicSourceStream: public CSourceStream, public CSettingsInterface, public IAMStreamConfig, public IKsPropertySet, public ISpecifyPropertyPages
 {
 public:
   /**
@@ -122,10 +124,14 @@ public:
    */
   HRESULT OnThreadCreate(void);
 
+  virtual STDMETHODIMP GetPages(CAUUID *pPages);
+  virtual STDMETHODIMP GetClassID(CLSID *pClassID);
+
 private:
   VirtualMicSource *m_pParent;
   REFERENCE_TIME m_rtLastTime;
   CCritSec m_cSharedState;
   IReferenceClock *m_pClock;
   unsigned m_uiFillSize;
+  unsigned m_Pattern;
 };

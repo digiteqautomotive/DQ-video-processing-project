@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\VirtualCamProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualCam\resource.h">

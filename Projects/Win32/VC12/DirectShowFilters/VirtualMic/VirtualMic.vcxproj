@@ -223,15 +223,20 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\DLLSetup.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMic.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMicProperties.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMicSourceStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\stdafx.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMic.h" />
+    <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMicProperties.h" />
     <ClInclude Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMicSourceStream.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMic.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\..\..\Source\Filters\DirectShow\VirtualMic\VirtualMic.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

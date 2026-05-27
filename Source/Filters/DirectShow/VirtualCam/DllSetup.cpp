@@ -9,7 +9,7 @@ DESCRIPTION			: VirtualCam DLLSetup source
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2015, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,7 +28,6 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ===========================================================================
 NOTE: The original code was written by Vivek.
 Adapted from http://tmhare.mvps.org/downloads/vcam.zip
@@ -104,7 +103,6 @@ CFactoryTemplate g_Templates[] =
     VirtualCamProperties::CreateInstance, 
     NULL, NULL
   }
-
 };
 
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);
@@ -183,127 +181,4 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 
 
 /////////////////////////////////////////////////////////////////////////////
-
-
-CUnknown * WINAPI VirtualCamProperties::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr) 
-{
-  ASSERT( pHr != NULL );
-  VirtualCamProperties *pNewObject = new VirtualCamProperties(pUnk);
-  if(pNewObject == NULL) 
-  {
-    *pHr = E_OUTOFMEMORY;
-  }
-  return pNewObject;
-}
-
-
-VirtualCamProperties::VirtualCamProperties(IUnknown *pUnk): 
-	        CBasePropertyPage(NAME("Virtual camera Properties"), pUnk, IDD_VIRTUAL_CAM_DIALOG, IDS_VCAM_CAPTION),
-		m_piConfig(NULL)
-{
-}
-
-
-// This routine is called when the property page is connected to the filter,
-// but before the property page is displayed. There is an implicit
-// design assumption that while we're connected the filter values being
-// manipulated through the property pages are not simultaneously being
-// manipulated via any of the filter's other interfaces.
-HRESULT VirtualCamProperties::OnConnect( IUnknown* piUnknown )
-{
-  ASSERT( piUnknown != NULL );
-
-  HRESULT hResult;
-  if(piUnknown == NULL)
-      hResult = VFW_E_NEED_OWNER;
-  else
-  {
-        // We should receive pointer to KS proxy for our driver.
-        // Make sure that we got what we expect
-    hResult = piUnknown->QueryInterface(IID_ISettingsInterface, reinterpret_cast<void**>(&m_piConfig));
-    if(FAILED(hResult))
-    {
-//        DbgLog((LOG_ERROR | LOG_TRACE, 0,
-//                _T( "CBallProxyPluginPage::OnConnect: owner doesn't support IBallProxySampleConfig" ) ));
-    }
-  }
-
-//  DbgLog(( LOG_TRACE, 5, _T( "CBallProxyPluginPage::OnConnect: return 0x%X" ), hResult ));
-  return hResult;
-}
-
-
-VirtualCamProperties::~VirtualCamProperties()
-{
-  if(m_piConfig)
-  {
-    m_piConfig->Release();
-    m_piConfig = NULL;
-  }
-}
-
-
-HRESULT VirtualCamProperties::ReadSettings(void)
-{
-  SendMessage(GetDlgItem(m_Dlg,IDC_SPIN1), (UINT)UDM_SETRANGE32, 0, 2);
-
-  if(m_piConfig)
-  {     
-    char szBuffer[BUFFER_SIZE];
-    int nLength = 0;
-    if(SUCCEEDED(m_piConfig->GetParameter(FILTER_PARAM_PATTERN,sizeof(szBuffer), szBuffer, &nLength)))
-      if(nLength>0)
-      {
-        SetDlgItemText(m_Dlg, IDC_EDIT_PATTERN, szBuffer);
-      }
-  }
-  
-  return S_OK;
-}
-
-
-HRESULT VirtualCamProperties::OnApplyChanges(void)
-{
-  if(m_piConfig==NULL) return E_UNEXPECTED;
-  int nLength = 0;
-  char szBuffer[BUFFER_SIZE];
-  nLength = GetDlgItemText(m_Dlg, IDC_EDIT_PATTERN, szBuffer, BUFFER_SIZE);
-  return m_piConfig->SetParameter(FILTER_PARAM_PATTERN, szBuffer);
-}
-
-
-HRESULT VirtualCamProperties::OnActivate(void)
-{
-  INITCOMMONCONTROLSEX icc;
-  icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
-  icc.dwICC = ICC_BAR_CLASSES;
-  if (InitCommonControlsEx(&icc) == FALSE)
-  {
-	return E_FAIL;
-  }
-
-//  ASSERT(m_pSettingsInterface != NULL);
-
-  return ReadSettings();
-}
-
-
-INT_PTR VirtualCamProperties::OnReceiveMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-		//TODO: only SetDirty if the spin message was intercepted
-  SetDirty();
-		// Let the parent class handle the message.
-  return CBasePropertyPage::OnReceiveMessage(hwnd,uMsg,wParam,lParam);
-}
-
-
-void VirtualCamProperties::SetDirty(void)
-{
-  m_bDirty = TRUE;
-  if (m_pPageSite)
-  {
-	m_pPageSite->OnStatusChange(PROPPAGESTATUS_DIRTY);
-  }
-}
-
 

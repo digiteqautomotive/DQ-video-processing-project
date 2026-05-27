@@ -35,7 +35,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <olectl.h>
 #include <initguid.h>
 #include <dllsetup.h>
+
 #include "VirtualMic.h"
+#include "VirtualMicProperties.h"
 
 #define CreateComObject(clsid, iid, var) CoCreateInstance( clsid, NULL, CLSCTX_INPROC_SERVER, iid, (void **)&var);
 
@@ -79,6 +81,13 @@ CFactoryTemplate g_Templates[] =
     NULL,
     &amsFilterVirtualMic
   },
+	// This entry is for the property page.
+  { 
+    L"Virtual Microphone Properties",
+    &CLSID_VPP_VirtualMicProperties,
+    VirtualMicProperties::CreateInstance,
+    NULL, NULL
+  }
 };
 
 int g_cTemplates = sizeof(g_Templates) / sizeof(g_Templates[0]);

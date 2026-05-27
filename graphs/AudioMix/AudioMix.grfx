@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph">
+    <filter name="Default DirectSound Device" index="0" clsid="{79376820-07D0-11CF-A24D-0020AFD79767}" clock="1">
+        <ipersiststream encoding="base64" data="MAAwADAAMAAwADAAMAAwADAAMAAwACAAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </filter>
+    <filter name="DQ VPP Audio Mixer" index="1" clsid="{1D91CA5C-C865-46BB-85F5-48ACFAB69585}"/>
+    <filter name="DQ VPP Virtual Mic" index="2" clsid="{CF48A03B-E62E-4E9E-9C0B-DE2458595F5B}"/>
+    <filter name="DQ VPP Virtual Mic 0000" index="3" clsid="{CF48A03B-E62E-4E9E-9C0B-DE2458595F5B}"/>
+    <connect out="DQ VPP Virtual Mic/DQ VPP Virtual Mic" in="DQ VPP Audio Mixer/Input 0" outFilterIndex="2" outPinId="1" outPinName="DQ VPP Virtual Mic" outPinIndex="0" inFilterIndex="1" inPinId="Input 0" inPinName="Input 0" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Audio / MEDIASUBTYPE_PCM" sampleSize="4" fixedSizeSamples="true" temporalCompression="false" majorType="{73647561-0000-0010-8000-00AA00389B71}" subType="{00000001-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_WaveFormatEx" formatType="{05589F81-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AQACAESsAAAQsQIABAAQAAAA"/>
+    </connect>
+    <connect out="DQ VPP Virtual Mic 0000/DQ VPP Virtual Mic" in="DQ VPP Audio Mixer/Input 1" outFilterIndex="3" outPinId="1" outPinName="DQ VPP Virtual Mic" outPinIndex="0" inFilterIndex="1" inPinId="Input 1" inPinName="Input 1" inPinIndex="1" direct="true">
+        <mediaType type="MEDIATYPE_Audio / MEDIASUBTYPE_PCM" sampleSize="4" fixedSizeSamples="true" temporalCompression="false" majorType="{73647561-0000-0010-8000-00AA00389B71}" subType="{00000001-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_WaveFormatEx" formatType="{05589F81-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AQACAESsAAAQsQIABAAQAAAA"/>
+    </connect>
+    <connect out="DQ VPP Audio Mixer/Output 0" in="Default DirectSound Device/Audio Input pin (rendered)" outFilterIndex="1" outPinId="Output 0" outPinName="Output 0" outPinIndex="0" inFilterIndex="0" inPinId="Audio Input pin (rendered)" inPinName="Audio Input pin (rendered)" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Audio / MEDIASUBTYPE_PCM" sampleSize="4" fixedSizeSamples="true" temporalCompression="false" majorType="{73647561-0000-0010-8000-00AA00389B71}" subType="{00000001-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_WaveFormatEx" formatType="{05589F81-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AQACAESsAAAQsQIABAAQAAAA"/>
+    </connect>
+</graph>

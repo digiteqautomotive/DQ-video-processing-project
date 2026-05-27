@@ -28,16 +28,13 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 //#pragma warning(disable:4244)
 //#pragma warning(disable:4711)
 #include "VirtualMic.h"
 #include "VirtualMicSourceStream.h"
 #include <stdio.h>
-#include <olectl.h>
-#include <dvdmedia.h>
+
 
 CUnknown * WINAPI VirtualMicSource::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr)
 {
@@ -45,6 +42,7 @@ CUnknown * WINAPI VirtualMicSource::CreateInstance(LPUNKNOWN lpunk, HRESULT *phr
   CUnknown *punk = new VirtualMicSource(lpunk, phr);
   return punk;
 }
+
 
 VirtualMicSource::VirtualMicSource(LPUNKNOWN lpunk, HRESULT *phr) :
 CSource(NAME("DQ VPP Virtual Mic"), lpunk, CLSID_VPP_VirtualMic)
@@ -56,10 +54,12 @@ CSource(NAME("DQ VPP Virtual Mic"), lpunk, CLSID_VPP_VirtualMic)
   m_paStreams[0] = new VirtualMicSourceStream(phr, this, L"DQ VPP Virtual Mic");
 }
 
+
 HRESULT VirtualMicSource::QueryInterface(REFIID riid, void **ppv)
 {
-  //Forward request for IAMStreamConfig & IKsPropertySet to the pin
-  if (riid == _uuidof(IAMStreamConfig) || riid == _uuidof(IKsPropertySet))
+	// Forward request for IAMStreamConfig & IKsPropertySet to the pin
+  if(riid==_uuidof(IAMStreamConfig) || riid==_uuidof(IKsPropertySet) || riid==_uuidof(ISpecifyPropertyPages) ||
+     riid==IID_ISettingsInterface)
     return m_paStreams[0]->QueryInterface(riid, ppv);
   else
     return CSource::QueryInterface(riid, ppv);

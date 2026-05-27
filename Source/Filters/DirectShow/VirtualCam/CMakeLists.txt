@@ -17,8 +17,9 @@ VirtualCamProperties.h
 SET(FLT_SRCS 
 DllSetup.cpp
 VirtualCam.cpp
+VirtualCamProperties.cpp
 VirtualCam.def
-AudioMixingFilter.rc
+VirtualCam.rc
 )
 
 ADD_LIBRARY(

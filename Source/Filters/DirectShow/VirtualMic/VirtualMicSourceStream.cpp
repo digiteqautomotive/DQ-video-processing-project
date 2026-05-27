@@ -28,31 +28,43 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "VirtualMicSourceStream.h"
 #include "VirtualMic.h"
 
-VirtualMicSourceStream::VirtualMicSourceStream(HRESULT *phr, VirtualMicSource *pParent, LPCWSTR pPinName) :
-CSourceStream(NAME("DQ VPP Virtual Mic"), phr, pParent, pPinName), m_pParent(pParent),
-m_uiFillSize(0)
+#include "DirectShow/CSettingsInterface.h"
+#include "DirectShow/VariantTools.h"
+
+
+const OLECHAR OLE_FILTER_PARAM_PATTERN[] = olestr(FILTER_PARAM_PATTERN);
+
+
+VirtualMicSourceStream::VirtualMicSourceStream(HRESULT *phr, VirtualMicSource *pParent, LPCWSTR pPinName):
+    CSourceStream(NAME("DQ VPP Virtual Mic"), phr, pParent, pPinName), m_pParent(pParent),
+    m_uiFillSize(0),
+    m_Pattern(0)
 {
-  // Set the default media type as 320x240x24@15
+	// Set the default media type as 320x240x24@15
   GetMediaType(0, &m_mt);
+
+  addParameter(FILTER_PARAM_PATTERN,OLE_FILTER_PARAM_PATTERN,&m_Pattern);
 }
+
 
 VirtualMicSourceStream::~VirtualMicSourceStream()
 {
-
 }
 
 HRESULT VirtualMicSourceStream::QueryInterface(REFIID riid, void **ppv)
 {
-  // Standard OLE stuff
-  if (riid == _uuidof(IAMStreamConfig))
+	// Standard OLE stuff
+  if(riid==IID_ISettingsInterface)
+      *ppv = (ISettingsInterface*)this;
+  else if(riid == _uuidof(ISpecifyPropertyPages))
+      *ppv = (ISpecifyPropertyPages*)this;
+  else if(riid == _uuidof(IAMStreamConfig))
     *ppv = (IAMStreamConfig*)this;
-  else if (riid == _uuidof(IKsPropertySet))
+  else if(riid == _uuidof(IKsPropertySet))
     *ppv = (IKsPropertySet*)this;
   else
     return CSourceStream::QueryInterface(riid, ppv);
@@ -60,6 +72,7 @@ HRESULT VirtualMicSourceStream::QueryInterface(REFIID riid, void **ppv)
   AddRef();
   return S_OK;
 }
+
 
 HRESULT VirtualMicSourceStream::FillBuffer(IMediaSample *pms)
 {
@@ -75,90 +88,99 @@ HRESULT VirtualMicSourceStream::FillBuffer(IMediaSample *pms)
   pms->GetPointer(&pData);
   lDataLen = pms->GetSize();
 
-#if 0
-  // creates static noise
-  for (int i = 0; i < lDataLen; ++i)
-    pData[i] = rand();
-#else
-#if 0
-  // creates beep
-  int i = 0;
-  static unsigned char val = 0;
-  int repeat = 1;
-  int inc = 10;
-  while (i < lDataLen)
+  switch(m_Pattern)
   {
-    pData[i++] = val;
-    if ((i % repeat) == 0)
-    {
-      val += inc;
-      if (val == 0)
-      {
-        inc *= -1;
-      }
-    }
-  }
-#else
-  int i = 0;
-  static unsigned char value = 255;
-  static unsigned char silence = 0;
-  static unsigned value_count = 32000;
-  static unsigned silence_count = 96000;
-  static bool output_silence = true;
-  static unsigned index = 0;
-  static unsigned char val = 0;
-  int repeat = 1;
-  int inc = 1;
-  static int currentBeep = 0;
-  while (i < lDataLen)
-  {
-    if (output_silence)
-    {
-      if (index < silence_count)
-      {
-        pData[i++] = silence;
-        index++;
-      }
-      else
-      {
-        index = 0;
-        output_silence = false;
-        val = 0;
-      }
-    }
-    else
-    {
-      if (index < value_count)
-      {
-        pData[i++] = val;
-        // if ((i % repeat) == 0)
-        if ((index % repeat) == 0)
-        {
-          val += inc;
-          if (val == 0)
-          {
-            inc *= -1;
+  case 0:{
+	   int i = 0;
+	   static unsigned char value = 255;
+	   static unsigned char silence = 0;
+	   static unsigned value_count = 32000;
+	   static unsigned silence_count = 96000;
+	   static bool output_silence = true;
+	   static unsigned index = 0;
+	   static unsigned char val = 0;
+	   int repeat = 1;
+	   int inc = 1;
+	   static int currentBeep = 0;
+	   while(i < lDataLen)
+	   {
+	     if(output_silence)
+	     {
+	       if(index < silence_count)
+	       {
+	         pData[i++] = silence;
+	         index++;
+	      }
+	      else
+	      {
+	        index = 0;
+                output_silence = false;
+                val = 0;
+              }
+            }
+            else
+            {
+              if(index < value_count)
+              {
+                pData[i++] = val;
+                // if ((i % repeat) == 0)
+                if((index % repeat) == 0)
+                {
+                  val += inc;
+                  if(val == 0)
+                  {
+                    inc *= -1;
+                  }
+                }
+                index++;
+              }
+              else
+              {
+                index = 0;
+                output_silence = true;
+              }
+            }
           }
         }
-        index++;
-      }
-      else
-      {
-        index = 0;
-        output_silence = true;
-      }
-    }
+        break;
+
+  case 2:
+       {
+	  // creates beep
+         int i = 0;
+         static unsigned char val = 0;
+         int repeat = 1;
+         int inc = 10;
+         while (i < lDataLen)
+         {
+           pData[i++] = val;
+           if ((i % repeat) == 0)
+           {
+             val += inc;
+             if (val == 0)
+             {
+               inc *= -1;
+             }
+           }
+         }
+       }
+       break;   
+
+  case 3:  // creates static noise
+        for(int i=0; i<lDataLen; ++i)
+            pData[i] = rand();
+        break;
   }
 
-#endif
-#endif
   return NOERROR;
 } // FillBuffer
+
 
 STDMETHODIMP VirtualMicSourceStream::Notify(IBaseFilter * pSender, Quality q)
 {
   return E_NOTIMPL;
 } // Notify
+
 
 HRESULT VirtualMicSourceStream::SetMediaType(const CMediaType *pmt)
 {
@@ -166,6 +188,7 @@ HRESULT VirtualMicSourceStream::SetMediaType(const CMediaType *pmt)
   HRESULT hr = CSourceStream::SetMediaType(pmt);
   return hr;
 }
+
 
 HRESULT VirtualMicSourceStream::GetMediaType(int iPosition, CMediaType *pmt)
 {
@@ -208,6 +231,7 @@ HRESULT VirtualMicSourceStream::GetMediaType(int iPosition, CMediaType *pmt)
 
 } // GetMediaType
 
+
 HRESULT VirtualMicSourceStream::CheckMediaType(const CMediaType *pMediaType)
 {
   WAVEFORMATEX *pWavForEx = (WAVEFORMATEX*)(pMediaType->Format());
@@ -215,6 +239,7 @@ HRESULT VirtualMicSourceStream::CheckMediaType(const CMediaType *pMediaType)
     return E_INVALIDARG;
   return S_OK;
 } // CheckMediaType
+
 
 HRESULT VirtualMicSourceStream::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProperties)
 {
@@ -237,12 +262,14 @@ HRESULT VirtualMicSourceStream::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATO
   return NOERROR;
 } // DecideBufferSize
 
+
 // Called when graph is run
-HRESULT VirtualMicSourceStream::OnThreadCreate()
+HRESULT VirtualMicSourceStream::OnThreadCreate(void)
 {
   m_rtLastTime = 0;
   return NOERROR;
 } // OnThreadCreate
+
 
 HRESULT STDMETHODCALLTYPE VirtualMicSourceStream::SetFormat(AM_MEDIA_TYPE *pmt)
 {
@@ -333,11 +360,13 @@ HRESULT STDMETHODCALLTYPE VirtualMicSourceStream::GetStreamCaps(int iIndex, AM_M
   return S_OK;
 }
 
+
 HRESULT VirtualMicSourceStream::Set(REFGUID guidPropSet, DWORD dwID, void *pInstanceData,
   DWORD cbInstanceData, void *pPropData, DWORD cbPropData)
 {// Set: Cannot set any properties.
   return E_NOTIMPL;
 }
+
 
 HRESULT VirtualMicSourceStream::Get(
   REFGUID guidPropSet,   // Which property set.
@@ -361,6 +390,7 @@ HRESULT VirtualMicSourceStream::Get(
   return S_OK;
 }
 
+
 HRESULT VirtualMicSourceStream::QuerySupported(REFGUID guidPropSet, DWORD dwPropID, DWORD *pTypeSupport)
 {
   if (guidPropSet != AMPROPSETID_Pin) return E_PROP_SET_UNSUPPORTED;
@@ -369,3 +399,27 @@ HRESULT VirtualMicSourceStream::QuerySupported(REFGUID guidPropSet, DWORD dwProp
   if (pTypeSupport) *pTypeSupport = KSPROPERTY_SUPPORT_GET;
   return S_OK;
 }
+
+
+/// For configuration dialog
+HRESULT VirtualMicSourceStream::GetPages(CAUUID *pPages)
+{
+  if(pPages == NULL) return E_POINTER;
+  pPages->cElems = 1;
+  pPages->pElems = (GUID*)CoTaskMemAlloc(sizeof(GUID));
+  if(pPages->pElems == NULL) 
+  {
+    return E_OUTOFMEMORY;
+  }
+  pPages->pElems[0] = CLSID_VPP_VirtualMicProperties;
+  return S_OK;
+}
+
+
+STDMETHODIMP VirtualMicSourceStream::GetClassID(CLSID *pClassID)
+{
+  if(pClassID==NULL) return E_POINTER;
+  *pClassID = CLSID_VPP_VirtualMic;
+  return S_OK;
+}
+

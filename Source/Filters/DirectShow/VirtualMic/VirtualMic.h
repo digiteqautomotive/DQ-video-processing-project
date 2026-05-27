@@ -9,7 +9,7 @@ DESCRIPTION			: VirtualMic source header
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -28,9 +28,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #pragma once
 
 #pragma warning(push)     // disable for this header only
@@ -44,18 +42,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static const GUID CLSID_VPP_VirtualMic = 
 { 0xcf48a03b, 0xe62e, 0x4e9e, { 0x9c, 0xb, 0xde, 0x24, 0x58, 0x59, 0x5f, 0x5b } };
 
+// {86635F82-367E-4ba5-9DE6-527D0F01947D}
+static const GUID CLSID_VPP_VirtualMicProperties = 
+{ 0x86635f82, 0x367e, 0x4ba5, { 0x9d, 0xe6, 0x52, 0x7d, 0xf, 0x1, 0x94, 0x7d } };
+
+
 
 #define DECLARE_PTR(type, ptr, expr) type* ptr = (type*)(expr);
+#define FILTER_PARAM_PATTERN		"Pattern"
 
 /// fwd
 class VirtualMicSourceStream;
 
-/**
- * @brief VirtualMicSource is a virtual audio capture filter.
+
+/** @brief VirtualMicSource is a virtual audio capture filter.
  * The current implementation just emits a constant beep.
- * @TODO: add metronome-like audio
- */
-class VirtualMicSource : public CSource
+ * @TODO: add metronome-like audio */
+class VirtualMicSource: public CSource
 {
 public:
 
