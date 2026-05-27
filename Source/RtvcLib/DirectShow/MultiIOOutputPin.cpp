@@ -71,10 +71,12 @@ HRESULT CMultiIOOutputPin::DecideBufferSize( IMemAllocator* pAlloc, ALLOCATOR_PR
   return m_pFilter->DecideBufferSize(pAlloc, pRequestProperties, m_nIndex);
 }
 
+
 HRESULT CMultiIOOutputPin::CheckMediaType( const CMediaType* pMediaType )
 {
   return m_pFilter->CheckOutputType(pMediaType);
 }
+
 
 HRESULT CMultiIOOutputPin::GetMediaType( int iPosition, CMediaType* pMediaType )
 {
