@@ -32,6 +32,7 @@ Copyright (c) 2025-2026, Jaroslav Fojtik, Digiteq Automotive All rights reserved
 DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
 DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 
 #ifndef MAX
@@ -97,6 +98,7 @@ void VideoCompareFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
 	// YUYV and YUY2 have same contents
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
@@ -118,6 +120,7 @@ void VideoCompareFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
@@ -466,7 +469,7 @@ HRESULT VideoCompareFilter::CreateVideoMixer(const CMediaType *pMediaType, int n
     return S_OK;
   }
 
-  if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
   {
     if(m_pPicCompare!=NULL)
     {
@@ -674,19 +677,25 @@ HRESULT VideoCompareFilter::CheckOutputType(const CMediaType* pMediaType)
     case BITS_PER_PIXEL_RGB24:
 		if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
 		{
-		  return S_OK;
+	          if(ConnectionFormat[0]==MEDIASUBTYPE_RGB24 || ConnectionFormat[1]==MEDIASUBTYPE_RGB24)
+		      return S_OK;
+		}
+	        else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
+		{
+	          if(ConnectionFormat[0]==MEDIASUBTYPE_YV24 || ConnectionFormat[1]==MEDIASUBTYPE_YV24)
+		      return S_OK;
 		}
 		break;
     case BITS_PER_PIXEL_RGB32:
 		if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
 		{
 	          if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
-		  return S_OK;
+		      return S_OK;
 		}
 		else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
 		{
 		  if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
-		  ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
+		     ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
 		  return S_OK;
 		}
 		break;

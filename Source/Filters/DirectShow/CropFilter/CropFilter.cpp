@@ -100,7 +100,7 @@ void CropFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  //AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets
 }
 
 
