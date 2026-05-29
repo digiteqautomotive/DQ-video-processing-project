@@ -20,7 +20,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik, All 
 #include "resource.h"
 #define BUFFER_SIZE 256
 
-const int RADIO_BUTTON_IDS[] = {IDC_HORIZONTAL, IDC_VERTICAL};
+//const int RADIO_BUTTON_IDS[] = {IDC_HORIZONTAL, IDC_VERTICAL};
 const int RADIO_BTN_SYNC_IDS[] = {IDC_RAD_INPUT1, IDC_RAD_INPUT2, IDC_RAD_BOTH};
 
 

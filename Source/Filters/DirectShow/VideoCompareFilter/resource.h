@@ -5,8 +5,6 @@
 #define IDD_VIDEO_COMPARE_DIALOG        101
 #define IDS_VM_CAPTION                  102
 #define IDC_CHECK_TCP                   1001
-#define IDC_HORIZONTAL                  1002
-#define IDC_VERTICAL                    1003
 #define IDC_RAD_INPUT1                  1004
 #define IDC_RAD_INPUT2                  1005
 #define IDC_RADIO3                      1006

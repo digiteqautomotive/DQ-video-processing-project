@@ -1,19 +1,19 @@
 /** @file
 
-MODULE				: DLLSetup
+MODULE:			DLLSetup
 
-FILE NAME			: DLLSetup.cpp
+FILE NAME:		DLLSetup.cpp
 
-DESCRIPTION			:
+DESCRIPTION:
 
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik, All rights reserved.
-
 ===========================================================================*/
 #include "stdafx.h"
 #include "VideoCompareFilter.h"
 #include "VideoCompareProperties.h"
+
 
 //###############################  Standard Filter DLL Code ###############################
 static const WCHAR g_wszName[] = L"DQ VPP Video Compare";   /// A name for the filter 
@@ -76,24 +76,13 @@ HRESULT  VideoCompareProperties::ReadSettings(void)
 {
 int nLength = 0;
 char szBuffer[BUFFER_SIZE];
-HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ORIENTATION, sizeof(szBuffer), szBuffer, &nLength);
-  if(FAILED(hr)) return hr;
 
+  HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_SYNCHRONISATION, sizeof(szBuffer), szBuffer, &nLength);
+  if(FAILED(hr)) return hr;
   int nCompareMode = atoi(szBuffer);
-  if(nCompareMode >= sizeof(RADIO_BUTTON_IDS)/sizeof(int)) return E_INVALIDARG;
-  int nRadioID = RADIO_BUTTON_IDS[nCompareMode];
-  long lResult = SendMessage(GetDlgItem(m_Dlg, nRadioID),	// handle to destination control
-			     (UINT) BM_SETCHECK,		// message ID
-			     (WPARAM) 1,			// = 0; not used, must be zero
-			     (LPARAM) 0				// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
-			    );					// returns LRESULT in lResult
-
-  hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_SYNCHRONISATION, sizeof(szBuffer), szBuffer, &nLength);
-  if(FAILED(hr)) return hr;
-  nCompareMode = atoi(szBuffer);
   if(nCompareMode >= sizeof(RADIO_BTN_SYNC_IDS)/sizeof(int)) return E_INVALIDARG;
-  nRadioID = RADIO_BTN_SYNC_IDS[nCompareMode];
-  lResult = SendMessage(GetDlgItem(m_Dlg, nRadioID),
+  int nRadioID = RADIO_BTN_SYNC_IDS[nCompareMode];
+  long lResult = SendMessage(GetDlgItem(m_Dlg, nRadioID),
 			     (UINT) BM_SETCHECK,
 			     (WPARAM) 1,
 			     (LPARAM) 0);
@@ -105,16 +94,6 @@ HRESULT hr = m_pSettingsInterface->GetParameter(FILTER_PARAM_ORIENTATION, sizeof
 HRESULT VideoCompareProperties::OnApplyChanges(void)
 {
 int i;
-  for(i=0; i<sizeof(RADIO_BUTTON_IDS)/sizeof(int); ++i)
-  {
-    const int iCheck = SendMessage(GetDlgItem(m_Dlg, RADIO_BUTTON_IDS[i]), (UINT)BM_GETCHECK, 0, 0);
-    if(iCheck != 0)
-    {
-      std::string sID = toString(i);
-      HRESULT hr = m_pSettingsInterface->SetParameter(FILTER_PARAM_ORIENTATION, sID.c_str());
-      break;
-    }
-  }
 
   for(i=0; i<sizeof(RADIO_BTN_SYNC_IDS)/sizeof(int); ++i)
   {
