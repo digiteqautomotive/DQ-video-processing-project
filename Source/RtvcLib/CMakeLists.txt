@@ -104,6 +104,7 @@ ELSE (MMX_SSE_ACCELERATORS)
       ../libs/VppLib/src/PicCompRGB24Impl.cpp
       ../libs/VppLib/src/PicCompRGB32Impl.cpp
       ../libs/VppLib/src/PicCompYUYV_Impl.cpp
+      ../libs/VppLib/src/PicCompI420Impl.cpp
   )
 ENDIF(MMX_SSE_ACCELERATORS)
 
@@ -161,6 +162,7 @@ SET(IU_HEADERS
 ../libs/VppLib/include/PicCompRGB24Impl.h
 ../libs/VppLib/include/PicCompRGB32Impl.h
 ../libs/VppLib/include/PicCompYUYV_Impl.h
+../libs/VppLib/include/PicCompI420Impl.h
 ../libs/VppLib/include/PicConcatBase.h
 ../libs/VppLib/include/PicConcatRGB24Impl.h
 ../libs/VppLib/include/PicConcatRGB32Impl.h

@@ -201,6 +201,7 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYV24toRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYVYUtoRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompareBase.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompI420Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompRGB24Impl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

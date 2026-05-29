@@ -44,6 +44,8 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
 
 
 const OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
@@ -98,12 +100,17 @@ void TogglerFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_IYUV, &FORMAT_VideoInfo);
 }
 
 
@@ -113,13 +120,17 @@ void TogglerFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
-
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_IYUV, &FORMAT_VideoInfo);
 }
 
 
@@ -481,6 +492,11 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
   }
 
 	// Create appropriate picture concatenator
+  if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12 || pMediaType->subtype==MEDIASUBTYPE_IYUV)
+  {
+    m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
+    return S_OK;
+  }
   if(pMediaType->subtype==MEDIASUBTYPE_YV24)
   {    
     m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;    
@@ -491,7 +507,7 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
     m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     return S_OK;
   }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 ||
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555 ||
      pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
      pMediaType->subtype==MEDIASUBTYPE_UYVY || pMediaType->subtype==MEDIASUBTYPE_HDYC)
   {    
@@ -593,6 +609,16 @@ HRESULT TogglerFilter::CheckOutputType(const CMediaType *pMediaType)
 
   switch(m_nBitsPerPixel)
   {
+    case BITS_PER_PIXEL_YUV420P:
+          if(*(pMediaType->Subtype())==MEDIASUBTYPE_YUV420P_S || *(pMediaType->Subtype())==MEDIASUBTYPE_I420 || *(pMediaType->Subtype())==MEDIASUBTYPE_YV12 || *(pMediaType->Subtype())==MEDIASUBTYPE_IYUV)
+          {
+            if(((ConnectionFormat[0]==MEDIASUBTYPE_I420 || ConnectionFormat[0]==MEDIASUBTYPE_YUV420P_S || ConnectionFormat[0]==MEDIASUBTYPE_YV12 || ConnectionFormat[0]==MEDIASUBTYPE_IYUV)
+		    && m_vInputPins[0]->IsConnected()) ||
+               ((ConnectionFormat[1]==MEDIASUBTYPE_I420 || ConnectionFormat[1]==MEDIASUBTYPE_YUV420P_S || ConnectionFormat[1]==MEDIASUBTYPE_YV12 || ConnectionFormat[1]==MEDIASUBTYPE_IYUV)
+		    && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
+          break;
     case 16:
           if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
           {
@@ -600,21 +626,28 @@ HRESULT TogglerFilter::CheckOutputType(const CMediaType *pMediaType)
                (ConnectionFormat[1]==MEDIASUBTYPE_RGB565 && m_vInputPins[1]->IsConnected()))
                 return S_OK;
           }
+          else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB555)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB555 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB555 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
           else if(*(pMediaType->Subtype())==MEDIASUBTYPE_YUYV || *(pMediaType->Subtype())==MEDIASUBTYPE_YUY2)
           {
-            if(ConnectionFormat[0]==MEDIASUBTYPE_YUYV || ConnectionFormat[0]==MEDIASUBTYPE_YUY2 ||
-               ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2)
+            if(((ConnectionFormat[0]==MEDIASUBTYPE_YUYV || ConnectionFormat[0]==MEDIASUBTYPE_YUY2) && m_vInputPins[0]->IsConnected()) ||
+               ((ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2) && m_vInputPins[1]->IsConnected()))
                 return S_OK;
           }
           else if(*(pMediaType->Subtype())==MEDIASUBTYPE_UYVY || *(pMediaType->Subtype())==MEDIASUBTYPE_HDYC)
           {
-            if(ConnectionFormat[0]==MEDIASUBTYPE_UYVY || ConnectionFormat[0]==MEDIASUBTYPE_HDYC ||
-               ConnectionFormat[1]==MEDIASUBTYPE_UYVY || ConnectionFormat[1]==MEDIASUBTYPE_HDYC)
+            if(((ConnectionFormat[0]==MEDIASUBTYPE_UYVY || ConnectionFormat[0]==MEDIASUBTYPE_HDYC) && m_vInputPins[0]->IsConnected()) ||
+               ((ConnectionFormat[1]==MEDIASUBTYPE_UYVY || ConnectionFormat[1]==MEDIASUBTYPE_HDYC) && m_vInputPins[1]->IsConnected()))
                 return S_OK;
           }
           else if(*(pMediaType->Subtype())==MEDIASUBTYPE_YVYU)
           {
-            if(ConnectionFormat[0]==MEDIASUBTYPE_YVYU || ConnectionFormat[0]==MEDIASUBTYPE_YVYU)
+            if((ConnectionFormat[0]==MEDIASUBTYPE_YVYU && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_YVYU && m_vInputPins[1]->IsConnected()))
                 return S_OK;
           }
           break;

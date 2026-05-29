@@ -195,9 +195,7 @@ HRESULT FrameSkippingFilter::CheckInputType(const CMediaType* mtIn)
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
 
-  if (
-    (mtIn->subtype != MEDIASUBTYPE_RGB24) && (mtIn->subtype != MEDIASUBTYPE_RGB32) && (mtIn->subtype != MEDIASUBTYPE_I420)
-    )
+  if((mtIn->subtype != MEDIASUBTYPE_RGB24) && (mtIn->subtype != MEDIASUBTYPE_RGB32) && (mtIn->subtype != MEDIASUBTYPE_I420))
   {
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
