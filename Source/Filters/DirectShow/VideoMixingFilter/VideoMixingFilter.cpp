@@ -64,6 +64,8 @@ VideoMixingFilter::VideoMixingFilter(): VideoMixingBase(NAME("DQ VPP Video Mixer
 
   TimeStart1 = TimeEnd1 = TimeStart2 = TimeEnd2 = 0;
 
+	// Virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
+  Initialise();
 	// Init parameters
   initParameters();
 }

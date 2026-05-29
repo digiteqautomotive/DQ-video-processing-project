@@ -43,6 +43,8 @@ const unsigned FeaturesCPU = GetFeaturesCPU();
 
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_HDYC, 0x43594448, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
 
 const OLECHAR OLE_PARAM_TARGET_WIDTH[] =  olestr(FILTER_PARAM_TARGET_WIDTH);  // L"TEST";  //  sstr(FILTER_PARAM_TARGET_WIDTH);
 const OLECHAR OLE_PARAM_TARGET_HEIGHT[] = olestr(FILTER_PARAM_TARGET_HEIGHT);
@@ -75,7 +77,6 @@ TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Toggle Filter"), 0,
   m_PicScaler1(NULL),
   m_PicScaler2(NULL),
   m_nBitsPerPixel(0),
-  //m_pBufferForScaledSecondaryImage(NULL),
   m_Vflip(false),
   m_bToggle(false),
   m_duration(0),
@@ -84,6 +85,8 @@ TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Toggle Filter"), 0,
   m_nSampleSizes[0] = 0;
   m_nSampleSizes[1] = 0;
 
+	// Virtual method of subclass can't be called from base class contructor, hence must be called in child contructor
+  Initialise();
 	// Init parameters
   initParameters();
 }
@@ -94,7 +97,13 @@ void TogglerFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
 }
 
 
@@ -103,7 +112,14 @@ void TogglerFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
+
 }
 
 
@@ -475,12 +491,14 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
     m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     return S_OK;
   }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB565)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 ||
+     pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
+     pMediaType->subtype==MEDIASUBTYPE_UYVY || pMediaType->subtype==MEDIASUBTYPE_HDYC)
   {    
-    m_nBitsPerPixel = 16;    
+    m_nBitsPerPixel = 16;
     return S_OK;
   }
-  else if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
+  if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
   {
     m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;    
     return S_OK;
@@ -580,6 +598,23 @@ HRESULT TogglerFilter::CheckOutputType(const CMediaType *pMediaType)
           {
             if((ConnectionFormat[0]==MEDIASUBTYPE_RGB565 && m_vInputPins[0]->IsConnected()) ||
                (ConnectionFormat[1]==MEDIASUBTYPE_RGB565 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
+          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_YUYV || *(pMediaType->Subtype())==MEDIASUBTYPE_YUY2)
+          {
+            if(ConnectionFormat[0]==MEDIASUBTYPE_YUYV || ConnectionFormat[0]==MEDIASUBTYPE_YUY2 ||
+               ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2)
+                return S_OK;
+          }
+          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_UYVY || *(pMediaType->Subtype())==MEDIASUBTYPE_HDYC)
+          {
+            if(ConnectionFormat[0]==MEDIASUBTYPE_UYVY || ConnectionFormat[0]==MEDIASUBTYPE_HDYC ||
+               ConnectionFormat[1]==MEDIASUBTYPE_UYVY || ConnectionFormat[1]==MEDIASUBTYPE_HDYC)
+                return S_OK;
+          }
+          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_YVYU)
+          {
+            if(ConnectionFormat[0]==MEDIASUBTYPE_YVYU || ConnectionFormat[0]==MEDIASUBTYPE_YVYU)
                 return S_OK;
           }
           break;

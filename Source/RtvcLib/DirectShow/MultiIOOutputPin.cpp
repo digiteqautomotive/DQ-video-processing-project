@@ -9,7 +9,7 @@ DESCRIPTION			:
 LICENSE: Software License Agreement (BSD License)
 
 	Copyright (c) 2008-2012, CSIR 
-	Copyright (c) 2025-2026, Jaroslav Fojtik	All rights reserved.
+	Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -42,9 +42,11 @@ CMultiIOOutputPin::CMultiIOOutputPin(CMultiIOBaseFilter* pFilter, CCritSec* pLoc
 {
 }
 
+
 CMultiIOOutputPin::~CMultiIOOutputPin(void)
 {
 }
+
 
 HRESULT CMultiIOOutputPin::CompleteConnect( IPin *pReceivePin )
 {
@@ -97,42 +99,41 @@ HRESULT CMultiIOOutputPin::GetMediaType( int iPosition, CMediaType* pMediaType )
 
 STDMETHODIMP CMultiIOOutputPin::Notify(IBaseFilter * pSender, Quality q)
 {
-	UNREFERENCED_PARAMETER(q);
-	UNREFERENCED_PARAMETER(pSender);
-	return E_NOTIMPL;
+  UNREFERENCED_PARAMETER(q);
+  UNREFERENCED_PARAMETER(pSender);
+  return E_NOTIMPL;
 }
 
 
 HRESULT CMultiIOOutputPin::Active(void)
 {
-	CAutoLock lock_it(m_pLock);
-	HRESULT hr = NOERROR;
+  CAutoLock lock_it(m_pLock);
+  HRESULT hr = NOERROR;
 
 	// Make sure that the pin is connected
-	if(m_Connected == NULL)
-		return NOERROR;
+  if(m_Connected == NULL)
+      return NOERROR;
 
 	// Create the output queue if we have to
-	if(m_pOutputQueue == NULL)
-	{
-		m_pOutputQueue = new COutputQueue(m_Connected, &hr, TRUE, FALSE);
-		if(m_pOutputQueue == NULL)
-			return E_OUTOFMEMORY;
+  if(m_pOutputQueue == NULL)
+  {
+    m_pOutputQueue = new COutputQueue(m_Connected, &hr, TRUE, FALSE);
+    if(m_pOutputQueue == NULL)
+        return E_OUTOFMEMORY;
 
 		// Make sure that the constructor did not return any error
-		if(FAILED(hr))
-		{
-			delete m_pOutputQueue;
-			m_pOutputQueue = NULL;
-			return hr;
-		}
-	}
-
+    if(FAILED(hr))
+    {
+      delete m_pOutputQueue;
+      m_pOutputQueue = NULL;
+      return hr;
+    }
+  }
 	// Pass the call on to the base class
-	CBaseOutputPin::Active();
-	return NOERROR;
-
+  CBaseOutputPin::Active();
+  return NOERROR;
 } // Active
+
 
 HRESULT CMultiIOOutputPin::Inactive()
 {
