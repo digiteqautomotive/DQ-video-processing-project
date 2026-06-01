@@ -32,8 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "VideoMixingFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include <PicConcatRGB24Impl.h>
-#include <PicConcatRGB32Impl.h>
+#include "PicConcatRGB24Impl.h"
+#include "PicConcatRGB32Impl.h"
+#include "PicConcatRGB565Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
@@ -42,6 +43,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef MAX
  #define MAX(a,b) ((a>b)?(a):(b))
 #endif
+
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 
 OLECHAR OLE_PARAM_ORIENTATION[] = olestr(FILTER_PARAM_ORIENTATION);
@@ -111,9 +114,13 @@ void VideoMixingFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 // AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
 // AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
 // AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
+// AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
 }
 
 
@@ -123,6 +130,9 @@ void VideoMixingFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 //  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
 //  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
 //  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
@@ -427,7 +437,24 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
 
 
 	// Create appropriate picture concatenator
-  if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB555 || pMediaType->subtype==MEDIASUBTYPE_RGB565)
+  {
+    if(m_pPicConcat!=NULL)
+    {
+      if(m_pPicConcat->GetVideoFormat()!=16) 
+      {
+        delete m_pPicConcat; m_pPicConcat=NULL;
+      }
+    }
+    if(m_pPicConcat==NULL)
+    {
+      m_pPicConcat = new PicConcatRGB565Impl();
+      m_nBitsPerPixel = 16;
+    }
+    return S_OK;
+  }
+
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
   {
     if(m_pPicConcat!=NULL)
     {
@@ -681,26 +708,48 @@ HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
   else
       return VFW_E_TYPE_NOT_ACCEPTED;
 
-  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
+  switch(m_nBitsPerPixel)
   {
-    if (*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
-    {
-      return S_OK;
-    }
-  }
-  else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
-  {
-    if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
-    {
-      if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
-        return S_OK;
-    }
-    else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
-    {
-      if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
-         ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
-        return S_OK;
-    }
+    case 16:
+          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB565 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB565 && m_vInputPins[1]->IsConnected()))
+            return S_OK;
+          }
+          else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB555)
+          {
+	    if((ConnectionFormat[0]==MEDIASUBTYPE_RGB555 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB555 && m_vInputPins[1]->IsConnected()))
+            return S_OK;
+          }
+          break;
+    case BITS_PER_PIXEL_RGB24:
+          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB24)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vInputPins[1]->IsConnected()))
+            return S_OK;
+          }
+          else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
+          {
+	    if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
+            return S_OK;
+          }
+          break;
+    case BITS_PER_PIXEL_RGB32:
+          if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
+          {
+            if(ConnectionFormat[0]==MEDIASUBTYPE_AYUV || ConnectionFormat[1]==MEDIASUBTYPE_AYUV)
+              return S_OK;
+          }
+          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
+          {
+            if(ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32 ||
+            ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
+            return S_OK;
+          }
   }
   return S_FALSE;
 }

@@ -1,12 +1,12 @@
 /** @file
 
-MODULE						: PicInPicRGB24Impl
+MODULE:			PicInPicRGB24Impl
 
-TAG								: PIPRGB24I
+TAG:			PIPRGB24I
 
-FILE NAME					: PicInPicRGB24Impl.h
+FILE NAME:		PicInPicRGB24Impl.h
 
-DESCRIPTION			: An RGB24 implementation derived from the general
+DESCRIPTION:		An RGB24 implementation derived from the general
 				PicInPicBase() class. Insert a packed RGB24 image
 				into another packed RGB24 image.
 
@@ -53,7 +53,7 @@ class PicInPicRGB24Impl: public PicInPicBase
 {
 public:
 		// Construction and destruction.
-	PicInPicRGB24Impl(void) { }
+	PicInPicRGB24Impl(void) {}
 	PicInPicRGB24Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) {}
 	virtual ~PicInPicRGB24Impl(void) {}
 

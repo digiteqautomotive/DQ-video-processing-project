@@ -38,6 +38,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicCompareBase.cpp
 ../libs/VppLib/src/PicConcatRGB24Impl.cpp
 ../libs/VppLib/src/PicConcatRGB32Impl.cpp
+../libs/VppLib/src/PicConcatRGB565Impl.cpp
 ../libs/VppLib/src/PicCropperRGB24Impl.cpp
 ../libs/VppLib/src/PicCropperRGB32Impl.cpp
 ../libs/VppLib/src/PicCropperRGB565Impl.cpp
@@ -166,6 +167,7 @@ SET(IU_HEADERS
 ../libs/VppLib/include/PicConcatBase.h
 ../libs/VppLib/include/PicConcatRGB24Impl.h
 ../libs/VppLib/include/PicConcatRGB32Impl.h
+../libs/VppLib/include/PicConcatRGB565Impl.h
 ../libs/VppLib/include/PicCropperBase.h
 ../libs/VppLib/include/PicCropperRGB24Impl.h
 ../libs/VppLib/include/PicCropperRGB32Impl.h

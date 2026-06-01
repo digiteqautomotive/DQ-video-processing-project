@@ -11,7 +11,7 @@ DESCRIPTION:		An RGB32 implementation derived from the general
 			image	to another packed RGB32 image.
 
 COPYRIGHT:		(c) 2007-2017, CSIR
-			(c) 2025-2026, Digiteq Automotive All rights reserved.
+			(c) 2025-2026, Digiteq Automotive	All rights reserved.
 
 LICENSE:		Software License Agreement (BSD License)
 
@@ -35,11 +35,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "PicConcatRGB32Impl.h"
 
-/*
-===========================================================================
-	Construction and Destruction.
-===========================================================================
-*/
+
+/*===========================================================================
+			Construction and Destruction.
+===========================================================================*/
 
 PicConcatRGB32Impl::PicConcatRGB32Impl(void) 
 {
@@ -56,17 +55,17 @@ PicConcatRGB32Impl::PicConcatRGB32Impl(int width, int height, int width1st, int 
 
 PicConcatRGB32Impl::~PicConcatRGB32Impl(void)
 {
-	if(_pPicInPic != NULL)
-		delete _pPicInPic;
+//  if(_pPicInPic != NULL)
+//	delete _pPicInPic;
 }//end destructor.
 
 
 int PicConcatRGB32Impl::Create(void)
 {
-	_pPicInPic = NULL;
-	_pPicInPic = new PicInPicRGB32Impl();
-	if(_pPicInPic == NULL)
-		return(0);
+//	_pPicInPic = NULL;
+//	_pPicInPic = new PicInPicRGB32Impl();
+//	if(_pPicInPic == NULL)
+//		return(0);
 	return(1);
 }//end Create.
 
@@ -85,7 +84,7 @@ in this method and must be handled by the calling process.
 @return				: 0 = failed, 1 = success. */
 int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip)
 {
-  if( (pImg == NULL) || (pImg1st == NULL) || (pImg2nd == NULL) || (_pPicInPic == NULL) )
+  if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
       return(0);
 
   int posX1, posY1, posX2, posY2;	/// Coords for top-left of images in output image.
@@ -95,18 +94,18 @@ int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* p
 			posX1 = 0;	/// Base image position.
 			posY1 = 0;
 			posX2 = 0;	/// Concat image position.
-			posY2 = _height - _height2nd;
+			posY2 = PicConcatBase::_height - _height2nd;
 			if(posY2 < 0) posY2 = 0;
 			break;
      case PicConcatBase::BOTTOM :
 			posX1 = 0;	/// Base image position.
-			posY1 = _height - _height1st;
+			posY1 = PicConcatBase::_height - _height1st;
 			if(posY1 < 0) posY1 = 0;
 			posX2 = 0;	/// Concat image position.
 			posY2 = 0;
 			break;
     case PicConcatBase::LEFT :
-			posX1 = _width - _width1st;	/// Base image position.
+			posX1 = PicConcatBase::_width - _width1st;	/// Base image position.
 			if(posX1 < 0) posX1 = 0;
 			posY1 = 0;
 			posX2 = 0;	/// Concat image position.
@@ -115,7 +114,7 @@ int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* p
     case PicConcatBase::RIGHT :
 			posX1 = 0;	/// Base image position.
 			posY1 = 0;
-			posX2 = _width - _width2nd;	/// Concat image position.
+			posX2 = PicConcatBase::_width - _width2nd;	/// Concat image position.
 			if(posX2 < 0) posX2 = 0;
 			posY2 = 0;
 			break;
@@ -127,18 +126,18 @@ int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* p
 			break;
   } //end switch _orient...
 
-  _pPicInPic->SetDimensions(_width, _height);		/// Set dimensions of output image.
+  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
 
 	/// Concat image written to output 1st.
-  _pPicInPic->SetSubDimensions(_width2nd, _height2nd);	/// Set dim of concat image.
-  _pPicInPic->SetPos(posX2, posY2);			/// Images are written from bottom to top.
-  _pPicInPic->Insert(pImg2nd, pImg, VFlip);
+  SetSubDimensions(_width2nd, _height2nd);	/// Set dim of concat image.
+  SetPos(posX2, posY2);			/// Images are written from bottom to top.
+  Insert(pImg2nd, pImg, VFlip);
 
 	/// Base image written last.
-  _pPicInPic->SetSubDimensions(_width1st, _height1st);	/// Set dim of base image.
-  _pPicInPic->SetPos(posX1, posY1);			/// Images are written from bottom to top.
-  _pPicInPic->Insert(pImg1st, pImg, VFlip);
+  SetSubDimensions(_width1st, _height1st);	/// Set dim of base image.
+  SetPos(posX1, posY1);			/// Images are written from bottom to top.
+  Insert(pImg1st, pImg, VFlip);
 
   return(1);
-}//end Concat.
+} //end Concat.
 

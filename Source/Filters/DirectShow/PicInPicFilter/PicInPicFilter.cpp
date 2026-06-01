@@ -118,7 +118,8 @@ void PicInPicFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);   
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets  
 /*
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
@@ -134,6 +135,7 @@ void PicInPicFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets  
 }
 
 
@@ -442,7 +444,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
     }
     return S_OK;
   }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB24)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
   {    
     if(m_pPicInPic==NULL)
     {
@@ -451,7 +453,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
     }
     return S_OK;
   }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB565)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
   {    
     if(m_pPicInPic==NULL)
     {
@@ -556,6 +558,12 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   switch(m_nBitsPerPixel)
   {
     case 16:
+          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB555)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB555 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_RGB555 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
           if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
           {
             if((ConnectionFormat[0]==MEDIASUBTYPE_RGB565 && m_vInputPins[0]->IsConnected()) ||
@@ -565,18 +573,18 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
           break;
 
     case BITS_PER_PIXEL_RGB24:
-	  if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
-	  {
-	    if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
-               (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-	  }
-          else if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
+          if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
           {
             if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vInputPins[0]->IsConnected()) ||
                (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vInputPins[1]->IsConnected()))
                 return S_OK;
           }
+	  else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
+	  {
+	    if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+	  }
           break;
 
     case BITS_PER_PIXEL_RGB32:

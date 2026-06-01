@@ -186,6 +186,9 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompI420Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB565Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h">

@@ -13,6 +13,7 @@ DESCRIPTION:	An RGB32 implementation derived from the general
 REVISION HISTORY: 
 
 COPYRIGHT:	(c)CSIR 2007-2017 all rights reserved
+		(c) 2025-2026, Digiteq Automotive	All rights reserved.
 
 LICENSE:	Software License Agreement (BSD License)
 
@@ -53,7 +54,7 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
  * PicConcatBase() class. Concatenate a packed RGB32 
  * image to another packed RGB32 image.
  */
-class PicConcatRGB32Impl: public PicConcatBase
+class PicConcatRGB32Impl: public PicConcatBase, public PicInPicRGB32Impl
 {
 public:
 	// Construction and destruction.
@@ -71,7 +72,7 @@ protected:
 
 protected:
 	// Members.
-	PicInPicRGB32Impl* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
+	//PicInPicBase* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
 
 };//end PicConcatRGB32Impl.
 
