@@ -30,7 +30,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================
 NOTE: The original code was written by Vivek.
-Adapted from http://tmhare.mvps.org/downloads/vcam.zip
+Adapted from http://tmhare.mvps.org/downloads/vcam.zip ...https://github.com/roman380/tmhare.mvps.org-vcam
 ===========================================================================*/
 #pragma warning(disable:4244)
 #pragma warning(disable:4711)
@@ -47,7 +47,6 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 #include "DirectShow/VariantTools.h"
 
 
-const unsigned MAX_COLORS = 8;
 const unsigned THICKNESS = 20;
 const RGBTRIPLE red = { 0, 0, 255 };
 const RGBTRIPLE blue = { 255, 0, 0 };
@@ -57,11 +56,21 @@ const RGBTRIPLE magenta = { 255, 0, 255 };
 const RGBTRIPLE cyan = { 255, 255, 0 };
 const RGBTRIPLE black = { 0, 0, 0 };
 const RGBTRIPLE white = { 255, 255, 255 };
-RGBTRIPLE lineColors[MAX_COLORS] = {white, yellow, cyan, green, magenta, red, blue, black};
 
-#define NUMBER_OF_CAPABILITIES 8
+#define NUMBER_OF_CAPABILITIES 8		///< Anount of video formats.
 
 const OLECHAR OLE_FILTER_PARAM_PATTERN[] = olestr(FILTER_PARAM_PATTERN);
+
+
+// TODO: Feed random block more fast
+//int rand(void) // RAND_MAX assumed to be 32767
+//{
+//    next = next * 1103515245 + 12345;
+//    return (unsigned int)(next/65536) % 32768;
+//}
+//void srand(unsigned int seed)
+//{next = seed;}
+
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -266,8 +275,8 @@ HRESULT CVCamStream::FillBuffer(IMediaSample *pms)
     }
 
   case 2: 
-    for(int i=0; i<lDataLen; ++i)
-      pData[i] = rand();  
+    while(lDataLen-- > 0)
+      *pData++ = rand();
     break;
   }
 

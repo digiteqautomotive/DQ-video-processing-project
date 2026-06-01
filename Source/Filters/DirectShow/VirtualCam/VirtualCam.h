@@ -41,6 +41,9 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 #define DECLARE_PTR(type, ptr, expr) type* ptr = (type*)(expr);
 #define FILTER_PARAM_PATTERN		"Pattern"
 
+const unsigned MAX_COLORS = 8;
+
+
 // fwd
 class CVCamStream;
 
@@ -134,6 +137,7 @@ protected:
   unsigned m_uiFrameCount;
   unsigned m_uiChangeRate;
   unsigned m_Pattern;
+  RGBTRIPLE lineColors[MAX_COLORS];
 };
 
 

@@ -50,6 +50,7 @@ Adapted from http://tmhare.mvps.org/downloads/vcam.zip
 #include <olectl.h>
 #include <initguid.h>
 #include <dllsetup.h>
+#include <time.h>
 #include "VirtualCam.h"
 #include "VirtualCamProperties.h"
 
@@ -176,6 +177,7 @@ extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE, ULONG, LPVOID);
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 {
+  if(dwReason==DLL_PROCESS_ATTACH) srand(time(NULL));
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }
 
