@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvNV12toRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB24toYUV420_FixP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB32toYUV420_FixP.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGB555toYUV420_FixP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGBtoYUYV_FixP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvUYVYtoRGB.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUV420toRGB.cpp" />

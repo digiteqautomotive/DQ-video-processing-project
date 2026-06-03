@@ -172,6 +172,7 @@ extern "C" {
  #define LD_UINT32_SWAP(ptr)  _byteswap_ulong((uint32_t)(*(uint32_t*)(uint8_t*)(ptr)))
  #define LD_UINT64_SWAP(ptr)  _byteswap_uint64((unsigned __int64)(*(unsigned __int64*)(uint8_t*)(ptr)))
 
+ #include <stdlib.h>
  #define ST_UINT16_SWAP(ptr,val)  *(uint16_t*)(uint8_t*)(ptr)=_byteswap_ushort((uint16_t)(val))
  #define ST_UINT32_SWAP(ptr,val)  *(uint32_t*)(uint8_t*)(ptr)=_byteswap_ulong((uint32_t)(val))
  #define ST_UINT64_SWAP(ptr,val)  *(uint64_t*)(uint8_t*)(ptr)=_byteswap_uint64((uint64_t)(val))

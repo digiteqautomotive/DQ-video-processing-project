@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DirectShow/VariantTools.h"
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGB24toYUV420.h"
+#include "ConvRGB555toYUV420.h"
 #include "ConvRGBtoYUYV.h"
 #include "DirectShow/DirectShowMediaFormats.h"
 
@@ -81,10 +82,14 @@ void RGBtoYUV420Filter::InitialiseInputTypes()
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo2);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo2);
 }
 
 
@@ -142,10 +147,17 @@ HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new ConvRGB555toYUYV_FixP(m_nInWidth,m_nInHeight);
-//        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
-//          m_pConverter = new ConvRGB555toYUV420FixP(m_nInWidth,m_nInHeight);
+        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
+          m_pConverter = new ConvRGB555toYUV420FixP(m_nInWidth,m_nInHeight);
       }
-      if(in_MediaType == MEDIASUBTYPE_RGB24)
+      if(in_MediaType == MEDIASUBTYPE_RGB565)
+      {
+        if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new ConvRGB565toYUYV_FixP(m_nInWidth,m_nInHeight);
+        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
+          m_pConverter = new ConvRGB565toYUV420FixP(m_nInWidth,m_nInHeight);
+      }
+      else if(in_MediaType == MEDIASUBTYPE_RGB24)
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new ConvRGB24toYUYV_FixP(m_nInWidth,m_nInHeight);
@@ -352,7 +364,9 @@ HRESULT RGBtoYUV420Filter::CheckTransform(const CMediaType *mtIn, const CMediaTy
 
   bool TransformOK = false;  
 	// Adding advert media type to this method
-  if(mtIn->subtype==MEDIASUBTYPE_RGB24 || mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
+
+  if(mtIn->subtype==MEDIASUBTYPE_RGB24 || mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32 ||
+     mtIn->subtype==MEDIASUBTYPE_RGB555)
   {
     if(mtOut->subtype==MEDIASUBTYPE_YUV420P_S || mtOut->subtype==MEDIASUBTYPE_I420 || mtOut->subtype==MEDIASUBTYPE_YV12 || mtOut->subtype==MEDIASUBTYPE_IYUV)
     {
