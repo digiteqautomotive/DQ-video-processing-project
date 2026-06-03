@@ -140,6 +140,7 @@ CVCamStream::~CVCamStream()
 
 HRESULT CVCamStream::QueryInterface(REFIID riid, void **ppv)
 {
+  if(ppv==NULL) return E_POINTER;
 	// Standard OLE stuff
   if(riid==IID_ISettingsInterface)
       *ppv = (ISettingsInterface*)this;

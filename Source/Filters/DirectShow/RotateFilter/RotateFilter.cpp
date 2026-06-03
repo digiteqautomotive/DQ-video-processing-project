@@ -41,6 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 const OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
 
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
 
 RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
 	m_pRotate(NULL),
@@ -81,12 +83,13 @@ CUnknown * WINAPI RotateFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 }
 
 
-void RotateFilter::InitialiseInputTypes()
+void RotateFilter::InitialiseInputTypes(void)
 {
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 }
@@ -99,29 +102,42 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
   {
 		//Determine whether we are connected to a RGB24 or 32 source
     if(pmt->majortype == MEDIATYPE_Video)
-    {
-			//The converter might already exist if the filter has been connected previously
-      if(m_pRotate)
+   {			//The converter might already exist if the filter has been connected previously
+      if(pmt->subtype==MEDIASUBTYPE_RGB24 || pmt->subtype==MEDIASUBTYPE_YV24)
       {
-        delete m_pRotate;
-	m_pRotate = NULL;
-      }
-
-      if(pmt->subtype == MEDIASUBTYPE_RGB24)
-      {
-	m_pRotate = new PicRotateRGB24Impl();
+        if(m_pRotate)
+        {
+          if(m_pRotate->BytesPerPixel()!=3)
+	          {delete m_pRotate; m_pRotate=NULL;}
+        }
+	if(m_pRotate==NULL)
+	    m_pRotate = new PicRotateRGB24Impl();
 	m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
       {
-        m_pRotate = new PicRotateRGB32Impl();
+        if(m_pRotate)
+        {
+          if(m_pRotate->BytesPerPixel()!=4)
+	          {delete m_pRotate; m_pRotate=NULL;}
+        }
+	if(m_pRotate==NULL)
+            m_pRotate = new PicRotateRGB32Impl();
 	m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565)
       {
-        m_pRotate = new PicRotateBPP16Impl();
+        if(m_pRotate)
+        {
+          if(m_pRotate->BytesPerPixel()!=2)
+	          {delete m_pRotate; m_pRotate=NULL;}
+        }
+	if(m_pRotate==NULL)
+            m_pRotate = new PicRotateBPP16Impl();
 	m_nBitsPerPixel = 16;
       }
+
+      if(m_pRotate==NULL) hr=VFW_E_TYPE_NOT_ACCEPTED;
     }
   }
   return hr;
@@ -307,6 +323,11 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
     if(mtOut->subtype == MEDIASUBTYPE_RGB24) return S_OK;
     return VFW_E_TYPE_NOT_ACCEPTED;
   }
+  if(mtIn->subtype == MEDIASUBTYPE_YV24)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_YV24) return S_OK;
+    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
   if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32) return S_OK;
@@ -335,22 +356,22 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
 STDMETHODIMP RotateFilter::SetParameter( const char* type, const char* value )
 {
 	// For now, one cannot set any parameters once the output has been connected -> this will affect the buffer size
-	if (m_pOutput)
-	{
-		if (m_pOutput->IsConnected())
-		{
-			return E_FAIL;
-		}
-	}
+  if(m_pOutput)
+  {
+    if (m_pOutput->IsConnected())
+    {
+	return E_FAIL;
+    }
+  }
 
-	if (SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
-	{
-		return S_OK;
-	}
-	else
-	{
-		return E_FAIL;
-	}
+  if(SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
+  {
+    return S_OK;
+  }
+  else
+  {
+    return E_FAIL;
+  }
 }
 
 
@@ -377,17 +398,17 @@ void RotateFilter::RecalculateFilterParameters()
 // 	m_nStride =  (m_nOutWidth * (m_nBitCount / 8) + 3) & ~3;
 // 	m_nPadding = m_nStride - (m_nBytesPerPixel * m_nOutWidth);
 
-	if (m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
-	{
-		m_nStride =  (m_nOutWidth * (m_nBitCount / 8) + 3) & ~3;
-		m_nPadding = m_nStride - (m_nBitsPerPixel * m_nOutWidth)/8;
-	}
-	else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
-	{
-		m_nStride =  (m_nOutWidth * (m_nBitCount >> 3));
-		m_nPadding = 32 - (m_nStride%32);
+  if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
+  {
+    m_nStride =  (m_nOutWidth * (m_nBitCount / 8) + 3) & ~3;
+    m_nPadding = m_nStride - (m_nBitsPerPixel * m_nOutWidth)/8;
+  }
+  else if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB32)
+  {
+    m_nStride =  (m_nOutWidth * (m_nBitCount >> 3));
+    m_nPadding = 32 - (m_nStride%32);
 		//m_nStride += m_nStride % 32;
-	}
+  }
 }
 
 
@@ -411,7 +432,7 @@ HRESULT RotateFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
   if(riid == IID_ISpecifyPropertyPages) return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
   if(riid == IID_IPersistPropertyBag)   return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
   if(riid == IID_IPropertyBag)          return GetInterface(static_cast<IPropertyBag*>(this), ppv);
-  if(riid == IID_IPersistStream)        return GetInterface((IPersistStream*) this, ppv);
+  if(riid == IID_IPersistStream)        return GetInterface((IPersistStream*)this, ppv);
 			// Call the parent class.
   return CCustomBaseFilter::NonDelegatingQueryInterface(riid, ppv);
 }

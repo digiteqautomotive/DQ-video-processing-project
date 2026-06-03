@@ -50,15 +50,13 @@ enum ROTATE_MODE
 	ROTATE_90_DEGS_CCK_VFLIP	= 7,
 };
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * This class is the base class defining the minimum interface	
  * and properties for all derived implementations to rotate an image.
  * The instantiation process must set the input dimensions and the rotation mode
  * so that the Rotate implementation only requires source image data
  * pointers. The Rotate method is pure virtual and must be 
- * implemented by derived classes.
- */
+ * implemented by derived classes. */
 class PicRotateBase
 {
 public:
@@ -79,13 +77,10 @@ public:
 
 	/// Implementation must be overidden by sub class
 	virtual bool Rotate(const void* pInImg, void* pOutImg) = 0;
+        virtual int BytesPerPixel(void) = 0;
 
 protected:
-	/// Width of input image
-	int m_nWidth;
-	/// Height of input image
-	int m_nHeight;
-
-	/// Rotation mode
-	ROTATE_MODE m_eMode;
+	int m_nWidth;		///< Width of input image
+	int m_nHeight;		///< Height of input image	
+	ROTATE_MODE m_eMode;	///< Rotation mode
 };

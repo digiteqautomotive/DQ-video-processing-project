@@ -87,7 +87,7 @@ public:
 	int Get2ndHeight(void) const	{ return(_height2nd); }
 	E_ORIENT GetOrientation(void) const { return(_orient); }
   
-	void SetOutDimensions(int width, int height)		{_width = width; _height = height; }
+	virtual void SetOutDimensions(int width, int height)	{_width = width; _height = height; }
 	void Set1stDimensions(int width1st, int height1st)	{_width1st = width1st; _height1st = height1st; }
 	void Set2ndDimensions(int width2nd, int height2nd)	{_width2nd = width2nd; _height2nd = height2nd; }
 	void SetOrientation(E_ORIENT orient)			{_orient = orient; }
@@ -102,11 +102,8 @@ public:
           return(_orient);
         }
 	
-		// Private methods.
+		// Private methods & members.
 protected:
-
-protected:
-		// Members.
 	int _width;		/// Of total output image that contains both input images.
 	int _height;
 	int _width1st;		/// Of 1st base image.

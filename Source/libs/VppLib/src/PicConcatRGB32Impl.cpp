@@ -40,34 +40,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			Construction and Destruction.
 ===========================================================================*/
 
-PicConcatRGB32Impl::PicConcatRGB32Impl(void) 
-{
-	Create();
-}//end default constuctor.
-
 
 PicConcatRGB32Impl::PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): 
 	PicConcatBase(width,height,width1st,height1st,width2nd,height2nd,orient)
 {
-	Create();
-}//end constructor.
+  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
+} //end constructor.
 
 
-PicConcatRGB32Impl::~PicConcatRGB32Impl(void)
+void PicConcatRGB32Impl::SetOutDimensions(int width, int height)
 {
-//  if(_pPicInPic != NULL)
-//	delete _pPicInPic;
-}//end destructor.
-
-
-int PicConcatRGB32Impl::Create(void)
-{
-//	_pPicInPic = NULL;
-//	_pPicInPic = new PicInPicRGB32Impl();
-//	if(_pPicInPic == NULL)
-//		return(0);
-	return(1);
-}//end Create.
+  PicConcatBase::_width=labs(width); PicConcatBase::_height=labs(height);
+  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
+}
 
 
 /*=========================================================================
@@ -126,7 +111,7 @@ int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* p
 			break;
   } //end switch _orient...
 
-  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
+  //SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
 
 	/// Concat image written to output 1st.
   SetSubDimensions(_width2nd, _height2nd);	/// Set dim of concat image.

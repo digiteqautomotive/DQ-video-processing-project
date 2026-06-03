@@ -28,13 +28,12 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include <streams.h>
 #include <olectl.h>
 #include <initguid.h>
 #include <dllsetup.h>
+#include <time.h>
 
 #include "VirtualMic.h"
 #include "VirtualMicProperties.h"
@@ -157,9 +156,11 @@ STDAPI DllUnregisterServer()
   return RegisterFilters(FALSE);
 }
 
+
 extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE, ULONG, LPVOID);
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  dwReason, LPVOID lpReserved)
 {
+  if(dwReason==DLL_PROCESS_ATTACH) srand(time(NULL));
   return DllEntryPoint((HINSTANCE)(hModule), dwReason, lpReserved);
 }

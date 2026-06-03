@@ -58,17 +58,14 @@ class PicConcatRGB32Impl: public PicConcatBase, public PicInPicRGB32Impl
 {
 public:
 	// Construction and destruction.
-	PicConcatRGB32Impl(void);
+	PicConcatRGB32Impl(void) {};
 	PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
-	virtual ~PicConcatRGB32Impl(void);
 
 	// Interface.
 	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
         virtual int GetVideoFormat(void) const {return 32;}
 
-protected:
-	// Support methods.
-	virtual int Create(void);
+        virtual void SetOutDimensions(int width, int height);
 
 protected:
 	// Members.

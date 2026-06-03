@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: PicCropperRGB565Impl
+MODULE:			PicCropperRGB565Impl
 
-FILE NAME			: PicCropperRGB565Impl.cpp
+FILE NAME:		PicCropperRGB565Impl.cpp
 
-DESCRIPTION			: An RGB565 implementation derived from the general
-					PicInPicBase() class. Insert a packed RGB565 image
-					into another packed RGB565 image.
+DESCRIPTION:		An RGB565 implementation derived from the general
+			PicInPicBase() class. Insert a packed RGB565 image
+			into another packed RGB565 image.
 					  			  
 LICENSE: Software License Agreement (BSD License)
 

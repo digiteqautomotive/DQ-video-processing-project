@@ -52,7 +52,7 @@ public:
 	~PicRotateRGBBase();
 
 	// Subclasses must override this
-	virtual int BytesPerPixel() = 0;
+	virtual int BytesPerPixel(void) = 0;
 
 	virtual bool Rotate(const void* pInImg, void* pOutImg);
 

@@ -42,7 +42,7 @@ PicRotateRGB24Impl::PicRotateRGB24Impl()
 }
 
 
-int PicRotateRGB24Impl::BytesPerPixel()
+int PicRotateRGB24Impl::BytesPerPixel(void)
 {
   return 3;
 }
