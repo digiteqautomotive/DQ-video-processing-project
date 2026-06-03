@@ -1,6 +1,6 @@
 /** @file
 
-MODULE				: RGBtoYUV420Filter
+MODULE				: RGBtoYUVFilter
 
 FILE NAME			: RGBtoYUVFilter.h
 
@@ -9,7 +9,7 @@ DESCRIPTION			: DirectShow Filter that converts RGB24 or RGB32 media to our cust
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026 Digiteq Automotive, written by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -49,16 +49,16 @@ class CVideoConverter;
 
 /** \ingroup DirectShowFilters
  * DirectShow Filter that converts RGB24 or RGB32 media to I420 format. */
-class RGBtoYUV420Filter: public CCustomBaseFilter,
+class RGBtoYUVFilter: public CCustomBaseFilter,
                          public ISpecifyPropertyPages
 {
 public:
   DECLARE_IUNKNOWN
 
   /** @brief Constructor */
-  RGBtoYUV420Filter();
+  RGBtoYUVFilter();
   /** @brief Destructor */
-  ~RGBtoYUV420Filter();
+  ~RGBtoYUVFilter();
   /** @brief Static object-creation method (for the class factory) */
   static CUnknown * WINAPI CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr); 
   /** Overriding this so that we can set whether this is an RGB24 or an RGB32 Filter */

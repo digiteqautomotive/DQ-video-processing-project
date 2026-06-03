@@ -1,8 +1,8 @@
 /** @file
 
-MODULE:			RGBtoYUV420Filter
+MODULE:			RGBtoYUVFilter
 
-FILE NAME:		RGBtoYUV420Filter.cpp
+FILE NAME:		RGBtoYUVFilter.cpp
 
 DESCRIPTION:
 					  
@@ -45,7 +45,7 @@ DEFINE_GUID(GUID_NULL, 0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00,
 const OLECHAR OLE_PARAM_FLIP[] =  olestr(FILTER_PARAM_ORIENTATION);
 
 
-RGBtoYUV420Filter::RGBtoYUV420Filter(): CCustomBaseFilter(NAME("DQ VPP RGB 2 YUV Converter"), 0, CLSID_VPP_RGBtoYUV420ColorConverter),
+RGBtoYUVFilter::RGBtoYUVFilter(): CCustomBaseFilter(NAME("DQ VPP RGB 2 YUV Converter"), 0, CLSID_VPP_RGBtoYUV420ColorConverter),
 	m_pConverter(NULL),
 	m_bInvert(true),
         m_nOutBitCount(0),
@@ -58,7 +58,7 @@ RGBtoYUV420Filter::RGBtoYUV420Filter(): CCustomBaseFilter(NAME("DQ VPP RGB 2 YUV
 }
 
 
-RGBtoYUV420Filter::~RGBtoYUV420Filter()
+RGBtoYUVFilter::~RGBtoYUVFilter()
 {
   if(m_pConverter)
   {
@@ -68,32 +68,33 @@ RGBtoYUV420Filter::~RGBtoYUV420Filter()
 }
 
 
-CUnknown * WINAPI RGBtoYUV420Filter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
+CUnknown * WINAPI RGBtoYUVFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 {
-  RGBtoYUV420Filter *pFilter = new RGBtoYUV420Filter();
+  RGBtoYUVFilter *pFilter = new RGBtoYUVFilter();
   if(pHr) *pHr = (pFilter==NULL) ? E_OUTOFMEMORY : S_OK;
   return pFilter;
 }
 
 
-void RGBtoYUV420Filter::InitialiseInputTypes()
-{
-	// Add standard input types
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
+static const GUID *RGBtoYUVSupportedFormats[] = {
+	&MEDIASUBTYPE_RGB24,
+	&MEDIASUBTYPE_RGB32,
+	&MEDIASUBTYPE_ARGB32,
+	&MEDIASUBTYPE_RGB555,
+	&MEDIASUBTYPE_RGB565};
 
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo2);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo2);
+
+void RGBtoYUVFilter::InitialiseInputTypes(void)
+{	// Add standard input types
+  for(int i=0; i<sizeof(RGBtoYUVSupportedFormats)/sizeof(GUID*); i++)
+  {
+    AddInputType(&MEDIATYPE_Video, RGBtoYUVSupportedFormats[i], &FORMAT_VideoInfo);
+    AddInputType(&MEDIATYPE_Video, RGBtoYUVSupportedFormats[i], &FORMAT_VideoInfo2);
+  }
 }
 
 
-HRESULT RGBtoYUV420Filter::BreakConnect(PIN_DIRECTION dir)
+HRESULT RGBtoYUVFilter::BreakConnect(PIN_DIRECTION dir)
 {
   if(m_pConverter) {delete m_pConverter; m_pConverter=NULL;}
   if(dir == PINDIR_INPUT)
@@ -104,7 +105,7 @@ HRESULT RGBtoYUV420Filter::BreakConnect(PIN_DIRECTION dir)
 }
 
 
-HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
+HRESULT RGBtoYUVFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 {
   HRESULT hr = CCustomBaseFilter::SetMediaType(direction, pmt);
  if(direction == PINDIR_INPUT)
@@ -184,7 +185,7 @@ HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
 }
 
 
-HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
+HRESULT RGBtoYUVFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 {
   if(iPosition < 0)
   {
@@ -267,7 +268,7 @@ HRESULT RGBtoYUV420Filter::GetMediaType(int iPosition, CMediaType *pMediaType)
 }
 
 
-HRESULT RGBtoYUV420Filter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
+HRESULT RGBtoYUVFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
   AM_MEDIA_TYPE mt;
   HRESULT hr = m_pOutput->ConnectionMediaType(&mt);
@@ -309,7 +310,7 @@ return S_OK;
 }
 
 
-HRESULT RGBtoYUV420Filter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
+HRESULT RGBtoYUVFilter::ApplyTransform(const BYTE* pBufferIn, long lInBufferSize, long lActualDataLength, BYTE* pBufferOut, long lOutBufferSize, long& lOutActualDataLength)
 {
   if(pBufferIn==NULL || pBufferOut==NULL) return E_POINTER;
   if(m_pConverter==NULL) return E_UNEXPECTED;
@@ -328,7 +329,7 @@ HRESULT RGBtoYUV420Filter::ApplyTransform(const BYTE* pBufferIn, long lInBufferS
 }
 
 
-HRESULT RGBtoYUV420Filter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
+HRESULT RGBtoYUVFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtOut)
 {
 	// Check the major type.
   if(mtOut->majortype != MEDIATYPE_Video) return VFW_E_TYPE_NOT_ACCEPTED;
@@ -385,7 +386,7 @@ HRESULT RGBtoYUV420Filter::CheckTransform(const CMediaType *mtIn, const CMediaTy
 }
 
 
-STDMETHODIMP RGBtoYUV420Filter::SetParameter(const char* type, const char* value)
+STDMETHODIMP RGBtoYUVFilter::SetParameter(const char* type, const char* value)
 {
   if(SUCCEEDED(CSettingsInterface::SetParameter(type, value)))
   {
@@ -399,7 +400,7 @@ STDMETHODIMP RGBtoYUV420Filter::SetParameter(const char* type, const char* value
 }
 
 
-void RGBtoYUV420Filter::initParameters(void)
+void RGBtoYUVFilter::initParameters(void)
 {
     // YUV is always top-down: give user option to not flip image
     // http://msdn.microsoft.com/en-us/library/windows/desktop/dd407212(v=vs.85).aspx
@@ -407,7 +408,7 @@ void RGBtoYUV420Filter::initParameters(void)
 }
 
 
-STDMETHODIMP RGBtoYUV420Filter::GetPages(CAUUID *pPages)
+STDMETHODIMP RGBtoYUVFilter::GetPages(CAUUID *pPages)
   {
   if(pPages == NULL) return E_POINTER;
   pPages->cElems = 1;
@@ -422,7 +423,7 @@ STDMETHODIMP RGBtoYUV420Filter::GetPages(CAUUID *pPages)
 }
 
 
-STDMETHODIMP RGBtoYUV420Filter::GetClassID(CLSID *pClassID)
+STDMETHODIMP RGBtoYUVFilter::GetClassID(CLSID *pClassID)
 {
   if(pClassID==NULL) return E_POINTER;
   *pClassID = CLSID_VPP_RGBtoYUV420ColorConverter;
@@ -431,7 +432,7 @@ STDMETHODIMP RGBtoYUV420Filter::GetClassID(CLSID *pClassID)
 
 
 /** Required for COM. */
-STDMETHODIMP RGBtoYUV420Filter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
+STDMETHODIMP RGBtoYUVFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
   if(riid == IID_IPersistPropertyBag)   return GetInterface(static_cast<IPersistPropertyBag*>(this), ppv);
   if(riid == IID_IPersistStream)	return GetInterface(static_cast<IPersistStream*>(this), ppv);
