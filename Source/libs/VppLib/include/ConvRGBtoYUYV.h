@@ -45,3 +45,16 @@ public:
 
     virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;            
 };
+
+
+class ConvRGB555toYUYV_FixP: public CVideoConverter
+{
+public:
+	// Construction and destruction.
+    ConvRGB555toYUYV_FixP(void) {}
+    ConvRGB555toYUYV_FixP(int width, int height): CVideoConverter(width,height) {}
+
+    virtual void Convert(const void* pBufferIn, void* pRgb) const;
+
+    virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;            
+};

@@ -138,6 +138,13 @@ HRESULT RGBtoYUV420Filter::SetMediaType(PIN_DIRECTION direction, const CMediaTyp
 
     if(m_pConverter == NULL)
     {
+      if(in_MediaType == MEDIASUBTYPE_RGB555)
+      {
+        if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new ConvRGB555toYUYV_FixP(m_nInWidth,m_nInHeight);
+//        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
+//          m_pConverter = new ConvRGB555toYUV420FixP(m_nInWidth,m_nInHeight);
+      }
       if(in_MediaType == MEDIASUBTYPE_RGB24)
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
