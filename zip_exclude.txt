@@ -54,3 +54,4 @@ out.txt
 videoprocessing/bin/*
 videoprocessing/doc/*
 videoprocessing/output_file/*
+graphs/*.png

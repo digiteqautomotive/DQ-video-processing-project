@@ -96,41 +96,15 @@ TogglerFilter::TogglerFilter(): VideoMixingBase(NAME("DQ VPP Toggle Filter"), 0,
 
 void TogglerFilter::InitialiseInputTypes(void)
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_IYUV, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, NULL, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, NULL, &FORMAT_VideoInfo2);
 }
 
 
 void TogglerFilter::InitialiseOutputTypes(void)
 {
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUYV, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUY2, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YVYU, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_UYVY, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_HDYC, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_I420, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YUV420P_S, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV12, &FORMAT_VideoInfo);
-  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_IYUV, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, NULL, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, NULL, &FORMAT_VideoInfo2);
 }
 
 
@@ -254,8 +228,9 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
         DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveFirstSample - NULL pointer in 2nd sample input data.")));
         return E_POINTER;
       }
-      const long SampleSize1 = pSample->GetSize();
 
+      const long SampleSize1 = pSample->GetSize();
+      const long RealOutputSize = (m_nOutputSize==0) ? SampleSize1 : m_nOutputSize;
       IMediaSample *pOutSample = NULL;
       {
         CAutoLock lck(&m_csReceive);
@@ -265,10 +240,10 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
            DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveFirstSample - CMultiIOBaseFilter::InitializeOutputSample failed hr=%Xh"),hr));
            return hr;
         }
-        hr = pOutSample->SetActualDataLength(m_nOutputSize);
+        hr = pOutSample->SetActualDataLength(RealOutputSize);
         if(FAILED(hr))
         {
-          DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveFirstSample - pOutSample->SetActualDataLength(%d) failed hr=%Xh"),m_nOutputSize,hr));
+          DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveFirstSample - pOutSample->SetActualDataLength(%d) failed hr=%Xh"),RealOutputSize,hr));
           pOutSample->Release();
           return hr;
         }
@@ -284,10 +259,10 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
             m_PicScaler1->Scale(pBufferOut, pBufferIn1, m_Vflip);
         else
         {
-          if(m_Vflip)
+          if(m_Vflip && m_nOutputSize>0)
             VFlipImg1(pBufferIn1,pBufferOut);
           else
-            memcpy(pBufferOut,pBufferIn1,m_nOutputSize);
+            memcpy(pBufferOut, pBufferIn1, RealOutputSize);
         }
       }
       pOutSample->SetSyncPoint(TRUE);
@@ -303,7 +278,7 @@ HRESULT TogglerFilter::ReceiveFirstSample(IMediaSample *pSample)
         m_duration += TimeEnd1 - TimeStart1;
         if(m_duration > m_MaxInterval)
         {
-          m_bToggle=!m_bToggle;m_duration=0;
+          m_bToggle=!m_bToggle; m_duration=0;
           FQ2.Erase();				// unblock queue 2
         }
       }
@@ -370,6 +345,7 @@ HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
         return E_POINTER;
       }
       const long SampleSize1 = pSample->GetSize();
+      const long RealOutputSize = (m_nOutputSize==0) ? SampleSize1 : m_nOutputSize;
 
       IMediaSample *pOutSample = NULL;
       {
@@ -380,10 +356,10 @@ HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
            DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - CMultiIOBaseFilter::InitializeOutputSample(1) failed hr=%Xh"),hr));
            return hr;
         }
-        hr = pOutSample->SetActualDataLength(m_nOutputSize);
+        hr = pOutSample->SetActualDataLength(RealOutputSize);
         if(FAILED(hr))
         {
-          DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - pOutSample->SetActualDataLength(%d) failed hr=%Xh"),m_nOutputSize,hr));
+          DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::ReceiveSecondSample - pOutSample->SetActualDataLength(%d) failed hr=%Xh"),RealOutputSize,hr));
           pOutSample->Release();
           return hr;
         }
@@ -399,10 +375,10 @@ HRESULT TogglerFilter::ReceiveSecondSample(IMediaSample *pSample)
             m_PicScaler2->Scale(pBufferOut, pBufferIn2, m_Vflip);
         else
         {
-          if(m_Vflip)
+          if(m_Vflip && m_nOutputSize>0)
             VFlipImg2(pBufferIn2,pBufferOut);
           else
-            memcpy(pBufferOut,pBufferIn2,m_nOutputSize);
+            memcpy(pBufferOut,pBufferIn2,RealOutputSize);
         }
       }
       pOutSample->SetSyncPoint(TRUE);
@@ -469,54 +445,58 @@ HRESULT TogglerFilter::CreateVideoMixer(const CMediaType *pMediaType, int nIndex
       bmih = &pVih2->bmiHeader;
     }
   }
-  if(bmih==NULL) return E_FAIL;
-
   if(nIndex>=2) return E_INVALIDARG;
-  m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
+  if(bmih!=NULL)
+  {
+    m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
 
-  if(m_PicScaler1)
-  {
-    if(!m_PicScaler1->isVideoFormatSupported(pMediaType->subtype))
+    if(m_PicScaler1)
     {
-      delete m_PicScaler1;
-      m_PicScaler1 = NULL;
+      if(!m_PicScaler1->isVideoFormatSupported(pMediaType->subtype))
+      {
+        delete m_PicScaler1;
+        m_PicScaler1 = NULL;
+      }
     }
-  }
-  if(m_PicScaler2)
-  {
-    if(!m_PicScaler2->isVideoFormatSupported(pMediaType->subtype))
+    if(m_PicScaler2)
     {
-      delete m_PicScaler2;
-      m_PicScaler2 = NULL;
+      if(!m_PicScaler2->isVideoFormatSupported(pMediaType->subtype))
+      {
+        delete m_PicScaler2;
+        m_PicScaler2 = NULL;
+      }
     }
-  }
 
 	// Create appropriate picture concatenator
-  if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12 || pMediaType->subtype==MEDIASUBTYPE_IYUV)
-  {
-    m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
-    return S_OK;
-  }
-  if(pMediaType->subtype==MEDIASUBTYPE_YV24)
-  {    
-    m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;    
-    return S_OK;
-  }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB24)
-  {    
-    m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-    return S_OK;
-  }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555 ||
-     pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
-     pMediaType->subtype==MEDIASUBTYPE_UYVY || pMediaType->subtype==MEDIASUBTYPE_HDYC)
-  {    
-    m_nBitsPerPixel = 16;
-    return S_OK;
-  }
-  if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
-  {
-    m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;    
+    if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12 || pMediaType->subtype==MEDIASUBTYPE_IYUV)
+    {
+      m_nBitsPerPixel = BITS_PER_PIXEL_YUV420P;
+      return S_OK;
+    }
+    if(pMediaType->subtype==MEDIASUBTYPE_YV24)
+    {    
+      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;    
+      return S_OK;
+    }
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB24)
+    {    
+      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
+      return S_OK;
+    }
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555 ||
+       pMediaType->subtype==MEDIASUBTYPE_YUYV || pMediaType->subtype==MEDIASUBTYPE_YUY2 || pMediaType->subtype==MEDIASUBTYPE_YVYU ||
+       pMediaType->subtype==MEDIASUBTYPE_UYVY || pMediaType->subtype==MEDIASUBTYPE_HDYC)
+    {    
+      m_nBitsPerPixel = 16;
+      return S_OK;
+    }
+    if(pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
+    {
+      m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;    
+      return S_OK;
+    }
+
+    m_nBitsPerPixel = 0;		// Unknown image video format.
     return S_OK;
   }
 
@@ -583,12 +563,16 @@ HRESULT TogglerFilter::CheckOutputType(const CMediaType *pMediaType)
     if(pBiOut->biHeight != m_nOutputHeight)
     {
       if(labs(pBiOut->biHeight) == labs(m_nOutputHeight))
-        m_Vflip = true;
+      {
+        if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB24)
+            m_Vflip = true;
+      }
       else
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
     if(pBiOut->biWidth != m_nOutputWidth)
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+    return S_OK;
   }
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
@@ -597,91 +581,23 @@ HRESULT TogglerFilter::CheckOutputType(const CMediaType *pMediaType)
     if(pBiOut->biHeight != m_nTargetHeight)
     {
       if(labs(pBiOut->biHeight) == labs(m_nOutputHeight))
-        m_Vflip = true;
+      {
+        if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_RGB24)
+            m_Vflip = true;
+      }
       else
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
     }
     if(pBiOut->biWidth != m_nOutputWidth)
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+    return S_OK;
   }
   else
-      return VFW_E_TYPE_NOT_ACCEPTED;
-
-  switch(m_nBitsPerPixel)
   {
-    case BITS_PER_PIXEL_YUV420P:
-          if(*(pMediaType->Subtype())==MEDIASUBTYPE_YUV420P_S || *(pMediaType->Subtype())==MEDIASUBTYPE_I420 || *(pMediaType->Subtype())==MEDIASUBTYPE_YV12 || *(pMediaType->Subtype())==MEDIASUBTYPE_IYUV)
-          {
-            if(((ConnectionFormat[0]==MEDIASUBTYPE_I420 || ConnectionFormat[0]==MEDIASUBTYPE_YUV420P_S || ConnectionFormat[0]==MEDIASUBTYPE_YV12 || ConnectionFormat[0]==MEDIASUBTYPE_IYUV)
-		    && m_vInputPins[0]->IsConnected()) ||
-               ((ConnectionFormat[1]==MEDIASUBTYPE_I420 || ConnectionFormat[1]==MEDIASUBTYPE_YUV420P_S || ConnectionFormat[1]==MEDIASUBTYPE_YV12 || ConnectionFormat[1]==MEDIASUBTYPE_IYUV)
-		    && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          break;
-    case 16:
-          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
-          {
-            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB565 && m_vInputPins[0]->IsConnected()) ||
-               (ConnectionFormat[1]==MEDIASUBTYPE_RGB565 && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB555)
-          {
-            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB555 && m_vInputPins[0]->IsConnected()) ||
-               (ConnectionFormat[1]==MEDIASUBTYPE_RGB555 && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_YUYV || *(pMediaType->Subtype())==MEDIASUBTYPE_YUY2)
-          {
-            if(((ConnectionFormat[0]==MEDIASUBTYPE_YUYV || ConnectionFormat[0]==MEDIASUBTYPE_YUY2) && m_vInputPins[0]->IsConnected()) ||
-               ((ConnectionFormat[1]==MEDIASUBTYPE_YUYV || ConnectionFormat[1]==MEDIASUBTYPE_YUY2) && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_UYVY || *(pMediaType->Subtype())==MEDIASUBTYPE_HDYC)
-          {
-            if(((ConnectionFormat[0]==MEDIASUBTYPE_UYVY || ConnectionFormat[0]==MEDIASUBTYPE_HDYC) && m_vInputPins[0]->IsConnected()) ||
-               ((ConnectionFormat[1]==MEDIASUBTYPE_UYVY || ConnectionFormat[1]==MEDIASUBTYPE_HDYC) && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          else if(*(pMediaType->Subtype())==MEDIASUBTYPE_YVYU)
-          {
-            if((ConnectionFormat[0]==MEDIASUBTYPE_YVYU && m_vInputPins[0]->IsConnected()) ||
-               (ConnectionFormat[1]==MEDIASUBTYPE_YVYU && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          break;
-
-    case BITS_PER_PIXEL_RGB24:
-	  if(*(pMediaType->Subtype()) == MEDIASUBTYPE_YV24)
-	  {
-	    if((ConnectionFormat[0]==MEDIASUBTYPE_YV24 && m_vInputPins[0]->IsConnected()) ||
-               (ConnectionFormat[1]==MEDIASUBTYPE_YV24 && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-	  }
-          else if(pMediaType->subtype == MEDIASUBTYPE_RGB24)
-          {
-            if((ConnectionFormat[0]==MEDIASUBTYPE_RGB24 && m_vInputPins[0]->IsConnected()) ||
-               (ConnectionFormat[1]==MEDIASUBTYPE_RGB24 && m_vInputPins[1]->IsConnected()))
-                return S_OK;
-          }
-          break;
-
-    case BITS_PER_PIXEL_RGB32:
-         if(*(pMediaType->Subtype())==MEDIASUBTYPE_AYUV)
-         {
-           if((ConnectionFormat[0]==MEDIASUBTYPE_AYUV && m_vInputPins[0]->IsConnected()) ||
-              (ConnectionFormat[1]==MEDIASUBTYPE_AYUV && m_vInputPins[1]->IsConnected()))
-               return S_OK;
-         }
-         else if(*(pMediaType->Subtype())==MEDIASUBTYPE_RGB32 || *(pMediaType->Subtype())==MEDIASUBTYPE_ARGB32)
-         {
-           if(((ConnectionFormat[0]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[0]==MEDIASUBTYPE_RGB32) && m_vInputPins[0]->IsConnected()) ||
-              ((ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32) && m_vInputPins[1]->IsConnected()))
-               return S_OK;
-         }
-         break;
+    DbgLog((LOG_ERROR, 0, TEXT("TogglerFilter::CheckOutputType - Another type than MEDIATYPE_Video is not supported.")));
+    return VFW_E_TYPE_NOT_ACCEPTED;
   }
+
   return S_FALSE;
 }
 
