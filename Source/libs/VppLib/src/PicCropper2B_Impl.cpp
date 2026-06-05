@@ -1,12 +1,12 @@
 /** @file
 
-MODULE:			PicCropperRGB565Impl
+MODULE:			PicCropper2B_Impl
 
-FILE NAME:		PicCropperRGB565Impl.cpp
+FILE NAME:		PicCropper2B_Impl.cpp
 
-DESCRIPTION:		An RGB565 implementation derived from the general
-			PicInPicBase() class. Insert a packed RGB565 image
-			into another packed RGB565 image.
+DESCRIPTION:		A 3 BYTE implementation derived from the general
+			PicCropperBase class. Insert a packed RGB555 or RGB565 image
+			to be cropped.
 					  			  
 LICENSE: Software License Agreement (BSD License)
 
@@ -24,7 +24,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "PicCropperRGB565Impl.h"
+#include "PicCropper2B_Impl.h"
 
 #include <uuids.h>
 
@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
 
-bool PicCropperRGB565Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+bool PicCropper2B_Impl::isVideoFormatSupported(const GUID &VideoFormat) const
 {
   return VideoFormat==MEDIASUBTYPE_RGB555 || VideoFormat==MEDIASUBTYPE_RGB565;
 }
@@ -47,7 +47,7 @@ prevent memory overwriting.
 @param pInImg	: Packed RGB 8888 format input image.
 @param pImg		: Packed RGB 8888 format output image.
 @return				: 0 = failed, 1 = success. */
-int PicCropperRGB565Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
+int PicCropper2B_Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
 {
   if( (pImg == NULL) || (pInImg == NULL) )
       return(0);

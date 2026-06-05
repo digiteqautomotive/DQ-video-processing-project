@@ -1,16 +1,16 @@
 /** @file
 
-MODULE				: PicCropperBase
+MODULE:		PicCropperBase
 
-FILE NAME			: PicCropperBase.h
+FILE NAME:	PicCropperBase.h
 
-DESCRIPTION			: This class is the base class defining the minimum interface	
-					and properties for all derived implementations to crop an
-					image and write it to another image. The instantiation process 
-					must set the parameters and limits to the images such that
-					the Crop() implementation only requires source image data
-					pointers. The insertion method is pure virtual and must be 
-					implemented by derived classes.
+DESCRIPTION:	This class is the base class defining the minimum interface	
+		and properties for all derived implementations to crop an
+		image and write it to another image. The instantiation process 
+		must set the parameters and limits to the images such that
+		the Crop() implementation only requires source image data
+		pointers. The insertion method is pure virtual and must be 
+		implemented by derived classes.
 					  
 					  
 LICENSE: Software License Agreement (BSD License)
@@ -44,16 +44,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * This class is the base class defining the minimum interface	
  * and properties for all derived implementations to crop an
  * image and write it to another image. The instantiation process 
  * must set the parameters and limits to the images such that
  * the Crop() implementation only requires source image data
  * pointers. The insertion method is pure virtual and must be 
- * implemented by derived classes.
- */
+ * implemented by derived classes. */
 class PicCropperBase
 {
 public:

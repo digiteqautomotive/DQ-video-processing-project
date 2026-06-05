@@ -1,17 +1,17 @@
 /** @file
 
-MODULE				: PicCropperRGB32Impl
+MODULE:			PicCropper4B_Impl
 
-FILE NAME			: PicCropperRGB32Impl.cpp
+FILE NAME:		PicCropper4B_Impl.cpp
 
-DESCRIPTION			: An RGB32 implementation derived from the general
-					PicInPicBase() class. Insert a packed RGB32 image
-					into another packed RGB32 image.
-					  			  
+DESCRIPTION:		An 4 BYTE implementation derived from the general
+			PicCropperBase class. Insert a packed RGB32, ARGB32 or AYUV image
+			to be cropped.
+				  			  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008 - 2012, CSIR All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,7 +31,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "PicCropperRGB32Impl.h"
+#include "PicCropper4B_Impl.h"
 
 #include <uuids.h>
 
@@ -42,9 +42,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-bool PicCropperRGB32Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+bool PicCropper4B_Impl::isVideoFormatSupported(const GUID &VideoFormat) const
 {
-  return VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_ARGB32;
+  return VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_ARGB32 || VideoFormat==MEDIASUBTYPE_AYUV;
 }
 
 
@@ -56,7 +56,7 @@ prevent memory overwriting.
 @param pInImg	: Packed RGB 8888 format input image.
 @param pImg		: Packed RGB 8888 format output image.
 @return				: 0 = failed, 1 = success. */
-int PicCropperRGB32Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
+int PicCropper4B_Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
 {
   if( (pImg == NULL) || (pInImg == NULL) )
       return(0);

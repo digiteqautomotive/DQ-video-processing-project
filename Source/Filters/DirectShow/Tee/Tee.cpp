@@ -2,11 +2,11 @@
 
 MODULE				: Tee
 
-FILE NAME			: Tee.cpp
+FILE NAME:		Tee.cpp
 
-DESCRIPTION			: 
+DESCRIPTION: 
 					  
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2008-2012, CSIR
 	      2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.

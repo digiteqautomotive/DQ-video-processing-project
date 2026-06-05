@@ -1,17 +1,17 @@
 /** @file
 
-MODULE				: PicCropperRGB24Impl
+MODULE:			PicCropper3B_Impl
 
-FILE NAME			: PicCropperRGB24Impl.cpp
+FILE NAME:		PicCropper3B_Impl.cpp
 
-DESCRIPTION			: An RGB24 implementation derived from the general
-					PicInPicBase() class. Insert a packed RGB24 image
-					into another packed RGB24 image.
+DESCRIPTION:		A 3 BYTE implementation derived from the general
+			PicCropperBase class. Insert a packed RGB24 or YV24 image
+			to be cropped.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008 - 2012, CSIR All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -31,20 +31,20 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "PicCropperRGB24Impl.h"
+#include "PicCropper3B_Impl.h"
 
 #include <uuids.h>
 
-/*
-===========================================================================
-	Interface Methods.
-===========================================================================
-*/
+DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
+/*===========================================================================
+			Interface Methods.
+===========================================================================*/
 
 
-bool PicCropperRGB24Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+bool PicCropper3B_Impl::isVideoFormatSupported(const GUID &VideoFormat) const
 {
-  return VideoFormat==MEDIASUBTYPE_RGB24;
+  return VideoFormat==MEDIASUBTYPE_RGB24 || VideoFormat==MEDIASUBTYPE_YV24;
 }
 
 
@@ -57,22 +57,22 @@ prevent memory overwriting.
 @param pInImg	: Packed RGB 888 format input image.
 @return				: 0 = failed, 1 = success.
 */
-int PicCropperRGB24Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
+int PicCropper3B_Impl::Crop(const void* pInImg, void* pImg, bool VFlip)
 {
-  if( (pImg == NULL) || (pInImg == NULL) )
-		return(0);
+  if((pImg == NULL) || (pInImg == NULL))
+      return(0);
 
 	/// Check the cropping to ensure it will fit and not overlap.
   int writeWidth = _widthIn - _byX1 - _byX2;
   int writeHeight = _heightIn - _byY1 - _byY2;
-  if( (writeWidth < 0) || (writeHeight < 0) )
+  if((writeWidth < 0) || (writeHeight < 0))
 		return(0);
   if(writeWidth > _widthOut) writeWidth = _widthOut;
   if(writeHeight > _heightOut) writeHeight = _heightOut;
 
 	/// Align src and dst pointers. Src pointer is offset into the input image.
   const unsigned char *pSrc= (const unsigned char*)pInImg + 3*((_byY1*_widthIn) + _byX1);
-  unsigned char*	pDst	= (unsigned char*)pImg;
+  unsigned char *pDst	= (unsigned char*)pImg;
 
   int y = writeHeight;
   if(VFlip)

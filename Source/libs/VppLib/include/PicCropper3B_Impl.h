@@ -1,18 +1,16 @@
 /** @file
 
-MODULE				: PicCropperRGB32Impl
+MODULE:			PicCropper3B_Impl
 
-FILE NAME			: PicCropperRGB32Impl.h
+FILE NAME:		PicCropper3B_Impl.h
 
-DESCRIPTION			: An RGB32 implementation derived from the general
-					PicCropperBase() class. Crop a packed RGB32 image
-					into another packed RGB32 image.
-					  
-					  
+DESCRIPTION:		An RGB24 implementation derived from the general
+			PicCropperBase() class. Crop a packed RGB24 image
+			into another packed RGB24 image.
+					  					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008 - 2012, CSIR All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,29 +30,27 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef _PICCROPPERRGB32IMPL_H
-#define _PICCROPPERRGB32IMPL_H
+#ifndef _PICCROPPER_3B_IMPL_H
+#define _PICCROPPER_3B_IMPL_H
 
 #include "PicCropperBase.h"
 
-/**
- * \ingroup ImageLib
- * An RGB32 implementation derived from the general
- * PicCropperBase() class. Crop a packed RGB32 image
- * into another packed RGB32 image.
- */
-class PicCropperRGB32Impl: public PicCropperBase
+/** \ingroup ImageLib
+ * An RGB24 implementation derived from the general
+ * PicCropperBase() class. Crop a packed RGB24 image
+ * into another packed RGB24 image. */
+class PicCropper3B_Impl: public PicCropperBase
 {
 public:
 	// Construction and destruction.
-	PicCropperRGB32Impl(void) { }
-	PicCropperRGB32Impl(int widthOut, int heightOut, int widthIn, int heightIn, int left, int right, int top, int bottom): PicCropperBase(widthOut,heightOut,widthIn,heightIn,left,right,top,bottom) { }
-	virtual ~PicCropperRGB32Impl(void) {}
+	PicCropper3B_Impl(void) { }
+	PicCropper3B_Impl(int widthOut, int heightOut, int widthIn, int heightIn, int left, int right, int top, int bottom): PicCropperBase(widthOut,heightOut,widthIn,heightIn,left,right,top,bottom) { }
+	virtual ~PicCropper3B_Impl(void) {}
 
 	// Interface.
 	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	int Crop(const void* pInImg, void* pImg, bool VFlip=false);
 
-};//end PicCropperRGB32Impl.
+}; //end PicCropper3B_Impl.
 
-#endif	// _PICCROPPERRGB32IMPL_H
+#endif	// _PICCROPPER_3B_IMPL_H

@@ -31,9 +31,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==========================================================================*/
 #include "CropFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include "PicCropperRGB24Impl.h"
-#include "PicCropperRGB32Impl.h"
-#include "PicCropperRGB565Impl.h"
+#include "PicCropper2B_Impl.h"
+#include "PicCropper3B_Impl.h"
+#include "PicCropper4B_Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
@@ -127,17 +127,17 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
 
       if(pmt->subtype==MEDIASUBTYPE_RGB24 || pmt->subtype==MEDIASUBTYPE_YV24)
       {
-        if(m_pCropper==NULL) m_pCropper = new PicCropperRGB24Impl();
+        if(m_pCropper==NULL) m_pCropper = new PicCropper3B_Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_RGB555)
       {
-        if(m_pCropper==NULL) m_pCropper = new PicCropperRGB565Impl();
+        if(m_pCropper==NULL) m_pCropper = new PicCropper2B_Impl();
         m_nBitsPerPixel = 16;        
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
       {
-        if(m_pCropper==NULL) m_pCropper = new PicCropperRGB32Impl();
+        if(m_pCropper==NULL) m_pCropper = new PicCropper4B_Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
     }

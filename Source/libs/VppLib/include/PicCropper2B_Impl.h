@@ -1,8 +1,8 @@
 /** @file
 
-MODULE				: PicCropperRGB565Impl
+MODULE				: PicCropper2B_Impl
 
-FILE NAME			: PicCropperRGB565Impl.h
+FILE NAME			: PicCropper2B_Impl.h
 
 DESCRIPTION			: An RGB565 implementation derived from the general
 					PicCropperBase() class. Crop a packed RGB565 image
@@ -24,29 +24,27 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef _PICCROPPERRGB565IMPL_H
-#define _PICCROPPERRGB565IMPL_H
+#ifndef _PICCROPPER_2B_IMPL_H
+#define _PICCROPPER_2B_IMPL_H
 
 #include "PicCropperBase.h"
 
-/**
- * \ingroup ImageLib
+/** \ingroup ImageLib
  * An RGB565 implementation derived from the general
  * PicCropperBase() class. Crop a packed RGB565 image
- * into another packed RGB565 image.
- */
-class PicCropperRGB565Impl: public PicCropperBase
+ * into another packed RGB565 image. */
+class PicCropper2B_Impl: public PicCropperBase
 {
 public:
 	// Construction and destruction.
-	PicCropperRGB565Impl(void) { }
-	PicCropperRGB565Impl(int widthOut, int heightOut, int widthIn, int heightIn, int left, int right, int top, int bottom): PicCropperBase(widthOut,heightOut,widthIn,heightIn,left,right,top,bottom) { }
-	virtual ~PicCropperRGB565Impl(void) {}
+	PicCropper2B_Impl(void) { }
+	PicCropper2B_Impl(int widthOut, int heightOut, int widthIn, int heightIn, int left, int right, int top, int bottom): PicCropperBase(widthOut,heightOut,widthIn,heightIn,left,right,top,bottom) { }
+	virtual ~PicCropper2B_Impl(void) {}
 
 	// Interface.
 	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	virtual int Crop(const void* pInImg, void* pImg, bool VFlip=false);
 
-};//end PicCropperRGB565Impl.
+}; //end PicCropper2B_Impl.
 
-#endif	// _PICCROPPERRGB565IMPL_H
+#endif	// _PICCROPPER_2B_IMPL_H

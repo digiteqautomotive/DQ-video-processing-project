@@ -11,7 +11,7 @@ DESCRIPTION:		An RGB32 implementation derived from the general
 			into another packed RGB32 image.
 
 COPYRIGHT:		(c)CSIR 2007-2010 all rights resevered
-			(c)2025 Jaroslav Fojtik
+			Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 LICENSE:		Software License Agreement (BSD License)
 
