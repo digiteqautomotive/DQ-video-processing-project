@@ -20,7 +20,7 @@ LICENSE:	Software License Agreement (BSD License)
 #define _PICCOMPARERGB32_SSE2_H
 
 #include "PicCompareBase.h"
-#include "PicInPicRGB32Impl.h"
+#include "PicInPicBase.h"
 
 /** \ingroup ImageLib
  * An RGB32 implementation derived from the general

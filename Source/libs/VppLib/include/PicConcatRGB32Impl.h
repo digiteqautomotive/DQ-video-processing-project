@@ -46,7 +46,7 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 #define _PICCONCATRGB32IMPL_H
 
 #include "PicConcatBase.h"
-#include "PicInPicRGB32Impl.h"
+#include "PicInPic4B_Impl.h"
 
 /**
  * \ingroup ImageLib
@@ -54,7 +54,7 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
  * PicConcatBase() class. Concatenate a packed RGB32 
  * image to another packed RGB32 image.
  */
-class PicConcatRGB32Impl: public PicConcatBase, public PicInPicRGB32Impl
+class PicConcatRGB32Impl: public PicConcatBase, public PicInPic4B_Impl
 {
 public:
 	// Construction and destruction.

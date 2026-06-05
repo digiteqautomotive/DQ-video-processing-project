@@ -1,22 +1,23 @@
 /** @file
 
-MODULE		: PicInPicYV24Impl
+MODULE:			PicInPic3B_Impl
 
-TAG		: PIPYV24I
+TAG:			PIPRGB24I
 
-FILE NAME	: PicInPicYV24Impl.h
+FILE NAME:		PicInPic3B_Impl.h
 
-DESCRIPTION	: An YV24 implementation derived from the general
-			PicInPicBase() class. Insert a packed YV24 image
-			into another packed YV24 image.
+DESCRIPTION:		An RGB24 implementation derived from the general
+			PicInPicBase() class. Insert a packed RGB24 image
+			into another packed RGB24 image.
 
-COPYRIGHT	: (c)2025-2026 Digiteq Automotive,  programmed by Jaroslav Fojtik all rights resevered
+COPYRIGHT:		(c) CSIR 2007-2010 all rights resevered
 
-LICENSE		: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
-RESTRICTIONS	: Redistribution and use in source and binary forms, with or without 
-		modification, are permitted provided that the following conditions 
-		are met:
+RESTRICTIONS:		Redistribution and use in source and binary forms, with or without 
+			modification, are permitted provided that the following conditions 
+			are met:
+
 			* Redistributions of source code must retain the above copyright notice, 
 			this list of conditions and the following disclaimer.
 			* Redistributions in binary form must reproduce the above copyright notice, 
@@ -38,30 +39,30 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 			NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 			SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef _PICINPIC_YV24IMPL_H
-#define _PICINPIC_YV24IMPL_H
+#ifndef _PICINPIC_3B_IMPL_H
+#define _PICINPIC_3B_IMPL_H
 
 #include "PicInPicBase.h"
 
 
-/**\ingroup ImageLib
- * An YV24 implementation derived from the general
- * PicInPicBase() class. Insert a packed YV24 image
- * into another packed YV24 image. */
-class PicInPicYV24Impl: public PicInPicBase
+/** \ingroup ImageLib
+ * An RGB24 implementation derived from the general
+ * PicInPicBase() class. Insert a packed RGB24 image
+ * into another packed RGB24 image. */
+class PicInPic3B_Impl: public PicInPicBase
 {
 public:
 		// Construction and destruction.
-	PicInPicYV24Impl(void) { }
-	PicInPicYV24Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) {}
-	virtual ~PicInPicYV24Impl(void) {}
+	PicInPic3B_Impl(void) {}
+	PicInPic3B_Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) {}
+	virtual ~PicInPic3B_Impl(void) {}
 
 protected:
 		// Interface.
-        bool isVideoFormatSupported(const GUID &VideoFormat) const;
+	bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) const;
         void DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip=false) const;
-}; //end _PICINPIC_YV24IMPL_H.
+}; //end _PicInPic3B_Impl_H.
 
 
 #endif

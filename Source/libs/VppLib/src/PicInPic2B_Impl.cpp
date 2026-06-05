@@ -1,14 +1,14 @@
 /** @file
 
-MODULE:		PicInPicRGB565Impl
+MODULE:		PicInPic2B_Impl
 
 TAG:		PIPRGB565I
 
-FILE NAME:	PicInPicRGB565Impl.cpp
+FILE NAME:	PicInPic2B_Impl.cpp
 
-DESCRIPTION:	An RGB56532 implementation derived from the general
-		PicInPicBase() class. Insert a packed RGB565 image
-		into another packed RGB565 image.
+DESCRIPTION:	An RGB565 implementation derived from the general
+		PicInPicBase() class. Insert a packed RGB565 or RGB555 image
+		into another packed RGB565 or RGB555 image.
 
 COPYRIGHT:      Copyright (c) 2026 Digiteq automotive; programmed by Jaroslav Fojtik
 
@@ -29,7 +29,7 @@ LICENSE:	Software License Agreement (BSD License)
 #include <stdio.h>
 #include <string.h>
 
-#include "PicInPicRGB565Impl.h"
+#include "PicInPic2B_Impl.h"
 
 #include <uuids.h>
 
@@ -39,7 +39,7 @@ LICENSE:	Software License Agreement (BSD License)
 ===========================================================================*/
 
 
-bool PicInPicRGB565Impl::isVideoFormatSupported(const GUID &VideoFormat) const
+bool PicInPic2B_Impl::isVideoFormatSupported(const GUID &VideoFormat) const
 {
   return VideoFormat==MEDIASUBTYPE_RGB555 || VideoFormat==MEDIASUBTYPE_RGB565;
 }
@@ -53,7 +53,7 @@ of the main image.
 @param pSubImg	: Packed RGB565 format smaller sub image.
 @param pImg	: Packed RGB 565 format main base image.
 @return		: none. */
-void PicInPicRGB565Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip) const
+void PicInPic2B_Impl::DoInsert(const void* pSubImg, void* pImg, bool VFlip) const
 {
   const unsigned char*	pSrc	= (const unsigned char*)pSubImg;
   unsigned char*	pDst	= (unsigned char*)pImg;
@@ -89,7 +89,7 @@ of the main image.
 @param pSubImg	: Packed RGB 8888 format smaller sub image.
 @param pImg			: Packed RGB 8888 format main base image.
 @return					: none. */
-void PicInPicRGB565Impl::DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip) const
+void PicInPic2B_Impl::DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip) const
 {
     // TODO: Just calling standard insert for now
     DoInsert(pSubImg, pImg, VFlip);

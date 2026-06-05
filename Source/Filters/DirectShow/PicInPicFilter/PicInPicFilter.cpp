@@ -28,10 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PicInPicFilter.h"
 #include <DirectShow/CommonDefs.h>
 
-#include "PicInPicRGB24Impl.h"
-#include "PicInPicRGB32Impl.h"
-#include "PicInPicYV24Impl.h"
-#include "PicInPicRGB565Impl.h"
+#include "PicInPic2B_Impl.h"
+#include "PicInPic3B_Impl.h"
+#include "PicInPic4B_Impl.h"
 #include "PicScalerRGB24Impl.h"
 #include "PicScalerRGB32Impl.h"
 #include "PicScalerYV24Impl.h"
@@ -120,6 +119,8 @@ void PicInPicFilter::InitialiseInputTypes(void)
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets  
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 /*
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo2);
   AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo2);
@@ -136,6 +137,8 @@ void PicInPicFilter::InitialiseOutputTypes(void)
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
   AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets  
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
+  AddOutputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
 }
 
 
@@ -416,15 +419,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
 
   if(nIndex>=2) return E_INVALIDARG;
   m_nSampleSizes[nIndex] = DIBSIZE(*bmih);
-
-  if(m_pPicInPic!=NULL)
-  {
-    if(!m_pPicInPic->isVideoFormatSupported(pMediaType->subtype))
-    {
-      delete m_pPicInPic;
-      m_pPicInPic = NULL;      
-    }
-  }
+  
   if(m_pTargetPicScaler)
   {
     if(!m_pTargetPicScaler->isVideoFormatSupported(pMediaType->subtype))
@@ -433,32 +428,31 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
       m_pTargetPicScaler = NULL;
     }
   }
+  if(m_pPicInPic!=NULL)
+  {
+    if(!m_pPicInPic->isVideoFormatSupported(pMediaType->subtype))
+    {
+      delete m_pPicInPic;
+      m_pPicInPic = NULL;      
+    }
+  }
 
 	// Create appropriate picture concatenator
-  if(pMediaType->subtype==MEDIASUBTYPE_YV24)
-  {    
-    if(m_pPicInPic==NULL)
-    {
-      m_pPicInPic = new PicInPicYV24Impl();
-      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-    }
-    return S_OK;
-  }
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
-  {    
-    if(m_pPicInPic==NULL)
-    {
-      m_pPicInPic = new PicInPicRGB24Impl();
-      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
-    }
-    return S_OK;
-  }
   if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
+  {
+    if(m_pPicInPic==NULL)
+    {
+      m_pPicInPic = new PicInPic2B_Impl();
+      m_nBitsPerPixel = 16;
+    }
+    return S_OK;
+  }
+  else if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
   {    
     if(m_pPicInPic==NULL)
     {
-      m_pPicInPic = new PicInPicRGB565Impl();
-      m_nBitsPerPixel = 16;
+      m_pPicInPic = new PicInPic3B_Impl();
+      m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     }
     return S_OK;
   }
@@ -466,7 +460,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
   {
     if(m_pPicInPic==NULL)
     {
-      m_pPicInPic = new PicInPicRGB32Impl();
+      m_pPicInPic = new PicInPic4B_Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
     }
     return S_OK;

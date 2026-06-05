@@ -237,8 +237,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB565Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB565Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicYV24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic2B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic3B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic4B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP16Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYV24Impl.cpp" />
@@ -254,8 +255,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB24Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropperRGB32Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPicRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGBBase.cpp" />

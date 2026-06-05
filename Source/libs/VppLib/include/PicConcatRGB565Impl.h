@@ -18,13 +18,13 @@ LICENSE:	Software License Agreement (BSD License)
 #define _PICCONCATRGB565IMPL_H
 
 #include "PicConcatBase.h"
-#include "PicInPicRGB565Impl.h"
+#include "PicInPic2B_Impl.h"
 
 
 /** \ingroup ImageLib An RGB565 implementation derived from the general
  * PicConcatBase() class. Concatenate a packed RGB565 
  * image	to another packed RGB565 image. */
-class PicConcatRGB565Impl: public PicConcatBase, public PicInPicRGB565Impl
+class PicConcatRGB565Impl: public PicConcatBase, public PicInPic2B_Impl
 {
 public:
 	// Construction and destruction.

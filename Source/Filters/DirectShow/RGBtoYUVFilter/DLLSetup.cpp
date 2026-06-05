@@ -53,7 +53,7 @@ CFactoryTemplate g_Templates[2] =
   {
     g_wszName,                              // Name
     &CLSID_VPP_RGBtoYUV420ColorConverter,   // CLSID
-    RGBtoYUVFilter::CreateInstance,      // Method to create an instance of MyComponent
+    RGBtoYUVFilter::CreateInstance,	    // Method to create an instance of MyComponent
     NULL,                                   // Initialization function
     &FilterInfo                             // Set-up information (for filters)
   },
