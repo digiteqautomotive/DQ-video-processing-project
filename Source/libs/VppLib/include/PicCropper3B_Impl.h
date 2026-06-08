@@ -11,6 +11,7 @@ DESCRIPTION:		An RGB24 implementation derived from the general
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -45,11 +46,10 @@ public:
 	// Construction and destruction.
 	PicCropper3B_Impl(void) { }
 	PicCropper3B_Impl(int widthOut, int heightOut, int widthIn, int heightIn, int left, int right, int top, int bottom): PicCropperBase(widthOut,heightOut,widthIn,heightIn,left,right,top,bottom) { }
-	virtual ~PicCropper3B_Impl(void) {}
 
 	// Interface.
 	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
-	int Crop(const void* pInImg, void* pImg, bool VFlip=false);
+	virtual int Crop(const void* pInImg, void* pImg, bool VFlip=false);
 
 }; //end PicCropper3B_Impl.
 

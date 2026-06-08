@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: PicCropper2B_Impl
+MODULE:			PicCropper2B_Impl
 
-FILE NAME			: PicCropper2B_Impl.h
+FILE NAME:		PicCropper2B_Impl.h
 
-DESCRIPTION			: An RGB565 implementation derived from the general
-					PicCropperBase() class. Crop a packed RGB565 image
-					into another packed RGB565 image.			  
+DESCRIPTION:		An RGB565 implementation derived from the general
+			PicCropperBase() class. Crop a packed RGB565 image
+			into another packed RGB565 image.			  
 					  
 LICENSE: Software License Agreement (BSD License)
 
@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicCropperBase.h"
 
+
 /** \ingroup ImageLib
  * An RGB565 implementation derived from the general
  * PicCropperBase() class. Crop a packed RGB565 image
@@ -44,7 +45,7 @@ public:
 	// Interface.
 	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	virtual int Crop(const void* pInImg, void* pImg, bool VFlip=false);
-
 }; //end PicCropper2B_Impl.
+
 
 #endif	// _PICCROPPER_2B_IMPL_H

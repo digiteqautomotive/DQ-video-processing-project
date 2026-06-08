@@ -76,7 +76,7 @@ CUnknown * WINAPI RGBtoYUVFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 }
 
 
-static const GUID *RGBtoYUVSupportedFormats[] = {
+static const GUID * const RGBtoYUVSupportedFormats[] = {
 	&MEDIASUBTYPE_RGB24,
 	&MEDIASUBTYPE_RGB32,
 	&MEDIASUBTYPE_ARGB32,

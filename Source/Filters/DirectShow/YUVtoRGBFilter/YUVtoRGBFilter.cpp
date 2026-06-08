@@ -75,7 +75,7 @@ CUnknown * WINAPI YUVtoRGBFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 }
 
 
-static const GUID *YUVtoRGBSupportedFormats[] = {
+static const GUID * const YUVtoRGBSupportedFormats[] = {
 	&MEDIASUBTYPE_AYUV,
 	&MEDIASUBTYPE_YV24,
 	&MEDIASUBTYPE_YUV420P_S, &MEDIASUBTYPE_I420, &MEDIASUBTYPE_YV12, &MEDIASUBTYPE_IYUV,  // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb

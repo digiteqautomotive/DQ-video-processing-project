@@ -159,7 +159,7 @@ CUnknown * WINAPI ScaleFilter::CreateInstance(LPUNKNOWN pUnk, HRESULT *pHr)
 }
 
 
-static const GUID *ScalleSupportedFormats[] = {
+static const GUID * const ScalleSupportedFormats[] = {
 	&MEDIASUBTYPE_RGB24,&MEDIASUBTYPE_RGB32,&MEDIASUBTYPE_ARGB32,
 	&MEDIASUBTYPE_YUY2, &MEDIASUBTYPE_YUYV, &MEDIASUBTYPE_YVYU, &MEDIASUBTYPE_UYVY, &MEDIASUBTYPE_HDYC,
 	&MEDIASUBTYPE_YUV420P_S, &MEDIASUBTYPE_I420, &MEDIASUBTYPE_YV12, &MEDIASUBTYPE_IYUV,  // I420 = IYUV = YUV420p (sometimes YUV420p can refer to YV12) https://gist.github.com/Jim-Bar/3cbba684a71d1a9d468a6711a6eddbeb

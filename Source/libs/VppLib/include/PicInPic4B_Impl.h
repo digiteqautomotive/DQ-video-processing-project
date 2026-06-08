@@ -53,14 +53,13 @@ class PicInPic4B_Impl: public PicInPicBase
 {
 public:
 		// Construction and destruction.
-	PicInPic4B_Impl(void) { }
+	PicInPic4B_Impl(void) {}
 	PicInPic4B_Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) { }
-	virtual ~PicInPic4B_Impl(void) {}
 
 protected:
 		// Interface.
-	bool isVideoFormatSupported(const GUID &VideoFormat) const;
-	void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) const;
+	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
+	virtual void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) const;
 	void DoInsertWithBorder(const void* pSubImg, void* pImg, bool VFlip=false) const;
 };
 

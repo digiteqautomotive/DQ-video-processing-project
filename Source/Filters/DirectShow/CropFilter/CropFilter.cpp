@@ -34,18 +34,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PicCropper2B_Impl.h"
 #include "PicCropper3B_Impl.h"
 #include "PicCropper4B_Impl.h"
+#include "PicCropper6B_Impl.h"
+#include "PicCropper8B_Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
 
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_R16G16B16, 0x36315242, 0x0000,0x0010, 0x80,0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_B16G16R16, 0x36314252, 0x0000,0x0010, 0x80,0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_A16R16G16B16, 0x36314241, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_A16B16G16R16, 0x36315241, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+
 
 const OLECHAR OLE_PARAM_LEFT_CROP[] =  olestr(FILTER_PARAM_LEFT_CROP);
 const OLECHAR OLE_PARAM_RIGHT_CROP[] = olestr(FILTER_PARAM_RIGHT_CROP);
 const OLECHAR OLE_PARAM_TOP_CROP[] =  olestr(FILTER_PARAM_TOP_CROP);
 const OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
 
+
+static const GUID * const CropSupportedFormats[] = {
+	&MEDIASUBTYPE_RGB24,
+	&MEDIASUBTYPE_RGB32,
+	&MEDIASUBTYPE_ARGB32,
+	&MEDIASUBTYPE_RGB555,
+	&MEDIASUBTYPE_RGB565,
+	&MEDIASUBTYPE_AYUV,
+	&MEDIASUBTYPE_YV24,		// YUV tripplets
+	&MEDIASUBTYPE_R16G16B16,
+        &MEDIASUBTYPE_B16G16R16,
+	&MEDIASUBTYPE_A16R16G16B16,
+	&MEDIASUBTYPE_A16B16G16R16};
 
 
  CropFilter::CropFilter(): CCustomBaseFilter(NAME("DQ VPP Crop Filter"), 0, CLSID_VPP_CropFilter),
@@ -56,11 +76,12 @@ const OLECHAR OLE_PARAM_BOTTOM_CROP[] = olestr(FILTER_PARAM_BOTTOM_CROP);
   m_DirtyPropsStream(true),
   m_nLeftCrop(0), m_nRightCrop(0), m_nTopCrop(0), m_nBottomCrop(0) 
 {
-  //Call the initialise input method to load all acceptable input types for this filter
+	//Call the initialise input method to load all acceptable input types for this filter
   InitialiseInputTypes();
-  // Init parameters
+	// Init parameters
   initParameters();
 }
+
 
  CropFilter::~CropFilter()
 {
@@ -94,13 +115,11 @@ void CropFilter::initParameters(void)
 
 void CropFilter::InitialiseInputTypes(void)
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);	// YUV tripplets
+  for(int i=0; i<sizeof(CropSupportedFormats)/sizeof(GUID*); i++)
+  {
+    AddInputType(&MEDIATYPE_Video, CropSupportedFormats[i], &FORMAT_VideoInfo);
+    AddInputType(&MEDIATYPE_Video, CropSupportedFormats[i], &FORMAT_VideoInfo2);
+  }
 }
 
 
@@ -139,6 +158,16 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
       {
         if(m_pCropper==NULL) m_pCropper = new PicCropper4B_Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_R16G16B16 || pmt->subtype==MEDIASUBTYPE_B16G16R16)
+      {
+        if(m_pCropper==NULL) m_pCropper = new PicCropper6B_Impl();
+        m_nBitsPerPixel = 48;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_A16R16G16B16 || pmt->subtype==MEDIASUBTYPE_A16B16G16R16)
+      {
+        if(m_pCropper==NULL) m_pCropper = new PicCropper8B_Impl();
+        m_nBitsPerPixel = 64;
       }
     }
     RecalculateFilterParameters();
@@ -200,6 +229,10 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
       pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
       pBi->biSizeImage = 2 * labs(pBi->biWidth*pBi->biHeight);
+    else if(pMediaType->subtype==MEDIASUBTYPE_R16G16B16 || pMediaType->subtype==MEDIASUBTYPE_B16G16R16)
+      pBi->biSizeImage = 6 * labs(pBi->biWidth*pBi->biHeight);
+    else if(pMediaType->subtype==MEDIASUBTYPE_A16R16G16B16 || pMediaType->subtype==MEDIASUBTYPE_A16B16G16R16)
+      pBi->biSizeImage = 8 * labs(pBi->biWidth*pBi->biHeight);
     else
      return E_INVALIDARG;
 
@@ -292,7 +325,7 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
 	//Subtypes
   if(mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_RGB24)
+    if(mtOut->subtype != MEDIASUBTYPE_RGB24)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -333,6 +366,38 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_R16G16B16)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_R16G16B16)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_B16G16R16)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_B16G16R16)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  } 
+  if(mtIn->subtype == MEDIASUBTYPE_A16R16G16B16)
+  {
+    if(mtOut->subtype != MEDIASUBTYPE_A16R16G16B16)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_A16B16G16R16)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_A16B16G16R16)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
