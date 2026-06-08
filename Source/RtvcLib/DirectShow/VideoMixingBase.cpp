@@ -1,16 +1,15 @@
 /** @file
 
-MODULE                : VideoMixingBase
+MODULE:			VideoMixingBase
 
-FILE NAME            : VideoMixingBase.cpp
+FILE NAME:		VideoMixingBase.cpp
 
-DESCRIPTION            :
+DESCRIPTION:
                      
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2017, CSIR
-Copyright (c) 2025, Jaroslav Fojtik
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -18,20 +17,13 @@ Redistribution and use in source and binary forms, with or without modification,
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 * Neither the name of the CSIR nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-===========================================================================
-*/
+===========================================================================*/
 #include "stdafx.h"
 
 #include "VideoMixingBase.h"
@@ -80,41 +72,53 @@ HRESULT VideoMixingBase::Receive(IMediaSample *pSample, int nIndex)
 HRESULT VideoMixingBase::DecideBufferSize(IMemAllocator* pAlloc, ALLOCATOR_PROPERTIES* pRequestProperties, int m_nIndex)
 {
 	// Get media type of the output pin
-	AM_MEDIA_TYPE mt;
-	HRESULT hr = m_vOutputPins[m_nIndex]->ConnectionMediaType(&mt);
-	if (FAILED(hr))
-	{
-		return hr;
-	} 
-	BITMAPINFOHEADER *pbmi = HEADER(mt.pbFormat);
+  AM_MEDIA_TYPE mt;
+  HRESULT hr = m_vOutputPins[m_nIndex]->ConnectionMediaType(&mt);
+  if (FAILED(hr))
+  {
+    return hr;
+  } 
+  const BITMAPINFOHEADER *pbmi = NULL;
+  if(mt.formattype==FORMAT_VideoInfo)
+  {
+    pbmi = HEADER(mt.pbFormat);
+  }
+  else if(mt.formattype==FORMAT_VideoInfo2)
+  {
+    const VIDEOINFOHEADER2* const pVih2 = (const VIDEOINFOHEADER2*)mt.pbFormat;
+    if(pVih2)
+    {
+      pbmi = &pVih2->bmiHeader;
+    }
+  }
 
 	//For RGB formats, hence we can just use the DIBSIZE of the bitmapinfoheader
-	pRequestProperties->cbBuffer = DIBSIZE(*pbmi);
+  pRequestProperties->cbBuffer = DIBSIZE(*pbmi);
 
-	if (pRequestProperties->cbAlign == 0)
-	{
-		pRequestProperties->cbAlign = 1;
-	}
-	if (pRequestProperties->cBuffers == 0)
-	{
-		pRequestProperties->cBuffers = 1;
-	}
+  if(pRequestProperties->cbAlign == 0)
+  {
+    pRequestProperties->cbAlign = 1;
+  }
+  if(pRequestProperties->cBuffers == 0)
+  {
+    pRequestProperties->cBuffers = 1;
+  }
 	// Release the format block.
-	FreeMediaType(mt);
+  FreeMediaType(mt);
 
 	// Set allocator properties.
-	ALLOCATOR_PROPERTIES Actual;
-	hr = pAlloc->SetProperties(pRequestProperties, &Actual);
-	if (FAILED(hr)) 
-	{
-		return hr;
-	}
+  ALLOCATOR_PROPERTIES Actual;
+  hr = pAlloc->SetProperties(pRequestProperties, &Actual);
+  if(FAILED(hr)) 
+  {
+    return hr;
+  }
 	// Even when it succeeds, check the actual result.
-	if (pRequestProperties->cbBuffer > Actual.cbBuffer) 
-	{
-		return E_FAIL;
-	}
-	return S_OK;
+  if(pRequestProperties->cbBuffer > Actual.cbBuffer) 
+  {
+    return E_FAIL;
+  }
+  return S_OK;
 }
 
 
@@ -200,6 +204,8 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       bmh1->biHeight = NewOutputHeight;
 
       bmh1->biSizeImage = NewOutputSize;
+      bmh1->biPlanes = 1;
+      bmh1->biBitCount = (8*NewOutputSize)/(NewOutputWidth*NewOutputHeight);
 			//Set sample size
       pMediaType->SetSampleSize(NewOutputSize);
  
