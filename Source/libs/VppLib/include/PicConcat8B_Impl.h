@@ -29,18 +29,11 @@ class PicConcat8B_Impl: public PicConcatPiP, virtual public PicInPic8B_Impl
 public:
 	// Construction and destruction.
 	PicConcat8B_Impl(void) {}
-	PicConcat8B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
+	PicConcat8B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient):
+		PicConcatPiP(width,height,width1st,height1st,width2nd,height2nd,orient) {}
 
 	// Interface.
-	//virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
-
         virtual int GetVideoFormat(void) const {return 64;}
-        //virtual void SetOutDimensions(int width, int height);
-
-        //bool isVideoFormatSupported(const GUID & G) const {return PicInPic8B_Impl::isVideoFormatSupported(G);}
-        //void DoInsert(const void *P1,void *P2,bool b) const {PicInPic8B_Impl::DoInsert(P1,P2,b);}
-        //void DoInsertWithBorder(const void * P1,void *P2,bool b) const {PicInPic8B_Impl::DoInsertWithBorder(P1,P2,b);}
-
 }; //end PicConcat8B_Impl.
 
 

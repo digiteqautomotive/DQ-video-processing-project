@@ -29,14 +29,11 @@ class PicConcat2B_Impl: public PicConcatPiP, virtual public PicInPic2B_Impl
 public:
 		// Construction and destruction.
 	PicConcat2B_Impl(void) {}
-	PicConcat2B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
+	PicConcat2B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient):
+		PicConcatPiP(width,height,width1st,height1st,width2nd,height2nd,orient) {}
 
 		// Interface.
-	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
-
         virtual int GetVideoFormat(void) const {return 16;}
-
-        //virtual void SetOutDimensions(int width, int height);
 
 protected:
 }; //end PicConcat2B_Impl.

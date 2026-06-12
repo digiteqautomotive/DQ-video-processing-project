@@ -62,18 +62,7 @@ public:
 	PicConcat4B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
 
 	// Interface.
-	//virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
         virtual int GetVideoFormat(void) const {return 32;}
-
-        //virtual void SetOutDimensions(int width, int height);
-        //bool isVideoFormatSupported(const GUID & G) const {return PicInPic4B_Impl::isVideoFormatSupported(G);}
-        //void DoInsert(const void *P1,void *P2,bool b) const {PicInPic4B_Impl::DoInsert(P1,P2,b);}
-        //void DoInsertWithBorder(const void * P1,void *P2,bool b) const {PicInPic4B_Impl::DoInsertWithBorder(P1,P2,b);}
-
-protected:
-	// Members.
-	//PicInPicBase* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
-
 };//end PicConcat4B_Impl.
 
 

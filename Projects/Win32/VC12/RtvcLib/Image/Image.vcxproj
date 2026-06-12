@@ -235,11 +235,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat2B_Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat3B_Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat4B_Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat6B_Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat8B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatPiP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropper2B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropper3B_Impl.cpp" />
@@ -344,6 +339,11 @@
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUVtoRGB.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYUYVtoRGB.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\ConvYVYUtoRGB.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\PicConcat2B_Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\PicConcat3B_Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\PicConcat4B_Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\PicConcat6B_Impl.h" />
+    <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\include\PicConcat8B_Impl.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastGpuRGB24toYUV420Converter.h" />
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastLookupTableRGB24toYUV420Converter.h" />
