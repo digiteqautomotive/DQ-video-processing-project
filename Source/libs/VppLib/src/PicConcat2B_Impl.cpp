@@ -1,10 +1,10 @@
 /** @file
 
-MODULE:			PicConcatRGB565Impl
+MODULE:			PicConcat2B_Impl
 
 TAG:			PCRGB565I
 
-FILE NAME:		PicConcatRGB565Impl.cpp
+FILE NAME:		PicConcat2B_Impl.cpp
 
 DESCRIPTION:		An RGB565 implementation derived from the general
 			PicConcatBase() class. Concatenate a packed RGB565 
@@ -14,36 +14,32 @@ COPYRIGHT:		(c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All
 
 LICENSE:		Software License Agreement (BSD License)
 ===========================================================================*/
-#include "PicConcatRGB565Impl.h"
+#include "PicConcat2B_Impl.h"
+
+
+/*===========================================================================
+			Construction and Destruction.
+===========================================================================*/
+
+PicConcat2B_Impl::PicConcat2B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): 
+	PicConcatPiP(width,height,width1st,height1st,width2nd,height2nd,orient)
+{
+} //end constructor.
+
 
 /*
-===========================================================================
-	Construction and Destruction.
-===========================================================================
-*/
-
-PicConcatRGB565Impl::PicConcatRGB565Impl(void) 
-{
-}//end default constuctor.
-
-
-PicConcatRGB565Impl::PicConcatRGB565Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): 
-	PicConcatBase(width,height,width1st,height1st,width2nd,height2nd,orient)
-{
-  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
-}//end constructor.
-
-
-void PicConcatRGB565Impl::SetOutDimensions(int width, int height)
+void PicConcat2B_Impl::SetOutDimensions(int width, int height)
 {
   PicConcatBase::_width=labs(width); PicConcatBase::_height=labs(height);
-  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
+  PicInPicBase::SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
 }
+*/
 
 
 /*=========================================================================
 	Interface Methods.
 ==========================================================================*/
+
 
 /** Concatenate the 2nd img to the 1st img.
 Attach the 2nd image to the 1st image at the set orientation (top,
@@ -53,7 +49,7 @@ in this method and must be handled by the calling process.
 @param pImg2nd	: Packed RGB 888 format image to attach.
 @param pImg			: Packed RGB 888 format output image.
 @return				: 0 = failed, 1 = success. */
-int PicConcatRGB565Impl::Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip)
+int PicConcat2B_Impl::Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip)
 {
   if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
       return(0);
@@ -98,15 +94,15 @@ int PicConcatRGB565Impl::Concat(const void* pImg1st, const void* pImg2nd, void* 
   } //end switch _orient...
 
 	/// Concat image written to output 1st.
-  SetSubDimensions(_width2nd, _height2nd);	/// Set dim of concat image.
-  SetPos(posX2, posY2);			/// Images are written from bottom to top.
-  Insert(pImg2nd, pImg, VFlip);
+  PicInPic2B_Impl::SetSubDimensions(_width2nd, _height2nd);	/// Set dim of concat image.
+  PicInPic2B_Impl::SetPos(posX2, posY2);			/// Images are written from bottom to top.
+  PicInPic2B_Impl::Insert(pImg2nd, pImg, VFlip);
 
 	/// Base image written last.
-  SetSubDimensions(_width1st, _height1st);	/// Set dim of base image.
-  SetPos(posX1, posY1);			/// Images are written from bottom to top.
-  Insert(pImg1st, pImg, VFlip);
+  PicInPic2B_Impl::SetSubDimensions(_width1st, _height1st);	/// Set dim of base image.
+  PicInPic2B_Impl::SetPos(posX1, posY1);			/// Images are written from bottom to top.
+  PicInPic2B_Impl::Insert(pImg1st, pImg, VFlip);
 
   return(1);
-}//end Concat.
+} //end Concat.
 

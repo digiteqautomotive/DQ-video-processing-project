@@ -1,10 +1,10 @@
 /** @file
 
-MODULE:			PicConcatRGB32Impl
+MODULE:			PicConcat4B_Impl
 
 TAG:			PCRGB32I
 
-FILE NAME:		PicConcatRGB32Impl.cpp
+FILE NAME:		PicConcat4B_Impl.cpp
 
 DESCRIPTION:		An RGB32 implementation derived from the general
 			PicConcatBase() class. Concatenate a packed RGB32 
@@ -33,7 +33,7 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#include "PicConcatRGB32Impl.h"
+#include "PicConcat4B_Impl.h"
 
 
 /*===========================================================================
@@ -41,18 +41,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
 
-PicConcatRGB32Impl::PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): 
-	PicConcatBase(width,height,width1st,height1st,width2nd,height2nd,orient)
+PicConcat4B_Impl::PicConcat4B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient): 
+	PicConcatPiP(width,height,width1st,height1st,width2nd,height2nd,orient)
 {
-  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
 } //end constructor.
 
 
-void PicConcatRGB32Impl::SetOutDimensions(int width, int height)
+/*
+void PicConcat4B_Impl::SetOutDimensions(int width, int height)
 {
   PicConcatBase::_width=labs(width); PicConcatBase::_height=labs(height);
-  SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
+  PicInPicBase::SetDimensions(PicConcatBase::_width, PicConcatBase::_height);		/// Set dimensions of output image.
 }
+*/
 
 
 /*=========================================================================
@@ -67,7 +68,8 @@ in this method and must be handled by the calling process.
 @param pImg2nd	: Packed RGB 888 format image to attach.
 @param pImg			: Packed RGB 888 format output image.
 @return				: 0 = failed, 1 = success. */
-int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip)
+/*
+int PicConcat4B_Impl::Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip)
 {
   if(pImg==NULL || pImg1st==NULL || pImg2nd==NULL)
       return(0);
@@ -125,4 +127,5 @@ int PicConcatRGB32Impl::Concat(const void* pImg1st, const void* pImg2nd, void* p
 
   return(1);
 } //end Concat.
+*/
 

@@ -235,7 +235,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB565Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat2B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat3B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat4B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat6B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat8B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatPiP.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropper2B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropper3B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCropper4B_Impl.cpp" />
@@ -252,13 +257,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB24Impl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGBBase.cpp" />

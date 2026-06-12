@@ -49,12 +49,12 @@ RESTRICTIONS:		Redistribution and use in source and binary forms, with or withou
  * An RGB32 implementation derived from the general
  * PicInPicBase() class. Insert a packed RGB32 image
  * into another packed RGB32 image. */
-class PicInPic4B_Impl: public PicInPicBase
+class PicInPic4B_Impl: virtual public PicInPicBase
 {
 public:
 		// Construction and destruction.
 	PicInPic4B_Impl(void) {}
-	PicInPic4B_Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) { }
+	PicInPic4B_Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) {}
 
 protected:
 		// Interface.

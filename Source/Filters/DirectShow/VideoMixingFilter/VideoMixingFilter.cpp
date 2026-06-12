@@ -32,9 +32,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 #include "VideoMixingFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include "PicConcatRGB24Impl.h"
-#include "PicConcatRGB32Impl.h"
-#include "PicConcatRGB565Impl.h"
+#include "PicConcat2B_Impl.h"
+#include "PicConcat3B_Impl.h"
+#include "PicConcat4B_Impl.h"
+#include "PicConcat6B_Impl.h"
+#include "PicConcat8B_Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
@@ -448,7 +450,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     }
     if(m_pPicConcat==NULL)
     {
-      m_pPicConcat = new PicConcatRGB565Impl();
+      m_pPicConcat = new PicConcat2B_Impl();
       m_nBitsPerPixel = 16;
     }
     return S_OK;
@@ -465,7 +467,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     }
     if(m_pPicConcat==NULL)
     {
-      m_pPicConcat = new PicConcatRGB24Impl();
+      m_pPicConcat = new PicConcat3B_Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
     }
     return S_OK;
@@ -482,7 +484,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     }
     if(m_pPicConcat==NULL)
     {
-      m_pPicConcat = new PicConcatRGB32Impl();
+      m_pPicConcat = new PicConcat4B_Impl();
       m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
     }
     return S_OK;

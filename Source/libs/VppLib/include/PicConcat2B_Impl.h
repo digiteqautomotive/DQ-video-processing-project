@@ -1,10 +1,10 @@
 /** @file
 
-MODULE:		PicConcatRGB565Impl
+MODULE:		PicConcat2B_Impl
 
 TAG:		PCRGB565I
 
-FILE NAME:	PicConcatRGB565Impl.h
+FILE NAME:	PicConcat2B_Impl.h
 
 DESCRIPTION:	An RGB565 implementation derived from the general
 		PicConcatBase() class. Concatenate a packed RGB565 
@@ -14,32 +14,32 @@ COPYRIGHT:	(c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All 
 
 LICENSE:	Software License Agreement (BSD License)
 ===========================================================================*/
-#ifndef _PICCONCATRGB565IMPL_H
-#define _PICCONCATRGB565IMPL_H
+#ifndef _PICCONCAT_2B_IMPL_H
+#define _PICCONCAT_2B_IMPL_H
 
-#include "PicConcatBase.h"
+#include "PicConcatPiP.h"
 #include "PicInPic2B_Impl.h"
 
 
 /** \ingroup ImageLib An RGB565 implementation derived from the general
  * PicConcatBase() class. Concatenate a packed RGB565 
  * image	to another packed RGB565 image. */
-class PicConcatRGB565Impl: public PicConcatBase, public PicInPic2B_Impl
+class PicConcat2B_Impl: public PicConcatPiP, virtual public PicInPic2B_Impl
 {
 public:
-	// Construction and destruction.
-	PicConcatRGB565Impl(void);
-	PicConcatRGB565Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
+		// Construction and destruction.
+	PicConcat2B_Impl(void) {}
+	PicConcat2B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
 
-	// Interface.
+		// Interface.
 	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
 
         virtual int GetVideoFormat(void) const {return 16;}
 
-        virtual void SetOutDimensions(int width, int height);
+        //virtual void SetOutDimensions(int width, int height);
 
 protected:
-}; //end PicConcatRGB565Impl.
+}; //end PicConcat2B_Impl.
 
 
-#endif _PICCONCATRGB565IMPL_H
+#endif	// _PICCONCAT_2B_IMPL_H

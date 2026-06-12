@@ -37,14 +37,13 @@ LICENSE:		Software License Agreement (BSD License)
  * An RGB565 implementation derived from the general
  * PicInPicBase() class. Insert a packed RGB565 image
  * into another packed RGB565 image. */
-class PicInPic2B_Impl: public PicInPicBase
+class PicInPic2B_Impl: virtual public PicInPicBase
 {
 public:
 		// Construction and destruction.
 	PicInPic2B_Impl(void) {}
 	PicInPic2B_Impl(int width, int height, int subWidth, int subHeight, int xPos, int yPos): PicInPicBase(width,height,subWidth,subHeight,xPos,yPos) {}
 
-protected:
 		// Interface.
 	virtual bool isVideoFormatSupported(const GUID &VideoFormat) const;
 	virtual void DoInsert(const void* pSubImg, void* pImg, bool VFlip=false) const;

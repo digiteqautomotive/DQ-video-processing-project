@@ -1,19 +1,17 @@
 /** @file
 
-MODULE:		PicConcatRGB32Impl
+MODULE:		PicConcat3B_Impl
 
-TAG:		PCRGB32I
+TAG:		PCRGB24I
 
-FILE NAME:	PicConcatRGB32Impl.h
+FILE NAME:	PicConcat3B_Impl.h
 
-DESCRIPTION:	An RGB32 implementation derived from the general
-		PicConcatBase() class. Concatenate a packed RGB32 
-		image to another packed RGB32 image.
+DESCRIPTION:	An RGB24 implementation derived from the general
+		PicConcatBase() class. Concatenate a packed RGB24 
+		image to another packed RGB24 image.
 
-REVISION HISTORY: 
-
-COPYRIGHT:	(c)CSIR 2007-2017 all rights reserved
-		(c) 2025-2026, Digiteq Automotive	All rights reserved.
+COPYRIGHT:	(c)CSIR 2007-2017
+		(c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 LICENSE:	Software License Agreement (BSD License)
 
@@ -42,36 +40,34 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
 		NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 		SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef _PICCONCATRGB32IMPL_H
-#define _PICCONCATRGB32IMPL_H
+#ifndef _PICCONCAT_3B_IMPL_H
+#define _PICCONCAT_3B_IMPL_H
 
-#include "PicConcatBase.h"
-#include "PicInPic4B_Impl.h"
+#include "PicConcatPiP.h"
+#include "PicInPic3B_Impl.h"
 
-/**
- * \ingroup ImageLib
- * An RGB32 implementation derived from the general
- * PicConcatBase() class. Concatenate a packed RGB32 
- * image to another packed RGB32 image.
- */
-class PicConcatRGB32Impl: public PicConcatBase, public PicInPic4B_Impl
+
+/** \ingroup ImageLib An RGB24 implementation derived from the general
+ * PicConcatBase() class. Concatenate a packed RGB24 
+ * image	to another packed RGB24 image. */
+class PicConcat3B_Impl: public PicConcatPiP, virtual public PicInPic3B_Impl
 {
 public:
 	// Construction and destruction.
-	PicConcatRGB32Impl(void) {};
-	PicConcatRGB32Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
+	PicConcat3B_Impl(void) {}
+	PicConcat3B_Impl(int width, int height, int width1st, int height1st, int width2nd, int height2nd, E_ORIENT orient);
 
 	// Interface.
-	virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
-        virtual int GetVideoFormat(void) const {return 32;}
+	//virtual int Concat(const void* pImg1st, const void* pImg2nd, void* pImg, bool VFlip=false);
 
-        virtual void SetOutDimensions(int width, int height);
+        virtual int GetVideoFormat(void) const {return 24;}
+        //virtual void SetOutDimensions(int width, int height);
 
-protected:
-	// Members.
-	//PicInPicBase* _pPicInPic;	/// Use a pic-in-pic obj to place the images.
+        //bool isVideoFormatSupported(const GUID & G) const {return PicInPic3B_Impl::isVideoFormatSupported(G);}
+        //void DoInsert(const void *P1,void *P2,bool b) const {PicInPic3B_Impl::DoInsert(P1,P2,b);}
+        //void DoInsertWithBorder(const void * P1,void *P2,bool b) const {PicInPic3B_Impl::DoInsertWithBorder(P1,P2,b);}
 
-};//end PicConcatRGB32Impl.
+}; //end PicConcat3B_Impl.
 
 
-#endif _PICCONCATRGB32IMPL_H
+#endif	// _PICCONCAT_3B_IMPL_H

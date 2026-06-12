@@ -24,12 +24,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB24Impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB32Impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -162,9 +156,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicCompI420Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatRGB565Impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvRGBtoYUYV_FixP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -199,6 +190,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic8B_Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat2B_Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat3B_Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat4B_Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat6B_Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcat8B_Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatPiP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -23,7 +23,7 @@ LICENSE:		Software License Agreement (BSD License)
  * An RGB24 implementation derived from the general
  * PicInPicBase() class. Insert a packed RGB24 image
  * into another packed RGB24 image. */
-class PicInPic6B_Impl: public PicInPicBase
+class PicInPic6B_Impl: virtual public PicInPicBase
 {
 public:
 		// Construction and destruction.

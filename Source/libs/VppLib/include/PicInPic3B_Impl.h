@@ -50,7 +50,7 @@ RESTRICTIONS:		Redistribution and use in source and binary forms, with or withou
  * An RGB24 implementation derived from the general
  * PicInPicBase() class. Insert a packed RGB24 image
  * into another packed RGB24 image. */
-class PicInPic3B_Impl: public PicInPicBase
+class PicInPic3B_Impl: virtual public PicInPicBase
 {
 public:
 		// Construction and destruction.
