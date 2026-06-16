@@ -14,7 +14,7 @@ DESCRIPTION           : This class is the base class defining the minimum interf
 LICENSE: Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -62,7 +62,7 @@ class PicRotateBase
 public:
 
 	PicRotateBase(): m_nWidth(0), m_nHeight(0) {}
-	virtual ~PicRotateBase(){}
+	virtual ~PicRotateBase() {}
 
 	void SetInDimensions(int nWidth, int nHeight);
 
@@ -76,7 +76,7 @@ public:
         virtual int BytesPerPixel(void) = 0;
 
 protected:
-	int m_nWidth;		///< Width of input image
-	int m_nHeight;		///< Height of input image	
-	ROTATE_MODE m_eMode;	///< Rotation mode
+	unsigned m_nWidth;		///< Width of input image
+	unsigned m_nHeight;		///< Height of input image	
+	ROTATE_MODE m_eMode;		///< Rotation mode
 };

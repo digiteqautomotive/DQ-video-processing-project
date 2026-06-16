@@ -24,12 +24,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB32Impl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGBBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -196,6 +190,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP24Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP32Impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP64Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

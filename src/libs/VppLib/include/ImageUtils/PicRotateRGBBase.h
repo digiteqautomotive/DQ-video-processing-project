@@ -45,7 +45,7 @@ typedef unsigned char BYTE;
  * It adds the pure virtual BytesPerPixel method which must be implemented
  * by sub-classes. 
  */
-class PicRotateRGBBase : public PicRotateBase
+class PicRotateRGBBase: public PicRotateBase
 {
 public:
 	PicRotateRGBBase();

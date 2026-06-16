@@ -23,8 +23,8 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "PicScalerYUV420PImpl.h"
 #include "ScaleTesters.h"
 
-#include "PicRotateRGB32Impl.h"
-#include "PicRotateRGB24Impl.h"
+#include "PicRotateBPP24Impl.h"
+#include "PicRotateBPP32Impl.h"
 #include "RotateTesters.h"
 
 #include "PicCompRGB32Impl.h"

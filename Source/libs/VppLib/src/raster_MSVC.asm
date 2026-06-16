@@ -120,6 +120,60 @@ Flip32_2 endp
 
 ;*************************************************************************************
 
+
+;void Flip64_2(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
+	public  Flip64_2
+Flip64_2	proc \
+        uses ebx edi esi \
+	_Width:DWORD, \
+	Height:DWORD, \
+	ptr_in:ptr byte, \
+        ptr_out:ptr byte
+
+        mov     esi,[ptr_in]     ; esi=source ptr
+	or	esi,esi
+	jz	ToEnd	
+	mov     edi,[ptr_out]     ; edi=destination ptr
+	or	edi,edi
+	jz	ToEnd	
+
+	mov	ecx,_Width
+	mov	eax,ecx
+	or	ecx,ecx
+	jz	ToEnd
+	mov	edx,Height
+	or	edx,edx
+	jz	ToEnd
+
+	sub	esi,8
+	shl	eax,3		; Width*8
+	add	esi,eax
+
+PIXEL:	mov	eax,[esi]
+	mov	ebx,[esi+4]
+	mov	[edi],eax
+	mov	[edi+4],ebx
+	add	edi,8
+	sub	esi,8
+	dec	ecx
+	jnz	PIXEL
+
+	mov	ecx,_Width
+	mov	eax,ecx
+	shl	eax,4		; *16
+	add	esi,eax	
+
+	dec	edx
+	jnz	PIXEL
+
+ToEnd:
+        ret                     ; _cdecl return
+                
+Flip64_2 endp
+
+
+;*************************************************************************************
+
 ;void Rotate24_180(unsigned Width, unsigned Height, void *ptr_in, void *ptr_out);
 	public  Rotate24_180
 Rotate24_180	proc \

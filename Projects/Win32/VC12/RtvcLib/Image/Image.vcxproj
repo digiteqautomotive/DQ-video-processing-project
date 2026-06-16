@@ -248,13 +248,14 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic8B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBase.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP16Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP24Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP32Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP64Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYV24Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ImageHandlerV2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayExtMem2Dv2.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\OverlayMem2Dv2.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB24Impl.cpp" />
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGB32Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateRGBBase.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerARGB32Impl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

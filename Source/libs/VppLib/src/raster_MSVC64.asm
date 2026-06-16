@@ -64,9 +64,10 @@ Flip24_2 endp
 	public  Flip32_2
 Flip32_2	proc \
 	uses rdi rsi
-;       count:DWORD	RCX
-;       Data:ptr byte	RDX
-;       Data2:ptr byte	R8
+;       Width:DWORD	RCX
+;       Height:ptr byte	RDX
+;       Data1:ptr byte	R8
+;       Data2:ptr byte	R9
 
 	or	rdx,rdx
 	jz	ToEnd
@@ -99,6 +100,49 @@ PIXEL:	mov	eax,[rsi]
 ToEnd:
         ret                     ; _cdecl return                
 Flip32_2	endp
+
+
+;*************************************************************************************
+
+
+	public  Flip64_2
+Flip64_2 proc
+;       Width:DWORD	RCX
+;       Height:ptr byte	RDX
+;       Data1:ptr byte	R8
+;       Data2:ptr byte	R9
+
+	or	rdx,rdx
+	jz	ToEnd
+	jrcxz	ToEnd		; ignore value 0
+
+	mov	rsi,rcx
+	shl	rsi,3		; *8
+	add	rsi,R8
+	sub	rsi,8
+	mov	rdi,R9
+
+	mov	R9,rcx
+	mov	R8,rdx
+
+PIXEL:	mov	rax,[rsi]
+	sub	rsi,8
+	mov	[rdi],rax
+	add	rdi,8
+	dec	rcx
+	jnz	PIXEL
+
+	mov	rcx,R9
+	mov	rax,R9
+	shl	rax,4		; *16
+	add	rsi,rax	
+
+	dec	R8
+	jnz	PIXEL
+ToEnd:
+        ret                     ; _cdecl return
+                
+Flip64_2 endp
 
 
 ;*************************************************************************************

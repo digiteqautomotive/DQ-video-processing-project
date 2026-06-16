@@ -8,7 +8,7 @@ DESCRIPTION           :
                      
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 
-int PicRotateBPP16Impl::BytesPerPixel()
+int PicRotateBPP16Impl::BytesPerPixel(void)
 {
 	return 2;
 }
@@ -45,14 +45,13 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 		}
     case ROTATE_90_DEGREES_CLOCKWISE:
 		{
-			const unsigned AbsHeight = (m_nHeight);
 			const BYTE* pSrc = (const BYTE*)pInImg;
-			BYTE *pDest = (BYTE*)pOutImg + 2*(m_nWidth-1)*AbsHeight;
+			BYTE *pDest = (BYTE*)pOutImg + 2*(m_nWidth-1)*m_nHeight;
 			
 			for(int i = 0; i < m_nWidth; ++i, pSrc+=2)
 			{
 				const BYTE* pSrcCol = pSrc;
-				unsigned j = AbsHeight;
+				unsigned j = m_nHeight;
 				while(j-- > 0)				
 				{
 					*(__int32*)(pDest) = *(__int32*)(pSrcCol);
@@ -60,7 +59,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 					pDest += 2;
 				}
 				// Copy pixels in same column to their destinations				
-				pDest -= 8 * AbsHeight;
+				pDest -= 8 * m_nHeight;
 			}
 			return true;
 		}
@@ -134,7 +133,6 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_DIAGONALLY:
 		{
 			const BYTE* pSrc = (const BYTE*)pInImg;
-			const unsigned AbsHeight = m_nHeight;
 			for (int i = 0; i < m_nWidth; ++i, pSrc += 2)
 			{
 				int nNewRow = (m_nWidth - i);//Index Base 1
@@ -145,7 +143,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 				--nNewIndex;
 				const BYTE* pSrcCol = pSrc;
 				BYTE* pDest = (BYTE*)pOutImg + (nNewIndex*2);
-				for (unsigned j=0; j<AbsHeight; ++j, pSrcCol+=(2*m_nWidth), pDest-=2)
+				for (unsigned j=0; j<m_nHeight; ++j, pSrcCol+=(2*m_nWidth), pDest-=2)
 				{
 				   *(__int32*)(pDest) = *(__int32*)(pSrcCol);
 				}
@@ -156,14 +154,13 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 
 	case ROTATE_90_DEGS_CCK_VFLIP:
 		{
-			const unsigned AbsHeight = m_nHeight;
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg;		// + 2*(m_nWidth-1)*AbsHeight;
 			
 			for(int i = 0; i < m_nWidth; ++i, pSrc+=2)
 			{
 				const BYTE* pSrcCol = pSrc;
-				unsigned j = AbsHeight;
+				unsigned j = m_nHeight;
 				while(j-- > 0)				
 				{
 					*(__int32*)(pDest) = *(__int32*)(pSrcCol);

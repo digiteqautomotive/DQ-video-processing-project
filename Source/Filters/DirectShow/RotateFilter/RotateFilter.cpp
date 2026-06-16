@@ -31,9 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "RotateFilter.h"
 #include <DirectShow/CommonDefs.h>
-#include "PicRotateRGB24Impl.h"
-#include "PicRotateRGB32Impl.h"
 #include "PicRotateBPP16Impl.h"
+#include "PicRotateBPP24Impl.h"
+#include "PicRotateBPP32Impl.h"
+#include "PicRotateBPP64Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
 #include "DirectShow/VariantTools.h"
@@ -42,6 +43,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 const OLECHAR OLE_PARAM_ROTATION[] = olestr(FILTER_PARAM_ROTATION_MODE);
 
 DEFINE_GUID(MEDIASUBTYPE_YV24, 0x34325659, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_R16G16B16, 0x36315242, 0x0000,0x0010, 0x80,0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_B16G16R16, 0x36314252, 0x0000,0x0010, 0x80,0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_A16R16G16B16, 0x36314241, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
+DEFINE_GUID(MEDIASUBTYPE_A16B16G16R16, 0x36315241, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71);
 
 
 RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0, CLSID_VPP_RotateFilter),
@@ -60,7 +65,7 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 }
 
 
-void RotateFilter::initParameters()
+void RotateFilter::initParameters(void)
 {
   addParameter(FILTER_PARAM_ROTATION_MODE, OLE_PARAM_ROTATION, &m_nRotation, ROTATE_NONE);
 }
@@ -75,6 +80,7 @@ RotateFilter::~RotateFilter()
   }
 }
 
+
 CUnknown * WINAPI RotateFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
 {
   RotateFilter *pFilter = new RotateFilter();
@@ -82,16 +88,25 @@ CUnknown * WINAPI RotateFilter::CreateInstance( LPUNKNOWN pUnk, HRESULT *pHr)
   return pFilter;
 }
 
+static const GUID * const RotateSupportedFormats[] = {
+  &MEDIASUBTYPE_RGB24,
+  &MEDIASUBTYPE_RGB32,
+  &MEDIASUBTYPE_ARGB32,
+  &MEDIASUBTYPE_AYUV,
+  &MEDIASUBTYPE_YV24,
+  &MEDIASUBTYPE_RGB555,
+  &MEDIASUBTYPE_RGB565,
+  &MEDIASUBTYPE_A16R16G16B16,
+  &MEDIASUBTYPE_A16B16G16R16
+};
 
 void RotateFilter::InitialiseInputTypes(void)
 {
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_ARGB32, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_AYUV, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_YV24, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB555, &FORMAT_VideoInfo);
-  AddInputType(&MEDIATYPE_Video, &MEDIASUBTYPE_RGB565, &FORMAT_VideoInfo);
+  for(int i=0; i<sizeof(RotateSupportedFormats)/sizeof(GUID*); i++)
+  {
+    AddInputType(&MEDIATYPE_Video, RotateSupportedFormats[i], &FORMAT_VideoInfo);
+    AddInputType(&MEDIATYPE_Video, RotateSupportedFormats[i], &FORMAT_VideoInfo2);
+  }  
 }
 
 
@@ -135,6 +150,17 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
 	if(m_pRotate==NULL)
             m_pRotate = new PicRotateBPP16Impl();
 	m_nBitsPerPixel = 16;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_A16R16G16B16 || pmt->subtype==MEDIASUBTYPE_A16B16G16R16)
+      {
+        if(m_pRotate)
+        {
+          if(m_pRotate->BytesPerPixel()!=8)
+	          {delete m_pRotate; m_pRotate=NULL;}
+        }
+	if(m_pRotate==NULL)
+            m_pRotate = new PicRotateBPP64Impl();
+	m_nBitsPerPixel = 64;
       }
 
       if(m_pRotate==NULL) hr=VFW_E_TYPE_NOT_ACCEPTED;
@@ -321,32 +347,34 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
   if(mtIn->subtype == MEDIASUBTYPE_RGB24)
   {
     if(mtOut->subtype == MEDIASUBTYPE_RGB24) return S_OK;
-    return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  if(mtIn->subtype == MEDIASUBTYPE_YV24)
+  else if(mtIn->subtype == MEDIASUBTYPE_YV24)
   {
     if(mtOut->subtype == MEDIASUBTYPE_YV24) return S_OK;
-    return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
+  else if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32) return S_OK;
-    return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  if(mtIn->subtype==MEDIASUBTYPE_RGB555)
+  else if(mtIn->subtype==MEDIASUBTYPE_RGB555)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB555) return S_OK;
-    return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  if(mtIn->subtype==MEDIASUBTYPE_RGB565)
+  else if(mtIn->subtype==MEDIASUBTYPE_RGB565)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB565) return S_OK;
-    return VFW_E_TYPE_NOT_ACCEPTED;
   }
-  if(mtIn->subtype == MEDIASUBTYPE_AYUV)
+  else if(mtIn->subtype == MEDIASUBTYPE_AYUV)
   {
     if(mtOut->subtype == MEDIASUBTYPE_AYUV) return S_OK;
-    return VFW_E_TYPE_NOT_ACCEPTED;
+  }
+  else if(mtIn->subtype == MEDIASUBTYPE_A16B16G16R16)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_A16B16G16R16) return S_OK;
+  }
+  else if(mtIn->subtype == MEDIASUBTYPE_A16R16G16B16)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_A16R16G16B16) return S_OK;
   }
 
   return VFW_E_TYPE_NOT_ACCEPTED;

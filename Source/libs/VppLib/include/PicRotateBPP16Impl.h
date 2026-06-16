@@ -8,7 +8,7 @@ DESCRIPTION           :
                      
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
