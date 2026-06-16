@@ -24,7 +24,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "PicRotateBPP16Impl.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 
@@ -41,12 +40,12 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
   {
     case ROTATE_NONE:
 		{
-			memcpy(pOutImg, pInImg, labs(m_nWidth*m_nHeight)*2);
+			memcpy(pOutImg, pInImg, (m_nWidth*m_nHeight)*2);
 			return true;
 		}
     case ROTATE_90_DEGREES_CLOCKWISE:
 		{
-			const unsigned AbsHeight = labs(m_nHeight);
+			const unsigned AbsHeight = (m_nHeight);
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg + 2*(m_nWidth-1)*AbsHeight;
 			
@@ -68,7 +67,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_180_DEGREES_CLOCKWISE:
 		{
 			const BYTE* pSrc = (const BYTE*)pInImg;
-			const int nTotalPixels = labs(m_nWidth * m_nHeight);
+			const int nTotalPixels = (m_nWidth * m_nHeight);
 			const int nLastIndex = (nTotalPixels - 1) * 2;
 			BYTE* pDest = (BYTE*)pOutImg + nLastIndex;
 			for (int i = 0; i < nTotalPixels; ++i, pSrc += 2, pDest -= 2)
@@ -80,8 +79,8 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 
 	case ROTATE_270_DEGREES_CLOCKWISE:	// Continual writing and scaterred reading is faster than continual reading and scaterred writing.
 		{
-			const unsigned y_src = labs(m_nHeight);
-			unsigned y_dst = labs(m_nWidth);
+			const unsigned y_src = m_nHeight;
+			unsigned y_dst = m_nWidth;
 			const unsigned x_src2 = 2*y_dst;
 			const BYTE* pSrc = (const BYTE*)pInImg + 2*(y_src-1)*m_nWidth;
 			BYTE* pDest = (BYTE*)pOutImg;
@@ -102,10 +101,10 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_VERTICAL:
 		{
 			// Code to flip image
-			const unsigned nRowLength = labs(m_nWidth) * 2;
+			const unsigned nRowLength = m_nWidth * 2;
 			const BYTE* pSrc = (const BYTE*)pInImg;
-			BYTE* pDest = (BYTE*)pOutImg + ((labs(m_nHeight) - 1) * nRowLength);
-			unsigned i = labs(m_nHeight);
+			BYTE* pDest = (BYTE*)pOutImg + ((m_nHeight - 1) * nRowLength);
+			unsigned i = m_nHeight;
 			while(i-- > 0)
 			{
 			  memcpy(pDest, pSrc, nRowLength);
@@ -116,11 +115,11 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 		}
 	case ROTATE_FLIP_HORIZONTAL:
 		{
-			const unsigned iRowLength = labs(m_nWidth) * 2;
+			const unsigned iRowLength = m_nWidth * 2;
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE* pDest = (BYTE*)pOutImg + iRowLength - 2;
 
-			unsigned y = labs(m_nHeight);
+			unsigned y = m_nHeight;
 		        while(y-- > 0)
 		        {
 			  BYTE* pDestPixel = pDest;
@@ -135,7 +134,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_DIAGONALLY:
 		{
 			const BYTE* pSrc = (const BYTE*)pInImg;
-			const unsigned AbsHeight = labs(m_nHeight);
+			const unsigned AbsHeight = m_nHeight;
 			for (int i = 0; i < m_nWidth; ++i, pSrc += 2)
 			{
 				int nNewRow = (m_nWidth - i);//Index Base 1
@@ -157,7 +156,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 
 	case ROTATE_90_DEGS_CCK_VFLIP:
 		{
-			const unsigned AbsHeight = labs(m_nHeight);
+			const unsigned AbsHeight = m_nHeight;
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg;		// + 2*(m_nWidth-1)*AbsHeight;
 			

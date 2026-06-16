@@ -61,14 +61,10 @@ class PicRotateBase
 {
 public:
 
-	PicRotateBase(){}
+	PicRotateBase(): m_nWidth(0), m_nHeight(0) {}
 	virtual ~PicRotateBase(){}
 
-	void SetInDimensions(int nWidth, int nHeight)
-	{
-		m_nWidth = nWidth;
-		m_nHeight = nHeight;
-	}
+	void SetInDimensions(int nWidth, int nHeight);
 
 	void SetRotateMode(ROTATE_MODE eMode)
 	{

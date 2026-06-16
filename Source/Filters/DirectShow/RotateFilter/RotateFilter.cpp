@@ -358,7 +358,7 @@ STDMETHODIMP RotateFilter::SetParameter( const char* type, const char* value )
 	// For now, one cannot set any parameters once the output has been connected -> this will affect the buffer size
   if(m_pOutput)
   {
-    if (m_pOutput->IsConnected())
+    if(m_pOutput->IsConnected())
     {
 	return E_FAIL;
     }

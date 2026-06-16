@@ -195,6 +195,9 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicConcatPiP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h">

@@ -50,6 +50,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicInPic4B_Impl.cpp
 ../libs/VppLib/src/PicInPic6B_Impl.cpp
 ../libs/VppLib/src/PicInPic8B_Impl.cpp
+../libs/VppLib/src/PicRotateBase.cpp
 ../libs/VppLib/src/PicRotateBPP16Impl.cpp
 ../libs/VppLib/src/PicRotateRGB24Impl.cpp
 ../libs/VppLib/src/PicRotateRGB32Impl.cpp

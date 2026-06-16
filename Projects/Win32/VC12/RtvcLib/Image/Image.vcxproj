@@ -246,6 +246,7 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic4B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic6B_Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicInPic8B_Impl.cpp" />
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBase.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicRotateBPP16Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerRGB565Impl.cpp" />
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\PicScalerYV24Impl.cpp" />
