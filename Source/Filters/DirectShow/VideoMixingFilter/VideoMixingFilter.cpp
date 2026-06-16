@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: VideoMixingFilter
+MODULE:			VideoMixingFilter
 
-FILE NAME			: VideoMixingFilter.cpp
+FILE NAME:		VideoMixingFilter.cpp
 
-DESCRIPTION			: Video Mixing Filter for AYUV, RGB24 and RGB32 Media
+DESCRIPTION:		Video Mixing Filter for AYUV, RGB24 and RGB32 Media
 					  
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2008-2014, CSIR
 Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik, All rights reserved.
@@ -531,7 +531,7 @@ HRESULT VideoMixingFilter::CreateVideoMixer(const CMediaType *pMediaType, int nI
     }
     if(m_pPicConcat==NULL)
     {
-      m_pPicConcat = new PicConcat6B_Impl();
+      m_pPicConcat = new PicConcat8B_Impl();
       m_nBitsPerPixel = 64;
     }
     return S_OK;
@@ -799,6 +799,7 @@ HRESULT VideoMixingFilter::CheckOutputType(const CMediaType* pMediaType)
             ConnectionFormat[1]==MEDIASUBTYPE_ARGB32 || ConnectionFormat[1]==MEDIASUBTYPE_RGB32)
             return S_OK;
           }
+	  break;
     case 48:
          if(*(pMediaType->Subtype())==MEDIASUBTYPE_R16G16B16)
          {
