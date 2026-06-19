@@ -204,6 +204,7 @@ bool PicRotateBPP64Impl::Rotate(const void* pInImg, void* pOutImg)
 				// Copy pixels in same column to their destinations				
 				//pDest -= 8 * AbsHeight;
 			}
+			return true;
 		}
 	default:
 		{

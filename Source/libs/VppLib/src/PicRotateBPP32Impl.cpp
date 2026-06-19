@@ -194,7 +194,7 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg;		// + 4*(m_nWidth-1)*AbsHeight;
 			
-			for(int i=0; i<m_nWidth; ++i, pSrc+=4)
+			for(unsigned i=0; i<m_nWidth; ++i, pSrc+=4)
 			{
 				const BYTE* pSrcCol = pSrc;
 				unsigned j = m_nHeight;
@@ -207,6 +207,7 @@ bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
 				// Copy pixels in same column to their destinations				
 				//pDest -= 8 * AbsHeight;
 			}
+			return true;
 		}
 	default:
 		{

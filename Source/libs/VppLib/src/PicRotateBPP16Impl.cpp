@@ -1,12 +1,12 @@
 /** @file
 
-MODULE                : PicRotateBPP16Impl
+MODULE:			PicRotateBPP16Impl
 
-FILE NAME             : PicRotateBPP16Impl.cpp
+FILE NAME:		PicRotateBPP16Impl.cpp
 
-DESCRIPTION           :
+DESCRIPTION:
                      
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int PicRotateBPP16Impl::BytesPerPixel(void) const
 {
-	return 2;
+  return 2;
 }
 
 
@@ -40,7 +40,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
   {
     case ROTATE_NONE:
 		{
-			memcpy(pOutImg, pInImg, (m_nWidth*m_nHeight)*2);
+			memcpy(pOutImg, pInImg, m_nWidth*m_nHeight*2);
 			return true;
 		}
     case ROTATE_90_DEGREES_CLOCKWISE:
@@ -48,18 +48,18 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg + 2*(m_nWidth-1)*m_nHeight;
 			
-			for(int i = 0; i < m_nWidth; ++i, pSrc+=2)
+			for(unsigned i=0; i<m_nWidth; ++i, pSrc+=2)
 			{
 				const BYTE* pSrcCol = pSrc;
 				unsigned j = m_nHeight;
 				while(j-- > 0)				
 				{
-					*(__int32*)(pDest) = *(__int32*)(pSrcCol);
+					*(__int16*)(pDest) = *(const __int16*)(pSrcCol);
 					pSrcCol += (2*m_nWidth);
 					pDest += 2;
 				}
 				// Copy pixels in same column to their destinations				
-				pDest -= 8 * m_nHeight;
+				pDest -= 4 * m_nHeight;
 			}
 			return true;
 		}
@@ -69,9 +69,9 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 			const int nTotalPixels = (m_nWidth * m_nHeight);
 			const int nLastIndex = (nTotalPixels - 1) * 2;
 			BYTE* pDest = (BYTE*)pOutImg + nLastIndex;
-			for (int i = 0; i < nTotalPixels; ++i, pSrc += 2, pDest -= 2)
+			for(unsigned i=0; i<nTotalPixels; ++i, pSrc += 2, pDest -= 2)
 			{
-				*(__int32*)(pDest) = *(__int32*)(pSrc);
+				*(__int16*)(pDest) = *(const __int16*)(pSrc);
 			}
 			return true;
 		}
@@ -89,7 +89,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 				int x_dst = y_src;
 				while(x_dst-- > 0)
 				{				
-				  *(__int32*)(pDest) = *(__int32*)(pSrcPos);
+				  *(__int16*)(pDest) = *(const __int16*)(pSrcPos);
 				  pDest += 2;
 				  pSrcPos -= x_src2;
 				}
@@ -121,10 +121,12 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 			unsigned y = m_nHeight;
 		        while(y-- > 0)
 		        {
-			  BYTE* pDestPixel = pDest;
-			  for ( int x = 0; x < m_nWidth; x++, pSrc += 2, pDestPixel-=2 )
+			  BYTE *pDestPixel = pDest;
+			  unsigned x = m_nWidth;
+			  while(x-- > 0)
 			  {
-			    *(__int32*)(pDestPixel) = *(__int32*)(pSrc);
+			    *(__int16*)(pDestPixel) = *(const __int16*)(pSrc);
+			    pSrc+=2; pDestPixel-=2;
 			  }
 			  pDest += iRowLength;
 			}
@@ -133,7 +135,7 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 	case ROTATE_FLIP_DIAGONALLY:
 		{
 			const BYTE* pSrc = (const BYTE*)pInImg;
-			for (int i = 0; i < m_nWidth; ++i, pSrc += 2)
+			for(unsigned i=0; i<m_nWidth; ++i, pSrc += 2)
 			{
 				int nNewRow = (m_nWidth - i);//Index Base 1
 				// Select target row to be one higher and subtract sizeof RGB block to be at last index of row
@@ -143,9 +145,11 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 				--nNewIndex;
 				const BYTE* pSrcCol = pSrc;
 				BYTE* pDest = (BYTE*)pOutImg + (nNewIndex*2);
-				for (unsigned j=0; j<m_nHeight; ++j, pSrcCol+=(2*m_nWidth), pDest-=2)
+			        unsigned j = m_nHeight;
+				while(j-- > 0)
 				{
-				   *(__int32*)(pDest) = *(__int32*)(pSrcCol);
+				  *(__int16*)(pDest) = *(const __int16*)(pSrcCol);
+				  pSrcCol+=(2*m_nWidth); pDest-=2;
 				}
 				// Copy pixels in same column to their destinations
 			}
@@ -157,19 +161,20 @@ bool PicRotateBPP16Impl::Rotate(const void* pInImg, void* pOutImg)
 			const BYTE* pSrc = (const BYTE*)pInImg;
 			BYTE *pDest = (BYTE*)pOutImg;		// + 2*(m_nWidth-1)*AbsHeight;
 			
-			for(int i = 0; i < m_nWidth; ++i, pSrc+=2)
+			for(unsigned i=0; i<m_nWidth; ++i, pSrc+=2)
 			{
 				const BYTE* pSrcCol = pSrc;
 				unsigned j = m_nHeight;
 				while(j-- > 0)				
 				{
-					*(__int32*)(pDest) = *(__int32*)(pSrcCol);
-					pSrcCol += (2*m_nWidth);
+					*(__int16*)(pDest) = *(const __int16*)(pSrcCol);
+					pSrcCol += 2*m_nWidth;
 					pDest += 2;
 				}
 				// Copy pixels in same column to their destinations				
-				//pDest -= 8 * AbsHeight;
+				//pDest -= 4 * AbsHeight;
 			}
+			return true;
 		}
 	default:
 		{
