@@ -34,10 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 
-PicRotateRGB32Impl::PicRotateRGB32Impl()
-{}
-
-int PicRotateRGB32Impl::BytesPerPixel(void) const
+int PicRotateBPP32Impl::BytesPerPixel(void) const
 {
   return 4;
 }
@@ -53,7 +50,7 @@ void Rotate32_270(unsigned Width, unsigned Height, const void *ptr_in, void *ptr
 #endif
 
 
-bool PicRotateRGB32Impl::Rotate(const void* pInImg, void* pOutImg)
+bool PicRotateBPP32Impl::Rotate(const void* pInImg, void* pOutImg)
 {
   if (!pInImg || !pOutImg) return false;
   switch (m_eMode)

@@ -28,14 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicRotateRGBBase.h"
 
-/**
- * \ingroup ImageLib
- * RGB32 implementation of PicRotateRGBBase
- */ 
-class PicRotateRGB32Impl : public PicRotateRGBBase
+/** \ingroup ImageLib
+ * RGB32 implementation of PicRotateRGBBase */ 
+class PicRotateBPP32Impl : public PicRotateRGBBase
 {
 public:
-	PicRotateRGB32Impl();
+	PicRotateBPP32Impl() {}
 
 	virtual int BytesPerPixel() const;
         virtual bool Rotate(const void* pInImg, void* pOutImg);

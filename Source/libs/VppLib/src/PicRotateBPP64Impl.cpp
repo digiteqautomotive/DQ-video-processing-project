@@ -79,7 +79,7 @@ bool PicRotateBPP64Impl::Rotate(const void* pInImg, void* pOutImg)
 					pDest += 8;
 				}
 				// Copy pixels in same column to their destinations				
-				pDest -= 8 * m_nHeight;
+				pDest -= 16 * m_nHeight;
 			}
 //#endif
 			return true;

@@ -140,7 +140,7 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
 	          {delete m_pRotate; m_pRotate=NULL;}
         }
 	if(m_pRotate==NULL)
-            m_pRotate = new PicRotateRGB32Impl();
+            m_pRotate = new PicRotateBPP32Impl();
 	m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
       else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565)

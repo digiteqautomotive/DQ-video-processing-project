@@ -23,8 +23,11 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "PicScalerYUV420PImpl.h"
 #include "ScaleTesters.h"
 
+#include "PicRotateBPP16Impl.h"
 #include "PicRotateBPP24Impl.h"
 #include "PicRotateBPP32Impl.h"
+#include "PicRotateBPP48Impl.h"
+#include "PicRotateBPP64Impl.h"
 #include "RotateTesters.h"
 
 #include "PicCompRGB32Impl.h"
@@ -1000,6 +1003,127 @@ bool Pause = false;
        }
      }
 
+//-----------------------------Rotate-BPP16---------------------------------------------
+
+  for(int WithIn=0; WithIn<6; WithIn++)
+   for(int HeightIn=0; HeightIn<6; HeightIn++)
+   {
+     const int WithOut = HeightIn;
+     const int HeightOut = WithIn;
+     
+     int InSize = 2 * WithIn * HeightIn;
+     int OutSize = 2 * WithOut * HeightOut;
+     if(InSize==0) OutSize=0;
+     PicRotateBPP16Impl picRotateBPP16;
+     picRotateBPP16.SetInDimensions(WithIn,HeightIn);
+     OrigRotateBPP16Impl origRotateBPP16;
+     origRotateBPP16.SetInDimensions(WithIn,HeightIn);
+
+     memcpy(BlobOut,BlobIn,16);
+     memcpy(BlobTest,BlobIn,16);
+     memset(BlobOut+16,0xFE,OutSize);
+     memset(BlobTest+16,0xFC,OutSize);
+     memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
+     memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
+
+     picRotateBPP16.SetRotateMode(ROTATE_NONE);
+     origRotateBPP16.SetRotateMode(ROTATE_NONE);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     int pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_NONE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateBPP16.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     origRotateBPP16.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_90_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateBPP16.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     origRotateBPP16.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_90_DEGS_CCK_VFLIP; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+
+     picRotateBPP16.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     origRotateBPP16.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_180_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateBPP16.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     origRotateBPP16.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_270_DEGREES_CLOCKWISE; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateBPP16.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     origRotateBPP16.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_FLIP_VERTICAL; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateBPP16.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     origRotateBPP16.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_FLIP_HORIZONTAL; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+
+     picRotateBPP16.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     origRotateBPP16.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     picRotateBPP16.Rotate(BlobIn+16, BlobOut+16);
+     origRotateBPP16.Rotate(BlobIn+16, BlobTest+16);
+
+     pos = memcmp(BlobTest, BlobOut, OutSize+32);
+     if(pos)
+     {
+       printf("\nBPP16 Rotate error %ux%u: Op:ROTATE_FLIP_DIAGONALLY; pos=%d.", WithIn, HeightIn, pos);
+       goto ReturnErr;
+     }
+   }
+
 //-----------------------------Rotate-RGB32---------------------------------------------
 
   for(int WithIn=0; WithIn<6; WithIn++)
@@ -1011,7 +1135,7 @@ bool Pause = false;
      int InSize = 4 * WithIn * HeightIn;
      int OutSize = 4 * WithOut * HeightOut;
      if(InSize==0) OutSize=0;
-     PicRotateRGB32Impl picRotateARGB32;
+     PicRotateBPP32Impl picRotateARGB32;
      picRotateARGB32.SetInDimensions(WithIn,HeightIn);
      OrigRotateRGB32Impl origRotateARGB32;
      origRotateARGB32.SetInDimensions(WithIn,HeightIn);
@@ -1808,8 +1932,8 @@ bool Pause = false;
     }
 
     {
-      PicRotateRGB32Impl PicRotateRGB32;
-      BenchRotator("Rotate RGB32", PicRotateRGB32, BlobIn, BlobOut);
+      PicRotateBPP32Impl PicRotateBPP32;
+      BenchRotator("Rotate RGB32", PicRotateBPP32, BlobIn, BlobOut);
     }
 
     {
