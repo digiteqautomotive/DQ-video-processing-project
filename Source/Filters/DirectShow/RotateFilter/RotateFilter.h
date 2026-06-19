@@ -139,6 +139,6 @@ private:
 	int m_nOutWidth;
 	int m_nOutHeight;
 
-	int m_nStride;
-	int m_nPadding;
+	//int m_nStride;
+	//int m_nPadding;
 };

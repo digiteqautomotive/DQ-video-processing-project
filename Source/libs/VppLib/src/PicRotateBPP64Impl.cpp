@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 PicRotateBPP64Impl::PicRotateBPP64Impl()
 {}
 
-int PicRotateBPP64Impl::BytesPerPixel(void)
+int PicRotateBPP64Impl::BytesPerPixel(void) const
 {
   return 8;
 }

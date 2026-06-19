@@ -1,20 +1,20 @@
 /** @file
 
-MODULE				: PicScalerARGB32ImplA
+MODULE:			PicScalerARGB32ImplA
 
-FILE NAME			: PicScalerARGB32ImplA.cpp
+FILE NAME:		PicScalerARGB32ImplA.cpp
 
-DESCRIPTION			: An ARGB32 implementation derived from the general
-				PicScalerBase() class. Scale a packed RGB32 image
-				to the dimensions of another packed RGB32 image.
-				Note that the upscaling is limited to 2x either 
-				dimension.
+DESCRIPTION:		An ARGB32 implementation derived from the general
+			PicScalerBase() class. Scale a packed RGB32 image
+			to the dimensions of another packed RGB32 image.
+			Note that the upscaling is limited to 2x either 
+			dimension.
 
-NOTE:	This code replaces PicScalerARGB32Impl.cpp and must not be compilled together with this file.
+NOTE:			This code replaces PicScalerARGB32Impl.cpp and must not be compilled together with this file.
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025-2026 Jaroslav Fojtik All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 ===========================================================================*/
 #include <stdlib.h>
@@ -72,4 +72,4 @@ int PicScalerARGB32Impl::Scale(void* pOutImg, const void* pInImg, bool VFlip)
    } //end for y...
 
   return(1);
-}//end Scale.
+} //end Scale.

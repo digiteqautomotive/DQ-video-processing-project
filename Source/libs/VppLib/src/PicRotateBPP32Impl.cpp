@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 PicRotateRGB32Impl::PicRotateRGB32Impl()
 {}
 
-int PicRotateRGB32Impl::BytesPerPixel(void)
+int PicRotateRGB32Impl::BytesPerPixel(void) const
 {
   return 4;
 }

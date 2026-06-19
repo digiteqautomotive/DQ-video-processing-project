@@ -35,7 +35,7 @@ PicRotateRGB24Impl::PicRotateRGB24Impl()
 }
 
 
-int PicRotateRGB24Impl::BytesPerPixel(void)
+int PicRotateRGB24Impl::BytesPerPixel(void) const
 {
   return 3;
 }

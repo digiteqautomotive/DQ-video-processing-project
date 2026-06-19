@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 
-int PicRotateBPP16Impl::BytesPerPixel(void)
+int PicRotateBPP16Impl::BytesPerPixel(void) const
 {
 	return 2;
 }

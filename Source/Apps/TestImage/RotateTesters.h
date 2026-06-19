@@ -4,18 +4,16 @@
 class OrigRotateRGB32Impl: public PicRotateRGBBase
 {
 public:
-	OrigRotateRGB32Impl();
-	~OrigRotateRGB32Impl();
+	OrigRotateRGB32Impl()	{}
 
-	virtual int BytesPerPixel();
+	virtual int BytesPerPixel(void) const;
 };
 
 
 class OrigRotateRGB24Impl: public PicRotateRGBBase
 {
 public:
-	OrigRotateRGB24Impl();
-	~OrigRotateRGB24Impl();
+	OrigRotateRGB24Impl()	{}
 
-	virtual int BytesPerPixel();
+	virtual int BytesPerPixel(void) const;
 };

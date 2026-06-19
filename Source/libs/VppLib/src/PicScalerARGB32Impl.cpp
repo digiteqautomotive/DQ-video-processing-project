@@ -1,19 +1,18 @@
 /** @file
 
-MODULE				: PicScalerARGB32Impl
+MODULE:			PicScalerARGB32Impl
 
-FILE NAME			: PicScalerARGB32Impl.cpp
+FILE NAME:		PicScalerARGB32Impl.cpp
 
-DESCRIPTION			: An ARGB32 implementation derived from the general
-					PicScalerBase() class. Scale a packed ARGB32 image
-					to the dimensions of another packed ARGB32 image.
-					Note that the upscaling is limited to 2x either 
-					dimension.
+DESCRIPTION:		An ARGB32 implementation derived from the general
+			PicScalerBase() class. Scale a packed ARGB32 image
+			to the dimensions of another packed ARGB32 image.
+			Note that the upscaling is limited to 2x either 
+			dimension.
 					  
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
-Copyright (c) 2025-2026 Jaroslav Fojtik
-All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

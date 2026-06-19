@@ -61,7 +61,7 @@ class PicRotateBase
 {
 public:
 
-	PicRotateBase(): m_nWidth(0), m_nHeight(0) {}
+	PicRotateBase(): m_nWidth(0), m_nHeight(0), m_eMode(ROTATE_NONE) {}
 	virtual ~PicRotateBase() {}
 
 	void SetInDimensions(int nWidth, int nHeight);
@@ -73,7 +73,7 @@ public:
 
 	/// Implementation must be overidden by sub class
 	virtual bool Rotate(const void* pInImg, void* pOutImg) = 0;
-        virtual int BytesPerPixel(void) = 0;
+        virtual int BytesPerPixel(void) const = 0;
 
 protected:
 	unsigned m_nWidth;		///< Width of input image

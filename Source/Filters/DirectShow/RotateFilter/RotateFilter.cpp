@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PicRotateBPP16Impl.h"
 #include "PicRotateBPP24Impl.h"
 #include "PicRotateBPP32Impl.h"
+#include "PicRotateBPP48Impl.h"
 #include "PicRotateBPP64Impl.h"
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
 
@@ -53,15 +54,15 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	m_pRotate(NULL),
 	m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
 	m_nOutWidth(0),
-	m_nOutHeight(0),
-	m_nStride(0),
-	m_nPadding(0)
+	m_nOutHeight(0)
+	//m_nStride(0),
+	//m_nPadding(0)
         //m_nRotation(0)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
-	InitialiseInputTypes();
+  InitialiseInputTypes();
 	// Init parameters
-	initParameters();
+  initParameters();
 }
 
 
@@ -96,6 +97,8 @@ static const GUID * const RotateSupportedFormats[] = {
   &MEDIASUBTYPE_YV24,
   &MEDIASUBTYPE_RGB555,
   &MEDIASUBTYPE_RGB565,
+  &MEDIASUBTYPE_R16G16B16,
+  &MEDIASUBTYPE_B16G16R16,
   &MEDIASUBTYPE_A16R16G16B16,
   &MEDIASUBTYPE_A16B16G16R16
 };
@@ -150,6 +153,17 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
 	if(m_pRotate==NULL)
             m_pRotate = new PicRotateBPP16Impl();
 	m_nBitsPerPixel = 16;
+      }
+      else if(pmt->subtype==MEDIASUBTYPE_R16G16B16 || pmt->subtype==MEDIASUBTYPE_B16G16R16)
+      {
+        if(m_pRotate)
+        {
+          if(m_pRotate->BytesPerPixel()!=6)
+	          {delete m_pRotate; m_pRotate=NULL;}
+        }
+	if(m_pRotate==NULL)
+            m_pRotate = new PicRotateBPP48Impl();
+	m_nBitsPerPixel = 48;
       }
       else if(pmt->subtype==MEDIASUBTYPE_A16R16G16B16 || pmt->subtype==MEDIASUBTYPE_A16B16G16R16)
       {
@@ -250,30 +264,30 @@ HRESULT RotateFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 HRESULT RotateFilter::DecideBufferSize(IMemAllocator *pAlloc, ALLOCATOR_PROPERTIES *pProp)
 {
 	// Adding padding to take stride into account
-	pProp->cbBuffer = ((m_nOutWidth + m_nPadding) * m_nOutHeight * m_nBitsPerPixel) / 8;
+  pProp->cbBuffer = ((m_nOutWidth /*+ m_nPadding*/) * m_nOutHeight * m_nBitsPerPixel) / 8;
 
-	if (pProp->cbAlign == 0)
-	{
-		pProp->cbAlign = 1;
-	}
-	if (pProp->cBuffers == 0)
-	{
-		pProp->cBuffers = 1;
-	}
+  if(pProp->cbAlign == 0)
+  {
+    pProp->cbAlign = 1;
+  }
+  if(pProp->cBuffers == 0)
+  {
+    pProp->cBuffers = 1;
+  }
 	
 	// Set allocator properties.
-	ALLOCATOR_PROPERTIES Actual;
-	HRESULT hr = pAlloc->SetProperties(pProp, &Actual);
-	if (FAILED(hr)) 
-	{
-		return hr;
-	}
+  ALLOCATOR_PROPERTIES Actual;
+  HRESULT hr = pAlloc->SetProperties(pProp, &Actual);
+  if(FAILED(hr)) 
+  {
+    return hr;
+  }
 	// Even when it succeeds, check the actual result.
-	if (pProp->cbBuffer > Actual.cbBuffer) 
-	{
-		return E_FAIL;
-	}
-	return S_OK;
+  if (pProp->cbBuffer > Actual.cbBuffer) 
+  {
+    return E_FAIL;
+  }
+  return S_OK;
 }
 
 
@@ -368,6 +382,14 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
   {
     if(mtOut->subtype == MEDIASUBTYPE_AYUV) return S_OK;
   }
+  else if(mtIn->subtype == MEDIASUBTYPE_B16G16R16)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_B16G16R16) return S_OK;
+  }
+  else if(mtIn->subtype == MEDIASUBTYPE_R16G16B16)
+  {
+    if(mtOut->subtype == MEDIASUBTYPE_R16G16B16) return S_OK;
+  }
   else if(mtIn->subtype == MEDIASUBTYPE_A16B16G16R16)
   {
     if(mtOut->subtype == MEDIASUBTYPE_A16B16G16R16) return S_OK;
@@ -425,7 +447,7 @@ void RotateFilter::RecalculateFilterParameters()
 {
 // 	m_nStride =  (m_nOutWidth * (m_nBitCount / 8) + 3) & ~3;
 // 	m_nPadding = m_nStride - (m_nBytesPerPixel * m_nOutWidth);
-
+/*
   if(m_nBitsPerPixel == BITS_PER_PIXEL_RGB24)
   {
     m_nStride =  (m_nOutWidth * (m_nBitCount / 8) + 3) & ~3;
@@ -437,6 +459,7 @@ void RotateFilter::RecalculateFilterParameters()
     m_nPadding = 32 - (m_nStride%32);
 		//m_nStride += m_nStride % 32;
   }
+*/
 }
 
 

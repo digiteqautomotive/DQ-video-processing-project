@@ -37,6 +37,6 @@ class PicRotateBPP64Impl: public PicRotateRGBBase
 public:
 	PicRotateBPP64Impl();
 
-	virtual int BytesPerPixel();
+	virtual int BytesPerPixel() const;
         virtual bool Rotate(const void* pInImg, void* pOutImg);
 };

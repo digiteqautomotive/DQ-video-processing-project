@@ -3,15 +3,7 @@
 #include "RotateTesters.h"
 
 
-OrigRotateRGB24Impl::OrigRotateRGB24Impl()
-{
-  m_eMode = ROTATE_NONE;
-}
-
-OrigRotateRGB24Impl::~OrigRotateRGB24Impl()
-{}
-
-int OrigRotateRGB24Impl::BytesPerPixel()
+int OrigRotateRGB24Impl::BytesPerPixel(void) const
 {
   return BITS_PER_PIXEL_RGB24/8;
 }
@@ -20,13 +12,7 @@ int OrigRotateRGB24Impl::BytesPerPixel()
 ////////////////////////////////////////////////////////
 
 
-OrigRotateRGB32Impl::OrigRotateRGB32Impl()
-{;}
-
-OrigRotateRGB32Impl::~OrigRotateRGB32Impl()
-{;}
-
-int OrigRotateRGB32Impl::BytesPerPixel()
+int OrigRotateRGB32Impl::BytesPerPixel(void) const
 {
 	return BITS_PER_PIXEL_RGB32/8;
 }
