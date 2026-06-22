@@ -9,7 +9,7 @@ DESCRIPTION:
 LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2012, CSIR
-(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
+(c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -33,14 +33,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PicRotateRGBBase.h"
 
-/**
- * \ingroup ImageLib
- * RGB24 implementation of PicRotateRGBBase
- */ 
-class PicRotateRGB24Impl: public PicRotateRGBBase
+
+/** \ingroup ImageLib
+ * RGB24 implementation of PicRotateRGBBase */ 
+class PicRotateBPP24Impl: public PicRotateRGBBase
 {
 public:
-	PicRotateRGB24Impl();
+	PicRotateBPP24Impl();
 
 	virtual int BytesPerPixel(void) const;
         virtual bool Rotate(const void* pInImg, void* pOutImg);

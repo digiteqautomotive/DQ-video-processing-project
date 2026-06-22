@@ -1124,7 +1124,7 @@ bool Pause = false;
      }
    }
 
-//-----------------------------Rotate-RGB32---------------------------------------------
+//-----------------------------Rotate-BPP32---------------------------------------------
 
   for(int WithIn=0; WithIn<6; WithIn++)
    for(int HeightIn=0; HeightIn<6; HeightIn++)
@@ -1135,8 +1135,8 @@ bool Pause = false;
      int InSize = 4 * WithIn * HeightIn;
      int OutSize = 4 * WithOut * HeightOut;
      if(InSize==0) OutSize=0;
-     PicRotateBPP32Impl picRotateARGB32;
-     picRotateARGB32.SetInDimensions(WithIn,HeightIn);
+     PicRotateBPP32Impl picRotateBPP32;
+     picRotateBPP32.SetInDimensions(WithIn,HeightIn);
      OrigRotateRGB32Impl origRotateARGB32;
      origRotateARGB32.SetInDimensions(WithIn,HeightIn);
 
@@ -1147,9 +1147,9 @@ bool Pause = false;
      memcpy(BlobOut+16+OutSize,BlobIn,16);	// tail
      memcpy(BlobTest+16+OutSize,BlobIn,16);	// reference tail
 
-     picRotateARGB32.SetRotateMode(ROTATE_NONE);
+     picRotateBPP32.SetRotateMode(ROTATE_NONE);
      origRotateARGB32.SetRotateMode(ROTATE_NONE);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      int pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1159,9 +1159,9 @@ bool Pause = false;
        goto ReturnErr;
      }
 
-     picRotateARGB32.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
+     picRotateBPP32.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
      origRotateARGB32.SetRotateMode(ROTATE_90_DEGREES_CLOCKWISE);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1171,9 +1171,9 @@ bool Pause = false;
        goto ReturnErr;
      }
 
-     picRotateARGB32.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
+     picRotateBPP32.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
      origRotateARGB32.SetRotateMode(ROTATE_90_DEGS_CCK_VFLIP);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1184,9 +1184,9 @@ bool Pause = false;
      }
 
 
-     picRotateARGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
+     picRotateBPP32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
      origRotateARGB32.SetRotateMode(ROTATE_180_DEGREES_CLOCKWISE);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1196,9 +1196,9 @@ bool Pause = false;
        goto ReturnErr;
      }
 
-     picRotateARGB32.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
+     picRotateBPP32.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
      origRotateARGB32.SetRotateMode(ROTATE_270_DEGREES_CLOCKWISE);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1208,9 +1208,9 @@ bool Pause = false;
        goto ReturnErr;
      }
 
-     picRotateARGB32.SetRotateMode(ROTATE_FLIP_VERTICAL);
+     picRotateBPP32.SetRotateMode(ROTATE_FLIP_VERTICAL);
      origRotateARGB32.SetRotateMode(ROTATE_FLIP_VERTICAL);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1220,9 +1220,9 @@ bool Pause = false;
        goto ReturnErr;
      }
 
-     picRotateARGB32.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
+     picRotateBPP32.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
      origRotateARGB32.SetRotateMode(ROTATE_FLIP_HORIZONTAL);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1232,9 +1232,9 @@ bool Pause = false;
        goto ReturnErr;
      }
 
-     picRotateARGB32.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
+     picRotateBPP32.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
      origRotateARGB32.SetRotateMode(ROTATE_FLIP_DIAGONALLY);
-     picRotateARGB32.Rotate(BlobIn+16, BlobOut+16);
+     picRotateBPP32.Rotate(BlobIn+16, BlobOut+16);
      origRotateARGB32.Rotate(BlobIn+16, BlobTest+16);
 
      pos = memcmp(BlobTest, BlobOut, OutSize+32);
@@ -1246,7 +1246,7 @@ bool Pause = false;
    }
 
 
-//-----------------------------Rotate-RGB24---------------------------------------------
+//-----------------------------Rotate-BPP24---------------------------------------------
 
   for(int WithIn=0; WithIn<6; WithIn++)
    for(int HeightIn=0; HeightIn<6; HeightIn++)
@@ -1257,7 +1257,7 @@ bool Pause = false;
      int InSize = 3 * WithIn * HeightIn;
      int OutSize = 3 * WithOut * HeightOut;
      if(InSize==0) OutSize=0;
-     PicRotateRGB24Impl picRotateRGB24;
+     PicRotateBPP24Impl picRotateRGB24;
      picRotateRGB24.SetInDimensions(WithIn,HeightIn);
      OrigRotateRGB24Impl origRotateRGB24;
      origRotateRGB24.SetInDimensions(WithIn,HeightIn);
@@ -1543,7 +1543,7 @@ bool Pause = false;
      ConvRGB24toYUV420Real PicConverterRGB24toYUV420(Width,Height);
      ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(Width,Height);
      ConvRGB24toYUV420FixP fpConverterRGB24toYUV420(Width,Height);
-     //FastRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height); //	-- nefunguje!!!
+     //FastRGB32toYUV420Converter PicConverterRGB32toYUV420(Width,Height); //	-- not working!!!
 
      PicConverterRGB24toYUV420.Convert(BlobIn+16, BlobOut+16);
      OrigPicConverterRGB24toYUV420.Convert(BlobIn+16, BlobTest+16);
@@ -1923,7 +1923,7 @@ bool Pause = false;
 	/////////////////////////////////////////////////////////
 
     {
-      PicRotateRGB24Impl PicRotateRGB24;
+      PicRotateBPP24Impl PicRotateRGB24;
       BenchRotator("Rotate RGB24", PicRotateRGB24, BlobIn, BlobOut);
     }
     {

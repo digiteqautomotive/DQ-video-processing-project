@@ -1,8 +1,8 @@
 /** @file
 
-MODULE                : PicRotateRGB24Impl
+MODULE                : PicRotateBPP24Impl
 
-FILE NAME             : PicRotateRGB24Impl.cpp
+FILE NAME             : PicRotateBPP24Impl.cpp
 
 DESCRIPTION           :
                      
@@ -29,13 +29,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 
-PicRotateRGB24Impl::PicRotateRGB24Impl()
+PicRotateBPP24Impl::PicRotateBPP24Impl()
 {
   m_eMode = ROTATE_NONE;
 }
 
 
-int PicRotateRGB24Impl::BytesPerPixel(void) const
+int PicRotateBPP24Impl::BytesPerPixel(void) const
 {
   return 3;
 }
@@ -49,7 +49,7 @@ void Rotate24_180(unsigned Width, unsigned Height, const void *ptr_in, void *ptr
 #endif
 
 
-bool PicRotateRGB24Impl::Rotate(const void* pInImg, void* pOutImg)
+bool PicRotateBPP24Impl::Rotate(const void* pInImg, void* pOutImg)
 {
 	if (!pInImg || !pOutImg) return false;
 	

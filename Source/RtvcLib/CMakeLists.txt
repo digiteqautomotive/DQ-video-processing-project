@@ -37,6 +37,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/OverlayExtMem2Dv2.cpp
 ../libs/VppLib/src/OverlayMem2Dv2.cpp
 ../libs/VppLib/src/PicCompareBase.cpp
+../libs/VppLib/src/PicConcatPiP.cpp
 ../libs/VppLib/src/PicConcatRGB24Impl.cpp
 ../libs/VppLib/src/PicConcatRGB32Impl.cpp
 ../libs/VppLib/src/PicConcatRGB565Impl.cpp
@@ -52,8 +53,9 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicInPic8B_Impl.cpp
 ../libs/VppLib/src/PicRotateBase.cpp
 ../libs/VppLib/src/PicRotateBPP16Impl.cpp
-../libs/VppLib/src/PicRotateRGB24Impl.cpp
-../libs/VppLib/src/PicRotateRGB32Impl.cpp
+../libs/VppLib/src/PicRotateBPP24Impl.cpp
+../libs/VppLib/src/PicRotateBPP32Impl.cpp
+../libs/VppLib/src/PicRotateBPP64Impl.cpp
 ../libs/VppLib/src/PicRotateRGBBase.cpp
 ../libs/VppLib/src/PicScalerARGB32Impl.cpp
 ../libs/VppLib/src/PicScalerRGB565Impl.cpp
@@ -170,6 +172,7 @@ SET(IU_HEADERS
 ../libs/VppLib/include/PicCompYUYV_Impl.h
 ../libs/VppLib/include/PicCompI420Impl.h
 ../libs/VppLib/include/PicConcatBase.h
+../libs/VppLib/include/PicConcatPiP.h
 ../libs/VppLib/include/PicConcatRGB24Impl.h
 ../libs/VppLib/include/PicConcatRGB32Impl.h
 ../libs/VppLib/include/PicConcatRGB565Impl.h
@@ -186,8 +189,10 @@ SET(IU_HEADERS
 ../libs/VppLib/include/PicInPic6B_Impl.h
 ../libs/VppLib/include/PicInPic8B_Impl.h
 ../libs/VppLib/include/PicRotateBase.h
-../libs/VppLib/include/PicRotateRGB24Impl.h
-../libs/VppLib/include/PicRotateRGB32Impl.h
+../libs/VppLib/include/PicRotateBPP24Impl.h
+../libs/VppLib/include/PicRotateBPP32Impl.h
+../libs/VppLib/include/PicRotateBPP48Impl.h
+../libs/VppLib/include/PicRotateBPP64Impl.h
 ../libs/VppLib/include/PicRotateRGBBase.h
 ../libs/VppLib/include/PicScalerBase.h
 ../libs/VppLib/include/PicScalerRGB24Impl.h

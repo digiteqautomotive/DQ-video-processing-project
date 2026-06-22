@@ -93,7 +93,7 @@ bool PicRotateBPP64Impl::Rotate(const void* pInImg, void* pOutImg)
 			const unsigned nTotalPixels = m_nWidth * m_nHeight;
 			const int nLastIndex = (nTotalPixels - 1) * 8;
 			BYTE* pDest = (BYTE*)pOutImg + nLastIndex;
-			for(unsigned i = 0; i < nTotalPixels; ++i, pSrc+=8, pDest-=8)
+			for(unsigned i=0; i<nTotalPixels; ++i, pSrc+=8, pDest-=8)
 			{
 				*(__int64*)(pDest) = *(__int64*)(pSrc);
 			}
