@@ -238,13 +238,13 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 
     prcSource->top = 0;
     prcSource->left = 0;
-    prcSource->right = pBi->biWidth;
-    prcSource->bottom = pBi->biHeight;
+    prcSource->right = labs(pBi->biWidth);
+    prcSource->bottom = labs(pBi->biHeight);
 
     prcTarget->top = 0;
     prcTarget->left = 0;
-    prcTarget->right = pBi->biWidth;
-    prcTarget->bottom = pBi->biHeight;
+    prcTarget->right = labs(pBi->biWidth);
+    prcTarget->bottom = labs(pBi->biHeight);
 
     pMediaType->lSampleSize = pBi->biSizeImage;
 

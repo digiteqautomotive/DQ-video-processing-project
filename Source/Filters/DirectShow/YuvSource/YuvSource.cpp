@@ -152,7 +152,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
     return;
   }
 
-  // try searching for x's
+	// try searching for x's
   pos = sFormatString.find("x");
   while(pos != std::string::npos)
   {
@@ -200,7 +200,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
     break;
   }
 
-  // just create picture buffer using default values
+	// just create picture buffer using default values
   recalculate();
   m_pYuvBuffer = new unsigned char[m_iFrameSize];
 

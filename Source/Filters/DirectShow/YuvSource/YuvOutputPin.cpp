@@ -66,28 +66,28 @@ HRESULT YuvOutputPin::GetMediaType(CMediaType *pMediaType)
 
   switch(m_pYuvFilter->m_nYuvFormat)
   {
-  case YUV420P:
-  {
-    pvi->bmiHeader.biBitCount = 12;
-    // For some reason IYUV requires a color converter before the renderer and I420 does not even though 
-    // these media types are the same
-    pvi->bmiHeader.biCompression = MAKEFOURCC('I', '4', '2', '0');
-    // Works too but DS inserts color space converter before renderer
-    //pvi->bmiHeader.biCompression = MAKEFOURCC('I', 'Y', 'U', 'V');
-    // Both of these work
-    pMediaType->SetSubtype(&MEDIASUBTYPE_I420);
-    // Tried other media types MEDIASUBTYPE_IMC3, MEDIASUBTYPE_IMC2, MEDIASUBTYPE_IMC4, etc
-    // These have no effect on the connection
-    // The most important thing seems to be the bmiHeader.biCompression being set correctly
-    // pMediaType->SetSubtype(&MEDIASUBTYPE_IMC3);
-    break;
-  }
-  case YUV444I:
-  {
-    pvi->bmiHeader.biBitCount = 32;
-    pvi->bmiHeader.biCompression = MAKEFOURCC('A', 'Y', 'U', 'V');
-    pMediaType->SetSubtype(&MEDIASUBTYPE_AYUV);    break;
-  }
+    case YUV420P:
+    {
+      pvi->bmiHeader.biBitCount = 12;
+	// For some reason IYUV requires a color converter before the renderer and I420 does not even though 
+	// these media types are the same
+      pvi->bmiHeader.biCompression = MAKEFOURCC('I', '4', '2', '0');
+	// Works too but DS inserts color space converter before renderer
+	//pvi->bmiHeader.biCompression = MAKEFOURCC('I', 'Y', 'U', 'V');
+	// Both of these work
+      pMediaType->SetSubtype(&MEDIASUBTYPE_I420);
+	// Tried other media types MEDIASUBTYPE_IMC3, MEDIASUBTYPE_IMC2, MEDIASUBTYPE_IMC4, etc
+	// These have no effect on the connection
+	// The most important thing seems to be the bmiHeader.biCompression being set correctly
+      // pMediaType->SetSubtype(&MEDIASUBTYPE_IMC3);
+      break;
+    }
+    case YUV444I:
+    {
+      pvi->bmiHeader.biBitCount = 32;
+      pvi->bmiHeader.biCompression = MAKEFOURCC('A', 'Y', 'U', 'V');
+      pMediaType->SetSubtype(&MEDIASUBTYPE_AYUV);    break;
+    }
   }
 
   pvi->bmiHeader.biClrImportant = 0;

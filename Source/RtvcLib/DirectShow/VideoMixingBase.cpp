@@ -216,8 +216,8 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       {
         rcSource->left = 0;
         rcSource->top = 0;
-        rcSource->right = NewOutputWidth;
-        rcSource->bottom = NewOutputHeight;
+        rcSource->right = labs(NewOutputWidth);
+        rcSource->bottom = labs(NewOutputHeight);
       }
 
 			// Set target rect
@@ -225,8 +225,8 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       {
         rcTarget->left = 0;
         rcTarget->top = 0;
-        rcTarget->right = NewOutputWidth;
-        rcTarget->bottom = NewOutputHeight;
+        rcTarget->right = labs(NewOutputWidth);
+        rcTarget->bottom = labs(NewOutputHeight);
       }
     }
 
