@@ -206,6 +206,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
 
 }
 
+
 STDMETHODIMP YuvSourceFilter::GetCurFile(LPOLESTR *ppszFileName, AM_MEDIA_TYPE *pmt)
 {
   if(ppszFileName==NULL) return E_POINTER;
