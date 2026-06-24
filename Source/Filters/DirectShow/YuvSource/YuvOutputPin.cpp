@@ -62,9 +62,9 @@ HRESULT YuvOutputPin::GetMediaType(CMediaType *pMediaType)
 
   ZeroMemory(pvi, pMediaType->cbFormat);
   pvi->AvgTimePerFrame = m_rtFrameLength;
-  pvi->dwBitRate = ((int)(m_pYuvFilter->m_iFramesPerSecond * m_pYuvFilter->m_iFrameSize * m_pYuvFilter->m_dBytesPerPixel)) << 3;
+  pvi->dwBitRate = m_pYuvFilter->m_iFramesPerSecond * m_pYuvFilter->m_iFrameSize * m_pYuvFilter->m_dBitsPerPixel;
 
-  switch (m_pYuvFilter->m_nYuvFormat)
+  switch(m_pYuvFilter->m_nYuvFormat)
   {
   case YUV420P:
   {

@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: YUVSource
+MODULE:		YUVSource
 
-FILE NAME			: YuvSource.cpp
+FILE NAME:	YuvSource.cpp
 
-DESCRIPTION			: 
+DESCRIPTION: 
 
-LICENSE: Software License Agreement (BSD License)
+LICENSE:	Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
 Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
@@ -64,7 +64,7 @@ YuvSourceFilter::YuvSourceFilter(IUnknown *pUnk, HRESULT *phr): CSource(NAME("DQ
   m_sDimensions("352x288"),
   m_iFramesPerSecond(30),
   m_iNoFrames(150),		  //TODO: move to property page
-  m_dBytesPerPixel(1.5),
+  m_dBitsPerPixel(12),
   m_pYuvBuffer(NULL),
   m_iFileSize(0),
   m_iRead(0)
@@ -95,6 +95,7 @@ YuvSourceFilter::~YuvSourceFilter()
   delete m_pPin;
 }
 
+
 STDMETHODIMP YuvSourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE *pmt)
 {
   // Store the URL
@@ -117,18 +118,19 @@ STDMETHODIMP YuvSourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE 
   }
 }
 
+
 void YuvSourceFilter::createYuvFrameBuffer()
 {
   std::string sFormatString = m_sFile;
   size_t pos = sFormatString.find("444");
-  if (pos != std::string::npos)
+  if(pos != std::string::npos)
   {
-    m_dBytesPerPixel = 4.0;
+    m_dBitsPerPixel = 4*8;
     m_nYuvFormat = YUV444I;
   }
   else
   {
-    m_dBytesPerPixel = 1.5;
+    m_dBitsPerPixel = 12;
     m_nYuvFormat = YUV420P;
   }
 
@@ -136,7 +138,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
   std::transform(sFormatString.begin(), sFormatString.end(), sFormatString.begin(), ::tolower);
 
   pos = sFormatString.find("qcif");
-  if (pos != std::string::npos)
+  if(pos != std::string::npos)
   {
     setDimensions("176x144");
     return;
@@ -152,7 +154,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
 
   // try searching for x's
   pos = sFormatString.find("x");
-  while (pos != std::string::npos)
+  while(pos != std::string::npos)
   {
     std::string sWidth, sHeight;
     // check if there is at least a number before and after the x, else continue
@@ -192,7 +194,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
     bool Ok;
     int iWidth = convert<int>(sWidth,Ok);
     int iHeight = convert<int>(sHeight,Ok);			// TODO: check OK
-    updatePictureBuffer(iWidth, iHeight, m_dBytesPerPixel);
+    updatePictureBuffer(iWidth, iHeight, m_dBitsPerPixel);
     // update for property page
     m_sDimensions = sWidth + "x" + sHeight;
     break;
@@ -235,7 +237,7 @@ STDMETHODIMP YuvSourceFilter::NonDelegatingQueryInterface( REFIID riid, void **p
 STDMETHODIMP YuvSourceFilter::Stop()
 {
   m_pPin->m_iCurrentFrame = 0;
-  m_in1.seekg( 0 , std::ios::beg );
+  m_in1.seekg(0 , std::ios::beg);
   return CSource::Stop();
 }
 
@@ -259,7 +261,7 @@ STDMETHODIMP YuvSourceFilter::SetParameter( const char* type, const char* value 
 
 void YuvSourceFilter::recalculate()
 {
-  m_iFrameSize = m_iWidth*m_iHeight*m_dBytesPerPixel;
+  m_iFrameSize = (labs(m_iWidth*m_iHeight)*m_dBitsPerPixel + 7) / 8;
   m_iNoFrames = m_iFileSize/m_iFrameSize;
   m_pPin->m_rtFrameLength = UNITS/m_iFramesPerSecond;
 }
@@ -267,9 +269,9 @@ void YuvSourceFilter::recalculate()
 
 bool YuvSourceFilter::readFrame()
 {
-  if (m_in1.is_open())
+  if(m_in1.is_open())
   {
-    m_in1.read( (char*)m_pYuvBuffer, m_iFrameSize );
+    m_in1.read((char*)m_pYuvBuffer, m_iFrameSize);
     return true;
   }
   return false;
@@ -286,15 +288,15 @@ bool YuvSourceFilter::setDimensions( const std::string& sDimensions )
     istr >> iWidth;
     std::istringstream istr2( sDimensions.substr( pos + 1) );
     istr2 >> iHeight;
-    return updatePictureBuffer(iWidth, iHeight, m_dBytesPerPixel);
+    return updatePictureBuffer(iWidth, iHeight, m_dBitsPerPixel);
   }
   return false;
 }
 
 
-bool YuvSourceFilter::updatePictureBuffer(int iWidth, int iHeight, double dBytesPerPixel)
+bool YuvSourceFilter::updatePictureBuffer(int iWidth, int iHeight, unsigned dBitsPerPixel)
 {
-  if (iWidth > 0 && iHeight > 0)
+  if(iWidth > 0 && iHeight > 0)
   {
     m_iWidth = iWidth;
     m_iHeight = iHeight;

@@ -1,15 +1,15 @@
 /** @file
 
-MODULE                : PicRotateBPP2Impl
+MODULE:		PicRotateBPP2Impl
 
-FILE NAME             : PicRotateBPP32Impl.cpp
+FILE NAME:	PicRotateBPP32Impl.cpp
 
-DESCRIPTION           :
+DESCRIPTION:
                      
-LICENSE: Software License Agreement (BSD License)
+LICENSE:	Software License Agreement (BSD License)
 
 Copyright (c) 2008-2012, CSIR
-Copyright (c) 2025-2026 Jaroslav Fojtik		All rights reserved.
+(c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

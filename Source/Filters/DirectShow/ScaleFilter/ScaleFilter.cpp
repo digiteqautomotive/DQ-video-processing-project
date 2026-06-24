@@ -1,12 +1,12 @@
 /** @file
 
-MODULE				: ScaleFilter
+MODULE:			ScaleFilter
 
-FILE NAME			: ScaleFilter.cpp
+FILE NAME:		ScaleFilter.cpp
 
-DESCRIPTION			:
+DESCRIPTION:
 
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2008-2015, CSIR
 Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.

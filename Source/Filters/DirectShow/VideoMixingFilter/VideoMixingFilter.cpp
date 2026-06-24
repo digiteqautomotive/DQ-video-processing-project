@@ -103,7 +103,7 @@ VideoMixingFilter::~VideoMixingFilter()
 
   for(int i=0; i<2; i++)
   {
-    if (m_pSampleBuffers[i])
+    if(m_pSampleBuffers[i])
     {
       delete[] m_pSampleBuffers[i];
       m_pSampleBuffers[i] = NULL;

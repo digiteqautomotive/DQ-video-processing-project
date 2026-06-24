@@ -118,7 +118,7 @@ private:
   ~YuvSourceFilter();
 
   bool setDimensions(const std::string& sDimensions);
-  bool updatePictureBuffer(int iWidth, int iHeight, double dBytesPerPixel);
+  bool updatePictureBuffer(int iWidth, int iHeight, unsigned dBitsPerPixel);
 
   void recalculate();
   bool readFrame();
@@ -142,7 +142,7 @@ private:
   int m_iFramesPerSecond;
   int m_iNoFrames;
   int m_iFrameSize;
-  double m_dBytesPerPixel;
+  unsigned char m_dBitsPerPixel;
 
   std::string m_sFile;
 
