@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph">
+    <filter name="Dump" index="0" clsid="{36A5F770-FE4C-11CE-A8ED-00AA002FEAB5}">
+        <ifilesinkfilter dest="D:\temp\video.720x576.YUV"/>
+    </filter>
+    <filter name="AVObjects Video Generator" index="1" clsid="{966FCC90-1C7A-42C3-A2DF-F91F0BEADDA1}" clock="1">
+        <ipersiststream encoding="base64" data="kMxvlnocw0Ki3/kfC+rdoQEAAAAAAAAAZAAAAAEAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAQAAAAAAAAAaJwAASTQyMAAAEACAAACqADibcYCfWAVWw84RvwEAqgBVWVrQAgAAQAIAAAAAAAAAADlApQAAAIC7AAAoAAAALAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    </filter>
+    <connect out="AVObjects Video Generator/Video" in="Dump/Input" outFilterIndex="1" outPinId="Video" outPinName="Video" outPinIndex="0" inFilterIndex="0" inPinId="Input" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_I420" sampleSize="622080" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{30323449-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcGoHAAAAAIAaBgAAAAAAKAAAANACAABAAgAAAQAMAEk0MjAAfgkAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+</graph>

@@ -298,7 +298,7 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     }
     if(pBi == NULL) return VFW_E_TYPE_NOT_ACCEPTED;
 
-    //Now we need to calculate the size of the output image
+	//Now we need to calculate the size of the output image
     if(m_nReqOutHeight!=0 && m_nReqOutWidth!=0)
     {
 	// Set height
@@ -338,13 +338,13 @@ HRESULT ScaleFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
 	// Adjust recs
     rcSource->top = 0;
     rcSource->left = 0;
-    rcSource->right = pBi->biWidth;
-    rcSource->bottom = pBi->biHeight;
+    rcSource->right = labs(pBi->biWidth);
+    rcSource->bottom = labs(pBi->biHeight);
 
     rcTarget->top = 0;
     rcTarget->left = 0;
-    rcTarget->right = pBi->biWidth;
-    rcTarget->bottom = pBi->biHeight;
+    rcTarget->right = labs(pBi->biWidth);
+    rcTarget->bottom = labs(pBi->biHeight);
 
     return S_OK;
   }
