@@ -503,8 +503,9 @@ HRESULT PicInPicFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, cons
   {
 	// if target width and height have been set use those dimensions
     nOutputWidth = m_nTargetWidth;
-    nOutputHeight = m_nTargetHeight;
-    nOutputSize = (m_nOutputWidth * m_nOutputHeight * m_nBitsPerPixel) / 8;
+    if(labs(nOutputHeight) != labs(m_nTargetHeight))
+        nOutputHeight = m_nTargetHeight;
+    nOutputSize = labs(m_nOutputWidth * m_nOutputHeight * m_nBitsPerPixel) / 8;
   }
   else
   {
@@ -513,13 +514,15 @@ HRESULT PicInPicFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, cons
       if(pBmih2==NULL) return E_POINTER;
       nOutputSize = m_nSampleSizes[1];
       nOutputWidth = pBmih2->biWidth;
-      nOutputHeight = pBmih2->biHeight;
+      if(labs(nOutputHeight) != labs(pBmih2->biHeight))
+         nOutputHeight = pBmih2->biHeight;
     }
     else
     {	// Use size of first input
       nOutputSize = m_nSampleSizes[0];
       nOutputWidth = pBmih1->biWidth;
-      nOutputHeight = pBmih1->biHeight;
+      if(labs(nOutputHeight) != labs(pBmih1->biHeight))
+          nOutputHeight = pBmih1->biHeight;
     }
   }  
 
@@ -548,32 +551,29 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   }
 
   	// Video format
+  const BITMAPINFOHEADER* pBiOut = NULL;
   if(pMediaType->formattype==FORMAT_VideoInfo)
   {
     const VIDEOINFOHEADER * const pVihOut = (const VIDEOINFOHEADER*)pMediaType->pbFormat;
-    const BITMAPINFOHEADER* const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nOutputHeight)
-    {
-      if(labs(pBiOut->biHeight) != labs(m_nOutputHeight))
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
-    }
-    if(pBiOut->biWidth != m_nOutputWidth)
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+    if(pVihOut) pBiOut = &(pVihOut->bmiHeader);    
   }
   else if(pMediaType->formattype==FORMAT_VideoInfo2)
   {
-    const VIDEOINFOHEADER2 * const pVihOut = (const VIDEOINFOHEADER2*)pMediaType->pbFormat;
-    const BITMAPINFOHEADER * const pBiOut = &(pVihOut->bmiHeader);
-    if(pBiOut->biHeight != m_nTargetHeight)
-    {
-      if(labs(pBiOut->biHeight) != labs(m_nOutputHeight))
+    const VIDEOINFOHEADER2 * const pVihOut2 = (const VIDEOINFOHEADER2*)pMediaType->pbFormat;
+    if(pVihOut2) pBiOut = &(pVihOut2->bmiHeader);
+  } 
+  if(pBiOut==NULL) return VFW_E_TYPE_NOT_ACCEPTED;
+
+  if(pBiOut->biWidth != m_nOutputWidth)
+    return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+
+  if(pBiOut->biHeight != m_nOutputHeight)
+  {
+    if(labs(pBiOut->biHeight) != labs(m_nOutputHeight))
         return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted height at this stage.
-    }
-    if(pBiOut->biWidth != m_nOutputWidth)
-        return VFW_E_TYPE_NOT_ACCEPTED;		// Unaccepted width at this stage.
+    m_nOutputHeight = pBiOut->biHeight;		// Change Height sign.
+    reconfigure();				// Unpleasant reconfigure/
   }
-  else
-      return VFW_E_TYPE_NOT_ACCEPTED;
 
   switch(m_nBitsPerPixel)
   {
@@ -717,7 +717,7 @@ void PicInPicFilter::reconfigure(void)
   m_Vflip = false;
   if(VideoFormat==MEDIASUBTYPE_ARGB32 || VideoFormat==MEDIASUBTYPE_RGB32 || VideoFormat==MEDIASUBTYPE_RGB24)
   {
-    m_Vflip = InputNegSign ^ (m_nOutputWidth<0);
+    m_Vflip = InputNegSign ^ (m_nOutputHeight<0);
   }
 
 	// target picture scaler

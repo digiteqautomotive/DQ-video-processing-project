@@ -1,15 +1,15 @@
 /** @file
 
-MODULE				: YUVSource
+MODULE:			YUVSource
 
-FILE NAME			: YuvSource.h
+FILE NAME:		YuvSource.h
 
-DESCRIPTION			: 
+DESCRIPTION: 
 
-LICENSE: Software License Agreement (BSD License)
+LICENSE:		Software License Agreement (BSD License)
 
 Copyright (c) 2008 - 2014, CSIR
-All rights reserved.
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -52,8 +52,13 @@ DEFINE_GUID(CLSID_YUVProperties,
 #define SOURCE_FPS        "fps"
 
 #define YUV_FORMAT        "yuv_format"
-#define YUV420P           0
-#define YUV444I           1
+
+typedef enum
+{
+    YUV420P = 0,
+    YUV444I,
+    RGB24
+} E_VIDEO_TYPE;
 
 /**
  * @brief YUV source filter that currently supports reading YUV420P and YUV444 interlaced packet.
@@ -81,9 +86,9 @@ public:
   /// From CSettingsInterface
   void initParameters()
   {
-    addParameter( YUV_FORMAT, &m_nYuvFormat, YUV420P);
-    addParameter( SOURCE_DIMENSIONS, &m_sDimensions, "352x288");
-    addParameter( SOURCE_FPS, &m_iFramesPerSecond, 30);
+    addParameter(YUV_FORMAT, &m_nYuvFormat, YUV420P);
+    addParameter(SOURCE_DIMENSIONS, &m_sDimensions, "352x288");
+    addParameter(SOURCE_FPS, &m_iFramesPerSecond, 30);
   }
   STDMETHODIMP SetParameter( const char* type, const char* value );
 
@@ -125,8 +130,7 @@ private:
   /**
    * @brief Creates the buffer to store YUV frames in. It tries to determine the dimensions 
    * of the YUV image based on the file name. Also tries to determine the YUV format of the 
-   * YUV image based on the file name. This defaults to YUV420P.
-   */
+   * YUV image based on the file name. This defaults to YUV420P. */
   void createYuvFrameBuffer();
   /**
    * @brief 

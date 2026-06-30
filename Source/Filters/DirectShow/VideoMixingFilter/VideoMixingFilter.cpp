@@ -610,6 +610,7 @@ void VideoMixingFilter::OnDisconnect(int nIndex, RTVC_DIRECTION eDirection)
 }
 
 
+/// This method calculates output video signal settings, but do not actually set it.
 HRESULT VideoMixingFilter::SetOutputDimensions(const BITMAPINFOHEADER* pBmih1, const BITMAPINFOHEADER* pBmih2, int& nOutputWidth, int& nOutputHeight, int& nOutputSize)
 {
   m_FeedHeight = m_FeedWidth = m_Feed_xPos = m_Feed_yPos = 0;

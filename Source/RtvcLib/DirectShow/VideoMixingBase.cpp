@@ -159,7 +159,7 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       return hr;
     }
 
-    int NewOutputWidth = m_nOutputWidth;
+    int NewOutputWidth = m_nOutputWidth;	// Fake output dimensions only for getting media type.
     int NewOutputHeight = m_nOutputHeight;
     int NewOutputSize = m_nOutputSize;
     {		// We need to recalculate the new width and height
@@ -205,7 +205,9 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
 
       bmh1->biSizeImage = NewOutputSize;
       bmh1->biPlanes = 1;
-      bmh1->biBitCount = (8*NewOutputSize)/(NewOutputWidth*NewOutputHeight);
+      bmh1->biBitCount = NewOutputWidth*NewOutputHeight;
+      if(bmh1->biBitCount!=0)
+        bmh1->biBitCount = (8*NewOutputSize)/(bmh1->biBitCount);
 			//Set sample size
       pMediaType->SetSampleSize(NewOutputSize);
  
@@ -311,6 +313,27 @@ HRESULT VideoMixingBase::SetMediaType(PIN_DIRECTION direction, const CMediaType 
       return hr;
     }
   }
+  else if(direction == PINDIR_OUTPUT)
+  {
+    const BITMAPINFOHEADER *bmih = NULL;
+    if(pmt->formattype==FORMAT_VideoInfo)
+    {		// Copy the video info header
+      const VIDEOINFOHEADER * const pVih = (VIDEOINFOHEADER*)pmt->pbFormat;
+      if(pVih) bmih = &pVih->bmiHeader;
+    }
+    else if(pmt->formattype==FORMAT_VideoInfo2)
+    {	  		// Copy the video info header
+      const VIDEOINFOHEADER2 * const pVih2 = (VIDEOINFOHEADER2*)pmt->pbFormat;
+      if(pVih2) bmih = &pVih2->bmiHeader;
+    }
+    if(bmih)        
+    {		// We need to recalculate the new width and height
+      m_nOutputWidth = bmih->biWidth;
+      m_nOutputHeight = bmih->biHeight;
+      m_nOutputSize = labs(m_nOutputWidth * m_nOutputHeight * m_nBitsPerPixel) / 8;
+    }
+  }
+
 
 		// Get first input dimensions
   AM_MEDIA_TYPE mediaType1;

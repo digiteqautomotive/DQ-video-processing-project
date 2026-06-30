@@ -1,15 +1,15 @@
 /** @file
 
-MODULE				: YuvProperties
+MODULE:			YuvProperties
 
-FILE NAME			: YuvProperties.cpp
+FILE NAME:		YuvProperties.cpp
 
-DESCRIPTION			: Properties dialog for YUV Source Filter
+DESCRIPTION:		Properties dialog for YUV Source Filter
 
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2008 - 2012, CSIR
-All rights reserved.
+Copyright (c) 2008-2012, CSIR
+Copyright (c) 2025-2026, Digiteq automotive, programmed by Jaroslav Fojtik	All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -62,11 +62,11 @@ HRESULT YuvProperties::ReadSettings(void)
   {
     int nYuvFormat = atoi(szBuffer);
     int nRadioID = RADIO_BUTTON_IDS[nYuvFormat];
-    long lResult = SendMessage(				// returns LRESULT in lResult
+    long lResult = SendMessage(			// returns LRESULT in lResult
         GetDlgItem(m_Dlg, nRadioID),		// handle to destination control
-        (UINT)BM_SETCHECK,					// message ID
-        (WPARAM)1,							// = 0; not used, must be zero
-        (LPARAM)0							// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
+        (UINT)BM_SETCHECK,			// message ID
+        (WPARAM)1,				// = 0; not used, must be zero
+        (LPARAM)0				// = (LPARAM) MAKELONG ((short) nUpper, (short) nLower)
         );
   }
   else

@@ -119,41 +119,79 @@ STDMETHODIMP YuvSourceFilter::Load(LPCOLESTR lpwszFileName, const AM_MEDIA_TYPE 
 }
 
 
-void YuvSourceFilter::createYuvFrameBuffer()
+/// QCIF stands for Quarter Common Intermediate Format. https://www.videoexpertsgroup.com/glossary/what-is-qcif
+typedef struct
+{
+  const char *Standard;
+  const char *Resolution;
+} TFormatItem;
+
+static const TFormatItem FormatItem[] =
+{
+  {"FULLHD1080P","1920x1080"},
+  {"FULLHD","1920x1080"},
+  {"HD960P","1280x960"},
+  {"HD720P","1280x720"},
+  {"SQCIF","128x96"},
+  {"UXGA","1600x1200"},
+  {"QCIF","176x120"},
+  {"2CIF","720x240"},
+  {"4CIF","704x480"},
+  {"960H","960x480"},
+  {"CIF","352x288"},	//  Common Intermediate Format, is another video resolution standard, table at www is messed up.
+  {"D1","720x480"},
+};
+
+
+typedef struct
+{
+  const char *Key;
+  unsigned ShortFormat;
+  unsigned BitsPerPixel;
+} TMediaFormatItem;
+
+static const TMediaFormatItem MediaFormats[] =
+{
+  {"RGB24",RGB24,24},
+  {"444",YUV444I,4*8},
+  {"420",YUV420P,12}  
+};
+
+
+void YuvSourceFilter::createYuvFrameBuffer(void)
 {
   std::string sFormatString = m_sFile;
-  size_t pos = sFormatString.find("444");
-  if(pos != std::string::npos)
-  {
-    m_dBitsPerPixel = 4*8;
-    m_nYuvFormat = YUV444I;
-  }
-  else
-  {
-    m_dBitsPerPixel = 12;
-    m_nYuvFormat = YUV420P;
-  }
 
-  // try and guess what the dimensions are based on file name
-  std::transform(sFormatString.begin(), sFormatString.end(), sFormatString.begin(), ::tolower);
+  m_dBitsPerPixel = MediaFormats[1].BitsPerPixel;
+  m_nYuvFormat = MediaFormats[1].ShortFormat;
 
-  pos = sFormatString.find("qcif");
-  if(pos != std::string::npos)
+  for(int i=0; i<sizeof(MediaFormats)/sizeof(TMediaFormatItem); i++)
   {
-    setDimensions("176x144");
-    return;
+    const size_t pos = sFormatString.find(MediaFormats[i].Key);
+    if(pos != std::string::npos)
+    {
+      m_dBitsPerPixel = MediaFormats[i].BitsPerPixel;
+      m_nYuvFormat = MediaFormats[i].ShortFormat;
+      break;
+    }
   }
 
-  // NB search for cif last since 'qcif' and '4cif' contain 'cif'
-  pos = sFormatString.find("cif");
-  if (pos != std::string::npos)
+	// try and guess what the dimensions are based on file name
+  std::transform(sFormatString.begin(), sFormatString.end(), sFormatString.begin(), ::toupper);
+
+	// NB search for cif last since 'qcif' and '4cif' contain 'cif'	
+  for(int i=0; i<sizeof(FormatItem)/sizeof(TFormatItem); i++)
   {
-    setDimensions("352x288");
-    return;
+    const size_t pos = sFormatString.find(FormatItem[i].Standard);
+    if(pos != std::string::npos)
+    {
+      setDimensions(FormatItem[i].Resolution);
+      return;
+    }
   }
 
 	// try searching for x's
-  pos = sFormatString.find("x");
+  size_t pos = sFormatString.find("X");
   while(pos != std::string::npos)
   {
     std::string sWidth, sHeight;
@@ -170,7 +208,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
     }
     else
     {
-      pos = sFormatString.find("x", pos + 1);
+      pos = sFormatString.find("X", pos + 1);
       continue;
     }
 
@@ -186,7 +224,7 @@ void YuvSourceFilter::createYuvFrameBuffer()
     }
     else
     {
-      pos = sFormatString.find("x", pos + 1);
+      pos = sFormatString.find("X", pos + 1);
       continue;
     }
 
@@ -196,14 +234,13 @@ void YuvSourceFilter::createYuvFrameBuffer()
     int iHeight = convert<int>(sHeight,Ok);			// TODO: check OK
     updatePictureBuffer(iWidth, iHeight, m_dBitsPerPixel);
     // update for property page
-    m_sDimensions = sWidth + "x" + sHeight;
+    m_sDimensions = sWidth + "X" + sHeight;
     break;
   }
 
 	// just create picture buffer using default values
   recalculate();
   m_pYuvBuffer = new unsigned char[m_iFrameSize];
-
 }
 
 
