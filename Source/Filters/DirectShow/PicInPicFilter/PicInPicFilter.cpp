@@ -72,6 +72,7 @@ static const GUID * const PiP_SupportedFormats[] = {
 	&MEDIASUBTYPE_RGB24,
 	&MEDIASUBTYPE_RGB32,
 	&MEDIASUBTYPE_ARGB32,
+        &MEDIASUBTYPE_ARGB1555,
 	&MEDIASUBTYPE_RGB555,
 	&MEDIASUBTYPE_RGB565,
 	&MEDIASUBTYPE_AYUV,
@@ -448,7 +449,7 @@ HRESULT PicInPicFilter::CreateVideoMixer(const CMediaType *pMediaType, int nInde
   }
 
 	// Create appropriate picture concatenator
-  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
+  if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555 || pMediaType->subtype==MEDIASUBTYPE_ARGB1555)
   {
     if(m_pPicInPic==NULL)
     {
@@ -578,13 +579,19 @@ HRESULT PicInPicFilter::CheckOutputType(const CMediaType *pMediaType)
   switch(m_nBitsPerPixel)
   {
     case 16:
-          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB555)
+          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_ARGB1555)
+          {
+            if((ConnectionFormat[0]==MEDIASUBTYPE_ARGB1555 && m_vInputPins[0]->IsConnected()) ||
+               (ConnectionFormat[1]==MEDIASUBTYPE_ARGB1555 && m_vInputPins[1]->IsConnected()))
+                return S_OK;
+          }
+          else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB555)
           {
             if((ConnectionFormat[0]==MEDIASUBTYPE_RGB555 && m_vInputPins[0]->IsConnected()) ||
                (ConnectionFormat[1]==MEDIASUBTYPE_RGB555 && m_vInputPins[1]->IsConnected()))
                 return S_OK;
           }
-          if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
+          else if(*(pMediaType->Subtype()) == MEDIASUBTYPE_RGB565)
           {
             if((ConnectionFormat[0]==MEDIASUBTYPE_RGB565 && m_vInputPins[0]->IsConnected()) ||
                (ConnectionFormat[1]==MEDIASUBTYPE_RGB565 && m_vInputPins[1]->IsConnected()))

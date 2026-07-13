@@ -379,13 +379,13 @@ inline void FrameSkippingOutputPin::adjustAverageTimePerFrameInVideoInfoHeader(A
 {
   if (((FrameSkippingFilter*)m_pFilter)->m_dSkipRatio > 0.0)
   {
-    if ((FORMAT_VideoInfo == pmt->formattype))
+    if((FORMAT_VideoInfo == pmt->formattype))
     {
       VIDEOINFOHEADER* pV = (VIDEOINFOHEADER*)pmt->pbFormat;
       REFERENCE_TIME duration = static_cast<REFERENCE_TIME>(pV->AvgTimePerFrame / ((FrameSkippingFilter*)m_pFilter)->m_dSkipRatio);
       pV->AvgTimePerFrame = duration;
     }
-    else if ((FORMAT_VideoInfo2 == pmt->formattype))
+    else if((FORMAT_VideoInfo2 == pmt->formattype))
     {
       VIDEOINFOHEADER2* pV = (VIDEOINFOHEADER2*)pmt->pbFormat;
       REFERENCE_TIME duration = static_cast<REFERENCE_TIME>(pV->AvgTimePerFrame / ((FrameSkippingFilter*)m_pFilter)->m_dSkipRatio);

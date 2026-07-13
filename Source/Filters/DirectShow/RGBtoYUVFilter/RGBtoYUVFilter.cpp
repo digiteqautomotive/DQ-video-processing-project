@@ -81,7 +81,9 @@ static const GUID * const RGBtoYUVSupportedFormats[] = {
 	&MEDIASUBTYPE_RGB32,
 	&MEDIASUBTYPE_ARGB32,
 	&MEDIASUBTYPE_RGB555,
-	&MEDIASUBTYPE_RGB565};
+	&MEDIASUBTYPE_RGB565,
+	&MEDIASUBTYPE_ARGB1555
+};
 
 
 void RGBtoYUVFilter::InitialiseInputTypes(void)
@@ -144,14 +146,21 @@ HRESULT RGBtoYUVFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
 
     if(m_pConverter == NULL)
     {
-      if(in_MediaType == MEDIASUBTYPE_RGB555)
+      if(in_MediaType == MEDIASUBTYPE_RGB555)		// X R R R R R G G   G G G B B B B B
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new ConvRGB555toYUYV_FixP(m_nInWidth,m_nInHeight);
         else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
           m_pConverter = new ConvRGB555toYUV420FixP(m_nInWidth,m_nInHeight);
       }
-      if(in_MediaType == MEDIASUBTYPE_RGB565)
+      else if(in_MediaType == MEDIASUBTYPE_ARGB1555)	// A R R R R R G G   G G G B B B B B
+      {
+        if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
+          m_pConverter = new ConvRGB555toYUYV_FixP(m_nInWidth,m_nInHeight);
+        else if(out_MediaType==MEDIASUBTYPE_YUV420P_S || out_MediaType==MEDIASUBTYPE_I420 || out_MediaType==MEDIASUBTYPE_YV12 || out_MediaType==MEDIASUBTYPE_IYUV)
+          m_pConverter = new ConvRGB555toYUV420FixP(m_nInWidth,m_nInHeight);
+      }
+      else if(in_MediaType == MEDIASUBTYPE_RGB565)
       {
         if(out_MediaType==MEDIASUBTYPE_YUYV || out_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new ConvRGB565toYUYV_FixP(m_nInWidth,m_nInHeight);
@@ -367,7 +376,7 @@ HRESULT RGBtoYUVFilter::CheckTransform(const CMediaType *mtIn, const CMediaType 
 	// Adding advert media type to this method
 
   if(mtIn->subtype==MEDIASUBTYPE_RGB24 || mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32 ||
-     mtIn->subtype==MEDIASUBTYPE_RGB555)
+     mtIn->subtype==MEDIASUBTYPE_RGB555 || mtIn->subtype==MEDIASUBTYPE_ARGB1555)
   {
     if(mtOut->subtype==MEDIASUBTYPE_YUV420P_S || mtOut->subtype==MEDIASUBTYPE_I420 || mtOut->subtype==MEDIASUBTYPE_YV12 || mtOut->subtype==MEDIASUBTYPE_IYUV)
     {

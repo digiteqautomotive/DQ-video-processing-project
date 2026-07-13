@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include "RtspSinkGuids.h"
-#include <Media/AudioChannelDescriptor.h>
-#include <Media/VideoChannelDescriptor.h>
+//#include <Media/AudioChannelDescriptor.h>
+//#include <Media/VideoChannelDescriptor.h>
 
 class RtspSinkFilter;
 

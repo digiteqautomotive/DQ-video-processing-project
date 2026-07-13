@@ -97,7 +97,7 @@ CUnknown *WINAPI RtspSourceFilter::CreateInstance( IUnknown* pUnk, HRESULT* phr 
 
 STDMETHODIMP RtspSourceFilter::NonDelegatingQueryInterface(REFIID riid, void **ppv)
 {
-  if(riid == (IID_ISettingsInterface))	return GetInterface((ISettingsInterface*) this, ppv);
+  if(riid == IID_ISettingsInterface)	return GetInterface((ISettingsInterface*) this, ppv);
   if(riid == IID_IStatusInterface)	return GetInterface((IStatusInterface*) this, ppv);
   if(riid == IID_IFileSourceFilter)	return GetInterface((IFileSourceFilter*) this, ppv);
   if(riid == IID_ISpecifyPropertyPages)	return GetInterface(static_cast<ISpecifyPropertyPages*>(this), ppv);
@@ -316,6 +316,7 @@ STDMETHODIMP RtspSourceFilter::Pause()
   }
   return CSource::Pause();
 }
+
 
 STDMETHODIMP RtspSourceFilter::GetState( DWORD dwMilliSecsTimeout, FILTER_STATE *pState )
 {

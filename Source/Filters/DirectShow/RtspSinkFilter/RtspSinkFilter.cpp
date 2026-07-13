@@ -4,8 +4,8 @@
 #include "StepBasedRateController.h"
 #include "DirectShowNetworkCodecControlInterface.h"
 #include <cassert>
-#include <Shared/StringUtil.h>
-#include <Media/MediaTypes.h>
+#include "GeneralUtils/StringUtil.h"
+#include "DirectShow/CustomMediaTypes.h"
 #include <Media/PacketManagerMediaChannel.h>
 #include <Media/SingleChannelManager.h>
 #include <Media/RtspService.h>

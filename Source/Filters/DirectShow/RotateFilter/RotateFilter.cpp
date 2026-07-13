@@ -55,9 +55,6 @@ RotateFilter::RotateFilter(): CCustomBaseFilter(NAME("DQ VPP Rotate Filter"), 0,
 	m_nBitsPerPixel(BITS_PER_PIXEL_RGB24),
 	m_nOutWidth(0),
 	m_nOutHeight(0)
-	//m_nStride(0),
-	//m_nPadding(0)
-        //m_nRotation(0)
 {
 	//Call the initialise input method to load all acceptable input types for this filter
   InitialiseInputTypes();
@@ -95,6 +92,7 @@ static const GUID * const RotateSupportedFormats[] = {
   &MEDIASUBTYPE_ARGB32,
   &MEDIASUBTYPE_AYUV,
   &MEDIASUBTYPE_YV24,
+  &MEDIASUBTYPE_ARGB1555,
   &MEDIASUBTYPE_RGB555,
   &MEDIASUBTYPE_RGB565,
   &MEDIASUBTYPE_R16G16B16,
@@ -143,7 +141,7 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
             m_pRotate = new PicRotateBPP32Impl();
 	m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565)
+      else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_ARGB1555)
       {
         if(m_pRotate)
         {
@@ -369,6 +367,10 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
   else if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
     if(mtOut->subtype==MEDIASUBTYPE_RGB32 || mtOut->subtype==MEDIASUBTYPE_ARGB32) return S_OK;
+  }
+  else if(mtIn->subtype==MEDIASUBTYPE_ARGB1555)
+  {
+    if(mtOut->subtype==MEDIASUBTYPE_ARGB1555 || mtOut->subtype==MEDIASUBTYPE_RGB555) return S_OK;
   }
   else if(mtIn->subtype==MEDIASUBTYPE_RGB555)
   {

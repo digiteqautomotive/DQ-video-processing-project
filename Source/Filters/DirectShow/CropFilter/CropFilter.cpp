@@ -1,10 +1,10 @@
 /** @file
 
-MODULE				: CropFilter
+MODULE:			CropFilter
 
-FILE NAME			: CropFilter.cpp
+FILE NAME:		CropFilter.cpp
 
-DESCRIPTION			:
+DESCRIPTION:
 
 LICENSE: Software License Agreement (BSD License)
 
@@ -58,6 +58,7 @@ static const GUID * const CropSupportedFormats[] = {
 	&MEDIASUBTYPE_RGB24,
 	&MEDIASUBTYPE_RGB32,
 	&MEDIASUBTYPE_ARGB32,
+        &MEDIASUBTYPE_ARGB1555,
 	&MEDIASUBTYPE_RGB555,
 	&MEDIASUBTYPE_RGB565,
 	&MEDIASUBTYPE_AYUV,
@@ -149,7 +150,7 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
         if(m_pCropper==NULL) m_pCropper = new PicCropper3B_Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_RGB555)
+      else if(pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_ARGB1555)
       {
         if(m_pCropper==NULL) m_pCropper = new PicCropper2B_Impl();
         m_nBitsPerPixel = 16;        
@@ -227,7 +228,7 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
       pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
-    else if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555)
+    else if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555 || pMediaType->subtype==MEDIASUBTYPE_ARGB1555)
       pBi->biSizeImage = 2 * labs(pBi->biWidth*pBi->biHeight);
     else if(pMediaType->subtype==MEDIASUBTYPE_R16G16B16 || pMediaType->subtype==MEDIASUBTYPE_B16G16R16)
       pBi->biSizeImage = 6 * labs(pBi->biWidth*pBi->biHeight);
@@ -333,7 +334,15 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   }
   if(mtIn->subtype == MEDIASUBTYPE_RGB565)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_RGB565)
+    if(mtOut->subtype != MEDIASUBTYPE_RGB565)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_ARGB1555)
+  {
+    if(mtOut->subtype!=MEDIASUBTYPE_ARGB1555 && mtOut->subtype!=MEDIASUBTYPE_RGB555)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -341,7 +350,7 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   }
   if(mtIn->subtype == MEDIASUBTYPE_RGB555)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_RGB555)
+    if(mtOut->subtype != MEDIASUBTYPE_RGB555)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -349,15 +358,15 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   }
   if(mtIn->subtype == MEDIASUBTYPE_YV24)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_YV24)
+    if(mtOut->subtype != MEDIASUBTYPE_YV24)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
     return S_OK;
   } 
-  if (mtIn->subtype == MEDIASUBTYPE_AYUV)
+  if(mtIn->subtype == MEDIASUBTYPE_AYUV)
   {
-    if (mtOut->subtype != MEDIASUBTYPE_AYUV)
+    if(mtOut->subtype != MEDIASUBTYPE_AYUV)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

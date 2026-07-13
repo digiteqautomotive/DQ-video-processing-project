@@ -25,7 +25,9 @@
 #define GLOG_NO_ABBREVIATED_SEVERITIES
 #endif
 
-#include <glog/logging.h>
+#ifdef USE_GLOG
+ #include <glog/logging.h>
+#endif
 
 #ifdef _WIN32
 #pragma warning(pop)     // restore original warning level

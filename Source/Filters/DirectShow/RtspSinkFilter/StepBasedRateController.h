@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
-#include <Media/IRateController.h>
+#include <assert.h>
+//#include <Media/IRateController.h>
 #include "INetworkCodecControlInterface.h"
 
 #define FBS_26KBPS_10FPS 2600
@@ -18,7 +19,6 @@
 /**
  * @brief This class stores a set of ordered framebitlimits
  * which the upstream H.264 codec can be configured with.
- *
  */
 class StepBasedRateController : public lme::IRateController
 {

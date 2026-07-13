@@ -64,7 +64,7 @@ _COM_SMARTPTR_TYPEDEF(IEnumMediaTypes, IID_IEnumMediaTypes);
 _COM_SMARTPTR_TYPEDEF(IEnumPins, IID_IEnumPins);
 
 //Sample Grabber Interface
-#include <QEdit.h>
+#include "../../Apps/FrameGrabber/fixC/qedit.h"
 _COM_SMARTPTR_TYPEDEF(ISampleGrabber, IID_ISampleGrabber);
 _COM_SMARTPTR_TYPEDEF(ISampleGrabberCB, IID_ISampleGrabberCB);
 // For compression

@@ -1882,14 +1882,14 @@ bool Pause = false;
       PicScalerARGB32Impl picScalerARGB32(1920,1080,800,600);     
       DurationMin = BenchScaller(picScalerARGB32, BlobIn, BlobOut);
     }
-    printf("\nScale ARGB32 from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+    printf("\nScale ARGB32 from 1920,1080->800,600 time %.3f", DurationMin/1000.0);
 
 #ifdef USE_MMX
     if(FeaturesCPU & 1)
     {
       PicScalerARGB32MMX picScalerARGB32mmx(1920,1080,800,600);     
       DurationMin = BenchScaller(picScalerARGB32mmx, BlobIn, BlobOut);      
-      printf("\nScale ARGB32_MMX from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+      printf(" MMX %.3f", DurationMin/1000.0);
     }
 #endif
 
@@ -1898,9 +1898,10 @@ bool Pause = false;
     {
       PicScalerARGB32SSE picScalerARGB32sse(1920,1080,800,600);
       DurationMin = BenchScaller(picScalerARGB32sse, BlobIn, BlobOut);
-      printf("\nScale ARGB32_SSE from 1920,1080->800,600 time %.3f[ms].", DurationMin/1000.0);
+      printf(" SSE %.3f", DurationMin/1000.0);
     }
 #endif
+    printf("[ms].");
 
     {
       PicScalerYUYVImpl PicScalerYUYV(1920,1080,800,600);

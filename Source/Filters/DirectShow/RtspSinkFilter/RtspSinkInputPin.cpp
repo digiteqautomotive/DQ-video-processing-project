@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "RtspSinkInputPin.h"
 #include "RtspSinkFilter.h"
-#include <DirectShow/CustomMediaTypes.h>
+#include "DirectShow/CustomMediaTypes.h"
 #include <cassert>
 // live555
 #include <Base64.hh>
@@ -10,7 +10,7 @@
 #include <dvdmedia.h>
 #include <wmcodecdsp.h>
 #endif
-#include <Media/MediaTypes.h>
+//#include <Media/MediaTypes.h>
 
 RtspSinkInputPin::RtspSinkInputPin( HRESULT* phr, RtspSinkFilter* pFilter, unsigned uiId )
 : CRenderedInputPin(NAME("DQ VPP RTSP Sink Filter Input Pin"), pFilter, &m_stateLock, phr, L"Input"),

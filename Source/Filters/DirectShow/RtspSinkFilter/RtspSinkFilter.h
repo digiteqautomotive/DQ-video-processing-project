@@ -1,12 +1,13 @@
 #pragma once
 #include <map>
 #include <memory>
+#include <vector>
 #include <DirectShow/CSettingsInterface.h>
-//#include <DirectShow/CStatusInterface.h>
-#include <Filters/DirectShow/FilterParameters.h>
-#include <Media/IRateController.h>
-#include <Media/SingleChannelManager.h>
-#include <Media/RtspService.h>
+#include <DirectShow/CStatusInterface.h>
+//#include <Filters/DirectShow/FilterParameters.h>
+//#include <Media/IRateController.h>
+//#include <Media/SingleChannelManager.h>
+//#include <Media/RtspService.h>
 #include "RtspSinkGuids.h"
 #include "RtspSinkProperties.h"
 
