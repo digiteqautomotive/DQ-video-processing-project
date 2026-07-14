@@ -1,10 +1,10 @@
 /** @file
 
-MODULE						: RealYUV420toRGB24CCIR601Converter
+MODULE						: RealYUV420toBGR24CCIR601Converter
 
 TAG								: RYUVRGB24CC
 
-FILE NAME					: RealYUV420toRGB24CCIR601Converter.cpp
+FILE NAME					: RealYUV420toBGR24CCIR601Converter.cpp
 
 DESCRIPTION				: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 										colour convertion derived from	the YUV420toRGBConverter base 
@@ -17,12 +17,18 @@ COPYRIGHT:
 
 RESTRICTIONS: 
 ===========================================================================*/
-#include <stdio.h>
+//#include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include "ConvYUV420toRGB24CCIR601Real.h"
+
+#include <uuids.h>
+
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
+DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71);
+
 
 /*===========================================================================
 				Macros
@@ -47,7 +53,14 @@ RESTRICTIONS:
 ===========================================================================*/
 
 
-void RealYUV420toRGB24CCIR601Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+bool RealYUV420toBGR24CCIR601Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatIn==MEDIASUBTYPE_RGB24 &&
+         (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);
+}
+
+
+void RealYUV420toBGR24CCIR601Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
   unsigned char *optr = (unsigned char *)pRgb;
   const unsigned char *py	= (const unsigned char*)pY;
@@ -87,7 +100,9 @@ void RealYUV420toRGB24CCIR601Converter::NonRotateConvert(const void* pY, const v
   		// Fast calculation intermediate variables. 
 			double cc = (RYUVRGB24CC_U0 * u) + 0.5;
 			double cb = (RYUVRGB24CC_U1 * u) + (RYUVRGB24CC_V1 * v) + 0.5;
-			double ca = (RYUVRGB24CC_V0 * v) + 0.5;
+			double ca = (RYUVRGB24CC_V0 * v) + 0.5;	
+
+			//printf("%u: cc:%.1f ca:%.1f cb:%.1f Y:%.1f;",y,cc,ca,cb,lum00);
 
 			b = (int)(lum00 + cc);
 			g = (int)(lum00 + cb);
@@ -137,7 +152,8 @@ void RealYUV420toRGB24CCIR601Converter::NonRotateConvert(const void* pY, const v
 
 }//end NonRotateConvert.
 
-void RealYUV420toRGB24CCIR601Converter::RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
+
+void RealYUV420toBGR24CCIR601Converter::RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
 	unsigned char *optr = (unsigned char *)pRgb;
 	const unsigned char *py = (const unsigned char*)pY;

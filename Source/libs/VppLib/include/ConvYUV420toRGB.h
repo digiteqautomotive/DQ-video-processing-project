@@ -32,20 +32,20 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef _REALYUV420TORGB24CONVERTER_H
-#define _REALYUV420TORGB24CONVERTER_H
+#ifndef _YUV420_TORGB24_CONVERTER_H
+#define _YUV420_TORGB24_CONVERTER_H
 
 #include "ConvYUVtoRGB.h"
 
+
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-* colour convertion derived from the YUV420toRGBConverter base 
-* class. */
+* colour convertion derived from the YUV420toRGBConverter base class. */
 class ConvYUV420toRGB24: public YUV420toRGBConverter
 {
 public:
   // Construction and destruction.
-  ConvYUV420toRGB24(void) { }
+  ConvYUV420toRGB24(void) {}
   ConvYUV420toRGB24(int width, int height): YUV420toRGBConverter(width,height) {}
 
 	// Interface.
@@ -59,14 +59,13 @@ protected:
 
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-* colour convertion derived from the YUV420toRGBConverter base 
-* class. */
+* colour convertion derived from the YUV420toRGBConverter base class. */
 class YUV420toRGB32Converter: public YUV420toRGBConverter
 {
 public:
   // Construction and destruction.
-  YUV420toRGB32Converter(void) { }
-  YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) { }
+  YUV420toRGB32Converter(void) {}
+  YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) {}
 
 	// Interface.
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
@@ -77,4 +76,24 @@ protected:
 }; //end ConvYUV420toRGB24.
 
 
-#endif	// _REALYUV420TORGB24CONVERTER_H
+
+/** \ingroup ImageLib
+* Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
+* colour convertion derived from the YUV420toRGBConverter base class. */
+class ConvYUV420toBGR24_CCIR601: public YUV420toRGBConverter
+{
+public:
+  // Construction and destruction.
+  ConvYUV420toBGR24_CCIR601(void) {}
+  ConvYUV420toBGR24_CCIR601(int width, int height): YUV420toRGBConverter(width,height) {}
+
+	// Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+
+protected:
+  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+}; //end ConvYUV420toRGB24.
+
+
+#endif	// _YUV420_TORGB24_CONVERTER_H

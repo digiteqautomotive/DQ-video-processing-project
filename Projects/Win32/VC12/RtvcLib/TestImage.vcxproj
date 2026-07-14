@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_Real.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_SIMD.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB32toYUV420_Real.cpp" />
+    <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\RealYUV420toRGB24CCIR601Converter.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\RotateTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\ScaleTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\stdafx.cpp" />

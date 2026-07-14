@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ConvRGB24toYUV420CCIR601Ver16.h"
 #include "ConvYUV420toRGB24CCIR601RealVer16.h"
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
-#include "ConvYUV420toRGB24CCIR601Real.h"
+#include "ConvYUV420toRGB.h"
 #include "ConvYUV420toRGB24RealImpl2Ver16.h"
 
 #include "FastForward4x4ITImpl2.h"

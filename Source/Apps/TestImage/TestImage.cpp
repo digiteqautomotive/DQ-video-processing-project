@@ -48,6 +48,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "reference/ConvRGB24toYUV420_SIMD.h"
 #include "reference/ConvRGB24toYUV420_Real.h "
 #include "reference/ConvRGB32toYUV420_Real.h "
+#include "reference/ConvYUV420toRGB24CCIR601Real.h"
 #include "ConvertTesters.h"
 
 
@@ -1497,6 +1498,29 @@ bool Pause = false;
     pos = RGB24toRGB32compareFlip("YUV420toRGB32 Flip", Width,Height, BlobTest, BlobOut);
     if(pos >= 10000) goto ReturnErr;
   }
+
+
+//-------------------------------YUV420 to RGB CCIR601---------------------------------------
+ for(int Width=2; Width<28; Width+=2)
+   for(int Height=2; Height<28; Height+=2)
+   {
+     RealYUV420toBGR24CCIR601Converter OrigPicConvertYUV2RGB24_CCIR601(Width,Height);
+     ConvYUV420toBGR24_CCIR601 picConvertYUV420toRGB24_CCIR601(Width,Height);
+     
+     picConvertYUV420toRGB24_CCIR601.Convert(BlobIn+16, BlobOut+16);
+     OrigPicConvertYUV2RGB24_CCIR601.Convert(BlobIn+16, BlobTest+16);
+
+     int pos = RGB24compare("YUV420toRGB24_CCIR601", Width,Height, BlobTest, BlobOut);
+     if(pos >= 10000)
+	goto ReturnErr;
+
+     picConvertYUV420toRGB24_CCIR601.SetFlip(true);
+     picConvertYUV420toRGB24_CCIR601.Convert(BlobIn+16, BlobOut+16);
+
+     pos = RGBcompareFlip("YUV420toRGB24_CCIR601 Flip", Width,Height, BlobTest, BlobOut);
+     if(pos >= 10000)
+	goto ReturnErr;
+   }
 
 //-----------------------------------RGB to YUV420-------------------------------------------
  for(int Width=2; Width<28; Width+=2)

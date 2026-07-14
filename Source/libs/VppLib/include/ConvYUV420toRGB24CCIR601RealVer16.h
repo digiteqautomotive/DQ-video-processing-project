@@ -1,10 +1,10 @@
 /** @file
 
-MODULE				: RealYUV420toRGB24CCIR601ConverterVer16
+MODULE				: RealYUV420toBGR24CCIR601ConverterVer16
 
 TAG						: RYUVRGB24CCV16
 
-FILE NAME			: RealYUV420toRGB24CCIR601ConverterVer16.h
+FILE NAME			: RealYUV420toBGR24CCIR601ConverterVer16.h
 
 DESCRIPTION		: Floating point implementation of YUV420 (16 bpp) to RGB 24 bit 
 								colour convertion derived from	the YUV420toRGBConverter base 
