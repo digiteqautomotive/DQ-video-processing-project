@@ -93,6 +93,7 @@ static const GUID * const RotateSupportedFormats[] = {
   &MEDIASUBTYPE_AYUV,
   &MEDIASUBTYPE_YV24,
   &MEDIASUBTYPE_ARGB1555,
+  &MEDIASUBTYPE_ARGB4444,
   &MEDIASUBTYPE_RGB555,
   &MEDIASUBTYPE_RGB565,
   &MEDIASUBTYPE_R16G16B16,
@@ -141,7 +142,8 @@ HRESULT RotateFilter::SetMediaType( PIN_DIRECTION direction, const CMediaType *p
             m_pRotate = new PicRotateBPP32Impl();
 	m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_ARGB1555)
+      else if(pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_RGB565 ||
+              pmt->subtype==MEDIASUBTYPE_ARGB1555 || pmt->subtype==MEDIASUBTYPE_ARGB4444)
       {
         if(m_pRotate)
         {
@@ -371,6 +373,10 @@ HRESULT RotateFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *m
   else if(mtIn->subtype==MEDIASUBTYPE_ARGB1555)
   {
     if(mtOut->subtype==MEDIASUBTYPE_ARGB1555 || mtOut->subtype==MEDIASUBTYPE_RGB555) return S_OK;
+  }
+  else if(mtIn->subtype==MEDIASUBTYPE_ARGB4444)
+  {
+    if(mtOut->subtype==MEDIASUBTYPE_ARGB4444) return S_OK;
   }
   else if(mtIn->subtype==MEDIASUBTYPE_RGB555)
   {

@@ -59,10 +59,13 @@ static const GUID * const CropSupportedFormats[] = {
 	&MEDIASUBTYPE_RGB32,
 	&MEDIASUBTYPE_ARGB32,
         &MEDIASUBTYPE_ARGB1555,
+	&MEDIASUBTYPE_ARGB4444,
 	&MEDIASUBTYPE_RGB555,
 	&MEDIASUBTYPE_RGB565,
 	&MEDIASUBTYPE_AYUV,
 	&MEDIASUBTYPE_YV24,		// YUV tripplets
+        &MEDIASUBTYPE_A2R10G10B10,	// https://learn.microsoft.com/en-us/windows/win32/directshow/uncompressed-rgb-video-subtypes
+	&MEDIASUBTYPE_A2B10G10R10,
 	&MEDIASUBTYPE_R16G16B16,
         &MEDIASUBTYPE_B16G16R16,
 	&MEDIASUBTYPE_A16R16G16B16,
@@ -150,12 +153,14 @@ HRESULT CropFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *pmt)
         if(m_pCropper==NULL) m_pCropper = new PicCropper3B_Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB24;
       }
-      else if(pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_RGB555 || pmt->subtype==MEDIASUBTYPE_ARGB1555)
+      else if(pmt->subtype==MEDIASUBTYPE_RGB565 || pmt->subtype==MEDIASUBTYPE_RGB555 ||
+              pmt->subtype==MEDIASUBTYPE_ARGB1555 || pmt->subtype==MEDIASUBTYPE_ARGB4444)
       {
         if(m_pCropper==NULL) m_pCropper = new PicCropper2B_Impl();
         m_nBitsPerPixel = 16;        
       }
-      else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV)
+      else if(pmt->subtype==MEDIASUBTYPE_RGB32 || pmt->subtype==MEDIASUBTYPE_ARGB32 || pmt->subtype==MEDIASUBTYPE_AYUV ||
+              pmt->subtype==MEDIASUBTYPE_A2R10G10B10 || pmt->subtype==MEDIASUBTYPE_A2B10G10R10)
       {
         if(m_pCropper==NULL) m_pCropper = new PicCropper4B_Impl();
         m_nBitsPerPixel = BITS_PER_PIXEL_RGB32;
@@ -224,18 +229,19 @@ HRESULT CropFilter::GetMediaType(int iPosition, CMediaType *pMediaType)
     if(pBi->biHeight == 0) return E_INVALIDARG;
     if(pBi->biWidth <= 0) return E_INVALIDARG;
 
-    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV)
-       pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
+    if(pMediaType->subtype==MEDIASUBTYPE_RGB32 || pMediaType->subtype==MEDIASUBTYPE_ARGB32 || pMediaType->subtype==MEDIASUBTYPE_AYUV ||
+       pMediaType->subtype==MEDIASUBTYPE_A2R10G10B10 || pMediaType->subtype==MEDIASUBTYPE_A2B10G10R10)
+        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB32 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_RGB24 || pMediaType->subtype==MEDIASUBTYPE_YV24)
-      pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
+        pBi->biSizeImage = labs(pBi->biWidth*pBi->biHeight) * (BITS_PER_PIXEL_RGB24 / 8);
     else if(pMediaType->subtype==MEDIASUBTYPE_RGB565 || pMediaType->subtype==MEDIASUBTYPE_RGB555 || pMediaType->subtype==MEDIASUBTYPE_ARGB1555)
-      pBi->biSizeImage = 2 * labs(pBi->biWidth*pBi->biHeight);
+        pBi->biSizeImage = 2 * labs(pBi->biWidth*pBi->biHeight);
     else if(pMediaType->subtype==MEDIASUBTYPE_R16G16B16 || pMediaType->subtype==MEDIASUBTYPE_B16G16R16)
-      pBi->biSizeImage = 6 * labs(pBi->biWidth*pBi->biHeight);
+        pBi->biSizeImage = 6 * labs(pBi->biWidth*pBi->biHeight);
     else if(pMediaType->subtype==MEDIASUBTYPE_A16R16G16B16 || pMediaType->subtype==MEDIASUBTYPE_A16B16G16R16)
-      pBi->biSizeImage = 8 * labs(pBi->biWidth*pBi->biHeight);
+        pBi->biSizeImage = 8 * labs(pBi->biWidth*pBi->biHeight);
     else
-     return E_INVALIDARG;
+       return E_INVALIDARG;
 
     prcSource->top = 0;
     prcSource->left = 0;
@@ -372,9 +378,9 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
     }
     return S_OK;
   } 
-  if(mtIn->subtype == MEDIASUBTYPE_RGB32 || mtIn->subtype == MEDIASUBTYPE_ARGB32)
+  if(mtIn->subtype==MEDIASUBTYPE_RGB32 || mtIn->subtype==MEDIASUBTYPE_ARGB32)
   {
-    if(mtOut->subtype != MEDIASUBTYPE_RGB32 && mtOut->subtype != MEDIASUBTYPE_ARGB32)
+    if(mtOut->subtype!=MEDIASUBTYPE_RGB32 && mtOut->subtype!=MEDIASUBTYPE_ARGB32)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }
@@ -407,6 +413,22 @@ HRESULT CropFilter::CheckTransform(const CMediaType *mtIn, const CMediaType *mtO
   if(mtIn->subtype == MEDIASUBTYPE_A16B16G16R16)
   {
     if (mtOut->subtype != MEDIASUBTYPE_A16B16G16R16)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_A2R10G10B10)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_A2R10G10B10)
+    {
+      return VFW_E_TYPE_NOT_ACCEPTED;
+    }
+    return S_OK;
+  }
+  if(mtIn->subtype == MEDIASUBTYPE_A2B10G10R10)
+  {
+    if (mtOut->subtype != MEDIASUBTYPE_A2B10G10R10)
     {
       return VFW_E_TYPE_NOT_ACCEPTED;
     }

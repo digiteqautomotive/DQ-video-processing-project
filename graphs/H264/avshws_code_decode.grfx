@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graph name="Unnamed Graph">
+    <filter name="Video Renderer" index="0" clsid="{70E102B0-5556-11CE-97C0-00AA0055595A}"/>
+    <filter name="DQ VPP H264 Decoder" index="1" clsid="{F97F9C42-6DA9-40AE-8434-2DF8AFD8F0DE}"/>
+    <filter name="DQ H264 Encoder" index="2" clsid="{4D5A7DC8-202A-40F6-913F-0FDF77DA72F8}"/>
+    <filter name="avshws Source" index="3" clsid="{17CCA71B-ECD7-11D0-B908-00A0C9223196}">
+        <ipersiststream encoding="base64" data="MAAwADAAMAAwADAAMAAwADAAMAAxACAAoAAAAEAAZABlAHYAaQBjAGUAOgBwAG4AcAA6AFwAXAA/AFwAcgBvAG8AdAAjAHUAbgBrAG4AbwB3AG4AIwAwADAAMAAwACMAewA2ADUAZQA4ADcANwAzAGQALQA4AGYANQA2AC0AMQAxAGQAMAAtAGEAMwBiADkALQAwADAAYQAwAGMAOQAyADIAMwAxADkANgB9AFwAZwBsAG8AYgBhAGwAAAAAAAAA"/>
+    </filter>
+    <connect out="avshws Source/Digitalizovat" in="DQ H264 Encoder/XForm In" outFilterIndex="3" outPinId="0" outPinName="Digitalizovat" outPinIndex="0" inFilterIndex="2" inPinId="In" inPinName="XForm In" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="230400" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwEsDAAAAAGMXBQAAAAAAKAAAAEABAADwAAAAAQAYAAAAAAAAhAMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+    <connect out="DQ H264 Encoder/XForm Out" in="DQ VPP H264 Decoder/XForm In" outFilterIndex="2" outPinId="Out" outPinName="XForm Out" outPinIndex="0" inFilterIndex="1" inPinId="In" inPinName="XForm In" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_AVC1" sampleSize="1" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{31435641-0000-0010-8000-00AA00389B71}"/>
+        <format type="FORMAT_MPEG2_VIDEO" formatType="{E06D80E3-DB46-11CF-B4D1-00805F6CBBEA}" encoding="base64" data="AAAAAAAAAABAAQAA8AAAAAAAAAAAAAAAQAEAAPAAAAAAAAAAAAAAAGMXBQAAAAAAAAAAAAAAAABAAQAA8AAAAAAAAAAAAAAAKAAAAEABAADwAAAAAQAYAGF2YzEAhAMAAAAAAAAAAAAAAAAAAAAAAAAAAAARAAAAQgAAABQAAAAEAAAAAAlnQgAUjWgUHxAABGjOOoAAAAAA"/>
+    </connect>
+    <connect out="DQ VPP H264 Decoder/XForm Out" in="Video Renderer/Input" outFilterIndex="1" outPinId="Out" outPinName="XForm Out" outPinIndex="0" inFilterIndex="0" inPinId="In" inPinName="Input" inPinIndex="0" direct="true">
+        <mediaType type="MEDIATYPE_Video / MEDIASUBTYPE_RGB24" sampleSize="230400" fixedSizeSamples="true" temporalCompression="false" majorType="{73646976-0000-0010-8000-00AA00389B71}" subType="{E436EB7D-524F-11CE-9F53-0020AF0BA770}"/>
+        <format type="FORMAT_VideoInfo" formatType="{05589F80-C356-11CE-BF01-00AA0055595A}" encoding="base64" data="AAAAAAAAAABAAQAA8AAAAAAAAAAAAAAAQAEAAPAAAAAAAAAAAAAAAGMXBQAAAAAAKAAAAEABAADwAAAAAQAYAAAAAAAAhAMAAAAAAAAAAAAAAAAAAAAAAA=="/>
+    </connect>
+</graph>
