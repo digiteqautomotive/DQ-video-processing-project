@@ -54,7 +54,7 @@ const signed char *u = (const signed char *)pU;
 const signed char *v = (const signed char *)pV;
 pRgb += 3*_width*(_height-1);
 
-  for(int row=0; row<_height; row++)
+  for(int row=0; row<_height; row+=2)
   {
     int Pixel2Count = (_width+1) / 2;
     while(Pixel2Count-->0)		//converts to RGB
@@ -65,7 +65,7 @@ pRgb += 3*_width*(_height-1);
       const int32_t ca = V*292 + 127;
       const int32_t cb = -101*U - 149*V + 127;
 
-      int32_t Y = 256 * *(y++);
+      int32_t Y = 256 * *y;
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
       if(X>255) pRgb[2]=255;
       else if(X<0) pRgb[2]=0;
@@ -79,7 +79,7 @@ pRgb += 3*_width*(_height-1);
       else if(X<0) pRgb[0]=0;
       else pRgb[0] = X;
 
-      Y = 256 * *(y++);
+      Y = 256 * y[1];
 
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
       if(X>255) pRgb[5]=255;
@@ -93,15 +93,43 @@ pRgb += 3*_width*(_height-1);
       if(X>255) pRgb[3]=255;
       else if(X<0) pRgb[3]=0;
       else pRgb[3] = X;
+	  
+	  Y = 256 * y[_width];
+	  pRgb -= 3 * _width;
 
-      pRgb += 6;
+	  X = (Y + cc) >> 8;		// B: Y + 2.032*U
+	  if (X>255) pRgb[2] = 255;
+	  else if (X<0) pRgb[2] = 0;
+	  else pRgb[2] = X;
+	  X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+	  if (X>255) pRgb[1] = 255;
+	  else if (X<0) pRgb[1] = 0;
+	  else pRgb[1] = X;
+	  X = (Y + ca) >> 8;		// R: Y + 1.40*V;
+	  if (X>255) pRgb[0] = 255;
+	  else if (X<0) pRgb[0] = 0;
+	  else pRgb[0] = X;
+
+	  Y = 256 * y[_width+1];
+
+	  X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
+	  if (X>255) pRgb[5] = 255;
+	  else if (X<0) pRgb[5] = 0;
+	  else pRgb[5] = X;
+	  X = (Y + cb) >> 8;		// G: Y - 0.395*U - 0.581*V
+	  if (X>255) pRgb[4] = 255;
+	  else if (X<0) pRgb[4] = 0;
+	  else pRgb[4] = X;
+	  X = (Y + ca) >> 8;		// R: Y + 1.402*V;   Y + 1.137*V;
+	  if (X>255) pRgb[3] = 255;
+	  else if (X<0) pRgb[3] = 0;
+	  else pRgb[3] = X;
+
+	  y += 2;
+	  pRgb += 3 * _width + 6;
     }
-    pRgb -= 6*_width;
-    if((row&1) == 0)
-    {
-      u -= _width/2;
-      v -= _width/2;
-    }  
+    pRgb -= 9 *_width;		// 3 lines down. 
+	y += _width;
   }
 } //end FlipConvert
 
