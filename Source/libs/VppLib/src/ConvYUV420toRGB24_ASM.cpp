@@ -37,9 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern "C"
 {
  void YUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
- void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB24(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB32(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
- void PelYUV_RGB_CMOV(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
+ void PelYUV_RGB24_CMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
  void PelYUV_RGB32_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
 }
@@ -83,14 +83,14 @@ int row = _height / 2;
 void ConvYUV420toRGB24_ASM::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
 {
 const unsigned char *y = (const unsigned char *)pY;
-const unsigned char *u = (const unsigned char *)pU;
-const unsigned char *v = (const unsigned char *)pV;
+const signed char *u = (const signed char *)pU;
+const signed char *v = (const signed char *)pV;
 int row = _height / 2;  
 
   while(row-- > 0)
   {
-    PelYUV_RGB(pRgb,  y,  u, v, _width);
-    //PelYUV_RGB_CMOV(pRgb,  y,  u, v, _width);
+    // PelYUV_RGB24(pRgb,  y,  u, v, _width);
+    PelYUV_RGB24_CMOV(pRgb,  y,  u, v, _width);
     y += 2*_width;
     pRgb += 6*_width;
     u += _width/2;

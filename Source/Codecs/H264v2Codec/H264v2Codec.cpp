@@ -1,19 +1,16 @@
 /** @file
+MODULE:		H264v2Codec
 
-MODULE        : H264v2Codec
+TAG:		H264V2
 
-TAG           : H264V2
+FILE NAME:	H264v2Codec.cpp
 
-FILE NAME     : H264v2Codec.cpp
-
-DESCRIPTIONS  : A 2nd generation of video codecs based on the H264 standard
-								implementation. The primary interface is ICodecv2 for access 
-								and configuration.
+DESCRIPTIONS:	A 2nd generation of video codecs based on the H264 standard implementation.
+		The primary interface is ICodecv2 for access and configuration.
                   
-LICENSE	: GNU Lesser General Public License
+LICENSE:	GNU Lesser General Public License
 
-Copyright (c) 2008 - 2013, CSIR
-All rights reserved.
+Copyright (c) 2008 - 2013, CSIR		All rights reserved.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -27,10 +24,7 @@ GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-===========================================================================
-*/
-
+===========================================================================*/
 #ifdef _WINDOWS
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
@@ -51,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "BitStreamReaderMSB.h"
 
 #include "ConvRGB24toYUV420CCIR601Ver16.h"
-#include "ConvYUV420toRGB24CCIR601RealVer16.h"
+#include "ConvYUV420_16toRGB.h"
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
 #include "ConvYUV420toRGB.h"
 #include "ConvYUV420toRGB24RealImpl2Ver16.h"
@@ -126,12 +120,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Colour space constants. 
 ---------------------------------------------------------------------------
 */
-#define H264V2_RGB24							0		///< 888 (Default).
-#define H264V2_RGB32							1		///< 8888.
-#define H264V2_RGB16							2		///< 565.
+#define H264V2_RGB24			0		///< 888 (Default).
+#define H264V2_RGB32			1		///< 8888.
+#define H264V2_RGB16			2		///< 565.
 
-#define H264V2_YUV420P16					16	///< Planar Y, U then V (16 bits/component).
-#define H264V2_YUV420P8						17	///< Planar Y, U then V (8 bits/component).
+#define H264V2_YUV420P16		16		///< Planar Y, U then V (16 bits/component).
+#define H264V2_YUV420P8			17		///< Planar Y, U then V (8 bits/component).
 
 /*
 --------------------------------------------------------------------------
@@ -196,25 +190,31 @@ const char*	H264v2Codec::MEMBER_LIST[] =
 /// default Flat_4x4_16 for DC scaling.
 const int H264v2Codec::dc4x4Scale[16] =
 	{ 16, 16, 16, 16, 
-		16, 16, 16, 16, 
-		16, 16, 16, 16,
-		16, 16, 16, 16 
-	};
+	  16, 16, 16, 16, 
+	  16, 16, 16, 16,
+	  16, 16, 16, 16 };
 const int H264v2Codec::dc2x2Scale[4] =
 	{ 16, 16, 
-		16, 16 
-	};
+	  16, 16 };
 
 /// Test sampling point coordinates for Intra_16x16 prediction mode selection on a spread out grid.
-const int H264v2Codec::test16X[256] = { 3, 11,  3, 11, 
-									1,  5,  9, 13,  1,  5,  9, 13,  1,  5,  9, 13,  1,  5,  9, 13, 
-									3,  7, 11, 15,  0,  7, 15,  0,  3,  7, 11, 15,  0,  7, 15,  0,  3,  7, 11, 15,
-									0,  2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,
-									5,  9, 13,  1,  5,  9, 13,  2,  4,  6,  8, 10, 12, 14,  0,  3,  7, 11, 15,  1,  5,  9, 13,  2,  4,  6,  8, 10, 12, 14,  0,  3,  7, 11, 15,  1,  5,  9, 13,  2,  4,  6,  8, 10, 12, 14,  0,  3,  7, 11, 15,  5,  9, 13,
-									1,  2,  4,  6,  8, 10, 12, 14,  0,  3,  7, 11, 15,  0,  3, 11, 15,  6, 14,  0,  1,  9, 15,  0,  3, 11, 15,  0,  3, 11, 15,  0,  1, 15,  6, 14,  0,  9, 15,  0,  3, 11, 15,  1,  2,  4,  6,  8, 10, 12, 14,
-									2,  4,  6,  8, 10, 12, 14,  2,  4,  8, 10, 12,  2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,  2,  4,  8, 10, 12,  2,  4,  6,  8, 10, 12, 14,
-									1,  5,  7,  9, 13,  3,  5,  7, 11, 13,  1,  5,  7,  9, 13,  1,  5,  7,  9, 13,  3,  5,  7,  9, 11, 13,  1,  3,  5,  7, 11, 13,  1,  5,  7,  9, 13 };
-const int H264v2Codec::test16Y[256] = { 3,  3, 11, 11, 
+const signed char H264v2Codec::test16X[256] = { 3, 11,  3, 11, 	1,  5,  9, 13,  1,  5,  9, 13,  1,  5,  9, 13,
+					1,  5,  9, 13, 	3,  7, 11, 15,  0,  7, 15,  0,  3,  7, 11, 15,
+					0,  7, 15,  0,  3,  7, 11, 15,	0,  2,  4,  6,  8, 10, 12, 14,
+					2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,  2,  4,
+					6,  8, 10, 12, 14,  5,  9, 13,  1,  5,  9, 13,  2,  4,  6,  8,
+					10, 12, 14,  0,  3,  7, 11, 15,  1,  5,  9, 13,  2,  4,  6,  8,
+					10, 12, 14,  0,  3,  7, 11, 15,  1,  5,  9, 13,  2,  4,  6,  8,
+					10, 12, 14,  0,  3,  7, 11, 15,  5,  9, 13,1,  2,  4,  6,  8, 
+					10, 12, 14,  0,  3,  7, 11, 15,  0,  3, 11, 15,  6, 14,  0,  1,
+					9, 15,  0,  3, 11, 15,  0,  3, 11, 15,  0,  1, 15,  6, 14,  0,
+					9, 15,  0,  3, 11, 15,  1,  2,  4,  6,  8, 10, 12, 14, 2,  4,
+					6,  8, 10, 12, 14,  2,  4,  8, 10, 12,  2,  4,  6,  8, 10, 12,
+					14,  2,  4,  6,  8, 10, 12, 14,  2,  4,  6,  8, 10, 12, 14,  2,
+					4,  8, 10, 12,  2,  4,  6,  8, 10, 12, 14, 1,  5,  7,  9, 13,
+					3,  5,  7, 11, 13,  1,  5,  7,  9, 13,  1,  5,  7,  9, 13,  3,
+					5,  7,  9, 11, 13,  1,  3,  5,  7, 11, 13,  1,  5,  7,  9, 13 };
+const signed char H264v2Codec::test16Y[256] = { 3,  3, 11, 11, 
 									1,  1,  1,  1,  5,  5,  5,  5,  9,  9,  9,  9, 13, 13, 13, 13, 
 									0,  0,  0,  0,  3,  3,  3,  7,  7,  7,  7,  7, 11, 11, 11, 15, 15, 15, 15, 15,
 									0,  2,  2,  2,  2,  2,  2,  2,  6,  6,  6,  6,  6,  6,  6, 10, 10, 10, 10, 10, 10, 10, 14, 14, 14, 14, 14, 14, 14,
@@ -291,16 +291,16 @@ const int H264v2Codec::indexAbS[3][52]	= { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 			};
 #endif
   const int H264v2Codec::NextQPDec[H264V2_MAX_EXT_QP+1] = 
-	  {//	0		1		2		3		4		5		6		7		8		9		10	11	12	13	14	15
-			  1,	1,	1,	2,	3,	4,	5,	6,	7,	8,	 9,	10,	11,	11,	13,	13,
-	  //	16	17	18	19	20	21	22	23	24	25	26	27	28	29	30	31
-			  15,	15,	17,	17,	19,	19,	21,	21,	23,	23,	25,	25,	27,	27,	29,	29,
-	  //	32	33	34	35	36	37	38	39	40	41	42	43	44	45	46	47
-			  31,	31,	31,	31,	35,	35,	35,	35,	39,	39,	39,	39,	43,	43,	43,	43,
-	  //	48	49	50	51  52  53  54  55  56  57  58  59  60  61  62  63  	
-			  47,	47,	47,	47, 51, 51, 51, 51, 55, 55, 55, 55, 59, 59, 59, 59,  
-    //  64  65  66  67  68  69  70  71
-        63, 63, 63, 63, 67, 68, 69, 70 
+	  {//  0		1		2		3		4		5		6		7		8		9		10	11	12	13	14	15
+	       1,	1,	1,	2,	3,	4,	5,	6,	7,	8,	 9,	10,	11,	11,	13,	13,
+	  //  16	17	18	19	20	21	22	23	24	25	26	27	28	29	30	31
+	      15,	15,	17,	17,	19,	19,	21,	21,	23,	23,	25,	25,	27,	27,	29,	29,
+	  //  32	33	34	35	36	37	38	39	40	41	42	43	44	45	46	47
+	      31,	31,	31,	31,	35,	35,	35,	35,	39,	39,	39,	39,	43,	43,	43,	43,
+	  //  48	49	50	51  52  53  54  55  56  57  58  59  60  61  62  63  	
+	      47,	47,	47,	47, 51, 51, 51, 51, 55, 55, 55, 55, 59, 59, 59, 59,  
+	  //  64  65  66  67  68  69  70  71
+	      63, 63, 63, 63, 67, 68, 69, 70 
 	  };
 
   /// CPU speed dependent high resolution timer.

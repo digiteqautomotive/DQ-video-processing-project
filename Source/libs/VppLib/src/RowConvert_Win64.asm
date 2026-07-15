@@ -280,10 +280,10 @@ Exit:
 YUV_RGB endp
 
 
-;void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public PelYUV_RGB
+;void PelYUV_RGB24(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB24_CMOV
 IF (@Version LT 1200) OR (@Version GE 1300)
-PelYUV_RGB proc \
+PelYUV_RGB24_CMOV proc \
         uses rdi rsi rbx R12 R13 R14,
         OutData: ptr BYTE,
         y: ptr BYTE,
@@ -292,7 +292,7 @@ PelYUV_RGB proc \
 	PixelCount: DWORD	; on stack
 ELSE
 ; The ASM from MSVC2013 seems to be much more worse than previous one. Use blind arguments.
-PelYUV_RGB proc \
+PelYUV_RGB24_CMOV proc \
         uses rdi rsi rbx R12 R13 R14
 ENDIF
 	mov	rdi,rcx		; [OutData]
@@ -461,7 +461,11 @@ LoopPel:mov	al,[R9]
 	jnz	LoopPel
 Exit:
 	ret
-PelYUV_RGB endp
+PelYUV_RGB24_CMOV endp
+
+
+; AMD 64 architecture has always CMOV instruction present.
+;ALIAS <PelYUV_RGB24> = <PelYUV_RGB24_CMOV>
 
 
 ;void PelYUV_RGB32(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)

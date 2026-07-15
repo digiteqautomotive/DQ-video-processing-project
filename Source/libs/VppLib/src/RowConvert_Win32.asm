@@ -269,9 +269,9 @@ Exit:
 YUV_RGB endp
 
 
-;void PelYUV_RGB(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public PelYUV_RGB
-PelYUV_RGB proc \
+;void PelYUV_RGB24(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB24
+PelYUV_RGB24 proc \
         uses edi esi ebx, \
         OutData: ptr BYTE, \
         y: ptr BYTE, \
@@ -447,7 +447,7 @@ NormB22:mov	[edi+5],bh		; B22
 
 Exit:
 	ret
-PelYUV_RGB endp
+PelYUV_RGB24 endp
 
 
 ;void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)

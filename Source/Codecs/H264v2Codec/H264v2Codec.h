@@ -463,8 +463,8 @@ private:
 	static const int dc2x2Scale[];
 
 	/// Test sampling point coordinates for Intra_16x16 and Intra_8x8 prediction mode selection.
-	static const int test16X[];
-	static const int test16Y[];
+	static const signed char test16X[];
+	static const signed char test16Y[];
 	static const int test16Limit[];
 	static const int testZoom16X[];
 	static const int testZoom16Y[];
