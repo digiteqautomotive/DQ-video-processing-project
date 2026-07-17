@@ -60,7 +60,7 @@ bool RealYUV420toBGR24CCIR601Converter::isVideoFormatSupported(const GUID &Video
 }
 
 
-void RealYUV420toBGR24CCIR601Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void RealYUV420toBGR24CCIR601Converter::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
   unsigned char *optr = (unsigned char *)pRgb;
   const unsigned char *py	= (const unsigned char*)pY;
@@ -153,7 +153,7 @@ void RealYUV420toBGR24CCIR601Converter::NonRotateConvert(const void* pY, const v
 }//end NonRotateConvert.
 
 
-void RealYUV420toBGR24CCIR601Converter::RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
+void RealYUV420toBGR24CCIR601Converter::RotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 	unsigned char *optr = (unsigned char *)pRgb;
 	const unsigned char *py = (const unsigned char*)pY;

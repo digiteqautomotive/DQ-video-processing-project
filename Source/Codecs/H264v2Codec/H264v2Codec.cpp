@@ -47,7 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ConvRGB24toYUV420CCIR601Ver16.h"
 #include "ConvYUV420_16toRGB.h"
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
-#include "ConvYUV420toRGB.h"
+//#include "ConvYUV420toRGB.h"
+#include "ConvYUV420_16toRGB.h"
 #include "ConvYUV420toRGB24RealImpl2Ver16.h"
 
 #include "FastForward4x4ITImpl2.h"
@@ -809,7 +810,7 @@ int H264v2Codec::Open(void)
 	int chrSize = _chrWidth * _chrHeight;
 	int imgSize = lumSize + 2*chrSize;
 	/// In/Out and ref images with primary lum at the head.
-  _pLum = new short[2 * imgSize];
+  _pLum = new uint16_t[2 * imgSize];
   if(!_pLum)
   {
     _errorStr = "[H264Codec::Open] Image memory unavailable";
@@ -817,11 +818,11 @@ int H264v2Codec::Open(void)
 	  return(0);
   }//end if !_pLum...
 	/// Place each image and colour component head pointer.
-	_pChrU		= &(_pLum[lumSize]);												///< End of _pLum.
-	_pChrV		= &(_pLum[lumSize + chrSize]);							///< End of _pChrU.
-	_pRLum		= &(_pLum[imgSize]);												///< End of input image.
-	_pRChrU		= &(_pLum[imgSize + lumSize]);							///< End of image and _pRLum.
-	_pRChrV		= &(_pLum[imgSize + lumSize + chrSize]);		///< End of _pRChrU.
+	_pChrU		= (int16_t*)&(_pLum[lumSize]);					///< End of _pLum.
+	_pChrV		= (int16_t*)&(_pLum[lumSize + chrSize]);			///< End of _pChrU.
+	_pRLum		= &(_pLum[imgSize]);						///< End of input image.
+	_pRChrU		= (int16_t*)&(_pLum[imgSize + lumSize]);			///< End of image and _pRLum.
+	_pRChrV		= (int16_t*)&(_pLum[imgSize + lumSize + chrSize]);		///< End of _pRChrU.
 
   /// Zero the reference and the previous input image spaces. Note that the mem
 	/// is contiguous.
@@ -919,7 +920,7 @@ int H264v2Codec::Open(void)
 #ifdef _CCIR601
 			_pOutColourConverter = new RealYUV420toRGB24CCIR601ConverterVer16(_width, _height);
 #else
-			_pOutColourConverter = new RealYUV420toRGB24ConverterImpl2Ver16(_width, _height);	//, 128
+			_pOutColourConverter = new ConvYUV420_16toBGR24(_width, _height);	//, 128
 #endif
 
 		if(_pOutColourConverter == NULL)
@@ -930,7 +931,7 @@ int H264v2Codec::Open(void)
 		}//end if !_pOutColourConverter...
 
     /// the calling code is responsible for the flipping of the image
-		_pOutColourConverter->SetFlip(_flip);
+		_pOutColourConverter->m_Flip = _flip;
 	
   }//end if _outColour...
 
@@ -1732,7 +1733,7 @@ int	H264v2Codec::Decode(const void* pCmp, int bitLength, void* pDst)
   }//end if H264V2_YUV420P8...
 	else
         {
-          if(_pOutColourConverter->GetFlip()) 
+          if(_pOutColourConverter->m_Flip) 
             _pOutColourConverter->FlipConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
           else
 	    _pOutColourConverter->NonRotateConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);

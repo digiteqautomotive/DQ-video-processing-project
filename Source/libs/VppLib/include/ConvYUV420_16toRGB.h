@@ -44,14 +44,31 @@ class ConvYUV420_16toBGR24_CCIR601
 {
 public:
   int _width, _height;
+  bool m_Flip;
 
   // Construction and destruction.
-  ConvYUV420_16toBGR24_CCIR601(void) {}
-  ConvYUV420_16toBGR24_CCIR601(int width, int height): _width(width), _height(height) {}
+  ConvYUV420_16toBGR24_CCIR601(void): m_Flip(false) {}
+  ConvYUV420_16toBGR24_CCIR601(int width, int height): _width(width), _height(height), m_Flip(false) {}
 
 	// Interface.
-  void FlipConvert(const uint16_t* y, const uint16_t *u, const uint16_t *v, unsigned char *pRgb) const;
-  void NonRotateConvert(const uint16_t* y, const uint16_t *u, const uint16_t *v, unsigned char *pRgb) const;
+  void FlipConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+  void NonRotateConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+}; //end ConvYUV420toRGB24.
+
+
+class ConvYUV420_16toBGR24
+{
+public:
+  int _width, _height;
+  bool m_Flip;
+
+  // Construction and destruction.
+  ConvYUV420_16toBGR24(void): m_Flip(false) {}
+  ConvYUV420_16toBGR24(int width, int height): _width(width), _height(height), m_Flip(false) {}
+
+	// Interface.
+  void FlipConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+  void NonRotateConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24.
 
 

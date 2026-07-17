@@ -68,6 +68,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define H264V2_DUMP_HEADERS 1
 #include "GeneralUtils/MeasurementTable.h"
 
+
+class ConvYUV420_16toBGR24;
+
 /*
 ===========================================================================
   Codec specific definitions.
@@ -75,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// Defined Modes of Operation for bit allocation stratergies - "mode of operation".
-#define	H264V2_OPEN										0	/// (Default) Slice QP defines the bit usage without control.
+#define	H264V2_OPEN			0	/// (Default) Slice QP defines the bit usage without control.
 #define H264V2_MB_QP_MINMAX_ADAPTIVE	1	/// Macroblock QP is adapted to meet the frame bit target.
 
 /// Seq and Pic param max encoded length.
@@ -176,11 +179,11 @@ private:
   /// Intermediate input/output YCbCr image mem members.
   int							_lumWidth;		/// pix width.
   int							_lumHeight;		/// pix height.
-  short*					_pLum;				/// Space to compress from and decompress to.
+        uint16_t *_pLum;		/// Space to compress from and decompress to.
 	int							_chrWidth;
 	int							_chrHeight;
-	short*					_pChrU;
-	short*					_pChrV;
+	int16_t *_pChrU;
+	int16_t *_pChrV;
 
 	/// 2-D overlays for YCbCr picture mem.
 	OverlayMem2Dv2*	_Lum;
@@ -188,9 +191,9 @@ private:
 	OverlayMem2Dv2*	_Cr;
 
   /// Reference image mem members.
-  short*					_pRLum;
-  short*					_pRChrU;
-  short*					_pRChrV;
+        uint16_t *_pRLum;
+	int16_t *_pRChrU;
+        int16_t *_pRChrV;
 
 	/// 2-D overlays for YCbCr picture reference mem.
 	OverlayMem2Dv2*	_RefLum;
@@ -494,7 +497,7 @@ private:
 
 	/// An input colour converter.
 	RGBtoYUV420Converter16 *_pInColourConverter;
-	YUV420toRGBConverter *_pOutColourConverter;
+	ConvYUV420_16toBGR24 *_pOutColourConverter;
 
 	/// 4x4 and 2x2 IT DC and AC transform filters.
 	IForwardTransform* _pF4x4TLum;

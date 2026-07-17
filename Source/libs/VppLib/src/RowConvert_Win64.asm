@@ -468,10 +468,10 @@ PelYUV_RGB24_CMOV endp
 ;ALIAS <PelYUV_RGB24> = <PelYUV_RGB24_CMOV>
 
 
-;void PelYUV_RGB32(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public PelYUV_RGB32
+;void PelYUV_RGB32_CMOV(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB32_CMOV
 IF (@Version LT 1200) OR (@Version GE 1300)
-PelYUV_RGB32 proc \
+PelYUV_RGB32_CMOV proc \
         uses rdi rsi rbx R12 R13 R14,
         OutData: ptr BYTE,
         y: ptr BYTE,
@@ -480,7 +480,7 @@ PelYUV_RGB32 proc \
 	PixelCount: DWORD	; on stack
 ELSE
 ; The ASM from MSVC2013 seems to be much more worse than previous one. Use blind arguments.
-PelYUV_RGB32 proc \
+PelYUV_RGB32_CMOV proc \
         uses rdi rsi rbx R12 R13 R14
 ENDIF
 	mov	rdi,rcx		; [OutData]
@@ -653,7 +653,7 @@ LoopPel:mov	al,[R9]
 	jnz	LoopPel
 Exit:
 	ret
-PelYUV_RGB32 endp
+PelYUV_RGB32_CMOV endp
 
 
 ;void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)

@@ -52,8 +52,8 @@ public:
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+	virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+	virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24.
 
 
@@ -71,8 +71,8 @@ public:
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+	virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+	virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24.
 
 
@@ -91,8 +91,8 @@ public:
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+  virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+  virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24.
 
 

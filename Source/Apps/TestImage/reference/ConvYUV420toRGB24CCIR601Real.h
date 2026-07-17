@@ -39,9 +39,9 @@ public:
 
 		// Interface.
 protected:
-	virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-	virtual void RotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-        virtual void FlipConvert(const void *,const void *,const void *,unsigned char *) const {/* NOT implemented*/}
+	virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+	virtual void RotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+        virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const {/* NOT implemented*/}
 
 }; //end RealYUV420toBGR24CCIR601Converter.
 

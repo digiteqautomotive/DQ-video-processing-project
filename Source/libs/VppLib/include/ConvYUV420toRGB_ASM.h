@@ -20,21 +20,20 @@ Copyright (c) 2025-2026, Digiteq Automotive		All rights reserved.
 
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-* colour convertion derived from the YUV420toRGBConverter base 
-* class. */
+* colour convertion derived from the YUV420toRGBConverter base class. */
 class ConvYUV420toRGB24_ASM: public YUV420toRGBConverter
 {
 public:
   // Construction and destruction.
-  ConvYUV420toRGB24_ASM(void)	{}
-  ConvYUV420toRGB24_ASM(int width, int height): YUV420toRGBConverter(width,height) {}
+    ConvYUV420toRGB24_ASM(void)	{}
+    ConvYUV420toRGB24_ASM(int width, int height): YUV420toRGBConverter(width,height) {}
 
 	// Interface.
-  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+    virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+    virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+    virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24_ASM.
 
 
@@ -53,8 +52,8 @@ public:
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+  virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+  virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;  
 }; //end ConvYUV420toRGB32_ASM.
 
 

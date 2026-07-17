@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ==========================================================================*/
 
 
-void ConvYUV420_16toBGR24_CCIR601::FlipConvert(const uint16_t* y, const uint16_t *u, const uint16_t *v, unsigned char *pRgb) const
+void ConvYUV420_16toBGR24_CCIR601::FlipConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const
 {
 int32_t X;
 pRgb += 3*_width*(_height-1);
@@ -104,7 +104,7 @@ pRgb += 3*_width*(_height-1);
 } //end FlipConvert
 
 
-void ConvYUV420_16toBGR24_CCIR601::NonRotateConvert(const uint16_t* y, const uint16_t *u, const uint16_t *v, unsigned char *pRgb) const
+void ConvYUV420_16toBGR24_CCIR601::NonRotateConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned width3 = _width * 3;
@@ -137,7 +137,7 @@ const unsigned width3 = _width * 3;
       else if(X<0) pRgb[2]=0;
       else pRgb[2] = X;
 
-      Y = 256 * y[1] - 16*256;;
+      Y = 256 * y[1] - 16*256;
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
       if(X>255) pRgb[3]=255;
       else if(X<0) pRgb[3]=0;
@@ -153,7 +153,7 @@ const unsigned width3 = _width * 3;
 
       pRgb += width3;
 
-      Y = 256 * y[_width] - 16*256;;
+      Y = 256 * y[_width] - 16*256;
       X = (Y + cc) >> 8;		// B: Y + 2.032*U
       if(X>255) pRgb[0]=255;
       else if(X<0) pRgb[0]=0;
@@ -167,7 +167,7 @@ const unsigned width3 = _width * 3;
       else if(X<0) pRgb[2]=0;
       else pRgb[2] = X;
 
-      Y = 256 * y[_width+1] - 16*256;;
+      Y = 256 * y[_width+1] - 16*256;
       X = (Y + cc) >> 8;		// B: Y + 1.772*Y + 2.034*U;
       if(X>255) pRgb[3]=255;
       else if(X<0) pRgb[3]=0;

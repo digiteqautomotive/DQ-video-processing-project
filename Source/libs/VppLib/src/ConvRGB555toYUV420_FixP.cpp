@@ -333,9 +333,9 @@ void ConvRGB565toYUV420FixP::NonFlipConvert(const unsigned char* pRgb, unsigned 
 
 	// Top right pel.
       val = LD_UINT16_LO(pRgb+2);
-      rs = (val>>11) & 0x1F;
-      gs = (val>>5) & 0x3F;
-      bs = val & 0x1F;
+      rs += r = (val>>11) & 0x1F;
+      gs += g = (val>>5) & 0x3F;
+      bs += b = val & 0x1F;
       y = ((iRRGB555_YUVCI2_00*r + iRRGB565_YUVCI2_01*g + iRRGB555_YUVCI2_02*b + (1<<iPrecision)) >> (iPrecision + 1));
       if(y>=255) pY[1]=255;		// y is only positive
             else pY[1] = (unsigned char)y;
@@ -343,18 +343,18 @@ void ConvRGB565toYUV420FixP::NonFlipConvert(const unsigned char* pRgb, unsigned 
       pRgb += 2 * _width;
 	// Bottom left pel.
       val = LD_UINT16_LO(pRgb);
-      rs = (val>>11) & 0x1F;
-      gs = (val>>5) & 0x3F;
-      bs = val & 0x1F;
+      rs += r = (val>>11) & 0x1F;
+      gs += g = (val>>5) & 0x3F;
+      bs += b = val & 0x1F;
       y = ((iRRGB555_YUVCI2_00*r + iRRGB565_YUVCI2_01*g + iRRGB555_YUVCI2_02*b + (1<<iPrecision)) >> (iPrecision + 1));
       if(y>=255) pY[_width]=255;	// y is only positive
             else pY[_width] = (unsigned char)y;
 
 	// Bottom right pel.
       val = LD_UINT16_LO(pRgb+2);
-      rs = (val>>11) & 0x1F;
-      gs = (val>>5) & 0x3F;
-      bs = val & 0x1F;
+      rs += r = (val>>11) & 0x1F;
+      gs += g = (val>>5) & 0x3F;
+      bs += b = val & 0x1F;
       y = ((iRRGB555_YUVCI2_00*r + iRRGB565_YUVCI2_01*g + iRRGB555_YUVCI2_02*b + (1<<iPrecision)) >> (iPrecision + 1));
       if(y>=255) pY[_width+1]=255;	// y is only positive
             else pY[_width+1] = (unsigned char)y;

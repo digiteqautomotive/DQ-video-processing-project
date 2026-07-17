@@ -101,11 +101,13 @@ public:
 
     virtual void Convert(const void* pBufferIn, void* pRgb) const;
     void Convert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
-    {if(_flip) FlipConvert(pY, pU, pV, (unsigned char*)pRgb);
-     else NonRotateConvert(pY, pU, pV, (unsigned char*)pRgb);}
+    {
+      if(_flip) FlipConvert((const unsigned char*)pY, (const signed char*)pU, (const signed char*)pV, (unsigned char*)pRgb);
+      else NonRotateConvert((const unsigned char*)pY, (const signed char*)pU, (const signed char*)pV, (unsigned char*)pRgb);
+    }
 
-    virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const = 0;
-    virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const = 0;    
+    virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char* pRgb) const = 0;
+    virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char* pRgb) const = 0;
 };
 
 

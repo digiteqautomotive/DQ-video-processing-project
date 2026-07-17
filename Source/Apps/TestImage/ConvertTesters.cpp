@@ -85,7 +85,7 @@ void OrigRealYUV444toRGB24Converter::Convert(const void* pInputBuffer, void* pRg
 #define _chrOff			128
 
 
-void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void OrigRealYUV420toRGB24Converter::FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
   unsigned char *optr	=	(unsigned char *)pRgb;
   const unsigned char *py	= (unsigned char *)pY;
@@ -183,7 +183,7 @@ void OrigRealYUV420toRGB24Converter::FlipConvert(const void* pY, const void* pU,
 }//end OrigRealYUV420toRGB24Converter::FlipConvert
 
 
-void OrigRealYUV420toRGB24Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void OrigRealYUV420toRGB24Converter::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
   unsigned char* 	optr	=	(unsigned char *)pRgb;
   const unsigned char*				py		= (unsigned char *)pY;

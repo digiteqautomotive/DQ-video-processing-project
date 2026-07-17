@@ -25,8 +25,8 @@ public:
 
 	// Interface
 protected:
-  virtual void FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
-  virtual void NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const;
+	virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+	virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
 }; //end OrigRealYUV420toRGB24Converter.
 
 

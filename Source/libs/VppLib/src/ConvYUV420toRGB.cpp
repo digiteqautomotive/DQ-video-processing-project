@@ -46,7 +46,7 @@ bool ConvYUV420toRGB24::isVideoFormatSupported(const GUID &VideoFormatIn, const 
 }
 
 
-void ConvYUV420toRGB24::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void ConvYUV420toRGB24::FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
@@ -134,7 +134,7 @@ pRgb += 3*_width*(_height-1);
 } //end FlipConvert
 
 
-void ConvYUV420toRGB24::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void ConvYUV420toRGB24::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned width3 = _width * 3;
@@ -230,7 +230,7 @@ bool YUV420toRGB32Converter::isVideoFormatSupported(const GUID &VideoFormatIn, c
 }
 
 
-void YUV420toRGB32Converter::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void YUV420toRGB32Converter::FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned char *y = (const unsigned char *)pY;
@@ -292,13 +292,13 @@ pRgb += 4*_width*(_height-1);
 } //end FlipConvert
 
 
-void YUV420toRGB32Converter::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char *pRgb) const
+void YUV420toRGB32Converter::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 int32_t X;
 const unsigned width4 = _width * 4;
-const unsigned char *y = (const unsigned char *)pY;
-const signed char *u = (const signed char *)pU;
-const signed char *v = (const signed char *)pV;
+const unsigned char *y = pY;
+const signed char *u = pU;
+const signed char *v = pV;
 
   for(int row=0; row<_height; row+=2)
   {
