@@ -41,7 +41,6 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGBtoYUYV.h"
 #include "ConvYUV420_16toRGB.h"
-#include "ConvYUV420toRGB24RealImpl2Ver16.h"		// @TODO move to reference
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
 #endif
@@ -52,6 +51,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "reference/ConvRGB32toYUV420_Real.h "
 #include "reference/ConvYUV420toRGB24CCIR601Real.h"
 #include "reference/ConvYUV420toRGB24CCIR601RealVer16.h"
+#include "reference/ConvYUV420toRGB24RealImpl2Ver16.h"
 #include "ConvertTesters.h"
 
 
@@ -1647,9 +1647,25 @@ bool Pause = false;
        if(pos >= 10000)
           goto ReturnErr;
 
-       ConvYUV420_16toBGR24_CCIR601 picConvYUV420_16toBGR24_CCIR6001(Width,Height);
-       RealYUV420toRGB24CCIR601ConverterVer16 origConvYUV420_16toBGR24_CCIR6001(Width,Height);
+       ConvYUV420_16toBGR24_CCIR601 picConvYUV420_16toBGR24_CCIR601(Width,Height);
+       RealYUV420toRGB24CCIR601ConverterVer16 origConvYUV420_16toBGR24_CCIR601(Width,Height);
 
+       picConvYUV420_16toBGR24_CCIR601.Convert(BlobIn+16, BlobOut+16);
+       origConvYUV420_16toBGR24_CCIR601.Convert(BlobIn+16, BlobTest+16);
+
+       pos = RGB24compare("YUV420_16toBGR24_CCIR601", Width,Height, BlobTest, BlobOut);
+       if(pos >= 10000)
+          goto ReturnErr;
+
+       picConvYUV420_16toBGR24_CCIR601.SetFlip(true);
+       origConvYUV420_16toBGR24_CCIR601.SetFlip(true);
+
+       picConvYUV420_16toBGR24_CCIR601.Convert(BlobIn+16, BlobOut+16);
+       origConvYUV420_16toBGR24_CCIR601.Convert(BlobIn+16, BlobTest+16);
+
+       pos = RGB24compare("YUV420_16toBGR24_CCIR601", Width,Height, BlobTest, BlobOut);
+       if(pos >= 10000)
+          goto ReturnErr;
      }
 
 
@@ -1949,7 +1965,27 @@ bool Pause = false;
     printf(" flip %.3f[ms]", DurationMin/1000.0);
 
 
+   {
+      ConvYUV420_16toBGR24_CCIR601 convYUV420_16toBGR24(1920,1080);
+      DurationMin = BenchConverter(convYUV420_16toBGR24, BlobIn, BlobOut);
+      printf("\nConvert CCIR601 YUV420_16 to BGR24 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      convYUV420_16toBGR24.SetFlip(true);
+      DurationMin = BenchConverter(convYUV420_16toBGR24, BlobIn, BlobOut);
+    }
+    printf(" flip %.3f[ms]", DurationMin/1000.0);
+
+   {
+      RealYUV420toRGB24CCIR601ConverterVer16 origYUV420_16toBGR24(1920,1080);
+      DurationMin = BenchConverter(origYUV420_16toBGR24, BlobIn, BlobOut);
+      printf(" orig %.3f[ms]", DurationMin/1000.0);
+      origYUV420_16toBGR24.SetFlip(true);
+      DurationMin = BenchConverter(origYUV420_16toBGR24, BlobIn, BlobOut);
+    }
+    printf(" flip %.3f[ms]", DurationMin/1000.0);
+
+
 	/////////////////////////////////////////////////////////
+
 
     {
       PicScalerRGB24Impl picScalerRGB24(1920,1080,800,600);

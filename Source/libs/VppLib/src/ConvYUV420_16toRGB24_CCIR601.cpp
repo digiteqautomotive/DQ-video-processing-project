@@ -57,8 +57,8 @@ pRgb += 3*_width*(_height-1);
     int Pixel2Count = (_width+1) / 2;
     while(Pixel2Count-->0)		//converts to RGB
     {
-      const signed char U = *u++ - 128;
-      const signed char V = *v++ - 128;
+      const int32_t U = *u++ - 128;
+      const int32_t V = *v++ - 128;
       const int32_t cc = U*520 + 127;
       const int32_t ca = V*292 + 127;
       const int32_t cb = -101*U - 149*V + 127;
@@ -114,8 +114,8 @@ const unsigned width3 = _width * 3;
     int Pixel2Count = (_width+1) / 2;
     while(Pixel2Count-->0)		//converts to RGB
     {
-      const signed char U = *u++ - 128;
-      const signed char V = *v++ - 128;
+      const int32_t U = *u++ - 128;
+      const int32_t V = *v++ - 128;
       const int32_t cc = U*520 + 127;
       const int32_t ca = V*292 + 127;
       const int32_t cb = -101*U - 149*V + 127;

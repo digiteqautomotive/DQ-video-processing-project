@@ -55,11 +55,10 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 #define RYUVRGB24CI2V16_V1		-0.581
 #define RYUVRGB24CI2V16_V0		 1.140
 
-/*
-===========================================================================
+/*===========================================================================
 	Constructors.
-===========================================================================
-*/
+===========================================================================*/
+
 RealYUV420toBGR24ConverterImpl2Ver16::RealYUV420toBGR24ConverterImpl2Ver16(int width, int height): CVideoConverter(width, height)
 { 
 }//end constructor.

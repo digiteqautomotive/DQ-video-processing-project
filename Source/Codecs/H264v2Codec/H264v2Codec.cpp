@@ -10,7 +10,8 @@ DESCRIPTIONS:	A 2nd generation of video codecs based on the H264 standard implem
                   
 LICENSE:	GNU Lesser General Public License
 
-Copyright (c) 2008 - 2013, CSIR		All rights reserved.
+	Copyright (c) 2008 - 2013, CSIR		All rights reserved.
+	Copyright (c) 2025-2026 Digiteq Automotive, written by Jaroslav Fojtik		All rights reserved.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -49,7 +50,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
 //#include "ConvYUV420toRGB.h"
 #include "ConvYUV420_16toRGB.h"
-#include "ConvYUV420toRGB24RealImpl2Ver16.h"
 
 #include "FastForward4x4ITImpl2.h"
 #include "FastForward4x4ITImpl1.h"
@@ -908,11 +908,11 @@ int H264v2Codec::Open(void)
 			_errorStr = "[H264Codec::Open] Cannot instantiate input colour converter";
 			Close();
 			return(0);
-		}//end if !_pInColourConverter...
+		} //end if !_pInColourConverter...
 
-    /// the calling code is responsible for the flipping of the image
+			/// the calling code is responsible for the flipping of the image
 		_pInColourConverter->SetFlip(_flip);
-	}//end if _inColour...
+	} //end if _inColour...
 
 	if(_outColour == H264V2_RGB24)
 	{
@@ -928,12 +928,12 @@ int H264v2Codec::Open(void)
 			_errorStr = "[H264Codec::Open] Cannot instantiate output colour converter";
 			Close();
 			return(0);
-		}//end if !_pOutColourConverter...
+		} //end if !_pOutColourConverter...
 
-    /// the calling code is responsible for the flipping of the image
+			/// the calling code is responsible for the flipping of the image
 		_pOutColourConverter->SetFlip(_flip);
 	
-  }//end if _outColour...
+  } //end if _outColour...
 
 	/// --------------- Instantiate IT filters ------------------------------------
 	/// Create Integer Transformers (IT) and their inverses for AC and DC coeffs. The
