@@ -42,10 +42,9 @@ class ConvAYUV444toRGB24: public CVideoConverter
 {
 public:
 	 // Construction and destruction.
-  ConvAYUV444toRGB24(void) { }
+  ConvAYUV444toRGB24(void) {}
   ConvAYUV444toRGB24(int width, int height): CVideoConverter(width,height) {}
 
-  virtual ~ConvAYUV444toRGB24(void) {}
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 	// Interface.

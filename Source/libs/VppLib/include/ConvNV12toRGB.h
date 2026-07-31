@@ -25,7 +25,7 @@ class ConvNV12toRGB24: public CVideoConverter
 {
 public:
   // Construction and destruction.
-  ConvNV12toRGB24(void) { }
+  ConvNV12toRGB24(void) {}
   ConvNV12toRGB24(int width, int height): CVideoConverter(width,height) {}
 
 	// Interface.

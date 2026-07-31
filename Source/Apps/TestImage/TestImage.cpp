@@ -1850,6 +1850,26 @@ bool Pause = false;
       printf("+Fix %.3f[ms]", DurationMin/1000.0);
     }
 
+	///////////////////////////////////////////////////////
+
+    {
+      ConvRGB24toYUYV_FixP ConvRGB24toYUYV(1920,1080);
+      DurationMin = BenchConverter(ConvRGB24toYUYV, BlobIn, BlobOut);
+      printf("\nConvert RGB24 to YUYV resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      ConvRGB24toYUYV.SetFlip(true);
+      DurationMin = BenchConverter(ConvRGB24toYUYV, BlobIn, BlobOut);
+    }
+    printf(" flip %.3f[ms]", DurationMin/1000.0);
+
+    {
+      ConvRGB32toYUYV_FixP ConvRGB32toYUYV(1920,1080);
+      DurationMin = BenchConverter(ConvRGB32toYUYV, BlobIn, BlobOut);
+      printf("\nConvert RGB32 to YUYV resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      ConvRGB32toYUYV.SetFlip(true);
+      DurationMin = BenchConverter(ConvRGB32toYUYV, BlobIn, BlobOut);
+    }
+    printf(" flip %.3f[ms]", DurationMin/1000.0);
+
 	/////////////////////////////////////////////////////////////////////////////
     {
       ConvAYUV444toRGB24 picConverterAYUV2RGB24(1920,1080);
@@ -1924,26 +1944,6 @@ bool Pause = false;
     printf(" ASM_Flip: %.3f[ms]", DurationMin/1000.0);
 #endif
 
-	///////////////////////////////////////////////////////
-
-    {
-      ConvRGB24toYUYV_FixP ConvRGB24toYUYV(1920,1080);
-      DurationMin = BenchConverter(ConvRGB24toYUYV, BlobIn, BlobOut);
-      printf("\nConvert RGB24 to YUYV resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
-      ConvRGB24toYUYV.SetFlip(true);
-      DurationMin = BenchConverter(ConvRGB24toYUYV, BlobIn, BlobOut);
-    }
-    printf(" flip %.3f[ms]", DurationMin/1000.0);
-
-    {
-      ConvRGB32toYUYV_FixP ConvRGB32toYUYV(1920,1080);
-      DurationMin = BenchConverter(ConvRGB32toYUYV, BlobIn, BlobOut);
-      printf("\nConvert RGB32 to YUYV resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
-      ConvRGB32toYUYV.SetFlip(true);
-      DurationMin = BenchConverter(ConvRGB32toYUYV, BlobIn, BlobOut);
-    }
-    printf(" flip %.3f[ms]", DurationMin/1000.0);
-
 	/////////////////////////////////////////////////////////
 
    {
@@ -1968,7 +1968,7 @@ bool Pause = false;
    {
       ConvYUV420_16toBGR24_CCIR601 convYUV420_16toBGR24(1920,1080);
       DurationMin = BenchConverter(convYUV420_16toBGR24, BlobIn, BlobOut);
-      printf("\nConvert CCIR601 YUV420_16 to BGR24 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nConvert YUV420_16 to BGR24 CCIR601 res. 1920,1080 time %.3f[ms]", DurationMin/1000.0);
       convYUV420_16toBGR24.SetFlip(true);
       DurationMin = BenchConverter(convYUV420_16toBGR24, BlobIn, BlobOut);
     }

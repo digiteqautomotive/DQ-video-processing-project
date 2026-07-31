@@ -80,9 +80,9 @@ void RealYUV420toRGB24CCIR601ConverterVer16::Convert(const void* pBufferIn, void
 void RealYUV420toRGB24CCIR601ConverterVer16::NonRotateConvert(const int16_t* pY, const int16_t* pU, const int16_t* pV, void* pRgb) const
 {
   unsigned char *optr =	(unsigned char *)pRgb;
-  int16_t *py	= (int16_t *)pY;
-  int16_t *pu	= (int16_t *)pU;
-  int16_t *pv	= (int16_t *)pV;
+  const int16_t *py = pY;
+  const int16_t *pu = pU;
+  const int16_t *pv = pV;
   int lumX	= _width;
   int lumY	= _height;
   int uvX	= _width >> 1;
