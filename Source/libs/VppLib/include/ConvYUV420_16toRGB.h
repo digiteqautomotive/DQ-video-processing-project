@@ -10,7 +10,7 @@ DESCRIPTION:		Fixed point implementation of YUV420 (16 bpp) to RGB 24 bit
 					  
 LICENSE: Software License Agreement (BSD License)
 
-Copyright (c) 2025-2026, Digiteq Automotive		All rights reserved.
+Copyright (c) 2025-2026, Digiteq Automotive programmed by Jaroslav Fojtik		All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -33,42 +33,68 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _YUV420_16_TORGB24_CONVERTER_H
 #define _YUV420_16_TORGB24_CONVERTER_H
 
-
+#include "ConvYUVtoRGB.h"
 #include "typedfs.h"
+
+
+class YUV420_16toRGB_Converter: public CVideoConverter
+{
+public:
+	/// Construction and destruction.
+	YUV420_16toRGB_Converter(void)		{}
+ 	YUV420_16toRGB_Converter(int width, int height): CVideoConverter(width,height)	{}
+
+		// Interface.
+	virtual void Convert(const void* pYUV, void* pRgb) const
+        {
+          const unsigned BlkYsz = _width*_height;
+          const int16_t * const pU = (const int16_t*)pYUV + BlkYsz;
+          const int16_t * const pV = pU + BlkYsz/4;
+          if(_flip) FlipConvert((int16_t*)pYUV, pU, pV, (unsigned char*)pRgb);
+               else NonRotateConvert((int16_t*)pYUV, pU, pV, (unsigned char*)pRgb);
+        } //end Convert.
+
+        void Convert(const void* pY, const void* pU, const void* pV, void* pRgb)
+        {
+          if(_flip) FlipConvert((const int16_t*)pY, (const int16_t*)pU, (const int16_t*)pV, (unsigned char*)pRgb);
+          else NonRotateConvert((const int16_t*)pY, (const int16_t*)pU, (const int16_t*)pV, (unsigned char*)pRgb);
+        }
+
+	virtual bool isVideoFormatSupported(const GUID &,const GUID &) const {return false;}
+
+		// Member interface.
+protected:
+	virtual void FlipConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const = 0;
+	virtual void NonRotateConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const = 0;
+}; //end RGBtoYUV420_16Converter.
 
 
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 * colour convertion derived from the YUV420toRGBConverter base class. */
-class ConvYUV420_16toBGR24_CCIR601
+class ConvYUV420_16toBGR24_CCIR601: public YUV420_16toRGB_Converter
 {
 public:
-  int _width, _height;
-  bool m_Flip;
-
-  // Construction and destruction.
-  ConvYUV420_16toBGR24_CCIR601(void): m_Flip(false) {}
-  ConvYUV420_16toBGR24_CCIR601(int width, int height): _width(width), _height(height), m_Flip(false) {}
+	// Construction and destruction.
+  ConvYUV420_16toBGR24_CCIR601(void) {}
+  ConvYUV420_16toBGR24_CCIR601(int width, int height):  YUV420_16toRGB_Converter(width,height) {}
 
 	// Interface.
-  void FlipConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
-  void NonRotateConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+  void FlipConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+  void NonRotateConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24.
 
 
-class ConvYUV420_16toBGR24
+class ConvYUV420_16toBGR24: public YUV420_16toRGB_Converter
 {
 public:
-  int _width, _height;
-  bool m_Flip;
-
-  // Construction and destruction.
-  ConvYUV420_16toBGR24(void): m_Flip(false) {}
-  ConvYUV420_16toBGR24(int width, int height): _width(width), _height(height), m_Flip(false) {}
+	// Construction and destruction.
+  ConvYUV420_16toBGR24(void) {}
+  ConvYUV420_16toBGR24(int width, int height): YUV420_16toRGB_Converter(width,height) {}
 
 	// Interface.
-  void FlipConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
-  void NonRotateConvert(const uint16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+  void FlipConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
+  void NonRotateConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24.
 
 

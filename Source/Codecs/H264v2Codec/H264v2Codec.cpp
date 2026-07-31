@@ -810,7 +810,7 @@ int H264v2Codec::Open(void)
 	int chrSize = _chrWidth * _chrHeight;
 	int imgSize = lumSize + 2*chrSize;
 	/// In/Out and ref images with primary lum at the head.
-  _pLum = new uint16_t[2 * imgSize];
+  _pLum = new int16_t[2 * imgSize];
   if(!_pLum)
   {
     _errorStr = "[H264Codec::Open] Image memory unavailable";
@@ -931,7 +931,7 @@ int H264v2Codec::Open(void)
 		}//end if !_pOutColourConverter...
 
     /// the calling code is responsible for the flipping of the image
-		_pOutColourConverter->m_Flip = _flip;
+		_pOutColourConverter->SetFlip(_flip);
 	
   }//end if _outColour...
 
@@ -1731,13 +1731,13 @@ int	H264v2Codec::Decode(const void* pCmp, int bitLength, void* pDst)
     for(int i = 0; i < colLen; i++)
       ((unsigned char *)pDst)[i] = (unsigned char)_pLum[i];
   }//end if H264V2_YUV420P8...
-	else
-        {
-          if(_pOutColourConverter->m_Flip) 
-            _pOutColourConverter->FlipConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
-          else
-	    _pOutColourConverter->NonRotateConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
-        }
+  else
+  {
+    if(_pOutColourConverter->GetFlip()) 
+        _pOutColourConverter->FlipConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
+    else
+        _pOutColourConverter->NonRotateConvert(_pRLum, _pRChrU, _pRChrV, (unsigned char*)pDst);
+  }
 
   return(1);
 

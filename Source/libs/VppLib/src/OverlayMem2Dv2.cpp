@@ -100,6 +100,7 @@ void OverlayMem2Dv2::ResetMembers(void)
 	_pBlock						= NULL;
 }//end ResetMembers.
 
+
 /** Alternate constructor.
 Set the overlay on top of a contiguous block of mem.
 @param srcPtr		: Top left pointer of the source mem.
@@ -107,20 +108,19 @@ Set the overlay on top of a contiguous block of mem.
 @param srcHeight: Height of source.
 @param width		: Width of the block to work with.
 @param height		: Height of block.
-@return					: none.
-*/
-OverlayMem2Dv2::OverlayMem2Dv2(void* srcPtr, int srcWidth, int srcHeight, int width, int height)
+@return					: none.	*/
+OverlayMem2Dv2::OverlayMem2Dv2(short* srcPtr, int srcWidth, int srcHeight, int width, int height)
 {
-	ResetMembers();
+  ResetMembers();
 
-	if(srcPtr == NULL)
-		return;
+  if(srcPtr == NULL)
+      return;
 
-	_width			= width;
-	_height			= height;
-	_srcWidth		= srcWidth;
-	_srcHeight	= srcHeight;
-	_pMem				= (short *)srcPtr;
+  _width			= width;
+  _height			= height;
+  _srcWidth		= srcWidth;
+  _srcHeight	= srcHeight;
+  _pMem				= (short *)srcPtr;
 
 	/// Potentially dangerous to alloc mem in a constructor as there is no way 
 	/// of determining failure.

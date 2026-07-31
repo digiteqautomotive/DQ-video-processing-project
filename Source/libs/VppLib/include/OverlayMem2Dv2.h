@@ -41,8 +41,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 								NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 								SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-===========================================================================
-*/
+===========================================================================*/
 #ifndef _OVERLAYMEM2DV2_H
 #define _OVERLAYMEM2DV2_H
 
@@ -55,7 +54,7 @@ class OverlayMem2Dv2
 {
 	/// Construction and destruction.
 public:
-	OverlayMem2Dv2(void* srcPtr, int srcWidth, int srcHeight, int width, int height);
+	OverlayMem2Dv2(short* srcPtr, int srcWidth, int srcHeight, int width, int height);
 	virtual ~OverlayMem2Dv2();
 
 protected:

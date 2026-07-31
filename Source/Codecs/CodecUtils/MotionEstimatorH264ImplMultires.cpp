@@ -222,7 +222,7 @@ int MotionEstimatorH264ImplMultires::Create(void)
 	/// --------------- Configure input overlays --------------------------------
 	/// Level 0: Put an overlay on the input with the block size set to the vector 
 	/// dim. This is used to access input vectors.
-	_pInOver = new OverlayMem2Dv2((void *)_pInput,_imgWidth,_imgHeight,_macroBlkWidth,_macroBlkHeight);
+	_pInOver = new OverlayMem2Dv2((short *)_pInput,_imgWidth,_imgHeight,_macroBlkWidth,_macroBlkHeight);
 	if(_pInOver == NULL)
 	{
 		Destroy();
@@ -284,7 +284,7 @@ int MotionEstimatorH264ImplMultires::Create(void)
 	/// --------------- Configure ref overlays --------------------------------
 	/// Level 0: Overlay the whole reference. The reference will have an extended 
 	/// boundary for motion estimation and must therefore have its own mem.
-	_pRefOver = new OverlayMem2Dv2((void *)_pRef, _imgWidth, _imgHeight, _imgWidth, _imgHeight);
+	_pRefOver = new OverlayMem2Dv2((short *)_pRef, _imgWidth, _imgHeight, _imgWidth, _imgHeight);
 	if(_pRefOver == NULL)
   {
 		Destroy();
@@ -457,23 +457,25 @@ int MotionEstimatorH264ImplMultires::Create(void)
 
 	/// --------------- Refinement Window ---------------------------------------
 	/// Prepare a 1/4 pel search window block for motion estimation refinement.
-	int winWidth	= (6 + _macroBlkWidth) * 4;
-	int winHeight = (6 + _macroBlkHeight) * 4;
-	_pWin					= new short[winWidth * winHeight];
-	_Win					= new OverlayMem2Dv2((void *)_pWin, winWidth, winHeight, winWidth, winHeight);
-	if( (_pWin == NULL)||(_Win == NULL) )
+  int winWidth	= (6 + _macroBlkWidth) * 4;
+  int winHeight = (6 + _macroBlkHeight) * 4;
+  _pWin	= new short[winWidth * winHeight];
+  _Win	= new OverlayMem2Dv2(_pWin, winWidth, winHeight, winWidth, winHeight);
+  if(_pWin==NULL || _Win==NULL)
   {
-		Destroy();
-	  return(0);
+    Destroy();
+    return(0);
   }//end if !_pWin...
 
-	_ready = 1;
-	return(1);
+  _ready = 1;
+  return(1);
 }//end Create.
+
 
 void	MotionEstimatorH264ImplMultires::Reset(void)
 {
-}//end Reset.
+} //end Reset.
+
 
 /** Set the speed mode.
 This is a multresolution algorithm and the speed is increased by estimating

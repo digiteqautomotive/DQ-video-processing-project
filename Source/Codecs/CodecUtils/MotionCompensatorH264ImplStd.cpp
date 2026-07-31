@@ -141,21 +141,9 @@ int MotionCompensatorH264ImplStd::Create(	void* ref,
 
 	/// --------------- Configure ref overlays --------------------------------
 	/// Overlay the reference and set to the motion block size.  
-	_pRefLumOver	= new OverlayMem2Dv2( (void *)_pRefLum, 
-																			_imgWidth, 
-																			_imgHeight, 
-																			_macroBlkWidth, 
-																			_macroBlkHeight );
-	_pRefChrUOver	= new OverlayMem2Dv2( (void *)_pRefChrU, 
-																			_chrWidth, 
-																			_chrHeight, 
-																			_chrMacroBlkWidth, 
-																			_chrMacroBlkHeight );
-	_pRefChrVOver	= new OverlayMem2Dv2( (void *)_pRefChrV, 
-																			_chrWidth, 
-																			_chrHeight, 
-																			_chrMacroBlkWidth, 
-																			_chrMacroBlkHeight );
+	_pRefLumOver	= new OverlayMem2Dv2(_pRefLum, _imgWidth, _imgHeight, _macroBlkWidth, _macroBlkHeight );
+	_pRefChrUOver	= new OverlayMem2Dv2(_pRefChrU, _chrWidth, _chrHeight, _chrMacroBlkWidth, _chrMacroBlkHeight );
+	_pRefChrVOver	= new OverlayMem2Dv2(_pRefChrV, _chrWidth, _chrHeight, _chrMacroBlkWidth, _chrMacroBlkHeight );
 	if( (_pRefLumOver == NULL)||(_pRefChrUOver == NULL)||(_pRefChrVOver == NULL) )
   {
 		Destroy();

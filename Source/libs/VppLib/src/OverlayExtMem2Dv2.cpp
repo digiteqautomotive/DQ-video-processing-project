@@ -51,16 +51,16 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 		Construction, initialisation and destruction
 ---------------------------------------------------------------------------*/
 
-OverlayExtMem2Dv2::OverlayExtMem2Dv2(void* srcPtr,	int srcWidth, int srcHeight, 
-																										int width,		int height,
-																										int bWidth,		int bHeight):
-		OverlayMem2Dv2(srcPtr, srcWidth, srcHeight, width, height)
+OverlayExtMem2Dv2::OverlayExtMem2Dv2(short* srcPtr,	int srcWidth, int srcHeight, 
+		  		int width,		int height,
+				int bWidth,		int bHeight): OverlayMem2Dv2(srcPtr, srcWidth, srcHeight, width, height)
 {
-	_bWidth		= bWidth;
-	_bHeight	= bHeight;
+  _bWidth		= bWidth;
+  _bHeight	= bHeight;
 	/// Adjust for the boundary in the base class.
-	OverlayMem2Dv2::SetOrigin(bWidth, bHeight);
+  OverlayMem2Dv2::SetOrigin(bWidth, bHeight);
 }//end alt constructor.
+
 
 OverlayExtMem2Dv2::~OverlayExtMem2Dv2()
 {

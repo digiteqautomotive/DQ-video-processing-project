@@ -57,12 +57,16 @@ class RealYUV420toRGB24CCIR601ConverterVer16: public CVideoConverter
 {
 public:
 		// Construction and destruction.
-	RealYUV420toRGB24CCIR601ConverterVer16(void) { }
+	RealYUV420toRGB24CCIR601ConverterVer16(void) {}
 	RealYUV420toRGB24CCIR601ConverterVer16(int width, int height): CVideoConverter(width,height) {}
 
 		// Interface.
 protected:
-	virtual void NonRotateConvert(const uint16_t* pY, const uint16_t* pU, const uint16_t *pV, void* pRgb) const;
+	virtual void Convert(const void* pBufferIn, void* pRgb) const;
+	virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+
+	virtual void NonRotateConvert(const int16_t* pY, const int16_t* pU, const int16_t *pV, void* pRgb) const;
+        virtual void FlipConvert(const int16_t* pY, const int16_t* pU, const int16_t *pV, void* pRgb) const;
 }; //end RealYUV420toRGB24CCIR601ConverterVer16.
 
 

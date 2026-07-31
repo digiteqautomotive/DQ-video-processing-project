@@ -64,16 +64,16 @@ class YUV420toRGB32Converter: public YUV420toRGBConverter
 {
 public:
   // Construction and destruction.
-  YUV420toRGB32Converter(void) {}
-  YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) {}
+    YUV420toRGB32Converter(void) {}
+    YUV420toRGB32Converter(int width, int height): YUV420toRGBConverter(width,height) {}
 
 	// Interface.
-  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+    virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 protected:
-	virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
-	virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
-}; //end ConvYUV420toRGB24.
+    virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+    virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+}; //end YUV420toRGB32Converter.
 
 
 

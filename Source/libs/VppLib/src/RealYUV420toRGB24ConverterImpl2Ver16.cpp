@@ -1,10 +1,10 @@
 /** @file
 
-MODULE		: RealYUV420toRGB24ConverterImpl2Ver16
+MODULE		: RealYUV420toBGR24ConverterImpl2Ver16
 
 TAG		: RYUVRGB24CI2V16
 
-FILE NAME	: RealYUV420toRGB24ConverterImpl2Ver16.cpp
+FILE NAME	: RealYUV420toBGR24ConverterImpl2Ver16.cpp
 
 DESCRIPTION	: Floating point implementation of YUV420 (16 bpp) to RGB 24 bit 
 		colour convertion derived from the YUV420toRGBConverter base 
@@ -60,24 +60,24 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 	Constructors.
 ===========================================================================
 */
-RealYUV420toRGB24ConverterImpl2Ver16::RealYUV420toRGB24ConverterImpl2Ver16(int width, int height): YUV420toRGBConverter(width, height)
+RealYUV420toBGR24ConverterImpl2Ver16::RealYUV420toBGR24ConverterImpl2Ver16(int width, int height): CVideoConverter(width, height)
 { 
 }//end constructor.
 
 
-bool RealYUV420toRGB24ConverterImpl2Ver16::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool RealYUV420toBGR24ConverterImpl2Ver16::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return VideoFormatOut==MEDIASUBTYPE_RGB24;
 }
 
 
-void RealYUV420toRGB24ConverterImpl2Ver16::Convert(const void* pBufferIn, void* pRgb) const
+void RealYUV420toBGR24ConverterImpl2Ver16::Convert(const void* pBufferIn, void* pRgb) const
 {    
 	//set the Y, U and V pointers to point to the correct positions within the byte array
   const unsigned m_nInPixelBytes = 2 * (_width * _height);
   //const yuvType *pY = (const yuvType *)pBufferIn;
-  const uint16_t *pU = (const uint16_t*)((uint8_t*)pBufferIn + m_nInPixelBytes);
-  const uint16_t *pV = (const uint16_t*)pU + m_nInPixelBytes/4;
+  const int16_t *pU = (const int16_t*)((uint8_t*)pBufferIn + m_nInPixelBytes);
+  const int16_t *pV = (const int16_t*)((uint8_t*)pU + m_nInPixelBytes/4);
         // let invert take precedence, not catering for both
   if(_flip) 
       FlipConvert(pBufferIn, pU, pV, (unsigned char*)pRgb);
@@ -91,25 +91,25 @@ void RealYUV420toRGB24ConverterImpl2Ver16::Convert(const void* pBufferIn, void* 
 	Private Methods.
 ===========================================================================
 */
-void RealYUV420toRGB24ConverterImpl2Ver16::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
+void RealYUV420toBGR24ConverterImpl2Ver16::NonRotateConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	const short*	py	= (short *)pY;
-	const short*	pu	= (short *)pU;
-	const short*	pv	= (short *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX	= _width >> 1;
+  unsigned char *optr	= (unsigned char *)pRgb;
+  const int16_t *py	= (int16_t *)pY;
+  const int16_t *pu	= (int16_t *)pU;
+  const int16_t *pv	= (int16_t *)pV;
+  int	lumX	= _width;
+  int	lumY	= _height;
+  int	uvX	= _width >> 1;
 
-	int x,y;
-	int lumposy;
-	int rgbposy;
-	int uvposy;
+  int x,y;
+  int lumposy;
+  int rgbposy;
+  int uvposy;
   int r,b,g;
 
-	int tworows  = lumX << 1;
-	int rgb1row  = (_width * 3);
-	int rgb2rows = (_width * 3) << 1;
+  int tworows  = lumX << 1;
+  int rgb1row  = (_width * 3);
+  int rgb2rows = (_width * 3) << 1;
 
 	for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
 	{
@@ -182,7 +182,7 @@ void RealYUV420toRGB24ConverterImpl2Ver16::NonRotateConvert(const void* pY, cons
 }//end NonRotateConvert.
 
 
-void RealYUV420toRGB24ConverterImpl2Ver16::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
+void RealYUV420toBGR24ConverterImpl2Ver16::FlipConvert(const void* pY, const void* pU, const void* pV, unsigned char* pRgb) const
 {
   unsigned char	*optr	= (unsigned char *)pRgb;
   const short	*py	= (short *)pY;

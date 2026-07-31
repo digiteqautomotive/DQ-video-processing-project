@@ -30,6 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "ConvYUV420toRGB24CCIR601RealVer16.h"
 
+#include <uuids.h>
+
 /*===========================================================================
 				Macros
 ===========================================================================*/
@@ -49,33 +51,54 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RYUVRGB24CCV16_V0		 1.140
 
 
+bool RealYUV420toRGB24CCIR601ConverterVer16::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return VideoFormatOut==MEDIASUBTYPE_RGB24;
+}
+
+
+void RealYUV420toRGB24CCIR601ConverterVer16::Convert(const void* pBufferIn, void* pRgb) const
+{    
+	//set the Y, U and V pointers to point to the correct positions within the byte array
+  const unsigned m_nInPixelBytes = 2 * (_width * _height);
+  //const yuvType *pY = (const yuvType *)pBufferIn;
+  const int16_t *pU = (const int16_t*)((uint8_t*)pBufferIn + m_nInPixelBytes);
+  const int16_t *pV = (const int16_t*)((uint8_t*)pU + m_nInPixelBytes/4);
+        // let invert take precedence, not catering for both
+  if(_flip) 
+      FlipConvert((const int16_t*)pBufferIn, pU, pV, (unsigned char*)pRgb);
+  else				
+      NonRotateConvert((const int16_t*)pBufferIn, pU, pV, (unsigned char*)pRgb);
+}  
+
+
 /*===========================================================================
 				Private Methods
 ===========================================================================*/
 
 
-void RealYUV420toRGB24CCIR601ConverterVer16::NonRotateConvert(const uint16_t* pY, const uint16_t* pU, const uint16_t* pV, void* pRgb) const
+void RealYUV420toRGB24CCIR601ConverterVer16::NonRotateConvert(const int16_t* pY, const int16_t* pU, const int16_t* pV, void* pRgb) const
 {
-	unsigned char* 	optr	=	(unsigned char *)pRgb;
-	short*				py		= (short *)pY;
-	short*				pu		= (short *)pU;
-	short*				pv		= (short *)pV;
-	int		lumX	= _width;
-	int		lumY	= _height;
-	int		uvX		= _width >> 1;
+  unsigned char* 	optr	=	(unsigned char *)pRgb;
+  short*				py		= (short *)pY;
+  short*				pu		= (short *)pU;
+  short*				pv		= (short *)pV;
+  int		lumX	= _width;
+  int		lumY	= _height;
+  int		uvX		= _width >> 1;
 
-	int x,y;
-	int lumposy;
-	int rgbposy;
-	int uvposy;
+  int x,y;
+  int lumposy;
+  int rgbposy;
+  int uvposy;
   int r,b,g;
 
-	int tworows  = lumX << 1;
-	int rgb1row  = (_width * 3);
-	int rgb2rows = (_width * 3) << 1;
+  int tworows  = lumX << 1;
+  int rgb1row  = (_width * 3);
+  int rgb2rows = (_width * 3) << 1;
 
-	for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
-	{
+  for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
+  {
 		int lumpos0 = lumposy;					// Reset to start of rows.
 		int lumpos1 = lumposy + lumX;
 		int uvpos	 = uvposy;
@@ -143,3 +166,8 @@ void RealYUV420toRGB24CCIR601ConverterVer16::NonRotateConvert(const uint16_t* pY
 	} //end for y...
 
 } //end NonRotateConvert.
+
+
+void RealYUV420toRGB24CCIR601ConverterVer16::FlipConvert(const int16_t* pY, const int16_t* pU, const int16_t *pV, void* pRgb) const
+{
+}

@@ -71,17 +71,17 @@ void RealYUV420toBGR24CCIR601Converter::NonRotateConvert(const unsigned char* pY
   int uvX = _width >> 1;
 
   int x,y;
-	int lumposy;
-	int rgbposy;
-	int uvposy;
+  int lumposy;
+  int rgbposy;
+  int uvposy;
   int r,b,g;
 
-	int tworows  = lumX << 1;
-	int rgb1row  = (_width * 3);
-	int rgb2rows = (_width * 3) << 1;
+  int tworows  = lumX << 1;
+  int rgb1row  = (_width * 3);
+  int rgb2rows = (_width * 3) << 1;
 
-	for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
-	{
+  for(y = 0,lumposy = 0,uvposy = 0,rgbposy = 0;	y < lumY;	y += 2,lumposy += tworows,uvposy += uvX,rgbposy += rgb2rows)
+  {
 		int lumpos0 = lumposy;					// Reset to start of rows.
 		int lumpos1 = lumposy + lumX;
 		int uvpos	 = uvposy;

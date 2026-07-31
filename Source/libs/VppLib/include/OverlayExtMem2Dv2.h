@@ -56,7 +56,7 @@ class OverlayExtMem2Dv2: public OverlayMem2Dv2
 {
 	/// Construction and destruction.
 public:
-	OverlayExtMem2Dv2(void* srcPtr, int srcWidth, int srcHeight, 
+	OverlayExtMem2Dv2(short* srcPtr, int srcWidth, int srcHeight, 
 																	int width,		int height,
 																	int bWidth,		int bHeight);
 

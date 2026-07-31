@@ -179,7 +179,7 @@ private:
   /// Intermediate input/output YCbCr image mem members.
   int							_lumWidth;		/// pix width.
   int							_lumHeight;		/// pix height.
-        uint16_t *_pLum;		/// Space to compress from and decompress to.
+        int16_t *_pLum;		/// Space to compress from and decompress to.
 	int							_chrWidth;
 	int							_chrHeight;
 	int16_t *_pChrU;
@@ -191,7 +191,7 @@ private:
 	OverlayMem2Dv2*	_Cr;
 
   /// Reference image mem members.
-        uint16_t *_pRLum;
+        int16_t *_pRLum;			/// @TODO Must be clarified whether to use uint16_t or int16_t
 	int16_t *_pRChrU;
         int16_t *_pRChrV;
 
