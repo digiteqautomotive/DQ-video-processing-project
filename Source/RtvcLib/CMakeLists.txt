@@ -33,6 +33,9 @@ SET(IU_SRCS
 ../libs/VppLib/src/ConvYV24toRGB.cpp
 ../libs/VppLib/src/ConvYUV420toRGB.cpp
 ../libs/VppLib/src/ConvYVYUtoRGB.cpp
+../libs/VppLib/src/ConvYUV420_16toRGB24.cpp
+../libs/VppLib/src/ConvYUV420_16toRGB24_CCIR601.cpp
+../libs/VppLib/src/ConvYUV420toRGB24_CCIR601.cpp
 ../libs/VppLib/src/ImageHandlerV2.cpp
 ../libs/VppLib/src/OverlayExtMem2Dv2.cpp
 ../libs/VppLib/src/OverlayMem2Dv2.cpp
@@ -65,11 +68,7 @@ SET(IU_SRCS
 ../libs/VppLib/src/PicScalerYV24Impl.cpp
 ../libs/VppLib/src/RealRGB24toYUV420CCIR601Converter.cpp
 ../libs/VppLib/src/RealRGB24toYUV420CCIR601ConverterVer16.cpp
-../libs/VppLib/src/RealRGB24toYUV420ConverterImpl2.cpp
 ../libs/VppLib/src/RealRGB24toYUV420ConverterImpl2Ver16.cpp
-../libs/VppLib/src/RealYUV420toRGB24CCIR601Converter.cpp
-../libs/VppLib/src/RealYUV420toRGB24CCIR601ConverterVer16.cpp
-../libs/VppLib/src/RealYUV420toRGB24ConverterImpl2Ver16.cpp
 )
 IF (MMX_SSE_ACCELERATORS)
   SET(IU_SRCS ${IU_SRCS}
@@ -150,16 +149,12 @@ SET(IU_HEADERS
 ../libs/VppLib/include/ConvRGB24toYUV420.h
 ../libs/VppLib/include/ConvRGB24toYUV420CCIR601Real.h
 ../libs/VppLib/include/ConvRGB24toYUV420CCIR601Ver16.h
-../libs/VppLib/include/ConvRGB24toYUV420RealImpl2.h
 ../libs/VppLib/include/ConvRGB24toYUV420RealImpl2Ver16.h
 ../libs/VppLib/include/ConvRGB32toYUV420.h
 ../libs/VppLib/include/ConvRGBtoYUV420.h
 ../libs/VppLib/include/ConvRGBtoYUYV.h
 ../libs/VppLib/include/ConvYUV420toRGB.h
-../libs/VppLib/include/ConvYUV420toRGB24CCIR601Real.h
-../libs/VppLib/include/ConvYUV420toRGB24CCIR601RealVer16.h
 ../libs/VppLib/include/ConvYUV420toRGB24RealImpl2.h
-../libs/VppLib/include/ConvYUV420toRGB24RealImpl2Ver16.h
 ../libs/VppLib/include/ConvYUVtoRGB.h
 ../libs/VppLib/include/ConvYUYVtoRGB.h
 ../libs/VppLib/include/ConvYVYUtoRGB.h

@@ -66,9 +66,6 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420CCIR601ConverterVer16.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420ConverterImpl2Ver16.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

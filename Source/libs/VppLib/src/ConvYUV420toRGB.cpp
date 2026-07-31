@@ -35,8 +35,6 @@ DEFINE_GUID(MEDIASUBTYPE_I420, 0x30323449, 0x0000, 0x0010, 0x80, 0x00, 0x00, 0xa
 
 #define RANGECHECK_UINT32_0TO255(__x) ( (((__x) & 0xFFFFFF00)==0 ) ? (__x) : ((~(__x))>>16 ) )
 
-//#define RYUVRGB24CI2V16_RANGECHECK_0TO255(__x) ( (((__x) <= 255)&&((__x) >= 0))?((__x)):( ((__x) > 255)?(255):(0) ) )
-
 //inline unsigned char RANGECHECK_0TO255(const int32_t x)
 //{
 //  if(x<=0) return 0;
@@ -143,6 +141,7 @@ pRgb += 3*_width*(_height-1);
 } //end FlipConvert
 
 
+#if 1
 void ConvYUV420toRGB24::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 const unsigned width3 = _width * 3;
@@ -245,6 +244,96 @@ int lineRGB0 = 0;
   }
 } //end NonRotateConvert.
 
+
+#else
+
+/* Alternative: This code is somehow slower. It is faster for 16 bit values, but it seems slower for 8 bits. */
+  
+void ConvYUV420toRGB24::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
+{
+  const int lumX = _width;
+  const int uvX	= _width >> 1;
+  const int tworows  = lumX << 1;
+  const int rgb1row  = (_width * 3);
+  const int rgb2rows = (_width * 3) << 1;
+
+  unsigned yy, xx;
+  int lumposy;
+  int rgbposy;
+  int uvposy;
+  int32_t r,b,g;
+
+  for(yy=0,lumposy=0,uvposy=0,rgbposy=0;  yy<_height;  yy+=2,lumposy+=tworows,uvposy+=uvX,rgbposy+=rgb2rows)
+  {
+    int lumpos0 = lumposy;					// Reset to start of rows.
+    int lumpos1 = lumposy + lumX;
+    int uvpos	 = uvposy;
+
+    int rgbpos0 = rgbposy;
+    int rgbpos1 = rgbposy + rgb1row;
+
+    xx = (_width+1) / 2;
+    while(xx-- > 0)
+    {
+      const int32_t U = (signed char)((pU[uvpos]) - 128);
+      const int32_t V = (signed char)((pV[uvpos++]) - 128);
+			// Lum00, u and v.
+
+  		// Fast calculation intermediate variables. 
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
+
+      {
+        const int32_t lum00 = 256 * (pY[lumpos0++]);	
+	r = (lum00 + ca) >> 8;
+	g = (lum00 + cb) >> 8;
+	b = (lum00 + cc) >> 8;
+
+			// R, G & B have range 0..255.
+	pRgb[rgbpos0++] = (unsigned char)(RANGECHECK_UINT32_0TO255(r));
+	pRgb[rgbpos0++] = (unsigned char)(RANGECHECK_UINT32_0TO255(g));
+	pRgb[rgbpos0++] = (unsigned char)(RANGECHECK_UINT32_0TO255(b));
+      }
+      {			// Lum01.
+	const int32_t lum01 = 256 * (pY[lumpos0++]);
+
+	r = (lum01 + ca) >> 8;	
+	g = (lum01 + cb) >> 8;
+	b = (lum01 + cc) >> 8;
+
+	pRgb[rgbpos0++] = (unsigned char)(RANGECHECK_UINT32_0TO255(r));
+	pRgb[rgbpos0++] = (unsigned char)(RANGECHECK_UINT32_0TO255(g));
+	pRgb[rgbpos0++] = (unsigned char)(RANGECHECK_UINT32_0TO255(b));
+      }
+      {			// Lum10.
+	const int32_t lum10 = 256 * (pY[lumpos1++]);
+
+	r = (lum10 + ca) >> 8;
+	g = (lum10 + cb) >> 8;
+	b = (lum10 + cc) >> 8;
+  
+	pRgb[rgbpos1++] = (unsigned char)(RANGECHECK_UINT32_0TO255(r));
+	pRgb[rgbpos1++] = (unsigned char)(RANGECHECK_UINT32_0TO255(g));
+	pRgb[rgbpos1++] = (unsigned char)(RANGECHECK_UINT32_0TO255(b));
+      }
+      {			// Lum11.
+	const int32_t lum11 = 256 * (pY[lumpos1++]);
+	
+	r = (lum11 + ca) >> 8;
+	g = (lum11 + cb) >> 8;
+	b = (lum11 + cc) >> 8;	
+  
+	pRgb[rgbpos1++] = (unsigned char)(RANGECHECK_UINT32_0TO255(r));
+	pRgb[rgbpos1++] = (unsigned char)(RANGECHECK_UINT32_0TO255(g));
+	pRgb[rgbpos1++] = (unsigned char)(RANGECHECK_UINT32_0TO255(b));
+      }
+    } //end for x...
+		
+  } //end for y...
+}
+
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

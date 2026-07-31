@@ -47,8 +47,9 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "reference/ConvRGB24toYUV420_LUT.h"
 #include "reference/ConvRGB24toYUV420_fixpLUT.h"
 #include "reference/ConvRGB24toYUV420_SIMD.h"
-#include "reference/ConvRGB24toYUV420_Real.h "
-#include "reference/ConvRGB32toYUV420_Real.h "
+#include "reference/ConvRGB24toYUV420_Real.h"
+#include "reference/ConvRGB32toYUV420_Real.h"
+#include "reference/ConvRGB24toYUV420RealImpl2.h"		/// @TODO: Otestovat objekt RealRGB24toYUV420ConverterImpl2
 #include "reference/ConvYUV420toRGB24CCIR601Real.h"
 #include "reference/ConvYUV420toRGB24CCIR601RealVer16.h"
 #include "reference/ConvYUV420toRGB24RealImpl2Ver16.h"

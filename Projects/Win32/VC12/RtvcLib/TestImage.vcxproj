@@ -36,6 +36,7 @@
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\TestImage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420RealImpl2.h" />
     <ClInclude Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_fixpLUT.h" />
     <ClInclude Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_Real.h" />
     <ClInclude Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_SIMD.h" />

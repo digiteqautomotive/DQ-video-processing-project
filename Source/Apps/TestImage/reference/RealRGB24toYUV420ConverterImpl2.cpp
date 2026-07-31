@@ -52,11 +52,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define RRGB_YUVCI2_RANGECHECK_0TO255(x) ( (((x) <= 255)&&((x) >= 0))?((x)):( ((x) > 255)?(255):(0) ) )
 #define RRGB_YUVCI2_RANGECHECK_N128TO127(x) ( (((x) <= 127)&&((x) >= -128))?((x)):( ((x) > 127)?(127):(-128) ) )
 
-/*
-===========================================================================
+/*===========================================================================
 	Constructor Methods.
-===========================================================================
-*/
+===========================================================================*/
 RealRGB24toYUV420ConverterImpl2::RealRGB24toYUV420ConverterImpl2(int width, int height): RGBtoYUV420Converter(width, height)
 { 
 }//end constructor.

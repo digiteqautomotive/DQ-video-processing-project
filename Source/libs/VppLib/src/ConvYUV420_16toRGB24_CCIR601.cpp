@@ -161,14 +161,14 @@ void ConvYUV420_16toBGR24_CCIR601::NonRotateConvert(const int16_t* y, const int1
     xx = (_width+1) / 2;
     while(xx-- > 0)
     {
-        const int32_t U = (u[uvpos]) - 128;
-        const int32_t V = (v[uvpos++]) - 128;
+      const int32_t U = (u[uvpos]) - 128;
+      const int32_t V = (v[uvpos++]) - 128;
 			// Lum00, u and v.
 
   		// Fast calculation intermediate variables. 
-        const int32_t cc = U*520 + 127;
-        const int32_t ca = V*292 + 127;
-        const int32_t cb = -101*U - 149*V + 127;
+      const int32_t cc = U*520 + 127;
+      const int32_t ca = V*292 + 127;
+      const int32_t cb = -101*U - 149*V + 127;
 
       {
         const int32_t lum00 = 256 * (y[lumpos0++]) - 16*256;

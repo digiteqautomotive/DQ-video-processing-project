@@ -183,6 +183,7 @@ void RealRGB24toYUV420ConverterImpl2Ver16::FlipInner(unsigned char* src, short* 
   }//end for ...
 }//end FlipInner.
 
+
 void RealRGB24toYUV420ConverterImpl2Ver16::NonFlipConvert(const unsigned char* pRgb, void* pY, void* pU, void* pV )
 {
   short*	py = (short *)pY;
