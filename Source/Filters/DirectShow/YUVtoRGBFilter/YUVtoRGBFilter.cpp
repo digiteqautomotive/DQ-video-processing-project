@@ -167,7 +167,13 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
 #endif
       }
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
-          m_pConverter = new YUYVtoRGB24Converter(m_nInWidth, m_nInHeight);
+      {
+#ifdef USE_ASM
+          m_pConverter = new YUYVtoBGR24ConverterAsm(m_nInWidth, m_nInHeight);
+#else
+          m_pConverter = new YUYVtoBGR24Converter(m_nInWidth, m_nInHeight);
+#endif
+      }
       if(in_MediaType==MEDIASUBTYPE_YVYU)
           m_pConverter = new YVYUtoRGB24Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_UYVY || in_MediaType==MEDIASUBTYPE_HDYC)

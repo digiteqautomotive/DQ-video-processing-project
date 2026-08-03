@@ -42,14 +42,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
 
-bool YUYVtoRGB24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+bool YUYVtoBGR24Converter::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
 {
   return (VideoFormatIn==MEDIASUBTYPE_YUYV || VideoFormatIn==MEDIASUBTYPE_YUY2) &&
          VideoFormatOut==MEDIASUBTYPE_RGB24;
 }
 
 
-void YUYVtoRGB24Converter::Convert(const void* pInputBuffer, void* pRgb) const
+void YUYVtoBGR24Converter::Convert(const void* pInputBuffer, void* pRgb) const
 {
 unsigned char * Out = (unsigned char *)pRgb;
 const unsigned char * In = (const unsigned char *)pInputBuffer;

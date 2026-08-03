@@ -37,6 +37,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 
 #include "ConvAYUV444toRGB.h"
 #include "ConvYUV420toRGB.h"
+#include "ConvYUYVtoRGB.h"
 #include "ConvRGB24toYUV420.h"
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGBtoYUYV.h"
@@ -487,6 +488,343 @@ int RGB24toRGB32compareFlip(const char *Alg, int Width, int Height, const unsign
 }
 
 
+void FeedBufferYUYV(unsigned char *Buffer, int Op)
+{
+int i;
+  switch(Op)
+  {
+    case 0:
+      for(i=0; i<256; i++)
+      {
+        Buffer[4*i] = 0;
+        Buffer[4*i+1] = 128;		// U
+        Buffer[4*i+2] = 0;
+        Buffer[4*i+3] = i;		// V
+      }
+      break;
+   case 1:
+      for(i=0; i<256; i++)
+      {
+        Buffer[4*i] = 0;
+        Buffer[4*i+1] = i;		// U
+        Buffer[4*i+2] = 0;
+        Buffer[4*i+3] = 128;		// V
+      }
+      break;
+    case 2:
+      for(i=0; i<256; i++)
+      {
+        Buffer[4*i] = 255;
+        Buffer[4*i+1] = 128;		// U
+        Buffer[4*i+2] = 255;
+        Buffer[4*i+3] = i;		// V
+      }
+      break;
+    case 3:
+      for(i=0; i<256; i++)
+      {
+        Buffer[4*i] = 255;
+        Buffer[4*i+1] = i;		// U
+        Buffer[4*i+2] = 255;
+        Buffer[4*i+3] = 128;		// V
+      }
+      break;
+    case 4:
+      for(i=0; i<256; i++)
+      {
+        Buffer[4*i] = 255;
+        Buffer[4*i+1] = i;		// U
+        Buffer[4*i+2] = 255;
+        Buffer[4*i+3] = i;		// V
+      }
+      break;
+    case 5:
+      for(i=0; i<256; i++)
+      {
+        Buffer[4*i] = 0;
+        Buffer[4*i+1] = i;		// U
+        Buffer[4*i+2] = 0;
+        Buffer[4*i+3] = i;		// V
+      }
+      break;
+  }
+}
+
+
+/// This function tests converter from YUYV to RGB24.
+int Test_YUYV_BGR(const char *fname, unsigned char *Buffer, unsigned char *Buffer2,  CVideoConverter & YUYV_RGBx)
+{
+int i, j;
+   printf(" %s\n", fname);
+
+   for(i=0; i<256; i++)
+   {
+     (Buffer)[2*i] = i;
+   }
+   for(i=0; i<128; i++)
+   {
+     (Buffer)[4*i+1] = 128;
+     (Buffer)[4*i+3] = 128;
+   }
+
+   YUYV_RGBx.SetDimensions(256,1);
+   YUYV_RGBx.Convert(Buffer, Buffer2);
+
+   for(i=0; i<256; i++)
+   {
+     if((Buffer2)[3*i+2] != i)
+     {
+       printf("%s wrong R compound %u!=%u", fname, i, (Buffer2)[3*i+2]);
+       return -41;
+     }
+     if((Buffer2)[3*i+1] != i)
+     {
+       printf("%s wrong G compound %u!=%u", fname, i, (Buffer2)[3*i+1]);
+       return -42;
+     }
+     if((Buffer2)[3*i] != i)
+     {
+       printf("%s wrong B compound %u!=%u", fname, i, (Buffer2)[3*i]);
+       return -43;
+     }
+   }
+
+	// Overflow test.
+   for(j=0; j<6; j++)
+   {
+     FeedBufferYUYV(Buffer,j);
+
+     YUYV_RGBx.SetDimensions(512,1);
+     YUYV_RGBx.Convert(Buffer, Buffer2);
+
+     for(i=0; i<256; i++)
+     {
+       int32_t Y = (Buffer)[4*i];
+       int32_t Y2 = (Buffer)[4*i+2];
+       signed char U = (Buffer)[4*i+1] - 128;
+       signed char V = (Buffer)[4*i+3] - 128;
+       uint8_t B1 = (Buffer2)[6*i];
+       uint8_t B2 = (Buffer2)[6*i+3];
+       uint8_t G1 = (Buffer2)[6*i+1];
+       uint8_t G2 = (Buffer2)[6*i+4];
+       uint8_t R1 = (Buffer2)[6*i+2];
+       uint8_t R2 = (Buffer2)[6*i+5];
+
+       int32_t X = (256*Y + 292*V) >> 8;	// Y + 1.137*V;
+       if(X<0) X=0;
+       if(X>255) X=255;
+       if(X != R1)
+       {
+         printf("%s wrong R1[%d] compound %u!=%u", fname, 2*i, X, R1);
+	 YUYV_RGBx.SetDimensions(2,1);
+         YUYV_RGBx.Convert(Buffer+4*i, Buffer2+6*i);
+         return -41;         
+       }
+     
+       X = (256*Y2 + 292*V) >> 8;		// Y + 1.137*V;
+       if(X<0) X=0;
+       if(X>255) X=255;
+       if(X != R2)
+       {
+         printf("%s wrong R2[%d] compound %u!=%u", fname, 2*i+1, X, R2);
+         return -41;
+         
+       }
+
+       X = (256*Y -101*U - 149*V) >> 8; // Y - 0.397*U - 0.58*V;
+       if(X<0) X=0;
+       if(X>255) X=255;
+       if(X != G1)
+       {
+         printf("%s wrong G1[%d] compound %u!=%u", fname, 2*i, X, G1);
+         return -41;
+         
+       }     
+       X = (256*Y2 -101*U - 149*V) >> 8; // Y - 0.397*U - 0.58*V;
+       if(X<0) X=0;
+       if(X>255) X=255;
+       if(X != G2)
+       {
+         printf("%s wrong G2[%d] compound %u!=%u", fname, 2*i+1, X, G2);
+         return -41;
+         
+       }
+
+       X = (256*Y + 520*U) >> 8;	// Y + 2.034*U;
+       if(X<0) X=0;
+       if(X>255) X=255;
+       if(X != B1)
+       {
+         printf("%s wrong B1[%d] compound %u!=%u", fname, 2*i, X, B1);
+         return -41;
+         
+       }     
+       X = (256*Y2 + 520*U) >> 8;	// Y + 2.034*U;
+       if(X<0) X=0;
+       if(X>255) X=255;
+       if(X != B2)
+       {
+         printf("%s wrong B2[%d] compound %u!=%u", fname, 2*i+1, X, B2);
+         return -41;
+         
+       }
+     }
+   }
+
+
+   for(i=0; i<512; i++)
+   {
+     (Buffer)[2*i] = i/2;
+   }
+   for(i=0; i<256; i++)
+   {
+     (Buffer)[4*i+1] = 128 - 10;
+     (Buffer)[4*i+3] = 128;
+   }
+
+   YUYV_RGBx.SetDimensions(512,1);
+   YUYV_RGBx.Convert(Buffer, Buffer2);
+
+   for(i=0; i<512; i++)
+   {
+     if((Buffer2)[3*i+2] != i/2)
+     {
+       printf("%s wrong R compound U=-10,V=0 %u!=%u", fname, i/2, (Buffer2)[3*i]);
+       return -31;
+       
+     }
+     int G = (256*(i/2) + 102*10) / 256;
+     if(G>255) G=255;
+     if((Buffer2)[3*i+1] != G)
+     {
+       printf("%s wrong G compound U=-10,V=0 %u!=%u", fname, G, (Buffer2)[3*i+1]);
+       return -32;
+       
+     }
+     int B = (256*(i/2) - 521*10) / 256;
+     if(B<0) B=0;
+     if((Buffer2)[3*i] != B)
+     {
+       printf("%s wrong B compound U=-10,V=0 %u!=%u", fname, B, (Buffer2)[3*i+2]);
+       return -33;
+       
+     }
+   }
+
+   for(i=0; i<512; i++)
+   {
+     (Buffer)[2*i] = i/2;
+   }
+   for(i=0; i<256; i++)
+   {
+     (Buffer)[4*i+1] = 128 + 10;
+     (Buffer)[4*i+3] = 128;
+   }
+   YUYV_RGBx.Convert(Buffer, Buffer2);
+
+   for(i=0; i<512; i++)
+   {
+     if((Buffer2)[3*i+2] != i/2)
+     {
+       printf("%s wrong R compound U=10,V=0 %u!=%u", fname, i/2, (Buffer2)[3*i]);
+       return -31;
+       
+     }
+     int G = (256*(i/2) - 102*10) / 256;
+     if(G<0) G=0;
+     if((Buffer2)[3*i+1] != G)
+     {
+       printf("%s wrong G compound U=10,V=0 %u!=%u", fname, G, (Buffer2)[3*i+1]);
+       return -32;
+       
+     }
+     int B = (256*(i/2) + 521*10) / 256;
+     if(B>255) B=255;
+     if((Buffer2)[3*i] != B)
+     {
+       printf("%s wrong B compound U=10,V=0 %u!=%u", fname, B, (Buffer2)[3*i+2]);
+       return -33;
+       
+     }
+   }
+
+   for(i=0; i<512; i++)
+   {
+     (Buffer)[2*i] = i/2;
+   }
+   for(i=0; i<256; i++)
+   {
+     (Buffer)[4*i+1] = 128;
+     (Buffer)[4*i+3] = 128 - 10;
+   }
+   YUYV_RGBx.Convert(Buffer, Buffer2);
+
+   for(i=0; i<512; i++)
+   {
+     int R = (256*(i/2) - 291*10) / 256;
+     if(R<0) R=0;
+     if((Buffer2)[3*i+2] != R)
+     {
+       printf("%s wrong R compound U=0,V=-10 %u!=%u", fname, R, (Buffer2)[3*i]);
+       return -31;
+       
+     }
+     int G = (256*(i/2) + 148*10) / 256;
+     if(G>255) G=255;
+     if((Buffer2)[3*i+1] != G)
+     {
+       printf("%s wrong G compound U=0,V=-10 %u!=%u", fname, G, (Buffer2)[3*i+1]);
+       return -32;
+       
+     }     
+     if((Buffer2)[3*i] != i/2)
+     {
+       printf("%s wrong B compound U=0,V=-10 %u!=%u", fname, i/2, (Buffer2)[3*i+2]);
+       return -33;
+       
+     }
+   }
+
+
+   for(i=0; i<512; i++)
+   {
+     (Buffer)[2*i] = i/2;
+   }
+   for(i=0; i<256; i++)
+   {
+     (Buffer)[4*i+1] = 128;
+     (Buffer)[4*i+3] = 128 + 10;
+   }
+   YUYV_RGBx.Convert(Buffer, Buffer2);
+
+   for(i=0; i<512; i++)
+   {
+     int R = (256*(i/2) + 291*10) / 256;
+     if(R>255) R=255;
+     if((Buffer2)[3*i+2] != R)
+     {
+       printf("%s wrong R compound U=0,V=10 %u!=%u", fname, R, (Buffer2)[3*i]);
+       return -31;
+       
+     }
+     int G = (256*(i/2) - 148*10) / 256;
+     if(G<0) G=0;
+     if((Buffer2)[3*i+1] != G)
+     {
+       printf("%s wrong G compound U=0,V=10 %u!=%u", fname, G, (Buffer2)[3*i+1]);
+       return -32;
+     }     
+     if((Buffer2)[3*i] != i/2)
+     {
+       printf("%s wrong B compound U=0,V=10 %u!=%u", fname, i/2, (Buffer2)[3*i+2]);
+       return -33;
+     }
+   }
+
+return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
 PicScalerRGB32Impl picScalerRGB32;
@@ -515,6 +853,22 @@ bool Pause = false;
     printf("\nError: Memory allocation problem.");
     goto ReturnErr;
   }
+
+//---------------------------------------------------------------------------------------
+
+  {
+    YUYVtoBGR24Converter convYUYVtoRGB24;
+    if(Test_YUYV_BGR("YUYVtoBGR24Converter",BlobIn,BlobOut,convYUYVtoRGB24) != 0)
+        goto ReturnErr;
+#ifdef USE_ASM
+    YUYVtoBGR24ConverterAsm convYUYVtoRGB24A;
+    if(Test_YUYV_BGR("YUYVtoBGR24ConverterAsm",BlobIn,BlobOut,convYUYVtoRGB24A) != 0)
+        goto ReturnErr;
+#endif
+  }
+
+//---------------------------------------------------------------------------------------
+
 
   for(int i=0; i<16384; i++)
   {
@@ -974,7 +1328,7 @@ bool Pause = false;
        }
      }
 
-//-----------------------------------YV420-----------------------------------------------
+//----------------------------------- Compare YV420-----------------------------------------------
 
   for(int WithIn=0; WithIn<12; WithIn+=2)
    for(int HeightIn=0; HeightIn<10; HeightIn+=2)
@@ -1612,7 +1966,7 @@ bool Pause = false;
    }
 
 
-	////////////////////////////////////////////////////////////////////////////////
+	/////////////This test must be the last, input data changed///////////////////////
 
 //-----------------------------------YUV420_16 to BGR-------------------------------------------
 
@@ -1872,6 +2226,25 @@ bool Pause = false;
     printf(" flip %.3f[ms]", DurationMin/1000.0);
 
 	/////////////////////////////////////////////////////////////////////////////
+    {
+      YUYVtoBGR24Converter convYUYVtoRGB24(1920,1080);
+      DurationMin = BenchConverter(convYUYVtoRGB24, BlobIn, BlobOut);
+      printf("\nConvert YUYV to RGB24 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      convYUYVtoRGB24.SetFlip(true);
+      DurationMin = BenchConverter(convYUYVtoRGB24, BlobIn, BlobOut);
+    }
+    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+#ifdef USE_ASM
+    {
+      YUYVtoBGR24ConverterAsm convYUYVtoRGB24A(1920,1080);
+      DurationMin = BenchConverter(convYUYVtoRGB24A, BlobIn, BlobOut);
+      printf(" ASM: %.3f[ms]", DurationMin/1000.0);
+      convYUYVtoRGB24A.SetFlip(true);
+      DurationMin = BenchConverter(convYUYVtoRGB24A, BlobIn, BlobOut);
+    }
+    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+#endif
+
     {
       ConvAYUV444toRGB24 picConverterAYUV2RGB24(1920,1080);
       DurationMin = BenchConverter(picConverterAYUV2RGB24, BlobIn, BlobOut);

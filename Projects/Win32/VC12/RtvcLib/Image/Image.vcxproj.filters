@@ -201,6 +201,9 @@
     <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUV420_16toRGB24.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Source\libs\VppLib\src\ConvYUYVtoRGB_ASM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Source\libs\VppLib\src\FastFixedPointRGB24toYUV420Converter.h">

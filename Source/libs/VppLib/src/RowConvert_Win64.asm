@@ -656,10 +656,10 @@ Exit:
 PelYUV_RGB32_CMOV endp
 
 
-;void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public PelYUV_RGB_Flip
+;void PelYUV_RGB24_FlipCMOV(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB24_FlipCMOV
 IF (@Version LT 1200) OR (@Version GE 1300)
-PelYUV_RGB_Flip proc \
+PelYUV_RGB24_FlipCMOV proc \
         uses rdi rsi rbx R12 R13 R14,
         OutData: ptr BYTE,
         y: ptr BYTE,
@@ -668,7 +668,7 @@ PelYUV_RGB_Flip proc \
 	PixelCount: DWORD	; on stack
 ELSE
 ; The ASM from MSVC2013 seems to be much more worse than previous one. Use blind arguments.
-PelYUV_RGB_Flip proc \
+PelYUV_RGB24_FlipCMOV proc \
         uses rdi rsi rbx R12 R13 R14
 ENDIF
 	mov	rdi,rcx		; [OutData]
@@ -837,14 +837,14 @@ LoopPel:mov	al,[R9]
 	jnz	LoopPel
 Exit:
 	ret
-PelYUV_RGB_Flip endp
+PelYUV_RGB24_FlipCMOV endp
 
 
 
-;void PelYUV_RGB32_Flip(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
-	public PelYUV_RGB32_Flip
+;void PelYUV_RGB32_FlipCMOV(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount)
+	public PelYUV_RGB32_FlipCMOV
 IF (@Version LT 1200) OR (@Version GE 1300)
-PelYUV_RGB32_Flip proc \
+PelYUV_RGB32_FlipCMOV proc \
         uses rdi rsi rbx R12 R13 R14,
         OutData: ptr BYTE,
         y: ptr BYTE,
@@ -853,7 +853,7 @@ PelYUV_RGB32_Flip proc \
 	PixelCount: DWORD	; on stack
 ELSE
 ; The ASM from MSVC2013 seems to be much more worse than previous one. Use blind arguments.
-PelYUV_RGB32_Flip proc \
+PelYUV_RGB32_FlipCMOV proc \
         uses rdi rsi rbx R12 R13 R14
 ENDIF
 	mov	rdi,rcx		; [OutData]
@@ -1026,7 +1026,214 @@ LoopPel:mov	al,[R9]
 	jnz	LoopPel
 Exit:
 	ret
-PelYUV_RGB32_Flip endp
+PelYUV_RGB32_FlipCMOV endp
+
+
+;void YUYV_BGR(unsigned char *OutData, const unsigned char *yuyv, unsigned PixelCount);
+	public YUYV_BGR
+YUYV_BGR proc \
+        uses rdi rsi rbx
+;        OutData: ptr BYTE, \
+;        yuyv: ptr BYTE, \
+;	PixelCount: DWORD
+
+	mov	rsi,rdx			; source data
+	mov	rdi,rcx			; destination data
+	mov	rcx,R8			; rcx=amount of pixels
+	
+	sub	ecx,2
+	jb	Exit
+
+LoopPx:	mov	ebx,[rsi]	; V_Y2_U_Y1
+	mov	eax,ebx
+	
+	xor	edx,edx
+	mov	dh,bl		; 255*Y
+	
+	rol	eax,8
+	and	eax,0FFh	; V
+	sub	eax,128
+	mov	r8d,eax		; store V  ---> to R8D
+	imul	eax,KOEF_V2R	; 291*V
+	mov	r9d,eax		; store 291*V to r9d
+	add	eax,edx
+	
+	test	eax,0FFFF0000h
+	jz	NormR1
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR1:	mov	[rdi+2],ah	; R1
+
+	movzx	eax,bh		; U
+	sub	eax,128
+	mov	r11d,eax
+	imul	eax,KOEF_U2B	; 520*U
+	mov	r10d,eax
+	add	eax,edx
+
+	test	eax,0FFFF0000h
+	jz	NormB1
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax	
+NormB1:	mov	[rdi],ah	; B1
+
+				;EDX = 255*Y	
+	imul	r8d,r8d,KOEF_V2G ; V normalised *148 ---> R8D
+	sub	edx,r8d
+	
+	imul	r11d,r11d,KOEF_U2G	; 101*U
+	sub	edx,r11d	; 255*Y - 101*U - 148*V
+
+	test	edx,0FFFF0000h
+	jz	NormG1
+	sar	edx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	edx	
+NormG1:	mov	[rdi+1],dh	; G1
+
+		; 2nd pixel
+	ror	ebx,8
+	mov	eax,r9d		; 291*V
+	and	ebx,0FF00h	; 255*Y2	
+	add	eax,ebx
+
+	test	eax,0FFFF0000h
+	jz	NormR2
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR2:	mov	[rdi+5],ah	; R2
+
+	mov	eax,r10d	; 520*U
+	add	eax,ebx
+
+	test	eax,0FFFF0000h
+	jz	NormB2
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormB2:	mov	[rdi+3],ah	; B2
+
+				;EDX = 255*Y
+	sub	ebx,r8d		; V normalised * 148
+				; r11d - 101*U normalised
+	sub	ebx,r11d	; 255*Y - 101*U - 148*V
+	test	ebx,0FFFF0000h
+	jz	NormG2
+	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	ebx
+NormG2:	mov	[rdi+4],bh	; **** G2 ****
+
+	add	rsi,4		; inc Y per 2 pixels
+	add	rdi,6		; Shift to R3
+	sub	ecx,2
+	jae	LoopPx
+
+Exit:	
+	ret
+YUYV_BGR endp
+
+
+;void YUYV_BGR_CMOV(unsigned char *OutData, const unsigned char *yuyv, unsigned PixelCount);
+	public YUYV_BGR_CMOV
+YUYV_BGR_CMOV proc \
+        uses rdi rsi rbx
+;        OutData: ptr BYTE, \
+;        yuyv: ptr BYTE, \
+;	PixelCount: DWORD
+
+	mov	rsi,rdx			; source data
+	mov	rdi,rcx			; destination data
+	mov	rcx,R8			; rcx=amount of pixels
+	
+	sub	ecx,2
+	jb	Exit
+
+LoopPx:	mov	ebx,[rsi]	; V_Y2_U_Y1
+	mov	eax,ebx
+	
+	xor	edx,edx
+	mov	dh,bl		; 255*Y1
+	
+	rol	eax,8
+	and	eax,0FFh	; V
+	sub	eax,128
+	mov	r8d,eax		; store V  ---> to R8D
+	imul	eax,KOEF_V2R	; 291*V
+	mov	r9d,eax		; store 291*V to r9d
+	add	eax,edx
+	mov	R11d,eax
+	sar	R11d,24		; signed DWORD <0 AH=1; >0 AH=0;
+	not	R11d
+	test	eax,0FFFF0000h
+	cmovnz  ax,R11w
+	mov	[rdi+2],ah	; <<<< R1 ****
+
+	movzx	eax,bh		; U
+	sub	eax,128
+	mov	r11d,eax
+	imul	eax,KOEF_U2B	; 520*U
+	mov	r10d,eax
+	add	eax,edx
+	mov	edx,eax
+	sar	edx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	edx
+	test	eax,0FFFF0000h
+	cmovnz	ax,dx
+	mov	[rdi],ah	; <<<< B1 ****
+
+	xor	edx,edx		; restore EDX = 255*Y1 from BL
+	mov	dh,bl		; 255*Y1
+
+	imul	r8d,r8d,KOEF_V2G ; V normalised *148 ---> R8D
+	sub	edx,r8d
+	
+	imul	r11d,r11d,KOEF_U2G	; 101*U
+	sub	edx,r11d	; 255*Y - 101*U - 148*V
+	mov	eax,edx
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax	
+	test	edx,0FFFF0000h
+	cmovnz	dx,ax	
+	mov	[rdi+1],dh	; <<<< G1 ****
+
+		; 2nd pixel
+	ror	ebx,8
+	mov	eax,r9d		; 291*V
+	and	ebx,0FF00h	; 255*Y2	
+	add	eax,ebx
+	mov	edx,eax
+	sar	edx,24		; signed DWORD <0 AH=1; >0 AH=0;
+	not	edx
+	test	eax,0FFFF0000h
+	cmovnz	ax,dx	
+	mov	[rdi+5],ah	; <<<< R2 ****
+
+	mov	eax,r10d	; 520*U
+	add	eax,ebx
+	mov	edx,eax
+	sar	edx,24		; signed DWORD <0 AH=1; >0 AH=0;
+	not	edx
+	test	eax,0FFFF0000h
+	cmovnz	ax,dx
+	mov	[rdi+3],ah	; <<<< B2 **** 
+
+				;EDX = 255*Y
+	sub	ebx,r8d		; V normalised * 148
+				; r11d - 101*U normalised
+	sub	ebx,r11d	; 255*Y - 101*U - 148*V
+	mov	eax,ebx
+	sar	eax,24		; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+	test	ebx,0FFFF0000h
+	cmovnz	bx,ax
+	mov	[rdi+4],bh	; <<<< G2 ****
+
+	add	rsi,4		; inc Y per 2 pixels
+	add	rdi,6		; Shift to R3
+	sub	ecx,2
+	jae	LoopPx
+
+Exit:	
+	ret
+YUYV_BGR_CMOV endp
 
 
         end

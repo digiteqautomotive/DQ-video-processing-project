@@ -1,14 +1,14 @@
 /** @file
 
-MODULE				: YUYVtoRGB24Converter
+MODULE:				YUYVtoBGR24Converter
 
-FILE NAME			: YUYVtoRGB24Converter.h
+FILE NAME:			YUYVtoBGR24Converter.h
 
-DESCRIPTION			: Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
-colour convertion derived from the CVideoConverter base 
-class.
+DESCRIPTION:			Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
+				colour convertion derived from the CVideoConverter base 
+				class.
 					  
-LICENSE: Software License Agreement (BSD License)
+LICENSE:			Software License Agreement (BSD License)
 
 Copyright (c) 2025-2026, Digiteq Automotive All rights reserved.
 
@@ -29,10 +29,9 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ==========================================================================*/
-#ifndef _YUYVTORGB24CONVERTER_H
-#define _YUYVTORGB24CONVERTER_H
+#ifndef _YUYVtoBGR24Converter_H
+#define _YUYVtoBGR24Converter_H
 #include <DirectShow/stdafx.h>
 #include "ConvYUVtoRGB.h"
 
@@ -40,18 +39,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** \ingroup ImageLib
 * Implementation of YUYV (16 bpp) to RGB 24 bit colour convertion derived 
 from the CVideoConverter base class. */
-class YUYVtoRGB24Converter: public CVideoConverter
+class YUYVtoBGR24Converter: public CVideoConverter
 {
 public:
   // Construction and destruction.
-  YUYVtoRGB24Converter(void) { }
-  YUYVtoRGB24Converter(int width, int height): CVideoConverter(width,height) {}
+  YUYVtoBGR24Converter(void) {}
+  YUYVtoBGR24Converter(int width, int height): CVideoConverter(width,height) {}
 
   // Interface.
   virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
   virtual void Convert(const void* pInputBuffer, void* pRgb) const;
 
-};//end YUYVtoRGB24Converter.
+};//end YUYVtoBGR24Converter.
 
 
 /** \ingroup ImageLib
@@ -71,4 +70,20 @@ public:
 }; //end YUYVtoARGB32Converter.
 
 
-#endif	// _YUYVTORGB24CONVERTER_H
+#ifdef USE_ASM
+class YUYVtoBGR24ConverterAsm: public CVideoConverter
+{
+public:
+  // Construction and destruction.
+  YUYVtoBGR24ConverterAsm(void) {}
+  YUYVtoBGR24ConverterAsm(int width, int height): CVideoConverter(width,height) {}
+
+  // Interface.
+  virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
+  virtual void Convert(const void* pInputBuffer, void* pRgb) const;
+};
+#endif
+
+
+
+#endif	// _YUYVtoBGR24Converter_H

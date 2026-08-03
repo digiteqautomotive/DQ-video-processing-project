@@ -42,7 +42,9 @@ extern "C"
  void PelYUV_RGB24_CMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB32_CMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
+ void PelYUV_RGB24_FlipCMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB32_Flip(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
+ void PelYUV_RGB32_FlipCMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
 }
 
 DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
@@ -68,7 +70,7 @@ int row = _height / 2;
 
   while(row-- > 0)
   {
-    PelYUV_RGB_Flip(pRgb,  pY,  pU, pV, _width);
+    PelYUV_RGB24_FlipCMOV(pRgb,  pY,  pU, pV, _width);
     pRgb -= 6*_width;
     pY += 2*_width;
     pU += _width/2;
@@ -110,7 +112,7 @@ int row = _height / 2;
 
   while(row-- > 0)
   {
-    PelYUV_RGB32_Flip(pRgb,  pY,  pU, pV, _width);
+    PelYUV_RGB32_FlipCMOV(pRgb,  pY,  pU, pV, _width);
     pRgb -= 8*_width;
     pY += 2*_width;
     pU += _width/2;

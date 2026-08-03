@@ -1009,4 +1009,114 @@ Exit:
 	ret
 PelYUV_RGB32_Flip endp
 
+
+;void YUYV_BGR(unsigned char *OutData, const unsigned char *yuyv, unsigned PixelCount);
+	public YUYV_BGR
+YUYV_BGR proc \
+        uses edi esi ebx ebp, \
+        OutData: ptr BYTE, \
+        yuyv: ptr BYTE, \
+	PixelCount: DWORD
+	
+	mov	edi,[OutData]
+	mov	esi,[yuyv]
+	mov	ecx,[PixelCount]	
+	
+	sub	ecx,2
+	jb	Exit
+
+LoopPx:	mov	ebx,[esi]	; YUYV
+	
+	xor	edx,edx
+	mov	dh,bl		; 255*Y		
+
+	mov	eax,ebx
+	rol	eax,8
+	and	eax,0FFh	; V
+
+	sub	eax,128
+	mov	ebp,eax		; store V to EBP
+	imul	eax,KOEF_V2R	; 291*V	
+	add	eax,edx
+	
+	test	eax,0FFFF0000h
+	jz	NormR1
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR1:	mov	[edi+2],ah	; <<<< R1 ****
+
+	movzx	eax,bh		; U
+
+	sub	eax,128
+	imul	eax,KOEF_U2B	; 520*U	
+	add	eax,edx
+	
+	test	eax,0FFFF0000h
+	jz	NormB1
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax	
+NormB1:	mov	[edi],ah	; <<<< B1 ****
+
+				; EDX = 255*Y	
+	imul	eax,ebp,KOEF_V2G; V normalised *148
+	sub	edx,eax
+
+        movzx	eax,bh		; U
+	sub	eax,128
+	imul	eax,KOEF_U2G	; 102*U
+	sub	edx,eax		; 255*Y - 102*U - 148*V
+	
+	test	edx,0FFFF0000h
+	jz	NormG1
+	sar	edx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	edx	
+NormG1:	mov	[edi+1],dh	; <<<< G1 ****
+
+		; 2nd pixel
+	mov	edx,ebx
+	ror	edx,8
+	and	edx,0FF00h	; 255*Y2
+	
+	imul	eax,ebp,KOEF_V2R; 291*V	
+	add	eax,edx
+	
+	test	eax,0FFFF0000h
+	jz	NormR2
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormR2:	mov	[edi+5],ah	; <<<< R2 ****
+
+	movzx	ebx,bh		; U
+	sub	ebx,128	
+	imul	eax,ebx,KOEF_U2B; 521*U
+	add	eax,edx
+	
+	test	eax,0FFFF0000h
+	jz	NormB2
+	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	eax
+NormB2:	mov	[edi+3],ah	; <<<< B2 ****
+
+				;EDX = 255*Y	
+	imul	eax,ebp,KOEF_V2G; V normalised * 148
+	sub	edx,eax
+
+	imul	eax,ebx,KOEF_U2G; 102*U normalised
+	sub	edx,eax		; 255*Y - 102*U - 148*V
+
+	test	edx,0FFFF0000h
+	jz	NormG2
+	sar	edx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	not	edx
+NormG2:	mov	[edi+4],dh	; <<<< G2 ****
+
+	add	esi,4		; inc Y per 2 pixels
+	add	edi,6		; Shift to new pixel R3
+	sub	ecx,2
+	jae	LoopPx
+
+Exit:
+	ret
+YUYV_BGR endp
+
         end
