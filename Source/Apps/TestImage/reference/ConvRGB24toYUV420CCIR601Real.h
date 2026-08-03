@@ -39,10 +39,11 @@ public:
 
 		// Interface.
 	void Convert(const unsigned char *Rgb, void* pY, void* pU, void* pV) const;
+        virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 
 private:
-	void FlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
-	void NonFlipConvert(const unsigned char *pRgb, void* pY, void* pU, void* pV) const;
+	virtual void FlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;
+	virtual void NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const;	
 
 };//end _REALRGB24TOYUV420CCIR601CONVERTER_H.
 

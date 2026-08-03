@@ -143,11 +143,11 @@ void ConvRGB24toYUV420FixP::FlipConvert(const unsigned char* pRgb, unsigned char
 The full real matix equation is used. The YUV output is represented with
 8 bits per pel and the UV components are adjusted from their -128..127 range
 to 0..255.
-@param pRgb	: Packed RGB 888 format.
-@param pY		: Lum plane.
-@param pU		: Chr U plane.
-@param pV		: Chr V plane.
-@return			: none. */
+ @param[in] pRgb	Packed RGB 888 format.
+ @param[out] pY		Lum plane.
+ @param[out] pU		Chr U plane.
+ @param[out] pV		Chr V plane.
+ @return		none */
 void ConvRGB24toYUV420FixP::NonFlipConvert(const unsigned char* pRgb, unsigned char* pY, unsigned char* pU, unsigned char* pV) const
 {
 	// Y has range 0..255, U & V have range -128..127.

@@ -45,6 +45,7 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
 #endif
+#include "reference/ConvRGB24toYUV420CCIR601Real.h"
 #include "reference/ConvRGB24toYUV420_LUT.h"
 #include "reference/ConvRGB24toYUV420_fixpLUT.h"
 #include "reference/ConvRGB24toYUV420_SIMD.h"
@@ -1965,9 +1966,17 @@ bool Pause = false;
      if(res>=10000) goto ReturnErr;
    }
 
+////////////////////////////////////////////////////////////////////////////////
+
+ for(int Width=2; Width<28; Width+=2)
+   for(int Height=2; Height<28; Height+=2)
+   {
+     RealRGB24toYUV420CCIR601Converter origRGB24toYUV420CCIR601(Width,Height);
+   }
+
+
 
 	/////////////This test must be the last, input data changed///////////////////////
-
 //-----------------------------------YUV420_16 to BGR-------------------------------------------
 
 	// Feed with 0 every 2nd byte.
