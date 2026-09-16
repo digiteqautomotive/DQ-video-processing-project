@@ -48,6 +48,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Private Methods.
 ==========================================================================*/
 
+/*
+bool ConvYUV420_16toBGR24_CCIR601::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return true;
+}
+*/
+
 
 void ConvYUV420_16toBGR24_CCIR601::FlipConvert(const int16_t* y, const int16_t *u, const int16_t *v, unsigned char *pRgb) const
 {

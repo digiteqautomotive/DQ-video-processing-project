@@ -1,10 +1,10 @@
 /** @file
 
-MODULE				: RealRGB24toYUV420CCIR601ConverterVer16
+MODULE				: RealRGB24toYUV420CCIR601ConverterV16R
 
 TAG						: RRGB24YUVCCV16
 
-FILE NAME:		RealRGB24toYUV420CCIR601ConverterVer16.cpp
+FILE NAME:		RealRGB24toYUV420CCIR601ConverterV16R.cpp
 
 DESCRIPTION:		Double precision floating point RGB 24 bit to YUV420 colour 
 			convertion derived from the RGBtoYUV420Converter base class.
@@ -78,7 +78,7 @@ and the UV (CbCr) range is 16..240 centred on 128.
 @param pU		: Chr U plane.
 @param pV		: Chr V plane.
 @return			: none. */
-void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert(const unsigned char* pRgb, uint8_t* pY, uint16_t *pU, uint16_t* pV) const
+void RealRGB24toYUV420CCIR601ConverterV16R::FlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t *pU, uint16_t* pV) const
 {
 	short*	py = (short *)pY;
 	short*	pu = (short *)pU;
@@ -118,9 +118,9 @@ void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert(const unsigned char* pR
 		u += 128 + RRGB24YUVCCV16_10*r + RRGB24YUVCCV16_11*g + RRGB24YUVCCV16_12*b;
 		v += 128 + RRGB24YUVCCV16_20*r + RRGB24YUVCCV16_21*g + RRGB24YUVCCV16_22*b;
 
-    lumOff += _width;
-    //t = t + _width*3 - 6;
-    t = t - _width*3 - 6;
+		lumOff += _width;
+		//t = t + _width*3 - 6;
+		t = t - _width*3 - 6;
 		// Bottom left pel..
 		b = (double)(*t++);
 		g = (double)(*t++);
@@ -147,7 +147,7 @@ void RealRGB24toYUV420CCIR601ConverterVer16::FlipConvert(const unsigned char* pR
 }//end Convert.
 
 
-void RealRGB24toYUV420CCIR601ConverterVer16::NonFlipConvert(const unsigned char *pRgb, uint8_t *pY, uint16_t *pU, uint16_t *pV) const
+void RealRGB24toYUV420CCIR601ConverterV16R::NonFlipConvert(const unsigned char *pRgb, uint16_t *pY, uint16_t *pU, uint16_t *pV) const
 {
   short*	py = (short *)pY;
   short*	pu = (short *)pU;
@@ -185,8 +185,8 @@ void RealRGB24toYUV420CCIR601ConverterVer16::NonFlipConvert(const unsigned char 
 		u += 128 + RRGB24YUVCCV16_10*r + RRGB24YUVCCV16_11*g + RRGB24YUVCCV16_12*b;
 		v += 128 + RRGB24YUVCCV16_20*r + RRGB24YUVCCV16_21*g + RRGB24YUVCCV16_22*b;
 
-    lumOff += _width;
-    t = t + _width*3 - 6;
+		lumOff += _width;
+		t = t + _width*3 - 6;
 		// Bottom left pel..
 		b = (double)(*t++);
 		g = (double)(*t++);

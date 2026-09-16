@@ -41,6 +41,9 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "ConvRGB24toYUV420.h"
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGBtoYUYV.h"
+#include "ConvRGB24toYUV420RealImpl2Ver16.h"
+#include "ConvRGB24toYUV420CCIR601v16FixP.h" 
+#include "ConvRGB24toYUV420CCIR601Ver16.h"
 #include "ConvYUV420_16toRGB.h"
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
@@ -1968,12 +1971,32 @@ bool Pause = false;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
+
+/* No test yet.
+
+ for(int Width=2; Width<28; Width+=2)
+   for(int Height=2; Height<28; Height+=2)
+   {
+     RealRGB24toYUV420ConverterImpl2Ver16 origRGB24toYUV420Impl2Ver16(Width,Height);
+
+     RealRGB24toYUV420CCIR601ConverterV16R origRGB24toYUV420CCIR601Impl2Ver16(Width,Height);
+   }
+*/
+
+
+// No test yet.
+
  for(int Width=2; Width<28; Width+=2)
    for(int Height=2; Height<28; Height+=2)
    {
      RealRGB24toYUV420CCIR601Converter origRGB24toYUV420CCIR601(Width,Height);
-   }
+     ConvRGB24toYUV420CCIR601V16FixP cRGB24toYUV420CCIR601V16FixP(Width,Height);
 
+     cRGB24toYUV420CCIR601V16FixP.Convert(BlobIn+16, BlobOut+16);
+     origRGB24toYUV420CCIR601.Convert(BlobIn+16, BlobTest+16);
+
+   }
 
 
 	/////////////This test must be the last, input data changed///////////////////////

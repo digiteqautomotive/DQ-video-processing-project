@@ -898,7 +898,7 @@ int H264v2Codec::Open(void)
 	{
 		/// Encoder input.
 #ifdef _CCIR601
-		_pInColourConverter = new RealRGB24toYUV420CCIR601ConverterVer16(_width, _height);
+		_pInColourConverter = new RealRGB24toYUV420CCIR601ConverterV16R(_width, _height);
 #else
 		_pInColourConverter = new RealRGB24toYUV420ConverterImpl2Ver16(_width, _height);
 #endif
