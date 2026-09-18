@@ -69,6 +69,14 @@ RESTRICTIONS:		Redistribution and use in source and binary forms, with or withou
 ===========================================================================*/
 
 
+bool RealRGB24toYUV420CCIR601ConverterV16R::isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const
+{
+  return true;
+  //return VideoFormatIn==MEDIASUBTYPE_RGB24);
+	// && (VideoFormatOut==MEDIASUBTYPE_YUV420P_S || VideoFormatOut==MEDIASUBTYPE_I420 || VideoFormatOut==MEDIASUBTYPE_YV12);
+}
+
+
 /** Double precision reference implementation.
 The full real matix equation is used. The YUV output is represented with
 16 bits per pel and the CCIR-601 specifies that the Y range is 16..235 
