@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "BitStreamWriterMSB.h"
 #include "BitStreamReaderMSB.h"
 
-#include "ConvRGB24toYUV420CCIR601Ver16.h"
+//#include "ConvRGB24toYUV420CCIR601Ver16.h"
 #include "ConvYUV420_16toRGB.h"
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
 //#include "ConvYUV420toRGB.h"
@@ -898,7 +898,7 @@ int H264v2Codec::Open(void)
 	{
 		/// Encoder input.
 #ifdef _CCIR601
-		_pInColourConverter = new RealRGB24toYUV420CCIR601ConverterV16R(_width, _height);
+		_pInColourConverter = new ConvRGB24toYUV420CCIR601V16Real(_width, _height);
 #else
 		_pInColourConverter = new RealRGB24toYUV420ConverterImpl2Ver16(_width, _height);
 #endif

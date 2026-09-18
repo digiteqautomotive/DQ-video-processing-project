@@ -43,11 +43,11 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "ConvRGBtoYUYV.h"
 #include "ConvRGB24toYUV420RealImpl2Ver16.h"
 #include "ConvRGB24toYUV420CCIR601v16FixP.h" 
-#include "ConvRGB24toYUV420CCIR601Ver16.h"
 #include "ConvYUV420_16toRGB.h"
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
 #endif
+#include "reference/ConvRGB24toYUV420CCIR601Ver16R.h"
 #include "reference/ConvRGB24toYUV420CCIR601Real.h"
 #include "reference/ConvRGB24toYUV420_LUT.h"
 #include "reference/ConvRGB24toYUV420_fixpLUT.h"
@@ -2032,7 +2032,7 @@ bool Pause = false;
    {
      RealRGB24toYUV420ConverterImpl2Ver16 origRGB24toYUV420Impl2Ver16(Width,Height);
 
-     RealRGB24toYUV420CCIR601ConverterV16R origRGB24toYUV420CCIR601Impl2Ver16(Width,Height);
+     ConvRGB24toYUV420CCIR601V16Real origRGB24toYUV420CCIR601Impl2Ver16(Width,Height);
    }
 */
 
@@ -2042,13 +2042,13 @@ bool Pause = false;
  for(int Width=2; Width<28; Width+=2)
    for(int Height=2; Height<28; Height+=2)
    {
-     RealRGB24toYUV420CCIR601ConverterV16R origRGB24toYUV420CCIR601(Width,Height);
+     ConvRGB24toYUV420CCIR601V16Real origRGB24toYUV420CCIR601(Width,Height);
      ConvRGB24toYUV420CCIR601V16FixP cRGB24toYUV420CCIR601V16FixP(Width,Height);
 
      cRGB24toYUV420CCIR601V16FixP.Convert(BlobIn+16, BlobOut+16);
      origRGB24toYUV420CCIR601.Convert(BlobIn+16, BlobTest+16);
 
-     int res = I420compare16("ConvRGB24toYUV420CCIR601V16FixP", Width, Height, (const uint16_t*)BlobOut, (const uint16_t *)BlobTest);
+     int res = I420compare16("ConvRGB24toYUV420CCIR601V16FixP", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest);
      if(res>=10000) goto ReturnErr;
      
    }
@@ -2290,6 +2290,26 @@ bool Pause = false;
       LutConverterRGB24toYUV420.SetFlip(true);
       DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
       printf("+Fix %.3f[ms]", DurationMin/1000.0);
+    }
+
+
+    {
+      ConvRGB24toYUV420CCIR601V16Real picConvRGB24toYUV420CCIR601V16Real(1920,1080);
+      picConvRGB24toYUV420CCIR601V16Real.SetFlip(false);
+      DurationMin = BenchConverter(picConvRGB24toYUV420CCIR601V16Real, BlobIn, BlobOut);
+      printf("\nConv RGB24 to 420CCIR601V16 1920x1080  Real:%.3f[ms]", DurationMin/1000.0);
+      picConvRGB24toYUV420CCIR601V16Real.SetFlip(true);
+      DurationMin = BenchConverter(picConvRGB24toYUV420CCIR601V16Real, BlobIn, BlobOut);
+      printf(" flip:%.3f[ms]", DurationMin/1000.0);
+    }
+    {
+      ConvRGB24toYUV420CCIR601V16FixP cRGB24toYUV420CCIR601V16FixP(1920,1080);
+      cRGB24toYUV420CCIR601V16FixP.SetFlip(false);
+      DurationMin = BenchConverter(cRGB24toYUV420CCIR601V16FixP, BlobIn, BlobOut);
+      printf(" Fix point:%.3f[ms]", DurationMin/1000.0);
+      cRGB24toYUV420CCIR601V16FixP.SetFlip(true);
+      DurationMin = BenchConverter(cRGB24toYUV420CCIR601V16FixP, BlobIn, BlobOut);
+      printf(" flip:%.3f[ms]", DurationMin/1000.0);
     }
 
 	///////////////////////////////////////////////////////

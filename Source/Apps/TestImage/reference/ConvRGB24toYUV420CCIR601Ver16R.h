@@ -1,6 +1,6 @@
 /** @file
 
-MODULE:		RealRGB24toYUV420CCIR601ConverterV16R
+MODULE:		ConvRGB24toYUV420CCIR601V16Real
 
 TAG:		RRGB24YUVCCV16
 
@@ -55,19 +55,19 @@ RESTRICTIONS:	Redistribution and use in source and binary forms, with or without
   Class definition.
 ===========================================================================
 */
-class RealRGB24toYUV420CCIR601ConverterV16R: public RGBtoYUV420Converter16
+class ConvRGB24toYUV420CCIR601V16Real: public RGBtoYUV420Converter16
 {
 public:
 	// Construction and destruction.
-	RealRGB24toYUV420CCIR601ConverterV16R(void) {}
-	RealRGB24toYUV420CCIR601ConverterV16R(int width, int height): RGBtoYUV420Converter16(width,height) {}
-	virtual ~RealRGB24toYUV420CCIR601ConverterV16R(void) {}
+	ConvRGB24toYUV420CCIR601V16Real(void) {}
+	ConvRGB24toYUV420CCIR601V16Real(int width, int height): RGBtoYUV420Converter16(width,height) {}
+	virtual ~ConvRGB24toYUV420CCIR601V16Real(void) {}
         virtual bool isVideoFormatSupported(const GUID &VideoFormatIn, const GUID &VideoFormatOut) const;
 		// Interface.
 protected:
 	void FlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t *pU, uint16_t *pV) const;
 	void NonFlipConvert(const unsigned char* pRgb, uint16_t* pY, uint16_t *pU, uint16_t *pV) const;
-}; //end _RealRGB24toYUV420CCIR601ConverterV16R_H.
+}; //end _ConvRGB24toYUV420CCIR601V16Real_H.
 
 
 #endif

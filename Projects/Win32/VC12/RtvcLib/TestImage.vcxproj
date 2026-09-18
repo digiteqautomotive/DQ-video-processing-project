@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="$(BASECLASSES)\GetTickCount_ms.c" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\ConvertTesters.cpp" />
+    <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420CCIR601Ver16R.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_fixpLUT.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_LUT.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420_Mt.cpp" />
@@ -35,7 +36,6 @@
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\ScaleTesters.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\stdafx.cpp" />
     <ClCompile Include="..\..\..\..\Source\Apps\TestImage\TestImage.cpp" />
-    <ClCompile Include="..\..\..\..\Source\libs\VppLib\src\RealRGB24toYUV420CCIR601ConverterVer16.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Source\Apps\TestImage\reference\ConvRGB24toYUV420RealImpl2.h" />
