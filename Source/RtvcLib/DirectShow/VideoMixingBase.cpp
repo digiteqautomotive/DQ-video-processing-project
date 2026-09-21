@@ -25,11 +25,15 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 #include "stdafx.h"
+#include <wmcodecdsp.h>			// MEDIASUBTYPE_I420; MEDIASUBTYPE_AVC1
 
 #include "VideoMixingBase.h"
 
 #include <DirectShow/CommonDefs.h>
 #include <Dvdmedia.h>			// VIDEOINFOHEADER2
+
+
+DEFINE_GUID(MEDIASUBTYPE_YUV420P_S, 0xc528b79f, 0xf025, 0x4eb7, 0x92, 0xb0, 0x46, 0xce, 0x81, 0x67, 0xe9, 0xf8);
 
 
 VideoMixingBase::VideoMixingBase(TCHAR *pObjectName, LPUNKNOWN lpUnk, CLSID clsid): CMultiIOBaseFilter(pObjectName, lpUnk, clsid),
@@ -212,7 +216,13 @@ HRESULT VideoMixingBase::GetMediaType(int iPosition, CMediaType* pMediaType, int
       pMediaType->SetSampleSize(NewOutputSize);
  
       bmh1->biCompression = BI_RGB;
-
+      if(pMediaType->majortype == MEDIATYPE_Video)
+      {
+        if(pMediaType->formattype==MEDIASUBTYPE_YUYV || pMediaType->formattype==MEDIASUBTYPE_YUY2)
+            bmh1->biCompression = MAKEFOURCC('Y','U','Y','2');
+        else if(pMediaType->subtype==MEDIASUBTYPE_YUV420P_S || pMediaType->subtype==MEDIASUBTYPE_I420 || pMediaType->subtype==MEDIASUBTYPE_YV12 || pMediaType->subtype==MEDIASUBTYPE_IYUV)
+            bmh1->biCompression = MAKEFOURCC('I', '4', '2', '0');
+      }      
 			// Set source rect
       if(rcSource)
       {

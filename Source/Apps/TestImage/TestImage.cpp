@@ -291,9 +291,10 @@ int I420compare16(const char *Alg, int Width, int Height, const uint16_t *BlobOu
       }
       else
       {
+        unsigned pos;
         for(int y=0; y<Height; y++)
         {
-          unsigned pos = 16/2 + (x + Width*y);
+          pos = 16/2 + (x + Width*y);
           if(BlobOut[pos]!=BlobTest[pos])
 	      diffs1++;
 	  if(labs(BlobOut[pos]-BlobTest[pos])>1)
@@ -305,7 +306,7 @@ int I420compare16(const char *Alg, int Width, int Height, const uint16_t *BlobOu
       }
     }
 #ifdef _DEBUG
-       printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, pos);
+       //printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, pos);
 #endif
      unsigned Upos = Width * Height;
      unsigned Vpos = Upos*5 / 4;
