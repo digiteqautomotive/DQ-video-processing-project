@@ -1,20 +1,20 @@
 /** @file
 
-MODULE						: ImageHandlerV2
+MODULE:			ImageHandlerV2
 
-TAG								: IH
+TAG:			IH
 
-FILE NAME					: ImageHandlerV2.cpp
+FILE NAME:		ImageHandlerV2.cpp
 
-DESCRIPTION				: Implementation of a ImageHandlerV2 class that holds images 
-										in DIB .bmp format and provides functions for colour 
-										space conversion and the like.
+DESCRIPTION:		Implementation of a ImageHandlerV2 class that holds images 
+			in DIB .bmp format and provides functions for colour 
+			space conversion and the like.
 
-REVISION HISTORY	:	
+REVISION HISTORY:	
 
-COPYRIGHT					: 
+COPYRIGHT: 
 
-RESTRICTIONS			: 
+RESTRICTIONS: 
 ===========================================================================
 */
 #include <memory.h>

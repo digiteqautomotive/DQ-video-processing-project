@@ -1,18 +1,18 @@
 /** @file
 
-MODULE				: RealRGB24toYUV420ConverterImpl2Ver16
+MODULE:			RealRGB24toYUV420ConverterImpl2Ver16
 
-TAG						: RRGB24YUVCI2V16
+TAG:			RRGB24YUVCI2V16
 
-FILE NAME			: RealRGB24toYUV420ConverterImpl2Ver16.cpp
+FILE NAME:		RealRGB24toYUV420ConverterImpl2Ver16.cpp
 
-DESCRIPTION		: Uses double precision floating point RGB 24 bit to YUV420 colour 
-								convertion derived from the RGBtoYUV420ConverterVer16 base class.
-								Planar YUV output is represented with 16-bits per colour component. 
+DESCRIPTION:		Uses double precision floating point RGB 24 bit to YUV420 colour 
+			convertion derived from the RGBtoYUV420ConverterVer16 base class.
+			Planar YUV output is represented with 16-bits per colour component. 
 
-COPYRIGHT			:	(c)CSIR 2007-2012 all rights resevered
+COPYRIGHT:		(c)CSIR 2007-2012 all rights resevered
 
-LICENSE				: Software License Agreement (BSD License)
+LICENSE	: Software License Agreement (BSD License)
 
 Copyright (c) 2008-2012, CSIR
 Copyright (c) 2025-2026 Digiteq Automotive, written by Jaroslav Fojtik		All rights reserved.

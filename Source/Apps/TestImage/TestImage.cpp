@@ -41,12 +41,13 @@ Copyright (c) 2025-2026, Digiteq Automotive, programmed by Jaroslav Fojtik	All r
 #include "ConvRGB24toYUV420.h"
 #include "ConvRGB32toYUV420.h"
 #include "ConvRGBtoYUYV.h"
-#include "ConvRGB24toYUV420RealImpl2Ver16.h"
-#include "ConvRGB24toYUV420CCIR601v16FixP.h" 
+#include "ConvRGB24toYUV420CCIR601v16FixP.h"
+#include "ConvRGB24toYUV420v16FixP.h"
 #include "ConvYUV420_16toRGB.h"
 #ifdef USE_ASM
 #include "ConvYUV420toRGB_ASM.h"
 #endif
+#include "reference/ConvRGB24toYUV420RealImpl2Ver16.h"
 #include "reference/ConvRGB24toYUV420CCIR601Ver16R.h"
 #include "reference/ConvRGB24toYUV420CCIR601Real.h"
 #include "reference/ConvRGB24toYUV420_LUT.h"
@@ -2071,19 +2072,32 @@ bool Pause = false;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/* No test yet.
 
  for(int Width=2; Width<28; Width+=2)
    for(int Height=2; Height<28; Height+=2)
    {
      RealRGB24toYUV420ConverterImpl2Ver16 origRGB24toYUV420Impl2Ver16(Width,Height);
+     ConvRGB24toYUV420v16FixP cRGB24toYUV420v16FixP(Width,Height);
 
-     ConvRGB24toYUV420CCIR601V16Real origRGB24toYUV420CCIR601Impl2Ver16(Width,Height);
+     origRGB24toYUV420Impl2Ver16.Convert(BlobIn+16, BlobOut+16);
+     cRGB24toYUV420v16FixP.Convert(BlobIn+16, BlobTest+16);
+
+     int res = I420compare16("ConvRGB24toYUV420v16FixP", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest);
+     if(res>=10000) goto ReturnErr;
+
+     origRGB24toYUV420Impl2Ver16.SetFlip(true);
+     cRGB24toYUV420v16FixP.SetFlip(true);
+
+     cRGB24toYUV420v16FixP.Convert(BlobIn+16, BlobTest+16);
+     
+     res = I420compare16("ConvRGB24toYUV420v16FixP flip", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest, true);
+     if(res>=10000) goto ReturnErr;
+
+     origRGB24toYUV420Impl2Ver16.Convert(BlobIn+16, BlobOut+16);
+
+     res = I420compare16("RealRGB24toYUV420ConverterImpl2Ver16 flip", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest);
+     if(res>=10000) goto ReturnErr;
    }
-*/
-
-
-// No test yet.
 
  for(int Width=2; Width<28; Width+=2)
    for(int Height=2; Height<28; Height+=2)
@@ -2366,6 +2380,26 @@ bool Pause = false;
       printf(" Fix point:%.3f[ms]", DurationMin/1000.0);
       cRGB24toYUV420CCIR601V16FixP.SetFlip(true);
       DurationMin = BenchConverter(cRGB24toYUV420CCIR601V16FixP, BlobIn, BlobOut);
+      printf(" flip:%.3f[ms]", DurationMin/1000.0);
+    }
+
+
+    {
+      RealRGB24toYUV420ConverterImpl2Ver16 picConvRGB24toYUV420v16Real(1920,1080);
+      picConvRGB24toYUV420v16Real.SetFlip(false);
+      DurationMin = BenchConverter(picConvRGB24toYUV420v16Real, BlobIn, BlobOut);
+      printf("\nConv RGB24 to 420v16 1920x1080  Real:%.3f[ms]", DurationMin/1000.0);
+      picConvRGB24toYUV420v16Real.SetFlip(true);
+      DurationMin = BenchConverter(picConvRGB24toYUV420v16Real, BlobIn, BlobOut);
+      printf(" flip:%.3f[ms]", DurationMin/1000.0);
+    }
+    {
+      ConvRGB24toYUV420v16FixP cRGB24toYUV420v16FixP(1920,1080);
+      cRGB24toYUV420v16FixP.SetFlip(false);
+      DurationMin = BenchConverter(cRGB24toYUV420v16FixP, BlobIn, BlobOut);
+      printf(" Fix point:%.3f[ms]", DurationMin/1000.0);
+      cRGB24toYUV420v16FixP.SetFlip(true);
+      DurationMin = BenchConverter(cRGB24toYUV420v16FixP, BlobIn, BlobOut);
       printf(" flip:%.3f[ms]", DurationMin/1000.0);
     }
 

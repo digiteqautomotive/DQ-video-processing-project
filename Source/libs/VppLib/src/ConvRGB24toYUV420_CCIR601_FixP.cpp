@@ -149,7 +149,7 @@ void ConvRGB24toYUV420CCIR601V16FixP::FlipConvert(const unsigned char* pRgb, uin
 }
 
 
-/** Double precision reference implementation.
+/** Fixed point precision reference implementation.
 The full real matix equation is used. The YUV output is represented with 8 bits
 per pel and the UV components are adjusted from their -128..127 range to 0..255.
  @param[in] pRgb	Packed RGB 888 format.
