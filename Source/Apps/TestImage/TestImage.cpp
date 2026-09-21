@@ -265,49 +265,95 @@ int I420compare(const char *Alg, int Width, int Height, const uint8_t *BlobOut, 
 }
 
 
-int I420compare16(const char *Alg, int Width, int Height, const uint16_t *BlobOut, const uint16_t *BlobTest)
+int I420compare16(const char *Alg, int Width, int Height, const uint16_t *BlobOut, const uint16_t *BlobTest, bool VFlip=false)
 {
-  int pos = memcmp(BlobTest, BlobOut, 16+2*(Width*Height+2*Width*Height/4));
-  if(pos)   
+  const int diff = memcmp(BlobTest, BlobOut, 16+2*(Width*Height+2*Width*Height/4));
+  if(diff)   
   {       
     int diffs1 = 0;
     for(int x=0; x<Width; x++)
-      for(int y=0; y<Height; y++)
+    {
+      if(VFlip)
       {
-        unsigned pos = 16/2 + (x + Width*y);
-        if(BlobOut[pos]!=BlobTest[pos])
-	    diffs1++;
-	if(labs(BlobOut[pos]-BlobTest[pos])>1)
+        for(int y=0; y<Height; y++)
         {
-           printf("\n%s %ux%u: x=%d y=%d ... Y=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
-           return 10000;
+          unsigned pos = 16/2 + (x + Width*y);
+          unsigned pos2 = 16/2 + (x + Width*(Height-y-1));
+          if(BlobOut[pos]!=BlobTest[pos2])
+	      diffs1++;
+	  if(labs(BlobOut[pos]-BlobTest[pos2])>1)
+          {
+             printf("\n%s %ux%u: x=%d y=%d ... Y=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos2]);
+             return 10000;
+          }
         }
       }
+      else
+      {
+        for(int y=0; y<Height; y++)
+        {
+          unsigned pos = 16/2 + (x + Width*y);
+          if(BlobOut[pos]!=BlobTest[pos])
+	      diffs1++;
+	  if(labs(BlobOut[pos]-BlobTest[pos])>1)
+          {
+             printf("\n%s %ux%u: x=%d y=%d ... Y=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
+             return 10000;
+          }
+        }
+      }
+    }
 #ifdef _DEBUG
        printf("\n%s %ux%u: 1_diffs=%d.", Alg, Width, Height, pos);
 #endif
      unsigned Upos = Width * Height;
      unsigned Vpos = Upos*5 / 4;
      for(int x=0; x<Width/2; x++)
-       for(int y=0; y<Height/2; y++)
-       {
-         pos = 16/2 + Upos + (x + y*(Width/2));
-         if(BlobOut[pos]!=BlobTest[pos])
-	     diffs1++;
-	 if(labs(BlobOut[pos]-BlobTest[pos])>1)
+     {
+       if(VFlip)
+         for(int y=0; y<Height/2; y++)
          {
-           printf("\n%s %ux%u: x/2=%d y/2=%d ... U=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
-           return 10001;
-         }
+           unsigned pos = 16/2 + Upos + (x + y*(Width/2));
+           unsigned pos2 = 16/2 + Upos + (x + (Height/2-y-1)*(Width/2));
+           if(BlobOut[pos]!=BlobTest[pos2])
+	       diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[pos2])>1)
+           {
+             printf("\n%s %ux%u: x/2=%d y/2=%d ... U=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos2]);
+             return 10001;
+           }
 
-      pos = 16/2 + Vpos + x + Width*y/2;
-      if(BlobOut[pos]!=BlobTest[pos])
-          diffs1++;
-      if(labs(BlobOut[pos]-BlobTest[pos])>1)
-      {
-        printf("\n%s %ux%u: x/2=%d y/2=%d ... V=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
-        return 10002;
-      }
+           pos = 16/2 + Vpos + x + Width*y/2;
+           pos2 = 16/2 + Vpos + x + Width*(Height/2-y-1)/2;
+           if(BlobOut[pos]!=BlobTest[pos2])
+               diffs1++;
+           if(labs(BlobOut[pos]-BlobTest[pos2])>1)
+           {
+             printf("\n%s %ux%u: x/2=%d y/2=%d ... V=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos2]);
+             return 10002;
+           }
+        }
+       else
+         for(int y=0; y<Height/2; y++)
+         {
+           unsigned pos = 16/2 + Upos + (x + y*(Width/2));
+           if(BlobOut[pos]!=BlobTest[pos])
+	       diffs1++;
+	   if(labs(BlobOut[pos]-BlobTest[pos])>1)
+           {
+             printf("\n%s %ux%u: x/2=%d y/2=%d ... U=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
+             return 10001;
+           }
+
+           pos = 16/2 + Vpos + x + Width*y/2;
+           if(BlobOut[pos]!=BlobTest[pos])
+               diffs1++;
+           if(labs(BlobOut[pos]-BlobTest[pos])>1)
+           {
+             printf("\n%s %ux%u: x/2=%d y/2=%d ... V=%d|%d.", Alg, Width,Height, x,y, BlobOut[pos],BlobTest[pos]);
+             return 10002;
+           }      
+         }
     }
        //goto ReturnErr;
      
@@ -2051,6 +2097,17 @@ bool Pause = false;
      int res = I420compare16("ConvRGB24toYUV420CCIR601V16FixP", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest);
      if(res>=10000) goto ReturnErr;
      
+     cRGB24toYUV420CCIR601V16FixP.SetFlip(true);
+     origRGB24toYUV420CCIR601.SetFlip(true);
+
+     cRGB24toYUV420CCIR601V16FixP.Convert(BlobIn+16, BlobOut+16);
+     res = I420compare16("ConvRGB24toYUV420CCIR601V16FixP flip", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest,true);
+     if(res>=10000) goto ReturnErr;
+
+     origRGB24toYUV420CCIR601.Convert(BlobIn+16, BlobTest+16);
+
+     res = I420compare16("ConvRGB24toYUV420CCIR601V16FixP flip", Width, Height, (const uint16_t*)BlobOut, (const uint16_t*)BlobTest);
+     if(res>=10000) goto ReturnErr;
    }
 
 

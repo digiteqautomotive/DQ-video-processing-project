@@ -105,14 +105,15 @@ void ConvRGB24toYUV420CCIR601V16FixP::FlipConvert(const unsigned char* pRgb, uin
       bs = pRgb[0];
       gs = pRgb[1];
       rs = pRgb[2];
-      y = ((iRRGB_YUVCI2_00*rs + iRRGB_YUVCI2_01*gs + iRRGB_YUVCI2_02*bs + (1<<iPrecision)) >> (iPrecision + 1));
+      y = 16 + ((iRRGB_YUVCI2_00*rs + iRRGB_YUVCI2_01*gs + iRRGB_YUVCI2_02*bs + (1<<iPrecision)) >> (iPrecision + 1));
+
       pY[0] = y;		// y is only positive
 
 	// Top right pel.
       bs += b = pRgb[3];
       gs += g = pRgb[4];
       rs += r = pRgb[5];
-      y = ((iRRGB_YUVCI2_00*r + iRRGB_YUVCI2_01*g + iRRGB_YUVCI2_02*b + (1<<iPrecision)) >> (iPrecision + 1));
+      y = 16 + ((iRRGB_YUVCI2_00*r + iRRGB_YUVCI2_01*g + iRRGB_YUVCI2_02*b + (1<<iPrecision)) >> (iPrecision + 1));
       pY[1] = y;		// y is only positive
 
       pRgb -= 3 * _width;
