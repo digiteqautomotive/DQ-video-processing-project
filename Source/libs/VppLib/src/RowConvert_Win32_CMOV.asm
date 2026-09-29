@@ -14,16 +14,17 @@ KOEF_V2R	EQU	292
 KOEF_V2G	EQU	149
 
 
-
-;void PelYUV_RGB24_CMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount)
+;void PelYUV_RGB24_CMOV(unsigned char *OutData, const unsigned char *y,
+;                       const signed char *u, const signed char *v, unsigned PixelCount)
 	public PelYUV_RGB24_CMOV
 PelYUV_RGB24_CMOV proc \
         uses edi esi ebx, \
         OutData: ptr BYTE, \
         y: ptr BYTE, \
         u: ptr BYTE, \
-	v: ptr BYTE, \
-	PixelCount: DWORD
+        v: ptr BYTE, \
+        PixelCount: DWORD
+
 local	PelCount: DWORD
 local	ValV_R: DWORD
 local	ValU_B: DWORD
@@ -31,134 +32,145 @@ local	PixelCount3: DWORD
 local	PixelCount3m6: DWORD
 
 	mov	edi,[OutData]
-	mov	esi,[y]	
+	mov	esi,[y]
 	mov	ecx,[PixelCount]
+
 	mov	eax,ecx
 	add	eax,ecx
-	add	eax,ecx			; 3*PixelCount
+	add	eax,ecx
 	mov	[PixelCount3],eax
 	sub	eax,6
-	mov	[PixelCount3m6],eax	; 3*PixelCount - 6
+	mov	[PixelCount3m6],eax
 
 	shr	ecx,1
-	or	ecx,ecx
 	jz	Exit
 	mov	[PelCount],ecx
 
 	xor	edx,edx
-LoopPel:mov	ebx,[v]
+
+LoopPel:
+	; ----- V -----
+	mov	ebx,[v]
 	mov	al,[ebx]
 	inc	ebx
-	sub	al,128
 	mov	[v],ebx
+	sub	al,128
 	mov	ch,al			; V
 	movsx	eax,al
-	imul	eax,KOEF_V2R		; 292*V	
+	imul	eax,KOEF_V2R
 	mov	[ValV_R],eax
-	mov	ebx,eax	
+	mov	ebx,eax			; keep ValV_R
 
-	mov	dh,[esi]		; 255*y11
+	; R11
+	mov	dh,[esi]
 	add	eax,edx
 	mov	edx,eax
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	eax,24
 	not	eax
 	test	edx,0FFFF0000h
 	cmovz	ax,dx
-	mov	[edi],ah		; R11
+	mov	[edi],ah
 	xor	edx,edx
 
+	; R12
 	mov	eax,ebx
-	mov	dh,[esi+1]		; 256*y12
+	mov	dh,[esi+1]
 	add	eax,edx
 	mov	ebx,eax
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	eax,24
 	not	eax
 	test	ebx,0FFFF0000h
-	cmovz	ax,bx	
-	mov	[edi+3],ah		; R12
+	cmovz	ax,bx
+	mov	[edi+3],ah
+	xor	edx,edx
 
+	; ----- U -----
 	mov	ebx,[u]
 	mov	al,[ebx]
 	inc	ebx
-	sub	al,128
 	mov	[u],ebx
+	sub	al,128
 	mov	cl,al			; U
 	movsx	eax,al
-	imul	eax,KOEF_U2B		; 520*U
+	imul	eax,KOEF_U2B
 	mov	[ValU_B],eax
-	mov	ebx,eax
+	mov	ebx,eax			; keep ValU_B
 
-	mov	dh,[esi]		; 256*y11
+	; B11
+	mov	dh,[esi]
 	add	eax,edx
 	mov	edx,eax
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	eax,24
 	not	eax
 	test	edx,0FFFF0000h
 	cmovz	ax,dx
-	mov	[edi+2],ah		; B11
+	mov	[edi+2],ah
 	xor	edx,edx
 
+	; B12
 	mov	eax,ebx
-	mov	dh,[esi+1]		; 256*y12
+	mov	dh,[esi+1]
 	add	eax,edx
 	mov	edx,eax
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	eax,24
 	not	eax
 	test	edx,0FFFF0000h
 	cmovz	ax,dx
-	mov	[edi+5],ah		; R12
+	mov	[edi+5],ah
 	xor	edx,edx
 
+	; ----- Green -----
 	movsx	eax,ch			; V
 	movsx	ecx,cl			; U
-	imul	eax,-KOEF_V2G
-	mov	dh,[esi]		; Y11
 	imul	ecx,-KOEF_U2G
-	add	eax,ecx
-	mov	ebx,eax
-;	mov	[ValUV_G],eax		; No need to store.
+	imul	eax,-KOEF_V2G
+	add	eax,ecx			; eax = pure ValUV_G
+	mov	ebx,eax			; keep pure ValUV_G  ? micro-step #8 corrected
 
+	; G11
+	mov	dh,[esi]
 	add	eax,edx
 	mov	ecx,eax
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
-	not	eax
-	test	ecx,0FFFF0000h
-	cmovz	ax,cx	
-	mov	[edi+1],ah		; G11
-
-	mov	dh,[esi+1]		; Y11
-	mov	eax,ebx
-	add	eax,edx
-	mov	ecx,eax
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	eax,24
 	not	eax
 	test	ecx,0FFFF0000h
 	cmovz	ax,cx
-	mov	[edi+4],ah		; G12
+	mov	[edi+1],ah
 
-;---------------------------------------
+	; G12
+	mov	dh,[esi+1]
+	mov	eax,ebx
+	add	eax,edx
+	mov	ecx,eax
+	sar	eax,24
+	not	eax
+	test	ecx,0FFFF0000h
+	cmovz	ax,cx
+	mov	[edi+4],ah
+
+	; ========== SECOND ROW (original, untouched) ==========
 	mov	eax,[PixelCount]
 	add	edi,[PixelCount3]
-	mov	cx, word ptr [esi+eax]
+	mov	cx,word ptr [esi+eax]
 
 	mov	eax,ebx			; ValUV_G
-	mov	dh,cl			; 256 * Y21
-	add	eax,edx			; 256*Y21
+	mov	dh,cl
+	add	eax,edx
 
-	mov	al,ch			; Y22
+	mov	al,ch
 	mov	ecx,eax
-	sar	ecx,24			; signed DWORD <0 CH=1; >0 CH=0;
+	sar	ecx,24
 	not	ecx
 	test	eax,0FFFF0000h
 	cmovz	cx,ax
 	mov	[edi+1],ch		; G21
-	
-	xor	ecx,ecx
-	mov	ch,al			; Y22
 
-	add	ebx,ecx			; 256*Y22 + ValUV_G
+	xor	ecx,ecx
+	mov	ch,al
+
+	add	ebx,ecx
 	mov	eax,ebx
-	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	ebx,24
 	not	ebx
 	test	eax,0FFFF0000h
 	cmovz	bx,ax
@@ -166,52 +178,51 @@ LoopPel:mov	ebx,[v]
 
 	mov	eax,[ValV_R]
 	mov	ebx,eax
-	add	eax,edx			; 256*y21
-	mov	al,ch			; y22
+	add	eax,edx
+	mov	al,ch
 	mov	ecx,eax
-	sar	ecx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	ecx,24
 	not	ecx
 	test	eax,0FFFF0000h
-	cmovz	cx,ax	
+	cmovz	cx,ax
 	mov	[edi],ch		; R21
 	xor	ecx,ecx
-	mov	ch,al			; y22
+	mov	ch,al
 
-	add	ebx,ecx			; + 256*y22
+	add	ebx,ecx
 	mov	eax,ebx
-	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	ebx,24
 	not	ebx
 	test	eax,0FFFF0000h
 	cmovz	bx,ax
 	mov	[edi+3],bh		; R22
 
 	mov	eax,[ValU_B]
-	add	ecx,eax			; ValU_B + 256*y22
-	add	eax,edx			; ValU_B + 256*y21
+	add	ecx,eax
+	add	eax,edx
 	mov	ebx,eax
-	sar	ebx,24			; signed DWORD <0 AH=1; >0 AH=0;
+	sar	ebx,24
 	not	ebx
 	test	eax,0FFFF0000h
 	cmovnz	ax,bx
 	mov	[edi+2],ah		; B21
 
-	mov	eax,ecx			; + 256*y22
-	sar	eax,24			; signed DWORD <0 AH=1; >0 AH=0;
+	mov	eax,ecx
+	sar	eax,24
 	not	eax
 	test	ecx,0FFFF0000h
 	cmovnz	cx,ax
 	mov	[edi+5],ch		; B22
 
 	add	esi,2
-	sub	edi,[PixelCount3m6]	
+	sub	edi,[PixelCount3m6]
 
 	dec	[PelCount]
-	jnz	LoopPel		
+	jnz	LoopPel
 
 Exit:
 	ret
 PelYUV_RGB24_CMOV endp
-
 
 
 ;void PelYUV_RGB24_FlipCMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount)

@@ -86,7 +86,7 @@ int row = _height / 2;
 
   while(row-- > 0)
   {
-    // PelYUV_RGB24(pRgb,  y,  u, v, _width);
+    //PelYUV_RGB24(pRgb,  pY,  pU, pV, _width);
     PelYUV_RGB24_CMOV(pRgb,  pY,  pU, pV, _width);
     pY += 2*_width;
     pRgb += 6*_width;

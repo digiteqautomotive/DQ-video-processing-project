@@ -1923,7 +1923,16 @@ bool Pause = false;
 #ifdef USE_ASM
     asmConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
     pos = RGB24compare("YUV420toRGB24_ASM", Width,Height, BlobTest, BlobOut);
-    if(pos >= 10000) goto ReturnErr;
+    if(pos >= 10000)
+    {
+        printf("\nInput Blob YUYV:");
+        for(int i=0; i<Width*Height*2; i++) printf(" %2.2X", BlobIn[i+16]);
+        printf("\nOutput Blob C++ reference RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobTest[i+16]);
+        printf("\nOutput Blob ASM RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
+	goto ReturnErr;
+    }
 #endif
 
      picConvertedYUV420toRGB32.Convert(BlobIn+16, BlobOut+16);
@@ -2204,6 +2213,12 @@ bool Pause = false;
   {
     BlobIn[i] = rand() % 255;
     BlobIn2[i] = rand() % 255;
+  }
+
+  int ThreadPriority = GetThreadPriority(GetCurrentThread());
+  if(ThreadPriority>-15 && ThreadPriority<=0)
+  {
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
   }
 
   printf("\n\nBenchmarks:");
@@ -2640,6 +2655,11 @@ bool Pause = false;
       OrigRotateRGB32Impl OrigRotateRGB32;
       BenchRotator("RotOrig RGB32", OrigRotateRGB32, BlobIn, BlobOut);
     }
+  }
+
+  if(ThreadPriority>-15 && ThreadPriority<=0)
+  {
+    SetThreadPriority(GetCurrentThread(), ThreadPriority);
   }
 
   free(BlobIn);
