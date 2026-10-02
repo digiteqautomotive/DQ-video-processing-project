@@ -37,6 +37,22 @@ protected:
 }; //end ConvYUV420toRGB24_ASM.
 
 
+#if defined(USE_SSE) && defined(_M_IX86)
+class ConvYUV420toRGB24_ASM_SSE2: public ConvYUV420toRGB24_ASM
+{
+public:
+  // Construction and destruction.
+    ConvYUV420toRGB24_ASM_SSE2(void)	{}
+    ConvYUV420toRGB24_ASM_SSE2(int width, int height): ConvYUV420toRGB24_ASM(width,height) {}
+
+	// Interface.
+
+protected:
+    virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+}; //end ConvYUV420toRGB24_ASM.
+#endif
+
+
 /** \ingroup ImageLib
 * Floating point implementation of YUV420 (8 bpp) to RGB 24 bit 
 * colour convertion derived from the YUV420toRGBConverter base 

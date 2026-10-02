@@ -41,6 +41,7 @@ extern "C"
  void PelYUV_RGB32(unsigned char *OutData, const unsigned char *y, const unsigned char *u, const unsigned char *v, unsigned PixelCount);
  void PelYUV_RGB24_CMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB32_CMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
+ void PelYUV_RGB24_CMOV_SSE(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB_Flip(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB24_FlipCMOV(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
  void PelYUV_RGB32_Flip(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
@@ -94,6 +95,23 @@ int row = _height / 2;
     pV += _width/2;
   }
 } //end NonRotateConvert.
+
+
+#if defined(USE_SSE) && defined(_M_IX86)
+void ConvYUV420toRGB24_ASM_SSE2::NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
+{
+int row = _height / 2;  
+
+  while(row-- > 0)
+  {
+    PelYUV_RGB24_CMOV_SSE(pRgb,  pY,  pU, pV, _width);
+    pY += 2*_width;
+    pRgb += 6*_width;
+    pU += _width/2;
+    pV += _width/2;
+  }
+}
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////

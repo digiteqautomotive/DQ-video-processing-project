@@ -1908,6 +1908,9 @@ bool Pause = false;
 #ifdef USE_ASM
      ConvYUV420toRGB24_ASM asmConvertedAYUV2RGB24(Width,Height);
 #endif
+#if defined(USE_SSE) && defined(_M_IX86)
+     ConvYUV420toRGB24_ASM_SSE2 asmConvertedAYUV2RGB24_SSE2(Width,Height);
+#endif
      OrigRealYUV420toRGB24Converter OrigPicConvertedAYUV2RGB24(Width,Height);
 #ifdef USE_ASM
      ConvYUV420toRGB32_ASM asmConvertedAYUV2RGB32(Width,Height);
@@ -1932,7 +1935,27 @@ bool Pause = false;
         printf("\nOutput Blob ASM RGB:");
         for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
 	goto ReturnErr;
+        break;
     }
+#endif
+
+#if defined(USE_SSE) && defined(_M_IX86)
+    if(FeaturesCPU & 16)	// SSE4.1
+    {
+      asmConvertedAYUV2RGB24_SSE2.Convert(BlobIn+16, BlobOut+16);
+      pos = RGB24compare("YUV420toRGB24_ASM_SSE2", Width,Height, BlobTest, BlobOut);
+      if(pos >= 10000)
+      {
+        printf("\nInput Blob YUYV:");
+        for(int i=0; i<Width*Height*2; i++) printf(" %2.2X", BlobIn[i+16]);
+        printf("\nOutput Blob C++ reference RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobTest[i+16]);
+        printf("\nOutput Blob ASM RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
+	goto ReturnErr;
+        break;
+      }
+   }
 #endif
 
      picConvertedYUV420toRGB32.Convert(BlobIn+16, BlobOut+16);
@@ -2499,7 +2522,18 @@ bool Pause = false;
       picConvertedYUV420toRGB24.SetFlip(true);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
     }
-    printf(" ASM_Flip: %.3f[ms]", DurationMin/1000.0);
+    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+#endif
+#if defined(USE_SSE) && defined(_M_IX86)
+    if(FeaturesCPU & 16)	// SSE4.1
+    {
+      ConvYUV420toRGB24_ASM_SSE2 picConvertedYUV420toRGB24(1920,1080);
+      DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
+      printf(" SSE %.3f[ms]", DurationMin/1000.0);
+      //picConvertedYUV420toRGB24.SetFlip(true);
+      //DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
+      //printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+    }
 #endif
     
     {

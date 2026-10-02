@@ -427,5 +427,8 @@
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowCompareSSE2_32.asm">
       <Filter>Source Files</Filter>
     </MASM>
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win32_SSE.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

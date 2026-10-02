@@ -161,7 +161,12 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
       if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12 || in_MediaType==MEDIASUBTYPE_IYUV)
       {
 #ifdef USE_ASM
-          m_pConverter = new ConvYUV420toRGB24_ASM(m_nInWidth, m_nInHeight);
+  #if defined(USE_SSE) && defined(_M_IX86)
+         if(FeaturesCPU & 16)	// SSE4.1
+             m_pConverter = new ConvYUV420toRGB24_ASM_SSE(m_nInWidth, m_nInHeight);
+         else
+  #endif
+             m_pConverter = new ConvYUV420toRGB24_ASM(m_nInWidth, m_nInHeight);
 #else
           m_pConverter = new ConvYUV420toRGB24(m_nInWidth, m_nInHeight);
 #endif

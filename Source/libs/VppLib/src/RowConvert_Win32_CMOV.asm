@@ -16,7 +16,7 @@ KOEF_V2G	EQU	149
 
 ;void PelYUV_RGB24_CMOV(unsigned char *OutData, const unsigned char *y,
 ;                       const signed char *u, const signed char *v, unsigned PixelCount)
-	public PelYUV_RGB24_CMOV
+public PelYUV_RGB24_CMOV
 PelYUV_RGB24_CMOV proc \
         uses edi esi ebx, \
         OutData: ptr BYTE, \
@@ -148,7 +148,7 @@ LoopPel:
 	cmovz	ax,cx
 	mov	[edi+4],ah
 
-	; ========== SECOND ROW (original, untouched) ==========
+	; ========== SECOND ROW (original) ==========
 	mov	eax,[PixelCount]
 	add	edi,[PixelCount3]
 	mov	cx,word ptr [esi+eax]
