@@ -46,13 +46,14 @@ local	sValUV_G: DWORD
 
 	mov	eax,ecx
 	and	eax,2
-	mov	[Remain],eax
+	mov	[Remain],eax			; 0 or 2 remainder pixels
 
 	shr	ecx,2
 	mov	[PelCount],ecx
 	jz	DoTail
 
 LoopPel:
+	; reload constants every iteration (overwritten by temporaries)
 	mov	eax,KOEF_V2R
 	movd	xmm7,eax
 	pshufd	xmm7,xmm7,0
@@ -71,6 +72,7 @@ LoopPel:
 
 	mov	[FirstRowPtr],edi
 
+	; load 2 signed V (sub-128 done on AL before sign-extend)
 	mov	ebx,[v]
 	mov	al,byte ptr [ebx]
 	sub	al,128
@@ -83,6 +85,7 @@ LoopPel:
 	punpcklqdq xmm0,xmm1
 	add	dword ptr [v],2
 
+	; load 2 signed U
 	mov	ebx,[u]
 	mov	al,byte ptr [ebx]
 	sub	al,128
@@ -95,16 +98,17 @@ LoopPel:
 	punpcklqdq xmm1,xmm2
 	add	dword ptr [u],2
 
-	movdqa	xmm3,xmm0
+	movdqa	xmm3,xmm0			; keep originals for green
 	movdqa	xmm2,xmm1
 
-	pmulld	xmm0,xmm7
-	pmulld	xmm1,xmm6
+	pmulld	xmm0,xmm7			; ValV_R
+	pmulld	xmm1,xmm6			; ValU_B
 
-	pmulld	xmm3,xmm5
-	pmulld	xmm2,xmm4
-	paddd	xmm3,xmm2
+	pmulld	xmm3,xmm5			; V * -KOEF_V2G
+	pmulld	xmm2,xmm4			; U * -KOEF_U2G
+	paddd	xmm3,xmm2			; ValUV_G
 
+	; broadcast to [Val0 Val0 Val1 Val1]
 	movd	eax,xmm0
 	pshufd	xmm0,xmm0,2
 	movd	ebx,xmm0
@@ -126,6 +130,7 @@ LoopPel:
 	pinsrd	xmm3,ebx,1
 	pshufd	xmm3,xmm3,050h
 
+	; first-row Y << 8
 	movzx	eax,byte ptr [esi]
 	shl	eax,8
 	movd	xmm2,eax
@@ -140,11 +145,12 @@ LoopPel:
 	pinsrd	xmm2,eax,3
 
 	movdqa	xmm4,xmm2
-	paddd	xmm4,xmm0
+	paddd	xmm4,xmm0			; R
 	movdqa	xmm5,xmm2
-	paddd	xmm5,xmm1
-	paddd	xmm2,xmm3
+	paddd	xmm5,xmm1			; B
+	paddd	xmm2,xmm3			; G
 
+	; store first row (4 pixels) with classic CMOV saturation
 	movd	eax,xmm4
 	mov	edx,eax
 	sar	eax,24
@@ -242,6 +248,7 @@ LoopPel:
 	cmovz	ax,dx
 	mov	[edi+11],ah
 
+	; second-row Y
 	mov	eax,[LineWidth]
 	add	esi,eax
 
@@ -267,6 +274,7 @@ LoopPel:
 	mov	edi,[FirstRowPtr]
 	add	edi,[PixelCount3]
 
+	; store second row (identical saturation)
 	movd	eax,xmm4
 	mov	edx,eax
 	sar	eax,24
@@ -364,6 +372,7 @@ LoopPel:
 	cmovz	ax,dx
 	mov	[edi+11],ah
 
+	; advance to next group of 4 (net +4 on first-row Y)
 	mov	edi,[FirstRowPtr]
 	add	edi,12
 	sub	esi,[LineWidth]
@@ -376,9 +385,10 @@ DoTail:
 	cmp	dword ptr [Remain],0
 	je	Exit
 
+	; ----- scalar tail for remaining 2 pixels (exact original CMOV path) -----
 	xor	edx,edx
 
-	; V
+	; V -> sValV_R
 	mov	ebx,[v]
 	mov	al,[ebx]
 	inc	ebx
@@ -390,7 +400,7 @@ DoTail:
 	mov	[sValV_R],eax
 	mov	ebx,eax
 
-	; R11
+	; R11 / R12
 	mov	dh,[esi]
 	add	eax,edx
 	mov	edx,eax
@@ -401,7 +411,6 @@ DoTail:
 	mov	[edi],ah
 	xor	edx,edx
 
-	; R12
 	mov	eax,ebx
 	mov	dh,[esi+1]
 	add	eax,edx
@@ -413,7 +422,7 @@ DoTail:
 	mov	[edi+3],ah
 	xor	edx,edx
 
-	; U
+	; U -> sValU_B
 	mov	ebx,[u]
 	mov	al,[ebx]
 	inc	ebx
@@ -425,7 +434,7 @@ DoTail:
 	mov	[sValU_B],eax
 	mov	ebx,eax
 
-	; B11
+	; B11 / B12
 	mov	dh,[esi]
 	add	eax,edx
 	mov	edx,eax
@@ -436,7 +445,6 @@ DoTail:
 	mov	[edi+2],ah
 	xor	edx,edx
 
-	; B12
 	mov	eax,ebx
 	mov	dh,[esi+1]
 	add	eax,edx
@@ -448,7 +456,7 @@ DoTail:
 	mov	[edi+5],ah
 	xor	edx,edx
 
-	; Green
+	; Green -> sValUV_G
 	movsx	eax,ch
 	movsx	ecx,cl
 	imul	ecx,-KOEF_U2G
@@ -457,7 +465,7 @@ DoTail:
 	mov	[sValUV_G],eax
 	mov	ebx,eax
 
-	; G11
+	; G11 / G12
 	mov	dh,[esi]
 	add	eax,edx
 	mov	ecx,eax
@@ -467,7 +475,6 @@ DoTail:
 	cmovz	ax,cx
 	mov	[edi+1],ah
 
-	; G12
 	mov	dh,[esi+1]
 	mov	eax,ebx
 	add	eax,edx
@@ -478,14 +485,14 @@ DoTail:
 	cmovz	ax,cx
 	mov	[edi+4],ah
 
-	; ----- second row -----
+	; second row of tail
 	mov	eax,[LineWidth]
 	add	esi,eax
 	mov	eax,[PixelCount3]
 	add	edi,eax
 	xor	edx,edx
 
-	; R21
+	; R21 / R22
 	mov	eax,[sValV_R]
 	mov	dh,[esi]
 	add	eax,edx
@@ -497,7 +504,6 @@ DoTail:
 	mov	[edi],ah
 	xor	edx,edx
 
-	; R22
 	mov	eax,[sValV_R]
 	mov	dh,[esi+1]
 	add	eax,edx
@@ -509,7 +515,7 @@ DoTail:
 	mov	[edi+3],ah
 	xor	edx,edx
 
-	; B21
+	; B21 / B22
 	mov	eax,[sValU_B]
 	mov	dh,[esi]
 	add	eax,edx
@@ -521,7 +527,6 @@ DoTail:
 	mov	[edi+2],ah
 	xor	edx,edx
 
-	; B22
 	mov	eax,[sValU_B]
 	mov	dh,[esi+1]
 	add	eax,edx
@@ -533,7 +538,7 @@ DoTail:
 	mov	[edi+5],ah
 	xor	edx,edx
 
-	; G21
+	; G21 / G22
 	mov	eax,[sValUV_G]
 	mov	dh,[esi]
 	add	eax,edx
@@ -544,7 +549,6 @@ DoTail:
 	cmovz	ax,cx
 	mov	[edi+1],ah
 
-	; G22
 	mov	eax,[sValUV_G]
 	mov	dh,[esi+1]
 	add	eax,edx
