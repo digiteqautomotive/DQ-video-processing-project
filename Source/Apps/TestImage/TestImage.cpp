@@ -1911,7 +1911,7 @@ bool Pause = false;
      ConvYUV420toRGB24_ASM asmConvertedAYUV2RGB24(Width,Height);
      ConvYUV420toRGB32_ASM asmConvertedAYUV2RGB32(Width,Height);
 #endif
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
      ConvYUV420toRGB24_SSE2 asmConvertedAYUV2RGB24_SSE2(Width,Height);
      ConvYUV420toRGB32_SSE2 asmConvertedAYUV2RGB32_SSE2(Width,Height);
 #endif
@@ -1940,9 +1940,10 @@ bool Pause = false;
     }
 #endif
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
     if(FeaturesCPU & 16)	// SSE4.1
     {
+      memset(BlobOut+16, 0xFF, Width*Height*3);
       asmConvertedAYUV2RGB24_SSE2.Convert(BlobIn+16, BlobOut+16);
       pos = RGB24compare("YUV420toRGB24_ASM_SSE2", Width,Height, BlobTest, BlobOut);
       if(pos >= 10000)
@@ -1953,6 +1954,7 @@ bool Pause = false;
         for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobTest[i+16]);
         printf("\nOutput Blob ASM RGB:");
         for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
+	memset(BlobOut+16, 0xFF, Width*Height*3);
 	goto ReturnErr;
       }
    }
@@ -1969,7 +1971,7 @@ bool Pause = false;
     if(pos >= 10000) goto ReturnErr;
 #endif
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
     if(FeaturesCPU & 16)	// SSE4.1
     {
       asmConvertedAYUV2RGB32_SSE2.Convert(BlobIn+16, BlobOut+16);
@@ -2005,7 +2007,7 @@ bool Pause = false;
     if(pos >= 10000) goto ReturnErr;
 #endif
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
     if(FeaturesCPU & 16)	// SSE4.1
     {
       asmConvertedAYUV2RGB24_SSE2.SetFlip(true);
@@ -2568,7 +2570,7 @@ bool Pause = false;
     }
     printf(" Flip: %.3f", DurationMin/1000.0);
 #endif
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
     if(FeaturesCPU & 16)	// SSE4.1
     {
       ConvYUV420toRGB24_SSE2 picConvertedYUV420toRGB24(1920,1080);
@@ -2611,7 +2613,7 @@ bool Pause = false;
     printf(" ASM_Flip: %.3f", DurationMin/1000.0);
 #endif
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
     if(FeaturesCPU & 16)	// SSE4.1
     {
       ConvYUV420toRGB32_SSE2 picConvertedYUV420toRGB32(1920,1080);

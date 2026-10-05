@@ -100,7 +100,7 @@ int row = _height / 2;
 } //end NonRotateConvert.
 
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
 void ConvYUV420toRGB24_SSE2::FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 pRgb += 3*_width*(_height-1);
@@ -177,7 +177,7 @@ int row = _height / 2;
 } //end NonRotateConvert.
 
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
 void ConvYUV420toRGB32_SSE2::FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const
 {
 pRgb += 4*_width*(_height-1);

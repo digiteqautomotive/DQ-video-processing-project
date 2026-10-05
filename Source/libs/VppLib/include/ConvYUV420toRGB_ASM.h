@@ -37,7 +37,7 @@ protected:
 }; //end ConvYUV420toRGB24_ASM.
 
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
 class ConvYUV420toRGB24_SSE2: public ConvYUV420toRGB24_ASM
 {
 public:
@@ -74,7 +74,7 @@ protected:
 }; //end ConvYUV420toRGB32_ASM.
 
 
-#if defined(USE_SSE) && defined(_M_IX86)
+#if defined(USE_SSE)
 class ConvYUV420toRGB32_SSE2: public ConvYUV420toRGB32_ASM
 {
 public:

@@ -1,7 +1,7 @@
 ;***************************************************************************************
 ;*   (c)2025-2026 Digiteq Automotive - designed by Jaroslav Fojtik All rights reserved.
 ;*
-;*  SSE4.1 Strategy B - 4-pixel main loop + remainder-2 tail
+;*  32bit, SSE4.1 Strategy B - 4-pixel main loop + remainder-2 tail
 ;*  LICENSE: Software License Agreement (BSD License)
 ;*  Improved with assistance from xAI's Grok.
 ;*
@@ -19,7 +19,6 @@
 ;*  Saturation: psrad 8 then packusdw+packuswb (unsigned 0..255).
 ;*  RGB32 alpha is written as 0 (CMOV left A untouched).
 ;****************************************************************************************/
-
 .686
 .XMM
 .MODEL FLAT, C
