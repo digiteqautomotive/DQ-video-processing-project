@@ -13,7 +13,8 @@ LICENSE: Software License Agreement (BSD License)
 Copyright (c) 2025-2026 Digiteq Automotive, programmed by Jaroslav Fojtik		All rights reserved.
 ===========================================================================*/
 
-// Note: Accessing a table instead of multiplication looks like smart idea.
+// Note: Removed from toolchain, it is here only as calculation referrence. 
+//	Accessing a table instead of multiplication looks like smart idea.
 //      Unfortunatelly this algorithm is not performing good.
 // RGB32 to YUV to resolution 1920,1080 
 // Win32 time double 13.762[ms] LUT 20.548[ms] fix point 10.705[ms] orig 17.957[ms]

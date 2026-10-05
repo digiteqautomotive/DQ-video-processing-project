@@ -38,17 +38,18 @@ protected:
 
 
 #if defined(USE_SSE) && defined(_M_IX86)
-class ConvYUV420toRGB24_ASM_SSE2: public ConvYUV420toRGB24_ASM
+class ConvYUV420toRGB24_SSE2: public ConvYUV420toRGB24_ASM
 {
 public:
   // Construction and destruction.
-    ConvYUV420toRGB24_ASM_SSE2(void)	{}
-    ConvYUV420toRGB24_ASM_SSE2(int width, int height): ConvYUV420toRGB24_ASM(width,height) {}
+    ConvYUV420toRGB24_SSE2(void)	{}
+    ConvYUV420toRGB24_SSE2(int width, int height): ConvYUV420toRGB24_ASM(width,height) {}
 
 	// Interface.
 
 protected:
     virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+    virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
 }; //end ConvYUV420toRGB24_ASM.
 #endif
 
@@ -71,6 +72,24 @@ protected:
   virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
   virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;  
 }; //end ConvYUV420toRGB32_ASM.
+
+
+#if defined(USE_SSE) && defined(_M_IX86)
+class ConvYUV420toRGB32_SSE2: public ConvYUV420toRGB32_ASM
+{
+public:
+  // Construction and destruction.
+    ConvYUV420toRGB32_SSE2(void)	{}
+    ConvYUV420toRGB32_SSE2(int width, int height): ConvYUV420toRGB32_ASM(width,height) {}
+
+	// Interface.
+
+protected:
+    virtual void NonRotateConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+    virtual void FlipConvert(const unsigned char* pY, const signed char* pU, const signed char* pV, unsigned char *pRgb) const;
+}; //end ConvYUV420toRGB24_ASM.
+#endif
+
 
 
 #endif	// _REALYUV420TORGB24CONVERTER_H

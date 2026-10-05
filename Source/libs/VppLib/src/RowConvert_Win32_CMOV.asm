@@ -1,5 +1,8 @@
 ;***************************************************************************************
 ;*                       (c)2025-2026 Digiteq Automotive - Jaroslav Fojtik
+;*
+;*LICENSE: Software License Agreement (BSD License)
+;*Copyright (c) 2025-2026 Digiteq Automotive, designed by Jaroslav Fojtik All rights reserved.
 ;****************************************************************************************/
 
 .686              ;Target processor.  Use instructions for Pentium class machines

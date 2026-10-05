@@ -41,7 +41,7 @@ RESTRICTIONS:		Redistribution and use in source and binary forms, with or withou
 			NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 			SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-
+// Note: Removed from toolchain, it is here only as calculation referrence.
 #include "ConvRGB24toYUV420CCIR601Ver16R.h"
 
 

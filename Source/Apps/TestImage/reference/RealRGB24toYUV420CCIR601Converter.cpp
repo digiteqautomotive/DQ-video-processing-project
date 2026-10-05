@@ -17,7 +17,7 @@ COPYRIGHT:
 
 RESTRICTIONS: 
 ===========================================================================*/
-
+// Note: Removed from toolchain, it is here only as calculation referrence.
 #include "ConvRGB24toYUV420CCIR601Real.h"
 
 #include <uuids.h>

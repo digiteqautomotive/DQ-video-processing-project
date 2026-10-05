@@ -85,6 +85,8 @@ IF (MMX_SSE_ACCELERATORS)
     SET(IU_SRCS ${IU_SRCS}
       ../libs/VppLib/src/raster_MSVC.asm
       ../libs/VppLib/src/RowConvert_Win32.asm
+      ../libs/VppLib/src/RowConvert_Win32_CMOV.asm
+      ../libs/VppLib/src/RowConvert_Win32_SSE.asm
       ../libs/VppLib/src/RowScallerARGB32_Win32.asm
       ../libs/VppLib/src/RowScallerMMX_Win32.asm
       ../libs/VppLib/src/RowScallerSSE_Win32.asm

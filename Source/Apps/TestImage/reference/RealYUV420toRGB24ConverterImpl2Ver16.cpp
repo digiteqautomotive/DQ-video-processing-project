@@ -1,20 +1,20 @@
 /** @file
 
-MODULE		: RealYUV420toBGR24ConverterImpl2Ver16
+MODULE:		RealYUV420toBGR24ConverterImpl2Ver16
 
-TAG		: RYUVRGB24CI2V16
+TAG:		RYUVRGB24CI2V16
 
-FILE NAME	: RealYUV420toBGR24ConverterImpl2Ver16.cpp
+FILE NAME:	RealYUV420toBGR24ConverterImpl2Ver16.cpp
 
-DESCRIPTION	: Floating point implementation of YUV420 (16 bpp) to RGB 24 bit 
+DESCRIPTION:	Floating point implementation of YUV420 (16 bpp) to RGB 24 bit 
 		colour convertion derived from the YUV420toRGBConverter base 
 		class.
 
 COPYRIGHT	(c)CSIR 2007-2012 all rights resevered
 
-LICENSE		: Software License Agreement (BSD License)
+LICENSE:	Software License Agreement (BSD License)
 
-RESTRICTIONS	: Redistribution and use in source and binary forms, with or without 
+RESTRICTIONS:	Redistribution and use in source and binary forms, with or without 
 		modification, are permitted provided that the following conditions 
 		are met:
 
@@ -39,6 +39,7 @@ RESTRICTIONS	: Redistribution and use in source and binary forms, with or withou
 		NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 		SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+// Note: Removed from toolchain, it is here only as calculation referrence.
 #include "ConvYUV420toRGB24RealImpl2Ver16.h"
 
 #include "typedfs.h"

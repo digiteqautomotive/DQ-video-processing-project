@@ -444,6 +444,10 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">0</WarningLevel>
       <TreatWarningsAsErrors Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatWarningsAsErrors>
     </MASM>
+    <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowConvert_Win64_SSE.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </MASM>
     <MASM Include="..\..\..\..\..\Source\libs\VppLib\src\RowScallerARGB32_Win32.asm">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

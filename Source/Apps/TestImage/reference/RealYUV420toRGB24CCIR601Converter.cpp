@@ -17,7 +17,7 @@ COPYRIGHT:
 
 RESTRICTIONS: 
 ===========================================================================*/
-//#include <stdio.h>
+// Note: Removed from toolchain, it is here only as calculation referrence.
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>

@@ -30,8 +30,8 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-
-//NOTE: In fact this code is not fast, but very slow. It consumes 25.2ms. SIMD does not automatically grant better speed.
+// Note: Removed from toolchain, it is here only as calculation referrence.
+//  In fact this code is not fast, but very slow. It consumes 25.2ms. SIMD does not automatically grant better speed.
 //  Convert RGB32 to YUV res 1920,1080 time 13.762[ms] LUT 20.548[ms] fix point 10.705[ms] orig 17.957[ms]
 //  Convert RGB24 to YUV res 1920,1080 time 18.670[ms] fix point 10.749[ms] orig 18.711[ms] simd 25.157[ms]
 

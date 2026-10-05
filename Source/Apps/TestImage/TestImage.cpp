@@ -69,7 +69,8 @@ extern "C"
  unsigned GetFeaturesCPU(void);
 #else
  unsigned GetFeaturesCPU(void) {return 0;}
-#endif 
+#endif
+//void Experiment5Args(unsigned char *OutData, const unsigned char *y, const signed char *u, const signed char *v, unsigned PixelCount);
 }
 
 unsigned char FeaturesCPU = 0x80;
@@ -957,6 +958,7 @@ bool Pause = false;
     printf("\nError: Memory allocation problem.");
     goto ReturnErr;
   }
+
 
 //---------------------------------------------------------------------------------------
 
@@ -1907,14 +1909,13 @@ bool Pause = false;
      ConvYUV420toRGB24 picConvertedAYUV2RGB24(Width,Height);
 #ifdef USE_ASM
      ConvYUV420toRGB24_ASM asmConvertedAYUV2RGB24(Width,Height);
-#endif
-#if defined(USE_SSE) && defined(_M_IX86)
-     ConvYUV420toRGB24_ASM_SSE2 asmConvertedAYUV2RGB24_SSE2(Width,Height);
-#endif
-     OrigRealYUV420toRGB24Converter OrigPicConvertedAYUV2RGB24(Width,Height);
-#ifdef USE_ASM
      ConvYUV420toRGB32_ASM asmConvertedAYUV2RGB32(Width,Height);
 #endif
+#if defined(USE_SSE) && defined(_M_IX86)
+     ConvYUV420toRGB24_SSE2 asmConvertedAYUV2RGB24_SSE2(Width,Height);
+     ConvYUV420toRGB32_SSE2 asmConvertedAYUV2RGB32_SSE2(Width,Height);
+#endif
+     OrigRealYUV420toRGB24Converter OrigPicConvertedAYUV2RGB24(Width,Height);
      YUV420toRGB32Converter picConvertedYUV420toRGB32(Width,Height);
      
      picConvertedAYUV2RGB24.Convert(BlobIn+16, BlobOut+16);
@@ -1953,7 +1954,6 @@ bool Pause = false;
         printf("\nOutput Blob ASM RGB:");
         for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
 	goto ReturnErr;
-        break;
       }
    }
 #endif
@@ -1967,6 +1967,24 @@ bool Pause = false;
     asmConvertedAYUV2RGB32.Convert(BlobIn+16, BlobOut+16);
     pos = RGB24toRGB32compare("YUV420toRGB32_ASM", Width,Height, BlobTest, BlobOut);
     if(pos >= 10000) goto ReturnErr;
+#endif
+
+#if defined(USE_SSE) && defined(_M_IX86)
+    if(FeaturesCPU & 16)	// SSE4.1
+    {
+      asmConvertedAYUV2RGB32_SSE2.Convert(BlobIn+16, BlobOut+16);
+      pos = RGB24toRGB32compare("YUV420toRGB32_SSE2", Width,Height, BlobTest, BlobOut);
+      if(pos >= 10000)
+      {
+        printf("\nInput Blob YUYV:");
+        for(int i=0; i<Width*Height*2; i++) printf(" %2.2X", BlobIn[i+16]);
+        printf("\nOutput Blob C++ reference RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobTest[i+16]);
+        printf("\nOutput Blob ASM RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
+	goto ReturnErr;
+      }
+   }
 #endif
 
      picConvertedAYUV2RGB24.SetFlip(true);
@@ -1985,6 +2003,32 @@ bool Pause = false;
     asmConvertedAYUV2RGB32.Convert(BlobIn+16, BlobOut+16);
     pos = RGB24toRGB32compareFlip("YUV420toRGB32_ASM Flip", Width,Height, BlobTest, BlobOut);
     if(pos >= 10000) goto ReturnErr;
+#endif
+
+#if defined(USE_SSE) && defined(_M_IX86)
+    if(FeaturesCPU & 16)	// SSE4.1
+    {
+      asmConvertedAYUV2RGB24_SSE2.SetFlip(true);
+      asmConvertedAYUV2RGB24_SSE2.Convert(BlobIn+16, BlobOut+16);
+      pos = RGBcompareFlip("YUV420toRGB24_ASM_FlipSSE", Width,Height, BlobTest, BlobOut);
+      if(pos >= 10000)
+      {
+        printf("\nInput Blob YUYV:");
+        for(int i=0; i<Width*Height*2; i++) printf(" %2.2X", BlobIn[i+16]);
+        printf("\nOutput Blob C++ reference (unflipped) RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobTest[i+16]);
+        printf("\nOutput Blob ASM RGB:");
+        for(int i=0; i<Width*Height*3; i++) printf(" %2.2X", BlobOut[i+16]);
+	goto ReturnErr;
+        break;
+      }
+
+      asmConvertedAYUV2RGB32_SSE2.SetFlip(true);
+      asmConvertedAYUV2RGB32_SSE2.Convert(BlobIn+16, BlobOut+16);
+      pos = RGB24toRGB32compareFlip("YUV420toRGB32 FlipSSE", Width,Height, BlobTest, BlobOut);
+      if(pos >= 10000)
+	  goto ReturnErr;
+   }
 #endif
 
     picConvertedYUV420toRGB32.SetFlip(true);
@@ -2354,7 +2398,7 @@ bool Pause = false;
     {
       OrigRealRGB24toYUV420Converter origConverterRGB24toYUV420(1920,1080);
       DurationMin = BenchConverter(origConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf(" orig %.3f[ms]", DurationMin/1000.0);
+      printf(" orig{C %.3f[ms]", DurationMin/1000.0);
     }
 #ifdef USE_SSE
     if(FeaturesCPU & 2)
@@ -2367,7 +2411,7 @@ bool Pause = false;
     {
       ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(1920,1080);
       DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf(" LUT %.3f[ms]", DurationMin/1000.0);
+      printf(" LUT %.3f[ms]}", DurationMin/1000.0);
     }
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -2387,19 +2431,19 @@ bool Pause = false;
       OrigRealRGB24toYUV420Converter origConverterRGB24toYUV420(1920,1080);
       origConverterRGB24toYUV420.SetFlip(true);
       DurationMin = BenchConverter(origConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf(" orig %.3f[ms]", DurationMin/1000.0);
+      printf(" orig{C %.3f[ms]", DurationMin/1000.0);
     }
     {
       ConvRGB24toYUV42_float_LUT LutConverterRGB24toYUV420(1920,1080);
       LutConverterRGB24toYUV420.SetFlip(true);
       DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf(" LUT %.3f[ms]", DurationMin/1000.0);
+      printf(" LUT %.3f[ms]}", DurationMin/1000.0);
     }
     {
       ConvRGB24toYUV42_fixp_LUT LutConverterRGB24toYUV420(1920,1080);
       LutConverterRGB24toYUV420.SetFlip(true);
       DurationMin = BenchConverter(LutConverterRGB24toYUV420, BlobIn, BlobOut);
-      printf("+Fix %.3f[ms]", DurationMin/1000.0);
+      printf(" +Fix %.3f[ms]", DurationMin/1000.0);
     }
 
 
@@ -2508,33 +2552,34 @@ bool Pause = false;
     {
       ConvYUV420toRGB24 picConvertedYUV420toRGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
-      printf("\nConvert YUV420 to RGB24 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nConvert YUV420 to RGB24 res 1920,1080 time %.3f", DurationMin/1000.0);
       picConvertedYUV420toRGB24.SetFlip(true);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
     }
-    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+    printf(" Flip: %.3f", DurationMin/1000.0);
 
 #ifdef USE_ASM
     {
       ConvYUV420toRGB24_ASM picConvertedYUV420toRGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
-      printf(" ASM %.3f[ms]", DurationMin/1000.0);
+      printf(" ASM %.3f", DurationMin/1000.0);
       picConvertedYUV420toRGB24.SetFlip(true);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
     }
-    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+    printf(" Flip: %.3f", DurationMin/1000.0);
 #endif
 #if defined(USE_SSE) && defined(_M_IX86)
     if(FeaturesCPU & 16)	// SSE4.1
     {
-      ConvYUV420toRGB24_ASM_SSE2 picConvertedYUV420toRGB24(1920,1080);
+      ConvYUV420toRGB24_SSE2 picConvertedYUV420toRGB24(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
-      printf(" SSE %.3f[ms]", DurationMin/1000.0);
-      //picConvertedYUV420toRGB24.SetFlip(true);
-      //DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
-      //printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+      printf(" SSE %.3f", DurationMin/1000.0);
+      picConvertedYUV420toRGB24.SetFlip(true);
+      DurationMin = BenchConverter(picConvertedYUV420toRGB24, BlobIn, BlobOut);
+      printf(" Flip: %.3f", DurationMin/1000.0);
     }
 #endif
+    printf("[ms]");
     
     {
       OrigRealYUV420toRGB24Converter origConvertedYUV420toRGB24(1920,1080);
@@ -2549,22 +2594,36 @@ bool Pause = false;
     {
       YUV420toRGB32Converter picConvertedYUV420toRGB32(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB32, BlobIn, BlobOut);
-      printf("\nConvert YUV420 to RGB32 resolution 1920,1080 time %.3f[ms]", DurationMin/1000.0);
+      printf("\nConvert YUV420 to RGB32 resolution 1920,1080 time %.3f", DurationMin/1000.0);
       picConvertedYUV420toRGB32.SetFlip(true);
       DurationMin = BenchConverter(picConvertedYUV420toRGB32, BlobIn, BlobOut);
     }
-    printf(" Flip: %.3f[ms]", DurationMin/1000.0);
+    printf(" Flip: %.3f", DurationMin/1000.0);
 
 #ifdef USE_ASM
     {
       ConvYUV420toRGB32_ASM picConvertedYUV420toRGB32(1920,1080);
       DurationMin = BenchConverter(picConvertedYUV420toRGB32, BlobIn, BlobOut);
-      printf(" ASM %.3f[ms]", DurationMin/1000.0);
+      printf(" ASM %.3f", DurationMin/1000.0);
       picConvertedYUV420toRGB32.SetFlip(true);
       DurationMin = BenchConverter(picConvertedYUV420toRGB32, BlobIn, BlobOut);
     }
-    printf(" ASM_Flip: %.3f[ms]", DurationMin/1000.0);
+    printf(" ASM_Flip: %.3f", DurationMin/1000.0);
 #endif
+
+#if defined(USE_SSE) && defined(_M_IX86)
+    if(FeaturesCPU & 16)	// SSE4.1
+    {
+      ConvYUV420toRGB32_SSE2 picConvertedYUV420toRGB32(1920,1080);
+      DurationMin = BenchConverter(picConvertedYUV420toRGB32, BlobIn, BlobOut);
+      printf(" SSE %.3f", DurationMin/1000.0);
+      picConvertedYUV420toRGB32.SetFlip(true);
+      DurationMin = BenchConverter(picConvertedYUV420toRGB32, BlobIn, BlobOut);
+      printf(" Flip: %.3f", DurationMin/1000.0);
+    }
+#endif
+    printf("[ms]");
+
 
 	/////////////////////////////////////////////////////////
 

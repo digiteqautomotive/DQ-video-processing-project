@@ -142,7 +142,18 @@ HRESULT YUVtoRGBFilter::SetMediaType(PIN_DIRECTION direction, const CMediaType *
       if(in_MediaType == MEDIASUBTYPE_YV24)
           m_pConverter = new ConvYV24toRGB32(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YUV420P_S || in_MediaType==MEDIASUBTYPE_I420 || in_MediaType==MEDIASUBTYPE_YV12 || in_MediaType==MEDIASUBTYPE_IYUV)
-          m_pConverter = new YUV420toRGB32Converter(m_nInWidth, m_nInHeight);
+      {
+#ifdef USE_ASM
+  #if defined(USE_SSE) && defined(_M_IX86)
+         if(FeaturesCPU & 16)	// SSE4.1
+             m_pConverter = new ConvYUV420toRGB32_SSE(m_nInWidth, m_nInHeight);
+         else
+  #endif
+            m_pConverter = new ConvYUV420toRGB32_ASM(m_nInWidth, m_nInHeight);
+#else
+	 m_pConverter = new YUV420toRGB32Converter(m_nInWidth, m_nInHeight);
+#endif
+      }
       if(in_MediaType==MEDIASUBTYPE_YUYV || in_MediaType==MEDIASUBTYPE_YUY2)
           m_pConverter = new YUYVtoARGB32Converter(m_nInWidth, m_nInHeight);
       if(in_MediaType==MEDIASUBTYPE_YVYU)
